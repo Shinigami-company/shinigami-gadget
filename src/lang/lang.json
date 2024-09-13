@@ -1,0 +1,58 @@
+{
+  "en":
+  {
+    "selectable": true,
+    "keys": true,
+    "name": "English",
+    "hlore": "first language",
+    "progress": 100
+  },
+
+  "fr":
+  {
+    "selectable": true,
+    "keys": true,
+    "name": "Français",
+    "hlore": "second language",
+    "progress": 99,
+    "sublang": "en"
+  },
+
+  "de":
+  {
+    "selectable": true,
+    "keys": true,
+    "name": "Deutsch",
+    "progress": 10,
+    "sublang": "en"
+  },  
+
+  "en-US":
+  {
+    "sublang": "en"
+  },
+  "en-GB":
+  {
+    "sublang": "en"
+  },
+
+  "cat":
+  {
+    "selectable": true,
+    "keys": true,
+    "name": "Cat UwU",
+    "lore": "this is a custom language",
+    "progress": 100,
+    "sublang": "en"
+  },
+
+  "ji":
+  {
+    "selectable": false,
+    "keys": true,
+    "name": "😃",
+    "lore": "this is a custom language",
+    "progress": 3,
+    "sublang": "en"
+  }
+}
