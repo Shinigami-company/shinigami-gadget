@@ -901,9 +901,10 @@ async function cmd_burn({ request, data, userbook, lang }) {
     }
   }
   
-  throw new Error("you would have burned it with sucress.");
-  console.log("DBUG : cmd : would burn");
-  //await kira_book_delete(userbook);
+  
+  console.log("DBUG : cmd : would burn book userbook=",userbook);
+  // throw new Error("you would have burned it with sucress.");
+  await kira_book_delete(userbook);
 
   return {
     method: 'PATCH',
