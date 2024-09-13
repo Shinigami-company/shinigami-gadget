@@ -42,11 +42,7 @@ export const schema: GadgetModel = {
       includeTime: true,
       storageKey: "bRmM-ugIUS1a::_hVDoSZAH3eF",
     },
-    heads: {
-      type: "number",
-      default: 0,
-      storageKey: "G6pQJoy1QYhM::VwDUNOV78ccf",
-    },
+    hits: { type: "number", storageKey: "iWLmQPtoMtqH" },
     is_alive: {
       type: "boolean",
       default: true,
@@ -57,7 +53,11 @@ export const schema: GadgetModel = {
       default: false,
       storageKey: "lx7fjOHlG4_e::7QkcSAaYuiF8",
     },
-    kills: { type: "number", storageKey: "iWLmQPtoMtqH" },
+    kills: {
+      type: "number",
+      default: 0,
+      storageKey: "G6pQJoy1QYhM::VwDUNOV78ccf",
+    },
     lang: {
       type: "string",
       storageKey: "7EStxtlMHvj5::U-rrIFAWCanl",

@@ -15,14 +15,14 @@ export const stats_all = {
   {
     begin:{},
     type:3,
-    cousin: "heads",
+    cousin: "kills",
     cousinRaw: false
   },
   "book_hit":
   {
     begin:0,
     type:1,
-    cousin: "kills",
+    cousin: "murders",
     cousinRaw: false
   },
   "book_try":

@@ -126,17 +126,17 @@ export async function kira_users_rank_kill()
   );
 }//return 3 best kills userdata
 
-export async function kira_users_rank_head()
+export async function kira_users_rank_hit()
 {
   return await api.KiraUsers.findMany(
     {
       sort: {
-        heads: "Descending",
+        hits: "Descending",
       },
       select: {
         id: true,
         userId: true,
-        heads: true,
+        hits: true,
         lang: true,
       },
 

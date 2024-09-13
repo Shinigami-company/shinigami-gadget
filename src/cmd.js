@@ -70,7 +70,7 @@ import { DiscordUserById } from '../utils.js';
 import { translate, lang_choice, lang_lore, lang_get, lang_set } from './lang.js';
 
 import { kira_user_get, kira_user_set_life, kira_user_get_daily, kira_user_set_daily, kira_user_add_apple } from './kira.js';//kira user
-import { kira_users_rank_apple, kira_users_rank_kill, kira_users_rank_head } from './kira.js';//kira user
+import { kira_users_rank_apple, kira_users_rank_kill, kira_users_rank_hit } from './kira.js';//kira user
 import { kira_book_create, kira_book_delete, kira_book_get, kira_book_color_choice, book_colors } from './kira.js';//kira book
 import { kira_run_create, kira_run_delete, kira_run_get, kira_run_of, kira_run_pack, kira_run_unpack_execute, kira_run_unpack_know, kira_runs_by } from './kira.js';//kira run
 import { kira_line_append, kira_line_get_page, kira_line_get_last_indexPage, kira_line_if_pageGood, kira_line_taste } from './kira.js';//kira line
@@ -315,7 +315,7 @@ const commands_structure =
           name: 'on',
           description: 'have the most...',
           required: true,
-          choices: [{ name: "Apples", value: "apple" }, { name: "Kills", value: "kill" }, { name: "Heads", value: "head" }]
+          choices: [{ name: "Apples", value: "apple" }, { name: "Kills", value: "kill" }, { name: "Meurtres", value: "murder" }]
         }
       ],
       type: 1
@@ -974,13 +974,13 @@ async function cmd_top({ data, lang }) {
       h_ranks = await kira_users_rank_apple();
       h_amountK = "apples";
     } break;
-    case ("head"): {
-      h_ranks = await kira_users_rank_head();
-      h_amountK = "heads";
-    } break;
     case ("kill"): {
       h_ranks = await kira_users_rank_kill();
       h_amountK = "kills";
+    } break;
+    case ("murder"): {
+      h_ranks = await kira_users_rank_hit();
+      h_amountK = "murders";
     } break;
   }
 

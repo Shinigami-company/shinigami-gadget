@@ -6,6 +6,7 @@
 "error.point.404": "how did you get there? `ERROR [404]=$[message]`",
 
 
+
 "check.god.not": "**Nop!** You dont have the god power.",
 "check.alive.not": "*You are dead for another **$[time]***",
 "check.hasbook.not": "*You don't own a death note*",
@@ -36,10 +37,11 @@
 "cmd.claim.done.paid": "Yum! **Here your beautiful death note!** $[emoji]",
 
 "cmd.burn.already": "*you burned a book, but it wasn't the death note*",
-"cmd.burn.confirm": "*you ligth up a match...*\n**Wait!**\nHuman, are you really going to burn your death note and everything you have in it?\nAfterall, if you really want to, do it.",
+"cmd.burn.confirm": "*you ligth up a match... 🧨*\n**Wait!**\nHuman, are you really going to burn your death note and everything you have in it?\nAfterall, if you really want to, do it.",
 "cmd.burn.confirm.button.ok": "BURN IT",
 "cmd.burn.confirm.button.no": "no!",
-"cmd.burn.cancel": "*you ligth off the match.*\nPlaying with fire could be dangerous, and that is fun.",
+"cmd.burn.cancel": "*you ligth off the match*\nPlaying with fire could be dangerous, but that is fun.",
+"cmd.burn.expired": "*the match went out in the meantime*",
 "cmd.burn.done": "**You burned your death note.** 🔥🔥🔥\nWell, see you later human\n*The shinigami disappears*",
 
 "cmd.apples.claim.daily": "you claimed your daily apple! **+$[added]**",
@@ -51,10 +53,10 @@
 
 "cmd.best.get.apple.title": "apples leaderboard :",
 "cmd.best.get.apple.place": "$[rank] : <@$[playerId]> with **$[amount]** :apple:",
-"cmd.best.get.head.title": "collected heads leaderboard :",
-"cmd.best.get.head.place": "$[rank] : <@$[playerId]> with **$[amount]** heads",
-"cmd.best.get.kill.title": "total kills leaderboard :",
+"cmd.best.get.kill.title": "kills leaderboard :",
 "cmd.best.get.kill.place": "$[rank] : <@$[playerId]> with **$[amount]** kills",
+"cmd.best.get.murder.title": "murders leaderboard :",
+"cmd.best.get.murder.place": "$[rank] : <@$[playerId]> with **$[amount]** murders",
 
 "cmd.rules.english": "I've copy the rules of the death note in english, the most spoke human language.",
 "cmd.rules.preamble": "Here one of them :",
@@ -123,6 +125,7 @@
 "format.time.between.other": "$[chunk], $[piece]",
 "format.time.between.last": "$[chunk] and $[piece]",
 
+
 "stats.misc.fail.nothing": "you are responsible of absolutly nothing (yet)",
 "stats.misc.show": "here what you have done :",
 "stats.misc.show.book_kill": "**differents victims killed** = $[value]",
@@ -131,17 +134,16 @@
 "stats.misc.show.ever_apple": "apples ever see = $[value]",
 "stats.misc.show.ever_death": "death amount = $[value]",
 "stats.misc.show.ever_deathTime": "death time = $[value]",
-"stats.misc.show.ever_book": "death notes see = $[value]",
+"stats.misc.show.ever_book": "death notes ever touched = $[value]",
 
-"stats.relation.fail.nothing": "you killed no one (yet)",
-"stats.relation.show": "here your releationship sumup :",
+"stats.relation.fail.nothing": "you are friendly with everyone (for now)",
+"stats.relation.show": "here your relationship sumup :",
 "stats.relation.person": "you killed <@$[whoId]> **$[value]** $[unit]",
 
 "stats.running.fail.nothing": "you are killing no one",
 "stats.running.show": "here what will happend :",
 "stats.running.attacker": "<@$[victimId]> shall die in **$[span]**",
 "stats.running.victim": "you shall die in **$[span]**",
-
 
 
 "word.apple": "apple",
