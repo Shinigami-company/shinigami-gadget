@@ -615,7 +615,7 @@ async function check_can_alive(dig) {
 
 //"book" check
 function check_has_book(dig) {
-  if (dig.userbook) {
+  if (!dig.userbook) {
     return {
       method: 'PATCH',
       body: {
@@ -712,6 +712,15 @@ async function cmd_god({ userdata, data, lang }) {
 	  
       const h_targetId = arg_user;
       const targetdata = await kira_user_get(h_targetId, false);
+	  
+      if (!targetdata) {
+        return {
+          method: 'PATCH',
+          body: {
+            content: translate(lang, "cmd.god.apple.fail.notplayer")
+          }
+        };
+      }
 
 	  const h_given = (h_fake) ? 0 : arg_amount;
 	  const h_identity = `${(h_fake) ? "fake" : "real"}.${(h_given<0) ? "remove" : "add"}`;
