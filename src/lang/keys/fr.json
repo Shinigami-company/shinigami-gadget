@@ -9,7 +9,7 @@
 
 "check.god.not": "**Nope !** Tu n'as pas le pouvoir d'un dieu.",
 "check.alive.not": "*tu es mort⸱e pendant encore **$[time]***",
-"check.hasbook.not": "*tu n'as pas de death note*",
+"check.hasbook.not": "*tu ne détiens pas de death note*\n`/claim` *pour en avoir un*",
 
 
 "cmd.god.life.fail.missing.user": "spécifie un utilisateur",

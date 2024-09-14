@@ -100,7 +100,7 @@ const commands_structure =
     {
       name: 'god',
       contexts: [0],
-      description: 'an admin command',
+      description: 'An admin-only command',
 
       options: [
         {
@@ -170,7 +170,7 @@ const commands_structure =
     register:
     {
       name: 'wakeup',
-      description: 'wake up the shinigami. todo when the bot was not used just before.',
+      description: 'Wake up the shinigami',
       contexts: [0],
       type: 1
     }
@@ -227,7 +227,7 @@ const commands_structure =
     register:
     {
       name: 'burn',
-      description: 'burn your death note. why would you do that?',
+      description: 'Burn your death note. Why would you do that?',
       contexts: [0],
       type: 1
     }
@@ -243,14 +243,14 @@ const commands_structure =
     register:
     {
       name: 'stats',
-      description: 'getting your stats',
+      description: 'Getting your stats',
       contexts: [0],
       type: 1,
       options: [
         {
           type: 3,
           name: 'categorie',
-          description: 'the page to view...',
+          description: 'stats about...',
           required: true,
           choices: [{ name: "General", value: "misc" }, { name: "People", value: "relation" }]
         }
@@ -267,7 +267,7 @@ const commands_structure =
     register:
     {
       name: 'lang',
-      description: 'set/get the human language I speak',
+      description: 'Set/Get the human language I speak',
       contexts: [0],
       options: [
         {
@@ -292,7 +292,7 @@ const commands_structure =
     register:
     {
       name: 'apple',
-      description: 'i like apples',
+      description: 'Claim your daily apple, claim obtained apples, and get your number of apples',
       contexts: [0],
       type: 1
     }
@@ -307,7 +307,7 @@ const commands_structure =
     register:
     {
       name: 'top',
-      description: 'the top players on multpiples things',
+      description: 'The top 3 players on multiples things',
       contexts: [0],
       options: [
         {
@@ -332,7 +332,7 @@ const commands_structure =
     register:
     {
       name: 'rules',
-      description: 'get a random rules of the death note',
+      description: 'Get a random rules of the death note',
       contexts: [0],
       type: 1
     }
@@ -347,7 +347,7 @@ const commands_structure =
     register:
     {
       name: 'see',
-      description: 'read what you write in your death note',
+      description: 'Read what you wrote in your death note',
       contexts: [0],
       options: [
         {
@@ -371,7 +371,7 @@ const commands_structure =
     register:
     {
       name: 'running',
-      description: 'see who will be killed',
+      description: 'See who will be killed',
       contexts: [0],
       type: 1
     }
@@ -387,7 +387,7 @@ const commands_structure =
     register:
     {
       name: 'kira',
-      description: 'kill someone after 40 seconds',
+      description: 'Kill someone after 40 seconds',
       contexts: [0],
       options: [
         {
@@ -547,7 +547,7 @@ export function cmd_register() {
     } else if (!commands_structure[i].systemOnly) {
       r_commandsRegisterAll.push({
         name: i,
-        description: 'idk',
+        description: '<no register field>',
         type: 1
       });
     }
@@ -606,7 +606,7 @@ async function check_can_alive(dig) {
 
 //"book" check
 function check_has_book(dig) {
-  if (!dig.userbook) {
+  if (dig.userbook) {
     return {
       method: 'PATCH',
       body: {
