@@ -111,13 +111,22 @@ const commands_structure =
           choices: [
             { name: "test", value: "test", description: 'execute the test script' },
             { name: "revive", value: "revive", description: 'revive someone' },
-            { name: "kill", value: "kill", description: 'kill someone' }
+            { name: "kill", value: "kill", description: 'kill someone' },
+            { name: "mercy", value: "mercy", description: 'cancel someone\'s death' },
+            { name: "give apple", value: "apple_give", description: 'give apple' },
+            { name: "gift apple", value: "apple_fake", description: 'fake giving apple' },
           ]
         },
         {
           type: 6,
           name: 'user',
-          description: 'the user to do things on',
+          description: 'the potential user to do things on',
+          required: false
+        },
+        {
+          type: 4,
+          name: 'amount',
+          description: 'the potential amount',
           required: false
         },
       ],
@@ -625,14 +634,17 @@ function check_has_book(dig) {
 //#god command
 async function cmd_god({ userdata, data, lang }) {
   
-  switch (data.options[0].value)
+  const arg_sub=data.options.find(opt => opt.name === "action")?.value;// also data.options[0].value
+  const arg_user=data.options.find(opt => opt.name === "user")?.value;
+  const arg_amount=data.options.find(opt => opt.name === "amount")?.value;
+ 
+  switch (arg_sub)
   {
-   
-    //#revive command
+    //#life subcommand (#revive & #kill)
     case ("revive"): {};
     case ("kill"):
     {
-      if (!data.options[1]) {
+      if (!arg_user) {
         return {
           method: 'PATCH',
           body: {
@@ -641,7 +653,7 @@ async function cmd_god({ userdata, data, lang }) {
         };
       }
   
-      const h_targetId = data.options[1].value;
+      const h_targetId = arg_user;
       const targetdata = await kira_user_get(h_targetId, false);
   
       if (!targetdata) {
@@ -653,7 +665,7 @@ async function cmd_god({ userdata, data, lang }) {
         };
       }
   
-      const h_life = (data.options[0].value === "revive");
+      const h_life = (arg_sub === "revive");
   
       if (targetdata.is_alive === h_life) {
         return {
@@ -673,11 +685,51 @@ async function cmd_god({ userdata, data, lang }) {
         },
       };
     } break;
+
+    //#apple subcommand (#apple_fake & #apple_give)
+    case ("apple_fake"): {};
+    case ("apple_give"): {
+	  
+      if (!arg_user) {
+        return {
+          method: 'PATCH',
+          body: {
+            content: translate(lang, "cmd.god.apple.fail.missing.user")
+          }
+        };
+      }
+
+	  const h_fake = !(arg_sub === "apple_give");
+
+      if (!arg_amount) {
+        return {
+          method: 'PATCH',
+          body: {
+            content: translate(lang, "cmd.god.apple.fail.missing.amount")
+          }
+        };
+      }
+	  
+      const h_targetId = arg_user;
+      const targetdata = await kira_user_get(h_targetId, false);
+
+	  const h_given = (h_fake) ? 0 : arg_amount;
+	  const h_identity = `${(h_fake) ? "fake" : "real"}.${(h_given<0) ? "remove" : "add"}`;
+      
+      kira_apple_claims_add(targetdata.id, { "added": h_given, "displayed": Math.abs(arg_amount), "type": "admin."+h_identity  });
+	  
+      return {
+        method: 'PATCH',
+        body: {
+          content: translate(lang, "cmd.god.apple.done."+h_identity, { "targetId": h_targetId, "displayed": Math.abs(arg_amount), "word": translate(lang, `word.apple${(Math.abs(arg_amount) > 1) ? "s" : ""}`) })
+        }
+      };
+
+	} break;
   
   
-    //#test command
+    //#test subcommand
     case ("test"): {
-      kira_apple_claims_add(userdata.id, { "added": 1, "type": "test", "by": "test command" });
   
       return {
         method: 'PATCH',
