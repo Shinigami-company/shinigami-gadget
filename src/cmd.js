@@ -315,7 +315,7 @@ const commands_structure =
           name: 'on',
           description: 'have the most...',
           required: true,
-          choices: [{ name: "Apples", value: "apple" }, { name: "Kills", value: "kill" }, { name: "Meurtres", value: "murder" }]
+          choices: [{ name: "Apples", value: "apple" }, { name: "Kills", value: "kill" }, { name: "Murders", value: "murder" }]
         }
       ],
       type: 1
