@@ -22,7 +22,7 @@ export const stats_all = {
   {
     begin:0,
     type:1,
-    cousin: "murders",
+    cousin: "hits",
     cousinRaw: false
   },
   "book_try":
