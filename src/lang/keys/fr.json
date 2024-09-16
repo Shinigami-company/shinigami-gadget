@@ -27,9 +27,6 @@
 "cmd.god.apple.done.fake.add": "**<@$[targetId]> a reçu $[displayed] $[word]**",
 "cmd.god.apple.done.fake.remove": "**<@$[targetId]> a perdu $[displayed] $[word]**",
 
-"cmd.wakeup.fail": "zzzz...",
-"cmd.wakeup.here": "Je suis bien réveillé maintenant !",
-
 "cmd.back.already": "*Tu es déjà en vie*",
 "cmd.back.wait": "*Attends **$[time]** avant de pouvoir revenir à la vie*",
 "cmd.back.done": "***Tu reviens à la vie !***",

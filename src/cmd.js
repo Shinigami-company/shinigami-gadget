@@ -169,22 +169,6 @@ const commands_structure =
     }
   },
 
-  "wakeup":
-  {
-    functions:
-    {
-      exe: cmd_wakeup,
-      checks: []
-    },
-    register:
-    {
-      name: 'wakeup',
-      description: 'Wake up the shinigami',
-      contexts: [0],
-      type: 1
-    }
-  },
-
   //SET
   "back": {
     functions:
@@ -795,17 +779,6 @@ async function cmd_back({ userdata, lang }) {
     method: 'PATCH',
     body: {
       content: translate(lang, "cmd.back.done")
-    },
-  };
-}
-
-
-//#wakeup command
-async function cmd_wakeup({ lang }) {
-  return {
-    method: 'PATCH',
-    body: {
-      content: translate(lang, "cmd.wakeup.here")
     },
   };
 }

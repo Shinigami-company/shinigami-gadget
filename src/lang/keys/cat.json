@@ -19,9 +19,6 @@
 "cmd.god.apple.done.fake.add": "gyft <@$[targetId]> $[displayed] $[word]",
 "cmd.god.apple.done.fake.remove": "seal <@$[targetId]> $[displayed] $[word]",
 
-"cmd.wakeup.fail": "zzzz...",
-"cmd.wakeup.here": "Ima not napin anymrr",
-
 "cmd.back.already": "*ur yet aliv*",
 "cmd.back.wait": "*Wayt **$[time]***",
 "cmd.back.done": "***u cawme bak alyve!***",
