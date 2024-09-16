@@ -43,8 +43,12 @@ export default async function route({ request, reply, api, logger, connections }
   // command call for slash  and components
   
   const calling_command =  async commandName => {
-      console.log("DBUG : route : URL=", `webhooks/${process.env.APP_ID}/${token}/messages/@original`);
-      const return_patch = await kira_cmd({ api, reply, request, user, data, member, channel, token }, commandName);
+      console.log(`
+	  DBUG : route : call command
+	  user=${user.id} (${user.username}) command=${commandName} options=${data.options}
+	  RESP_URL=webhooks/${process.env.APP_ID}/${token}/messages/@original
+	  `);
+      const return_patch = await kira_cmd({ api, reply, request, user, data, member, channel, token, id }, commandName);
       // return_patch.method must be 'PATCH'
       
       for (let i=1; i<=10;i+=1)
@@ -54,8 +58,10 @@ export default async function route({ request, reply, api, logger, connections }
         }
         catch (e) {
           console.log(`CATCH : route : interaction ERROR : `,e);
+          if (i===0)
+            var firstErorr=e;
           if (i>=10)
-            throw e;
+            throw firstErorr;
           await sleep(1000);
           console.log(`LOG : route : RETRY ${i+1}`);
         }
@@ -127,7 +133,7 @@ export default async function route({ request, reply, api, logger, connections }
         } break;
       }
 
-      console.log("LOG : route : components. created data=", data);
+      console.log("LOG : route : components interaction. created data=", data);
       return calling_command(h_cmd);
 
     }

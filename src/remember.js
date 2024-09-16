@@ -15,8 +15,6 @@ import { kira_runs_after } from './kira.js';
 //}
 
 
-//console.log(`DEBUG : rem3mber : refresh`);
-
 //this works FOREVER (and that cool)
 setInterval(kira_remember_checkup, 1000);
 

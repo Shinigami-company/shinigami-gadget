@@ -510,20 +510,20 @@ export async function kira_cmd(f_deep, f_cmd) {
     for (let v of commands_structure[f_cmd].functions.checks) {
       const r_check = await v[0](f_deep);
       if (r_check) {//if the check is not validated
-        await f_deep.reply.send({ type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: { flags: (v[1]) ? (InteractionResponseFlags.EPHEMERAL) : (undefined) } });
+        await DiscordRequest(`interactions/${f_deep.id}/${f_deep.token}/callback`, {method:'POST', body: { type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: { flags: (v[1]) ? (InteractionResponseFlags.EPHEMERAL) : (undefined) } }});
         return r_check;
       }
     }
 
-    await f_deep.reply.send({ type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE });
-    let replyed = true;
+    await DiscordRequest(`interactions/${f_deep.id}/${f_deep.token}/callback`, {method:'POST', body: { type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE }});
+    replyed = true;
 
     return await commands_structure[f_cmd].functions.exe(f_deep);
   }
     
   catch (e) {
     if (!replyed)
-      await f_deep.reply.send({ type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE });
+      await DiscordRequest(`interactions/${f_deep.id}/${f_deep.token}/callback`, {method:'POST', body: { type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE }});
     console.log("ERROR : cmd wrong js : ", e);
     kira_error_throw("error.system.wrongjs", e, f_deep.lang, f_deep.token, true);
     return;// will not bcs throw before
@@ -963,7 +963,7 @@ async function cmd_burn({ request, data, userbook, lang }) {
   }
   
   
-  console.log("DBUG : cmd : would burn book userbook=",userbook);
+  console.log("DBUG : cmd : burn userbook=",userbook);
   // throw new Error("you would have burned it with sucress.");
   await kira_book_delete(userbook);
 
