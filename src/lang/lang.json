@@ -14,7 +14,7 @@
     "keys": true,
     "name": "Français",
     "hlore": "second language",
-    "progress": 99,
+    "progress": 100,
     "sublang": "en"
   },
 
@@ -48,11 +48,11 @@
 
   "ji":
   {
-    "selectable": false,
+    "selectable": true,
     "keys": true,
     "name": "😃",
     "lore": "this is a custom language",
-    "progress": 3,
+    "progress": 10,
     "sublang": "en"
   }
 }
