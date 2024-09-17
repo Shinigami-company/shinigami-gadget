@@ -170,24 +170,6 @@ const commands_structure =
   },
 
   //SET
-  "back": {
-    functions:
-    {
-      exe: cmd_back,
-      checks: []
-    },
-    systemOnly: true
-    /*
-    register:
-    {
-      name: 'back',
-      description: 'come back to life, if you are dead',
-      contexts: [0],
-      type: 1
-    }
-    */
-  },
-
   "claim": {
     functions:
     {
@@ -746,42 +728,6 @@ async function cmd_god({ userdata, data, lang }) {
   }
 }
 
-
-
-
-//#back command
-async function cmd_back({ userdata, lang }) {
-
-  if (userdata.is_alive === true) {
-    return {
-      method: 'PATCH',
-      body: {
-        content: translate(lang, "cmd.back.already")
-      }
-    };
-  }
-
-  //getSeconds()
-  const h_ping = parseInt((new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000);
-  if (h_ping > 0) {
-    //wait before coming back to life
-    return {
-      method: 'PATCH',
-      body: {
-        content: translate(lang, "cmd.back.wait", { "time": format_time_string_from_int(h_ping, lang) })
-      }
-    };
-  }
-
-  await kira_user_set_life(userdata.id, true);
-
-  return {
-    method: 'PATCH',
-    body: {
-      content: translate(lang, "cmd.back.done")
-    },
-  };
-}
 
 
 //#claim command

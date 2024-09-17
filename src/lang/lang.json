@@ -4,7 +4,7 @@
     "selectable": true,
     "keys": true,
     "name": "English",
-    "hlore": "first language",
+    "hlore": "bilang",
     "progress": 100
   },
 
@@ -13,7 +13,7 @@
     "selectable": true,
     "keys": true,
     "name": "Français",
-    "hlore": "second language",
+    "hlore": "bilang",
     "progress": 100,
     "sublang": "en"
   },

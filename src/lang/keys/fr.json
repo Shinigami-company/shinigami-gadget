@@ -27,10 +27,6 @@
 "cmd.god.apple.done.fake.add": "**<@$[targetId]> a reçu $[displayed] $[word]**",
 "cmd.god.apple.done.fake.remove": "**<@$[targetId]> a perdu $[displayed] $[word]**",
 
-"cmd.back.already": "*Tu es déjà en vie*",
-"cmd.back.wait": "*Attends **$[time]** avant de pouvoir revenir à la vie*",
-"cmd.back.done": "***Tu reviens à la vie !***",
-
 "cmd.claim.fail.already": "**Nope !** Tu as déjà un death note.",
 "cmd.claim.fail.color.young": "*tu ne peux pas prendre cette couleur pour ton premier death note*",
 "cmd.claim.fail.color.poor": "Tu n'as pas assez de pommes pour me convaincre... Prends le death note noir et tout ira bien.",

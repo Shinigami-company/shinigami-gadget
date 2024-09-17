@@ -19,10 +19,6 @@
 "cmd.god.apple.done.fake.add": "gyft <@$[targetId]> $[displayed] $[word]",
 "cmd.god.apple.done.fake.remove": "seal <@$[targetId]> $[displayed] $[word]",
 
-"cmd.back.already": "*ur yet aliv*",
-"cmd.back.wait": "*Wayt **$[time]***",
-"cmd.back.done": "***u cawme bak alyve!***",
-
 "cmd.claim.fail.already": "**Mrew!** uve alredy feather book.",
 "cmd.claim.fail.color.young": "*nut kustom colr 4 ur 1 feather book*",
 "cmd.claim.fail.color.poor": "just get blak 1.",
