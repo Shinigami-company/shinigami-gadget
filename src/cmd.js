@@ -1089,7 +1089,7 @@ async function cmd_stats({ data, userdata, lang }) {
       if (h_stats.book_kill) {
         r_text = translate(lang, `stats.relation.show`);
         for (let k in h_stats.book_kill) {
-          r_lore = `${r_lore}\n${translate(lang, `stats.relation.person`, { "whoId":k, "value": h_stats.book_kill[k] })}`;
+          r_lore = `${r_lore}\n${translate(lang, `stats.relation.person`, { "whoId":k, "value": h_stats.book_kill[k], "unit": translate(lang, `word.time${(h_stats.book_kill[k] > 1) ? "s" : ""}`) })}`;
         }
       } else {
         r_text = translate(lang, `stats.relation.fail.nothing`);

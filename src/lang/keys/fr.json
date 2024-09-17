@@ -133,6 +133,7 @@
 "format.time.unit.days": "jours",
 "format.time.between.other": "$[chunk], $[piece]",
 "format.time.between.last": "$[chunk] et $[piece]",
+"format.time.between.unit": "$[number] $[unit]",
 
 
 "stats.misc.fail.nothing": "tu n'es responsable de rien (pour l'instant)",

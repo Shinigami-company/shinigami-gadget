@@ -124,6 +124,7 @@
 "format.time.unit.days": "daiys",
 "format.time.between.other": "$[chunk] + $[piece]",
 "format.time.between.last": "$[chunk] + $[piece]",
+"format.time.between.unit": "$[number] $[unit]",
 
 
 "stats.fail.nothing": "uwr du nothing yt",

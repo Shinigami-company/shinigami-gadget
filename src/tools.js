@@ -35,7 +35,7 @@ export function format_time_string_from_int(f_s, lang)
       if (f_v>0)
       {
         f_s = f_s % times[i].divider;
-        r_texts.push(`${f_v} ${translate(lang, `format.time.unit.${times[i].key}${(f_v > 1) ? "s" : ""}`)}`);
+        r_texts.push(translate(lang, `format.time.between.unit`,{"number":f_v,"unit":translate(lang, `format.time.unit.${times[i].key}${(f_v > 1) ? "s" : ""}`)}));
       }
       //console.log("timef : values :",i);
     }
