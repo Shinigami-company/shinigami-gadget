@@ -53,10 +53,31 @@ export async function kira_user_create(f_userId)
 {
   return await api.KiraUsers.create({
     userId: f_userId,
-    //apples_daily: new Date(0),
+    statsPtr: {
+       _link: await kira_user_create_stats().id,
+      },
+    achivementsPtr: {
+       _link: await kira_user_create_achivements().id,
+      },
     }
   );
 }//return the created user
+
+export async function kira_user_create_stats(f_userId)
+{
+  return await api.KiraUserStats.create({
+    userId: f_userId,
+    }
+  );
+}//return the created element
+
+export async function kira_user_create_achivements(f_userId)
+{
+  return await api.KiraUserAchivements.create({
+    userId: f_userId,
+    }
+  );
+}//return the created element
 
 //capsule
 export async function kira_user_set_life(f_dataId, f_bool, f_span=null)

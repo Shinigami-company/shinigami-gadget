@@ -9,7 +9,16 @@ export const schema: GadgetModel = {
   fields: {
     achievements: {
       type: "json",
+      default: {},
       storageKey: "xwo1onpC7DuG::iar1JPeY3FTM",
+    },
+    advancementsPtr: {
+      type: "hasOne",
+      child: {
+        model: "KiraUserAchivements",
+        belongsToField: "userPtr",
+      },
+      storageKey: "RR3W8scCkFes",
     },
     apples: {
       type: "number",
@@ -78,6 +87,11 @@ export const schema: GadgetModel = {
       type: "json",
       default: {},
       storageKey: "Z_qznoOqayeX::jqMjB6Km3Hj8",
+    },
+    statsPtr: {
+      type: "hasOne",
+      child: { model: "KiraUserStats", belongsToField: "userPtr" },
+      storageKey: "vver91mvgQ50",
     },
     userId: {
       type: "string",

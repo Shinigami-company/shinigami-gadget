@@ -705,6 +705,37 @@ async function cmd_god({ userdata, data, lang }) {
   
     //#test subcommand
     case ("test"): {
+
+		
+		console.time("test");
+		console.log("time('test') started");
+		let v;
+		console.timeEnd("test");
+		
+		console.time("test");
+		v= await stats_get(userdata.id, "ever_book");
+		console.log("get stat:",v);
+		console.timeEnd("test");
+		
+		console.time("test");
+		v=await stats_add(userdata.id, "ever_book");
+		console.log("add stats:",v);
+		console.timeEnd("test");
+		
+		console.time("test");
+		v=await stats_add(userdata.id, "ever_book");
+		console.log("add stats:",v);
+		console.timeEnd("test");
+		
+		console.time("test");
+		v= await kira_user_set_daily(userdata.id);
+		console.log("set daily:",v);
+		console.timeEnd("test");
+		
+		console.time("test");
+		v= await kira_user_get_daily(userdata.id);
+		console.log("get daily:",v);
+		console.timeEnd("test");
   
       return {
         method: 'PATCH',
