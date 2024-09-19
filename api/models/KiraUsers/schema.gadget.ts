@@ -7,17 +7,14 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "oi3a16gtOqDz",
   fields: {
-    achievements: {
+    achiv: {
       type: "json",
       default: {},
       storageKey: "xwo1onpC7DuG::iar1JPeY3FTM",
     },
-    advancementsPtr: {
+    achivPtr: {
       type: "hasOne",
-      child: {
-        model: "KiraUserAchivements",
-        belongsToField: "userPtr",
-      },
+      child: { model: "KiraUserAchiv", belongsToField: "userPtr" },
       storageKey: "RR3W8scCkFes",
     },
     apples: {

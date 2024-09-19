@@ -21,6 +21,62 @@ const settings_date_options = {
 //manage
 export async function kira_user_get(f_userId, f_createIfNot=false)
 {
+  const h_preData=await api.KiraUsers.maybeFindFirst(
+    {
+      filter:
+      {
+        userId: { equals: f_userId }
+      },
+      select: {
+        id: true,
+        statsPtr: {id: true},
+        achivPtr: {id: true}
+      }
+    }
+  );
+  if (!h_preData && f_createIfNot)
+  {
+    //create it
+    return await kira_user_create(f_userId);
+  } else {
+	//get it
+	//and create
+	if (!h_preData.statsPtr)
+	{
+		await api.KiraUserStats.create({userPtr: { _link: h_preData.id }, userId: f_userId });
+	}
+		  
+	if (!h_preData.achivPtr)
+	{
+		await api.KiraUserAchiv.create({userPtr: { _link: h_preData.id }, userId: f_userId });
+	}
+	
+    return await api.KiraUsers.maybeFindFirst(
+      {
+        filter:
+        {
+          userId: { equals: f_userId }
+        },
+        select: {
+          id: true,
+          userId: true,
+          is_alive: true,
+          is_god: true,
+          apples: true,
+          apples_daily: true,
+          lang: true,
+          backDate: true,
+          deathDate: true,
+          statsPtr: {id: true},
+          achivPtr: {id: true}
+        }
+      }
+    );
+
+  }
+  return r_data;
+
+/*
   let r_data=await api.KiraUsers.maybeFindFirst(
     {
       filter:
@@ -47,33 +103,13 @@ export async function kira_user_get(f_userId, f_createIfNot=false)
     r_data = await kira_user_create(f_userId);
   }
   return r_data;
+*/
 }//return the userdata from user
 
-export async function kira_user_create(f_userId)
-{
-  return await api.KiraUsers.create({
-    userId: f_userId,
-    statsPtr: {
-       _link: await kira_user_create_stats().id,
-      },
-    achivementsPtr: {
-       _link: await kira_user_create_achivements().id,
-      },
-    }
-  );
-}//return the created user
 
-export async function kira_user_create_stats(f_userId)
+export async function kira_user_create_achiv(f_userId)
 {
-  return await api.KiraUserStats.create({
-    userId: f_userId,
-    }
-  );
-}//return the created element
-
-export async function kira_user_create_achivements(f_userId)
-{
-  return await api.KiraUserAchivements.create({
+  return await api.KiraUserAchiv.create({
     userId: f_userId,
     }
   );

@@ -1,7 +1,7 @@
-import { applyParams, save, ActionOptions, UpdateKiraUserAchivementsActionContext } from "gadget-server";
+import { applyParams, save, ActionOptions, UpdateKiraUserAchivActionContext } from "gadget-server";
 
 /**
- * @param { UpdateKiraUserAchivementsActionContext } context
+ * @param { UpdateKiraUserAchivActionContext } context
  */
 export async function run({ params, record, logger, api, connections }) {
   applyParams(params, record);
@@ -9,7 +9,7 @@ export async function run({ params, record, logger, api, connections }) {
 };
 
 /**
- * @param { UpdateKiraUserAchivementsActionContext } context
+ * @param { UpdateKiraUserAchivActionContext } context
  */
 export async function onSuccess({ params, record, logger, api, connections }) {
   // Your logic goes here

@@ -1,14 +1,14 @@
-import { deleteRecord, ActionOptions, DeleteKiraUsersActionContext } from "gadget-server";
+import { deleteRecord, ActionOptions, DeleteKiraUserAchivActionContext } from "gadget-server";
 
 /**
- * @param { DeleteKiraUsersActionContext } context
+ * @param { DeleteKiraUserAchivActionContext } context
  */
 export async function run({ params, record, logger, api, connections }) {
   await deleteRecord(record);
 };
 
 /**
- * @param { DeleteKiraUsersActionContext } context
+ * @param { DeleteKiraUserAchivActionContext } context
  */
 export async function onSuccess({ params, record, logger, api, connections }) {
   // Your logic goes here
@@ -16,5 +16,5 @@ export async function onSuccess({ params, record, logger, api, connections }) {
 
 /** @type { ActionOptions } */
 export const options = {
-  actionType: "delete"
+  actionType: "delete",
 };

@@ -5,13 +5,13 @@ import type { GadgetModel } from "gadget-server";
 
 export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
-  storageKey: "_rdspw2aR5t0",
+  storageKey: "eImas_skswE4",
   fields: {
-    userId: { type: "number", storageKey: "hKdzz4ODw1MG" },
+    userId: { type: "string", storageKey: "LQwQf84POQ71" },
     userPtr: {
       type: "belongsTo",
       parent: { model: "KiraUsers" },
-      storageKey: "lovAxIj_GUAP",
+      storageKey: "dKlK6D2quhzM",
     },
   },
 };

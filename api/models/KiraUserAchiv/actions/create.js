@@ -1,7 +1,7 @@
-import { applyParams, save, ActionOptions, UpdateKiraUsersActionContext } from "gadget-server";
+import { applyParams, save, ActionOptions, CreateKiraUserAchivActionContext } from "gadget-server";
 
 /**
- * @param { UpdateKiraUsersActionContext } context
+ * @param { CreateKiraUserAchivActionContext } context
  */
 export async function run({ params, record, logger, api, connections }) {
   applyParams(params, record);
@@ -9,7 +9,7 @@ export async function run({ params, record, logger, api, connections }) {
 };
 
 /**
- * @param { UpdateKiraUsersActionContext } context
+ * @param { CreateKiraUserAchivActionContext } context
  */
 export async function onSuccess({ params, record, logger, api, connections }) {
   // Your logic goes here
@@ -17,5 +17,5 @@ export async function onSuccess({ params, record, logger, api, connections }) {
 
 /** @type { ActionOptions } */
 export const options = {
-  actionType: "update"
+  actionType: "create",
 };
