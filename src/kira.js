@@ -34,10 +34,12 @@ export async function kira_user_get(f_userId, f_createIfNot=false)
       }
     }
   );
-  if (!h_preData && f_createIfNot)
+  if (!h_preData)
   {
-    //create it
-    return await kira_user_create(f_userId);
+	if (f_createIfNot)//create it
+	    return await kira_user_create(f_userId);
+	else//not created
+		return undefined;
   } else {
 	//get it
 	//and create submodel
@@ -112,12 +114,12 @@ export async function kira_user_create(f_userId)
 {
   return await api.KiraUsers.create({
     userId: f_userId,
-	statPtr: {
-		create: [{userId: f_userId }]
-		},
-	achivPtr: {
-		create: [{userId: f_userId }]
-		}
+	statPtr: [{
+		create: {userId: f_userId }
+		}],
+	achivPtr: [{
+		create: {userId: f_userId }
+		}]
   });
 }//return the created element
 

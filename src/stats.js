@@ -459,26 +459,6 @@ export async function stats_transfert(f_userdata)
 
 export async function stats_checkup(f_userdata)
 {
-  //getting the value
-  const h_transfert=await api.KiraUsers.findOne(f_userdata.id,{
-    "stats":true
-  }).then(obj => obj["stats"]);
-
-  for (const k in stats_old)
-  {
-	if (stats_old[k].new && h_transfert[k])
-	{
-		await stats_simple_set(f_userdata.statPtr.id, stats_old[k].new, h_transfert[k]);
-	}
-  }
-
-  for (const victimId in h_transfert["book_kill"])
-  {
-	
-  	const victimData = await kira_user_get(victimId, false);
-	const h_pair=await stats_pair_get_id(f_userdata.id, f_userdata.userId, victimData.id, victimId);
-    await stats_pair_set(h_pair, "note_kill", h_transfert["book_kill"][victimId]);//return the value
-  }
 }
 
 //--- RANKING ---

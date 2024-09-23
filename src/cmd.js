@@ -1148,7 +1148,7 @@ async function cmd_stats({ data, userdata, lang }) {
         for (let k of stats_order_misc) {
         	const value = await stats_simple_get(userdata.statPtr.id, k);
 			//if (!stats_simple_is_default(k, value))
-			if (value)
+			if (value && !stats_simple_is_default(k, value))
 			{
             	r_lore = `${r_lore}\n${translate(lang, `stats.misc.show.${k}`, { "value": stats_parse(k, value, lang) })}`;
 			}
@@ -1392,7 +1392,7 @@ async function cmd_kira({ request, user, userdata, data, userbook, channel, lang
     }
   }
 
-  let h_victim_data = await kira_user_get(h_victim_id, h_will_fail);//needed to know if alive
+  let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail);//needed to know if alive
 
   //check/others runs
   let run_combo = 1;
@@ -1425,7 +1425,7 @@ async function cmd_kira({ request, user, userdata, data, userbook, channel, lang
           method: 'PATCH',
           body: {
             content: translate(lang, "cmd.kira.fail.maxcombo", {"max": sett_counter_combo_max})
-          },
+          }
         }
       }
       
@@ -1433,6 +1433,7 @@ async function cmd_kira({ request, user, userdata, data, userbook, channel, lang
       console.log("LOG : kira : countering... comobo=",run_combo);
       await cmd_kira_cancel({ more: { runId: h_run_reverse.id } });
       console.log("LOG : kira : countered");
+	  const h_pair=await stats_pair_get_id(userdata.id, user.id, h_victim_data.id, pack.victim_id);
       await stats_pair_add(h_pair, "by_counter", 1);//return the value
       await stats_simple_add(h_pair, "note_counter");
       //and continue
