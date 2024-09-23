@@ -18,13 +18,18 @@ import { kira_runs_after } from './kira.js';
 //this works FOREVER (and that cool)
 setInterval(kira_remember_checkup, 1000);
 
-var remembering = false;
+var remembering = 0;
 var ocurence = 0;
 async function kira_remember_checkup()
 {
   //remembering
-  if (remembering) return;//!dangerous
-  remembering=true;
+  if (remembering>0)
+	{
+    remembering+=1;
+    console.log(`ERROR : rem3mber : already remembering. remembering=${remembering} ocurence=${ocurence}`);
+    if (remembering<10) return;//!only if AFK < 10s
+	}
+  remembering=1;
 
 
   //retrive
@@ -50,12 +55,11 @@ async function kira_remember_checkup()
     console.log(`ERROR : rem3mber : mrew failed`,response);
   }
   ocurence+=1;
-  
-  remembering=false;
+  remembering=0;
 };
 
 export function linkme(f_txt) 
 {
   console.log("LOG : rem3mber : LINKED : ",f_txt)
-  remembering=false;
+  remembering=0;
 };
