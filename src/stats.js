@@ -480,3 +480,22 @@ export async function stats_checkup(f_userdata)
     await stats_pair_set(h_pair, "note_kill", h_transfert["book_kill"][victimId]);//return the value
   }
 }
+
+//--- RANKING ---
+
+export async function stats_simple_rank(f_onKey)
+{
+  return await api.KiraUserStats.findMany(
+    {
+      sort: {
+        [f_onKey]: "Descending",
+      },
+      select: {
+        userId: true,
+        [f_onKey]: true,
+      },
+
+      first: 3
+    }
+  );
+}//return 3 best userdata on [f_onKey]

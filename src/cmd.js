@@ -70,13 +70,13 @@ import { DiscordUserById } from '../utils.js';
 import { translate, lang_choice, lang_lore, lang_get, lang_set } from './lang.js';
 
 import { kira_user_get, kira_user_set_life, kira_user_get_daily, kira_user_set_daily, kira_user_add_apple } from './kira.js';//kira user
-import { kira_users_rank_apple, kira_users_rank_kill, kira_users_rank_hit } from './kira.js';//kira user
+import { kira_users_rank } from './kira.js';//kira user
 import { kira_book_create, kira_book_delete, kira_book_get, kira_book_color_choice, book_colors } from './kira.js';//kira book
 import { kira_run_create, kira_run_delete, kira_run_get, kira_run_of, kira_run_pack, kira_run_unpack_execute, kira_run_unpack_know, kira_runs_by } from './kira.js';//kira run
 import { kira_line_append, kira_line_get_page, kira_line_get_last_indexPage, kira_line_if_pageGood, kira_line_taste } from './kira.js';//kira line
 import { kira_apple_claims_set, kira_apple_claims_add, kira_apple_claims_get, kira_format_applemoji } from './apple.js';//kira apples
 
-import { stats_simple_get, stats_simple_is_default, stats_simple_set, stats_simple_add, stats_simple_bulkadd, stats_parse, stats_order_misc } from './stats.js';
+import { stats_simple_get, stats_simple_is_default, stats_simple_set, stats_simple_add, stats_simple_bulkadd, stats_parse, stats_simple_rank, stats_order_misc } from './stats.js';
 import { stats_pair_get_id, stats_pair_get_value, stats_pair_get_multiples, stats_pair_add } from './stats.js';
 import { stats_transfert } from './stats.js';
 
@@ -1079,16 +1079,16 @@ async function cmd_top({ data, lang }) {
   switch (h_on)
   {
     case ("apple"): {
-      h_ranks = await kira_users_rank_apple();
+      h_ranks = await kira_users_rank("apples");
       h_amountK = "apples";
     } break;
     case ("kill"): {
-      h_ranks = await kira_users_rank_kill();
-      h_amountK = "kills";
+      h_ranks = await stats_simple_rank("note_kill");
+      h_amountK = "note_kill";
     } break;
     case ("murder"): {
-      h_ranks = await kira_users_rank_hit();
-      h_amountK = "murders";
+      h_ranks = await stats_simple_rank("note_hit");
+      h_amountK = "note_hit";
     } break;
   }
 
@@ -1750,7 +1750,7 @@ export async function cmd_kira_execute({ more }) {
     //stats
     await stats_simple_add(userdata.statPtr.id, "note_hit");
     await stats_simple_add(h_victim_data.statPtr.id, "ever_death");
-    await stats_simple_add(h_victim_data.statPtr.id, "ever_deathTime", pack.span);
+    await stats_simple_add(h_victim_data.statPtr.id, "ever_deadTime", pack.span);
     
 	const h_pair=await stats_pair_get_id(userdata.id, user.id, h_victim_data.id, pack.victim_id);
     const h_repetition=await stats_pair_add(h_pair, "by_hit", 1);//return the value

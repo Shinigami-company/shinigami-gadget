@@ -151,55 +151,17 @@ export async function kira_user_add_apple(f_data, f_amount=1)
   );
 }
 
-export async function kira_users_rank_apple()
+export async function kira_users_rank(f_onKey)
 {
   return await api.KiraUsers.findMany(
     {
       sort: {
-        apples: "Descending",
+        [f_onKey]: "Descending",
       },
       select: {
         id: true,
         userId: true,
-        apples: true,
-        lang: true,
-      },
-
-      first: 3
-    }
-  );
-}//return 3 best apples userdata
-
-export async function kira_users_rank_kill()
-{
-  return await api.KiraUsers.findMany(
-    {
-      sort: {
-        kills: "Descending",
-      },
-      select: {
-        id: true,
-        userId: true,
-        kills: true,
-        lang: true,
-      },
-
-      first: 3
-    }
-  );
-}//return 3 best kills userdata
-
-export async function kira_users_rank_hit()
-{
-  return await api.KiraUsers.findMany(
-    {
-      sort: {
-        hits: "Descending",
-      },
-      select: {
-        id: true,
-        userId: true,
-        hits: true,
+        [f_onKey]: true,
         lang: true,
       },
 
