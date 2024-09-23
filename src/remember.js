@@ -24,11 +24,11 @@ async function kira_remember_checkup()
 {
   //remembering
   if (remembering>0)
-	{
+  {
     remembering+=1;
     console.log(`ERROR : rem3mber : already remembering. remembering=${remembering} ocurence=${ocurence}`);
     if (remembering<10) return;//!only if AFK < 10s
-	}
+  }
   remembering=1;
 
 

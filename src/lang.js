@@ -67,19 +67,15 @@ function varEx(inputString, inputObject) {
   });
 }
 
-
 //all templates
-const fileExists = file =>
-  fetch(file, {method: 'HEAD', cache: 'no-store'})
-  .then(response => ({200: true, 404: false})[response.status])
-  .catch(exception => undefined);
-function lang_load()
-{
+const fileExists = (file) =>
+  fetch(file, { method: "HEAD", cache: "no-store" })
+    .then((response) => ({ 200: true, 404: false }[response.status]))
+    .catch((exception) => undefined);
+function lang_load() {
   let h_lang = require(`./lang/lang.json`);
-  for (let i in h_lang)
-  {
-    if (h_lang[i].keys)
-    h_lang[i].key= require(`./lang/keys/${i}.json`);
+  for (let i in h_lang) {
+    if (h_lang[i].keys) h_lang[i].key = require(`./lang/keys/${i}.json`);
   }
   return h_lang;
 }
@@ -97,70 +93,57 @@ export function translate(f_lang, f_key, f_dolarValues) {
   while (!lang_texts[f_lang].keys || !lang_texts[f_lang].key[f_key]) {
     if (!lang_texts[f_lang].sublang)
       return `\`unknown translate key [${f_key}] for lang [${f_lang}]\``;
-    else
-      f_lang = lang_texts[f_lang].sublang;
+    else f_lang = lang_texts[f_lang].sublang;
   }
 
   return varEx(lang_texts[f_lang].key[f_key], f_dolarValues);
   //return lang_texts[f_lang].key[f_key](f_dolarValues);
-};
-
+}
 
 //for lang command
 export function lang_choice(r_choices = []) {
   for (let i in lang_texts) {
     if (lang_texts[i].selectable) {
-      r_choices.push(
-        {
-          name: lang_texts[i].name,
-          value: i
-        }
-      )
+      r_choices.push({
+        name: lang_texts[i].name,
+        value: i,
+      });
     }
   }
   return r_choices;
 }
 
 export async function lang_set(f_dataId, f_lang) {
-  return await api.KiraUsers.update(
-    f_dataId,
-    {
-      lang: f_lang
-    }
-  );
-};
+  return await api.KiraUsers.update(f_dataId, {
+    lang: f_lang,
+  });
+}
 
 export function lang_lore(f_lang) {
   //return "";
-  let r_txt="";
+  let r_txt = "";
   let h_progress = lang_texts[f_lang].progress;
   let h_lore = lang_texts[f_lang].lore;
-  
-  if (h_lore)
-  {
-    r_txt+=`\n\`${h_lore}\``;
+
+  if (h_lore) {
+    r_txt += `\n\`${h_lore}\``;
   }
 
-  if (h_progress)
-  {
-    if (h_progress<=0)
-    {
-      r_txt+=`\n\`⚠ not translated\``;
-    }
-    else if (h_progress<100)
-    {
-      r_txt+=`\n\`⚠ ${h_progress}% translated\``;
+  if (h_progress) {
+    if (h_progress <= 0) {
+      r_txt += `\n\`⚠ not translated\``;
+    } else if (h_progress < 100) {
+      r_txt += `\n\`⚠ ${h_progress}% translated\``;
     }
   }
   return r_txt;
-};
+}
 
-export function lang_get(f_deep)
-{//need userdata && request
+export function lang_get(f_deep) {
+  //need userdata && request
   if (f_deep.userdata.lang) {
     return f_deep.userdata.lang;
   } else {
     return f_deep.request.body.locale;
   }
-};
-
+}

@@ -1,7 +1,7 @@
 import { api } from "gadget-server";
 
 const settings_max_pages = 60;
-const settings_max_lines=10;//38
+const settings_max_lines = 10; //38
 
 const settings_date_zone = "es-ES";
 
@@ -19,66 +19,62 @@ const settings_date_options = {
 //DATA about the user
 
 //manage
-export async function kira_user_get(f_userId, f_createIfNot=false)
-{
-  const h_preData=await api.KiraUsers.maybeFindFirst(
-    {
-      filter:
-      {
-        userId: { equals: f_userId }
+export async function kira_user_get(f_userId, f_createIfNot = false) {
+  const h_preData = await api.KiraUsers.maybeFindFirst({
+    filter: {
+      userId: { equals: f_userId },
+    },
+    select: {
+      id: true,
+      statPtr: { id: true },
+      achivPtr: { id: true },
+    },
+  });
+  if (!h_preData) {
+    if (f_createIfNot)
+      //create it
+      return await kira_user_create(f_userId);
+    //not created
+    else return undefined;
+  } else {
+    //get it
+    //and create submodel
+    if (!h_preData.statPtr) {
+      await api.KiraUserStats.create({
+        userPtr: { _link: h_preData.id },
+        userId: f_userId,
+      });
+    }
+
+    if (!h_preData.achivPtr) {
+      await api.KiraUserAchiv.create({
+        userPtr: { _link: h_preData.id },
+        userId: f_userId,
+      });
+    }
+
+    return await api.KiraUsers.maybeFindFirst({
+      filter: {
+        userId: { equals: f_userId },
       },
       select: {
         id: true,
-        statPtr: {id: true},
-        achivPtr: {id: true}
-      }
-    }
-  );
-  if (!h_preData)
-  {
-	if (f_createIfNot)//create it
-	    return await kira_user_create(f_userId);
-	else//not created
-		return undefined;
-  } else {
-	//get it
-	//and create submodel
-	if (!h_preData.statPtr)
-	{
-		await api.KiraUserStats.create({userPtr: { _link: h_preData.id }, userId: f_userId });
-	}
-		  
-	if (!h_preData.achivPtr)
-	{
-		await api.KiraUserAchiv.create({userPtr: { _link: h_preData.id }, userId: f_userId });
-	}
-	
-    return await api.KiraUsers.maybeFindFirst(
-      {
-        filter:
-        {
-          userId: { equals: f_userId }
-        },
-        select: {
-          id: true,
-          userId: true,
-          is_alive: true,
-          is_god: true,
-          apples: true,
-          apples_daily: true,
-          lang: true,
-          backDate: true,
-          deathDate: true,
-          statPtr: {id: true},
-          achivPtr: {id: true}
-        }
-      }
-    );
-
+        userId: true,
+        is_alive: true,
+        is_god: true,
+        apples: true,
+        apples_daily: true,
+        lang: true,
+        backDate: true,
+        deathDate: true,
+        statPtr: { id: true },
+        achivPtr: { id: true },
+      },
+    });
   }
   return r_data;
 
-/*
+  /*
   let r_data=await api.KiraUsers.maybeFindFirst(
     {
       filter:
@@ -106,163 +102,142 @@ export async function kira_user_get(f_userId, f_createIfNot=false)
   }
   return r_data;
 */
-}//return the userdata from user
+} //return the userdata from user
 
-
-
-export async function kira_user_create(f_userId)
-{
+export async function kira_user_create(f_userId) {
   return await api.KiraUsers.create({
     userId: f_userId,
-	statPtr: [{
-		create: {userId: f_userId }
-		}],
-	achivPtr: [{
-		create: {userId: f_userId }
-		}]
+    statPtr: [
+      {
+        create: { userId: f_userId },
+      },
+    ],
+    achivPtr: [
+      {
+        create: { userId: f_userId },
+      },
+    ],
   });
-}//return the created element
+} //return the created element
 
 //capsule
-export async function kira_user_set_life(f_dataId, f_bool, f_span=null)
-{
+export async function kira_user_set_life(f_dataId, f_bool, f_span = null) {
   let h_finalDate = null;
-  if (f_span)
-  {
+  if (f_span) {
     h_finalDate = new Date();
     h_finalDate.setSeconds(h_finalDate.getSeconds() + f_span);
   }
 
-  await api.KiraUsers.update(
-    f_dataId,
-    {
-      is_alive: f_bool,
-      backDate: h_finalDate,
-    }
-  );
+  await api.KiraUsers.update(f_dataId, {
+    is_alive: f_bool,
+    backDate: h_finalDate,
+  });
 }
 
-
-export async function kira_user_add_apple(f_data, f_amount=1)
-{
-  await api.KiraUsers.update(
-    f_data.id,
-    {
-      apples: f_data.apples + f_amount
-    }
-  );
+export async function kira_user_add_apple(f_data, f_amount = 1) {
+  await api.KiraUsers.update(f_data.id, {
+    apples: f_data.apples + f_amount,
+  });
 }
 
-export async function kira_users_rank(f_onKey)
-{
-  return await api.KiraUsers.findMany(
-    {
-      sort: {
-        [f_onKey]: "Descending",
-      },
-      select: {
-        id: true,
-        userId: true,
-        [f_onKey]: true,
-        lang: true,
-      },
+export async function kira_users_rank(f_onKey) {
+  return await api.KiraUsers.findMany({
+    sort: {
+      [f_onKey]: "Descending",
+    },
+    select: {
+      id: true,
+      userId: true,
+      [f_onKey]: true,
+      lang: true,
+    },
 
-      first: 3
-    }
-  );
-}//return 3 best kills userdata
+    first: 3,
+  });
+} //return 3 best kills userdata
 
-
-export async function kira_user_set_daily(f_dataId)
-{
-  await api.KiraUsers.update(
-    f_dataId,
-    {
-      apples_daily:new Date().toISOString()
-    }
-  );
+export async function kira_user_set_daily(f_dataId) {
+  await api.KiraUsers.update(f_dataId, {
+    apples_daily: new Date().toISOString(),
+  });
 }
 
-export async function kira_user_get_daily(f_dataId)
-{
-  return await api.KiraUsers.findOne(f_dataId, {select: {apples_daily:true}})
-    .then(data => data.apples_daily)
-    .then(iso => new Date(iso));
+export async function kira_user_get_daily(f_dataId) {
+  return await api.KiraUsers.findOne(f_dataId, {
+    select: { apples_daily: true },
+  })
+    .then((data) => data.apples_daily)
+    .then((iso) => new Date(iso));
 }
 
 //---kira_book---
 //DATA about the book
 
-export const book_colors = 
-[
-    {//the first must be free
+export const book_colors = [
+  {
+    //the first must be free
     color: "black",
-    int:0,
-    emoji:"<:book_black:1281258833271849050>",
-    emojiObj: { id:'1281258833271849050' },
-    price:0
+    int: 0,
+    emoji: "<:book_black:1281258833271849050>",
+    emojiObj: { id: "1281258833271849050" },
+    price: 0,
   },
   {
     color: "red",
     int: 16711680,
     emoji: "<:book_red:1281258840570204283>",
-    emojiObj: { id: '1281258840570204283' },
-    price: 10
+    emojiObj: { id: "1281258840570204283" },
+    price: 10,
   },
   {
-    color:"white", int:16777215, 
+    color: "white",
+    int: 16777215,
     emoji: "<:book_white:1281258835214073972>",
-    emojiObj: { id: '1281258835214073972' },
-    price: 100
+    emojiObj: { id: "1281258835214073972" },
+    price: 100,
   },
   {
     color: "purple",
     int: 11665663,
     emoji: "<:book_purple:1281258837076082688>",
-    emojiObj: { id: '1281258837076082688' },
-    price: -1
+    emojiObj: { id: "1281258837076082688" },
+    price: -1,
   },
-]
+];
 
 //manage
-export async function kira_book_get(f_userdataId)
-{
-  const h_userToBook = await api.KiraUsers.findOne(f_userdataId,{
+export async function kira_book_get(f_userdataId) {
+  const h_userToBook = await api.KiraUsers.findOne(f_userdataId, {
     select: {
       bookPtr: {
-        id: true
-      }
-    }
+        id: true,
+      },
+    },
   });
   if (!h_userToBook.bookPtr) return undefined;
   return await api.KiraBooks.findOne(h_userToBook.bookPtr.id);
 }
 
-
-export function kira_book_color_choice()
-{
+export function kira_book_color_choice() {
   let r = [];
 
-  for (let i = 0; i < book_colors.length;i++)
-  {
-    if (book_colors[i].price!=-1)
-    r.push({value:i, name: book_colors[i].color});
+  for (let i = 0; i < book_colors.length; i++) {
+    if (book_colors[i].price != -1)
+      r.push({ value: i, name: book_colors[i].color });
   }
-  
+
   return r;
 }
 
-export async function kira_book_create(f_userdata, f_color)
-{
+export async function kira_book_create(f_userdata, f_color) {
   return await api.KiraBooks.create({
-      index: 0,
-      ownerPtr: {
-        _link: f_userdata.id,
-      },
+    index: 0,
+    ownerPtr: {
+      _link: f_userdata.id,
+    },
     userId: f_userdata.userId,
     color: f_color,
-    }
-  );
+  });
   /* 
   return await api.KiraUsers.update( f_userdata.id,
     {
@@ -275,12 +250,10 @@ export async function kira_book_create(f_userdata, f_color)
     },
   );
    */
-}//return the created book
+} //return the created book
 
-export async function kira_book_delete(f_book)
-{
-
-  const h_bookToNotes = await api.KiraBooks.findOne(f_book.id,{
+export async function kira_book_delete(f_book) {
+  const h_bookToNotes = await api.KiraBooks.findOne(f_book.id, {
     select: {
       notesPtr: {
         edges: {
@@ -291,28 +264,30 @@ export async function kira_book_delete(f_book)
       },
     },
   });
-  await api.KiraNotes.bulkDelete(h_bookToNotes.notesPtr.edges.map((the) => the.node.id));
-
-  await api.KiraBooks.delete(
-    f_book.id,
+  await api.KiraNotes.bulkDelete(
+    h_bookToNotes.notesPtr.edges.map((the) => the.node.id)
   );
+
+  await api.KiraBooks.delete(f_book.id);
 }
 
 //uses
 //kira_line : DATA
 
-
-export async function kira_line_append(f_userdata, f_book, f_line)
-{
+export async function kira_line_append(f_userdata, f_book, f_line) {
   let h_indexLine = f_book.index;
 
-  
   //date
-  let h_date_book = new Date(f_book.updatedAt).toLocaleDateString(settings_date_zone, settings_date_options);
-  let h_date_now = new Date().toLocaleDateString(settings_date_zone, settings_date_options);
+  let h_date_book = new Date(f_book.updatedAt).toLocaleDateString(
+    settings_date_zone,
+    settings_date_options
+  );
+  let h_date_now = new Date().toLocaleDateString(
+    settings_date_zone,
+    settings_date_options
+  );
 
-  if (f_book.index === 0 || h_date_book != h_date_now)
-  {
+  if (f_book.index === 0 || h_date_book != h_date_now) {
     await api.KiraNotes.create({
       indexLine: h_indexLine,
       line: {
@@ -325,7 +300,6 @@ export async function kira_line_append(f_userdata, f_book, f_line)
     h_indexLine++;
   }
 
-
   //line
   let r_line = await api.KiraNotes.create({
     indexLine: h_indexLine,
@@ -336,10 +310,10 @@ export async function kira_line_append(f_userdata, f_book, f_line)
       _link: f_book.id,
     },
   });
-  
+
   //stats
   await api.KiraBooks.update(f_book.id, {
-    index: h_indexLine+1,
+    index: h_indexLine + 1,
     lastNoteId: r_line.id,
     //stats_kills: f_book.stats_kills+1,
   });
@@ -350,46 +324,37 @@ export async function kira_line_append(f_userdata, f_book, f_line)
 }
 
 //give a taste/style to a line.
-export async function kira_line_taste(f_noteId, f_code)
-{
-  let r_line = await api.KiraNotes.findOne(
-    f_noteId,
-    {
-      select: {
-        line: { markdown:true }
-      }
-    }
-  ).then(obj => obj.line.markdown);
+export async function kira_line_taste(f_noteId, f_code) {
+  let r_line = await api.KiraNotes.findOne(f_noteId, {
+    select: {
+      line: { markdown: true },
+    },
+  }).then((obj) => obj.line.markdown);
 
   //-- codes --
 
   //sucessful kill
-  if (f_code === 1)
-  {
-    r_line = `**${r_line}**`
+  if (f_code === 1) {
+    r_line = `**${r_line}**`;
   }
 
-  await api.KiraNotes.update(
-    f_noteId,
-    {
-      line: { markdown:r_line }
-    }
-  );
+  await api.KiraNotes.update(f_noteId, {
+    line: { markdown: r_line },
+  });
 }
-
 
 export async function kira_line_get_last_indexPage(f_book) {
   //const h_data_gtr = await api.KiraNotes.maybeFindFirst(
-    // {
-    //  filter:
-    //  {
-    //    attackerBookPtr: { equals: f_book.id }
-    //  },
-    //  sort:
-    //  {
-    //    indexLine: "Descending",
-    //  }
-    //});
+  // {
+  //  filter:
+  //  {
+  //    attackerBookPtr: { equals: f_book.id }
+  //  },
+  //  sort:
+  //  {
+  //    indexLine: "Descending",
+  //  }
+  //});
   //if (!h_data_gtr) return 1;
   if (!f_book.lastNoteId) return 1;
   const h_data_gtr = await api.KiraNotes.findOne(f_book.lastNoteId);
@@ -397,42 +362,50 @@ export async function kira_line_get_last_indexPage(f_book) {
 }
 
 export async function kira_line_if_pageGood(f_book, f_page) {
-  return (f_page >= 0 && (f_page < settings_max_pages || f_page < await kira_line_get_last_indexPage(f_book)));
+  return (
+    f_page >= 0 &&
+    (f_page < settings_max_pages ||
+      f_page < (await kira_line_get_last_indexPage(f_book)))
+  );
 }
 
-export async function kira_line_get_page(f_book, f_page, f_ifBlank=true)
-{
-  const h_data_lines_minimal = await api.KiraNotes.findMany(
-    {
-      filter:
-      [
-        {
-          attackerBookPtr: { equals: f_book.id }
-        }, {
-          indexLine: { greaterThanOrEqual: settings_max_lines * f_page, lessThan: settings_max_lines * (f_page + 1) }
-        }
-      ]
-    });
+export async function kira_line_get_page(f_book, f_page, f_ifBlank = true) {
+  const h_data_lines_minimal = await api.KiraNotes.findMany({
+    filter: [
+      {
+        attackerBookPtr: { equals: f_book.id },
+      },
+      {
+        indexLine: {
+          greaterThanOrEqual: settings_max_lines * f_page,
+          lessThan: settings_max_lines * (f_page + 1),
+        },
+      },
+    ],
+  });
   if (!f_ifBlank) return h_data_lines_minimal;
 
   let h_data_lines_blanked = new Array(settings_max_lines).fill(false);
-  for (let i=0;i<h_data_lines_minimal.length;i++)
-  {
-    h_data_lines_blanked[h_data_lines_minimal[i].indexLine - settings_max_lines * f_page] = h_data_lines_minimal[i];
+  for (let i = 0; i < h_data_lines_minimal.length; i++) {
+    h_data_lines_blanked[
+      h_data_lines_minimal[i].indexLine - settings_max_lines * f_page
+    ] = h_data_lines_minimal[i];
   }
   return h_data_lines_blanked;
 }
 
-
-
-export async function kira_run_create(f_span, f_attackerId, f_victimId, f_victimDataId, f_counterCombo)
-{
+export async function kira_run_create(
+  f_span,
+  f_attackerId,
+  f_victimId,
+  f_victimDataId,
+  f_counterCombo
+) {
   //console.log("create c & g :", f_channelId, f_guildId);
   let h_finalDate = new Date();
   h_finalDate.setSeconds(h_finalDate.getSeconds() + f_span);
 
-  if (f_victimDataId)
-  {
+  if (f_victimDataId) {
     await api.KiraUsers.update(f_victimDataId, {
       deathDate: h_finalDate,
     });
@@ -447,110 +420,94 @@ export async function kira_run_create(f_span, f_attackerId, f_victimId, f_victim
     //the date
     finalDate: h_finalDate,
     //data
-    counterCombo: f_counterCombo
-    }
-  );
-}//return the kirarun
+    counterCombo: f_counterCombo,
+  });
+} //return the kirarun
 
-export async function kira_run_pack(f_runId, f_executePack, f_knowPack)
-{//add kira_execute informations
+export async function kira_run_pack(f_runId, f_executePack, f_knowPack) {
+  //add kira_execute informations
   await api.KiraRun.update(f_runId, {
     //used to kira_execute
     executePack: f_executePack,
-    knowPack: f_knowPack
+    knowPack: f_knowPack,
   });
 }
 
-export async function kira_run_unpack_execute(f_runId)
-{//retrive kira_execute informations
-  return await api.KiraRun.maybeFindFirst(
-  {
+export async function kira_run_unpack_execute(f_runId) {
+  //retrive kira_execute informations
+  return await api.KiraRun.maybeFindFirst({
     filter: { id: { equals: f_runId } },
-    select: { executePack: true }
-  }).then(obj => obj?.executePack);
+    select: { executePack: true },
+  }).then((obj) => obj?.executePack);
 }
 
-export async function kira_run_unpack_know(f_runId)
-{//retrive kira_know informations
-  return await api.KiraRun.maybeFindFirst(
-  {
+export async function kira_run_unpack_know(f_runId) {
+  //retrive kira_know informations
+  return await api.KiraRun.maybeFindFirst({
     filter: { id: { equals: f_runId } },
-    select: { knowPack: true }
-  }).then(obj => obj?.knowPack);
+    select: { knowPack: true },
+  }).then((obj) => obj?.knowPack);
 }
 
-
-export async function kira_run_get(f_runId)
-{
+export async function kira_run_get(f_runId) {
   //return await api.KiraRun.findOne(f_runId);
-  return await api.KiraRun.maybeFindFirst(
-    {
-      filter: { id: { equals: f_runId } },
-      select: {
-        attackerId: true,
-        channelId: true,
-      }
-    }
-  );
+  return await api.KiraRun.maybeFindFirst({
+    filter: { id: { equals: f_runId } },
+    select: {
+      attackerId: true,
+      channelId: true,
+    },
+  });
 }
 
-
-export async function kira_runs_after(f_date)
-{
-  return await api.KiraRun.findMany(
-    {
-      filter: {
-        finalDate: { before: f_date.toISOString() }
-      },
-      //sort: { finalDate: "Ascending" },//!better for manual search, but unefficient here
-      select: {//! acually need only that, but could change
-        id: true
-        //is unpacked after. unpack here?
-      },
-    }
-  );
+export async function kira_runs_after(f_date) {
+  return await api.KiraRun.findMany({
+    filter: {
+      finalDate: { before: f_date.toISOString() },
+    },
+    //sort: { finalDate: "Ascending" },//!better for manual search, but unefficient here
+    select: {
+      //! acually need only that, but could change
+      id: true,
+      //is unpacked after. unpack here?
+    },
+  });
 }
 
-export async function kira_runs_by(f_victimId, f_attackerId)
-{
-  return await api.KiraRun.findMany(
-    {
-      filter: {
-        victimId: (f_victimId) ? { equals: f_victimId } : undefined,
-        attackerId: (f_attackerId) ? { equals: f_attackerId } : undefined
-      },
-      select: {
-        id: true,
-        finalDate: true,
-        victimId: true,
-        attackerId: true
-      }
-    }
-  );
+export async function kira_runs_by(f_victimId, f_attackerId) {
+  return await api.KiraRun.findMany({
+    filter: {
+      victimId: f_victimId ? { equals: f_victimId } : undefined,
+      attackerId: f_attackerId ? { equals: f_attackerId } : undefined,
+    },
+    select: {
+      id: true,
+      finalDate: true,
+      victimId: true,
+      attackerId: true,
+    },
+  });
 }
 
-
-export async function kira_run_of(f_victimId, f_attackerId)
-{
+export async function kira_run_of(f_victimId, f_attackerId) {
   return await api.KiraRun.maybeFindFirst(
     {
       filter: {
         victimId: { equals: f_victimId },
-        attackerId: { equals: f_attackerId }
-      }
+        attackerId: { equals: f_attackerId },
+      },
     },
     {
       select: {
         id: true,
         finalDate: true,
-        counterCombo: true
-      }
+        counterCombo: true,
+      },
     }
   );
 }
 
-export async function kira_run_delete(f_runId, f_victimDataId)
-{
+export async function kira_run_delete(f_runId, f_victimDataId) {
   /* get the victim data.
   //but victim data is not given when he does not exist.
   if (!f_victimDataId)
@@ -565,8 +522,7 @@ export async function kira_run_delete(f_runId, f_victimDataId)
   }
   */
 
-  if (f_victimDataId)
-  {
+  if (f_victimDataId) {
     await api.KiraUsers.update(f_victimDataId, {
       deathDate: null,
     });

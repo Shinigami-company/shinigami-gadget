@@ -1,8 +1,6 @@
 import { api } from "gadget-server";
-import { format_time_string_from_int } from './tools.js';
-import { kira_user_get } from './kira.js';
-
-
+import { format_time_string_from_int } from "./tools.js";
+import { kira_user_get } from "./kira.js";
 
 //--- SIMPLE ---
 
@@ -13,47 +11,39 @@ import { kira_user_get } from './kira.js';
 //4 = time (int in s) [you can use the lang parameter]
 
 const stats_simple_all = {
-  "note_kill":
-  {
-	type:1,
-    begin:0
+  note_kill: {
+    type: 1,
+    begin: 0,
   },
-  "note_hit":
-  {
-	type:1,
-    begin:0
+  note_hit: {
+    type: 1,
+    begin: 0,
   },
-  "note_try":
-  {
-	type:1,
-    begin:0
+  note_try: {
+    type: 1,
+    begin: 0,
   },
-  "note_counter":
-  {
-	type:1,
-    begin:0
+  note_counter: {
+    type: 1,
+    begin: 0,
   },
 
-  "ever_death":
-  {
-	type:1,
-    begin:0
+  ever_death: {
+    type: 1,
+    begin: 0,
   },
-  "ever_deadTime":
-  {
-	type:3,
-    begin:0
+  ever_deadTime: {
+    type: 3,
+    begin: 0,
   },
-  "ever_apple":
-  {
-	type:1,
-    begin:0
+  ever_apple: {
+    type: 1,
+    begin: 0,
   },
-  "ever_book":
-  {
-	type:1,
-    begin:0
-  }
+  ever_book: {
+    type: 1,
+    begin: 0,
+  },
 };
 
 //used in #stats command
@@ -66,39 +56,35 @@ export const stats_order_misc = [
   "ever_deadTime",
   "ever_apple",
   "ever_book",
-]
-
-
+];
 
 //GET
 
 //simply get the value at a key from stats model
-export async function stats_simple_get(f_modelStatsId, f_statKey)
-{
+export async function stats_simple_get(f_modelStatsId, f_statKey) {
   //getting the value
-  return await api.KiraUserStats.findOne(f_modelStatsId,{
-    [f_statKey]:true
-  }).then(obj => obj[f_statKey]);
+  return await api.KiraUserStats.findOne(f_modelStatsId, {
+    [f_statKey]: true,
+  }).then((obj) => obj[f_statKey]);
   //.then(elem => (f_begin && elem===null) ? stats_simple_all[f_statKey].begin : elem);
 }
 
-export function stats_simple_is_default(f_statKey, f_value)
-{
+export function stats_simple_is_default(f_statKey, f_value) {
   //getting the value
-  return (f_value === ((stats_simple_all[f_statKey]) ? stats_simple_all[f_statKey].begin : 0));
+  return (
+    f_value ===
+    (stats_simple_all[f_statKey] ? stats_simple_all[f_statKey].begin : 0)
+  );
 }
 
-export function stats_parse(f_statKey, f_value, f_lang=undefined)
-{
-  switch (stats_simple_all[f_statKey].type)
-  {
-    case 3: return format_time_string_from_int(f_value, f_lang);
-	default: return f_value;
+export function stats_parse(f_statKey, f_value, f_lang = undefined) {
+  switch (stats_simple_all[f_statKey].type) {
+    case 3:
+      return format_time_string_from_int(f_value, f_lang);
+    default:
+      return f_value;
   }
 }
-
-
-
 
 /*
 export function stats_parse(f_stat, f_statKey, f_lang=undefined, f_dictKey=undefined)
@@ -218,264 +204,271 @@ export async function stats_add(f_userdataId, f_statKey, f_add=1, f_dictKey=unde
 //SET
 
 //simply set the value at a key to an stats model
-export async function stats_simple_set(f_modelStatsId, f_statKey, f_statValue)
-{
+export async function stats_simple_set(f_modelStatsId, f_statKey, f_statValue) {
   //getting the value
-  await api.KiraUserStats.update(f_modelStatsId,{
-    [f_statKey]: f_statValue
+  await api.KiraUserStats.update(f_modelStatsId, {
+    [f_statKey]: f_statValue,
   });
 }
 
 //simply add to the value at a key to an stats model
-export async function stats_simple_add(f_modelStatsId, f_statKey, f_statValueAdd=1)
-{
+export async function stats_simple_add(
+  f_modelStatsId,
+  f_statKey,
+  f_statValueAdd = 1
+) {
   //getting the value
-  const h_value=await stats_simple_get(f_modelStatsId, f_statKey) + f_statValueAdd;
-  await api.KiraUserStats.update(f_modelStatsId,{
-    [f_statKey]: h_value
+  const h_value =
+    (await stats_simple_get(f_modelStatsId, f_statKey)) + f_statValueAdd;
+  await api.KiraUserStats.update(f_modelStatsId, {
+    [f_statKey]: h_value,
   });
   return h_value;
 }
 
-export async function stats_simple_bulkadd(f_modelStatsId, f_dictionnary)
-{
-  for (let k in f_dictionnary)
-  {
-	f_dictionnary[k]+=await stats_simple_get(f_modelStatsId, k)
+export async function stats_simple_bulkadd(f_modelStatsId, f_dictionnary) {
+  for (let k in f_dictionnary) {
+    f_dictionnary[k] += await stats_simple_get(f_modelStatsId, k);
   }
   //getting the value
-  await api.KiraUserStats.update(f_modelStatsId,f_dictionnary);
+  await api.KiraUserStats.update(f_modelStatsId, f_dictionnary);
 }
-
 
 //--- PAIR ---
 
 const stats_pair_place = ["_one", "_two"];
 const stats_pair_place_reverse = ["_two", "_one"];
 const stats_pair_all = {
-	"by_hit":{
-		type:1
-		//cousin:"all_kill"
-		//amount of differents pair hited
-	},
-	"by_counter":{
-		type:1
-		//cousin:"note_counter"
-		//add all counters
-	}
+  by_hit: {
+    type: 1,
+    //cousin:"all_kill"
+    //amount of differents pair hited
+  },
+  by_counter: {
+    type: 1,
+    //cousin:"note_counter"
+    //add all counters
+  },
 };
 
 //CREATE
-async function stats_pair_create(f_user1_dataId, f_user1_userId, f_user2_dataId, f_user2_userId)
-{
-  const h_places=(f_user1_userId > f_user2_userId) ? stats_pair_place_reverse : stats_pair_place;
-  
-  return await api.KiraUserPair.create(
-	{
-	  [`userPtr${h_places[0]}`]: { _link: f_user1_dataId},
-	  [`userPtr${h_places[1]}`]: { _link: f_user2_dataId},
-	  [`userId${h_places[0]}`]: f_user1_userId,
-	  [`userId${h_places[1]}`]: f_user2_userId
-	}
-  );
+async function stats_pair_create(
+  f_user1_dataId,
+  f_user1_userId,
+  f_user2_dataId,
+  f_user2_userId
+) {
+  const h_places =
+    f_user1_userId > f_user2_userId
+      ? stats_pair_place_reverse
+      : stats_pair_place;
+
+  return await api.KiraUserPair.create({
+    [`userPtr${h_places[0]}`]: { _link: f_user1_dataId },
+    [`userPtr${h_places[1]}`]: { _link: f_user2_dataId },
+    [`userId${h_places[0]}`]: f_user1_userId,
+    [`userId${h_places[1]}`]: f_user2_userId,
+  });
 }
 
 //GET
-export async function stats_pair_get_id(f_user1_dataId, f_user1_userId, f_user2_dataId, f_user2_userId, f_creatingIfNot=true)
-{
-  const h_places=(f_user1_userId > f_user2_userId) ? stats_pair_place_reverse : stats_pair_place;
+export async function stats_pair_get_id(
+  f_user1_dataId,
+  f_user1_userId,
+  f_user2_dataId,
+  f_user2_userId,
+  f_creatingIfNot = true
+) {
+  const h_places =
+    f_user1_userId > f_user2_userId
+      ? stats_pair_place_reverse
+      : stats_pair_place;
 
-  let h_found=await api.KiraUserPair.maybeFindFirst(
-	{
-	  filter: {
-		  [`userId${h_places[0]}`]: {equals: f_user1_userId},
-		  [`userId${h_places[1]}`]: {equals: f_user2_userId}
-	  },
-	  select: {
-		id: true
-	  }
-	}
-  );
+  let h_found = await api.KiraUserPair.maybeFindFirst({
+    filter: {
+      [`userId${h_places[0]}`]: { equals: f_user1_userId },
+      [`userId${h_places[1]}`]: { equals: f_user2_userId },
+    },
+    select: {
+      id: true,
+    },
+  });
 
   if (!h_found)
     if (f_creatingIfNot)
-	  h_found=await stats_pair_create(f_user1_dataId, f_user1_userId, f_user2_dataId, f_user2_userId);
-	else
-	  return undefined;
-  
-  return [h_found.id,(f_user1_userId > f_user2_userId)];
+      h_found = await stats_pair_create(
+        f_user1_dataId,
+        f_user1_userId,
+        f_user2_dataId,
+        f_user2_userId
+      );
+    else return undefined;
+
+  return [h_found.id, f_user1_userId > f_user2_userId];
 }
 
-async function stats_pair_get_bykey(f_pairId, f_fullKey)
-{
-  return await api.KiraUserPair.findOne(f_pairId, {select: {[f_fullKey]: true}}).then(obj => obj[f_fullKey]);
+async function stats_pair_get_bykey(f_pairId, f_fullKey) {
+  return await api.KiraUserPair.findOne(f_pairId, {
+    select: { [f_fullKey]: true },
+  }).then((obj) => obj[f_fullKey]);
 }
 
 //f_pair : [<pairId>, ifFromIsTwo]
-export async function stats_pair_get_value(f_pair, f_key)
-{
-  const h_places=(f_pair[1]) ? stats_pair_place_reverse : stats_pair_place;
-  
-  return await stats_pair_get_bykey(f_pair[0],f_key+h_places[0]);
-}
+export async function stats_pair_get_value(f_pair, f_key) {
+  const h_places = f_pair[1] ? stats_pair_place_reverse : stats_pair_place;
 
+  return await stats_pair_get_bykey(f_pair[0], f_key + h_places[0]);
+}
 
 //f_pair : [<pairId>, ifFromIsTwo]
 //f_keysDict : {<key> : <wanted>...}
 //wanted : 0=no, 1=from, 2=to, 3=both
-export async function stats_pair_get_multiples(f_pair, f_keysDict)
-{
-  const h_places=(f_pair[1]) ? stats_pair_place_reverse : stats_pair_place;
+export async function stats_pair_get_multiples(f_pair, f_keysDict) {
+  const h_places = f_pair[1] ? stats_pair_place_reverse : stats_pair_place;
 
-  keysToReturnAs={};
-  for (let k of f_keysDict)
-  {
-	switch (f_keysDict[k])
-	{
-		case 3:
-		case 1: {
-			keysToReturnAs[k+h_places[0]]=1;
-		} break;
-		case 3:
-		case 2: {
-			keysToReturnAs[k+h_places[1]]=2;
-		} break;
-	}
+  keysToReturnAs = {};
+  for (let k of f_keysDict) {
+    switch (f_keysDict[k]) {
+      case 3:
+      case 1:
+        {
+          keysToReturnAs[k + h_places[0]] = 1;
+        }
+        break;
+      case 3:
+      case 2:
+        {
+          keysToReturnAs[k + h_places[1]] = 2;
+        }
+        break;
+    }
   }
 
-  const h_data = await api.KiraUserPair.findOne(f_pair[0], {select: keysToReturnAs});
+  const h_data = await api.KiraUserPair.findOne(f_pair[0], {
+    select: keysToReturnAs,
+  });
 
-  let r=[{},{}];
-  for (let k of keysToReturnAs)
-  {
-	r[keysToReturnAs[k]-1]=h_data[k];
+  let r = [{}, {}];
+  for (let k of keysToReturnAs) {
+    r[keysToReturnAs[k] - 1] = h_data[k];
   }
   return r;
 }
 //return [{<keyFrom>: <value>},{<keyTo>: <value>}]
 
-
 //SET
 
 //f_pair : [<pairId>, ifFromIsTwo]
-export async function stats_pair_set(f_pair, f_key, f_value)
-{
-  const h_places=(f_pair[1]) ? stats_pair_place_reverse : stats_pair_place;
-  
-  f_key=f_key+h_places[0];
+export async function stats_pair_set(f_pair, f_key, f_value) {
+  const h_places = f_pair[1] ? stats_pair_place_reverse : stats_pair_place;
 
-  await api.KiraUserPair.update(f_pair[0], {[f_key]: f_value});
+  f_key = f_key + h_places[0];
+
+  await api.KiraUserPair.update(f_pair[0], { [f_key]: f_value });
 }
 
-
 //f_pair : [<pairId>, ifFromIsTwo]
-export async function stats_pair_add(f_pair, f_key, f_addValue)
-{
-  const h_places=(f_pair[1]) ? stats_pair_place_reverse : stats_pair_place;
-  
-  f_key=f_key+h_places[0];
-  const h_value=await stats_pair_get_bykey(f_pair[0], f_key)+f_addValue;
+export async function stats_pair_add(f_pair, f_key, f_addValue) {
+  const h_places = f_pair[1] ? stats_pair_place_reverse : stats_pair_place;
 
-  await api.KiraUserPair.update(f_pair[0], {[f_key]: h_value});
+  f_key = f_key + h_places[0];
+  const h_value = (await stats_pair_get_bykey(f_pair[0], f_key)) + f_addValue;
+
+  await api.KiraUserPair.update(f_pair[0], { [f_key]: h_value });
   return h_value;
 }
 
 //--- TRANSFERT ---
 
 export const stats_old = {
-  "book_kill":
-  {
-	//new:"all_kill",
-    begin:{},
-    type:3,
+  book_kill: {
+    //new:"all_kill",
+    begin: {},
+    type: 3,
     cousin: "kills",
-    cousinRaw: false
+    cousinRaw: false,
   },
-  "book_hit":
-  {
-	new:"note_hit",
-    begin:0,
-    type:1,
+  book_hit: {
+    new: "note_hit",
+    begin: 0,
+    type: 1,
     cousin: "hits",
-    cousinRaw: false
+    cousinRaw: false,
   },
-  "book_try":
-  {
-	new:"note_try",
-    begin:0,
-    type:1
+  book_try: {
+    new: "note_try",
+    begin: 0,
+    type: 1,
   },
 
-  "ever_death":
-  {
-	new:"ever_death",
-    begin:0,
-    type:1
+  ever_death: {
+    new: "ever_death",
+    begin: 0,
+    type: 1,
   },
-  "ever_deathTime":
-  {
-	new:"ever_deadTime",
-    begin:0,
-    type:4
+  ever_deathTime: {
+    new: "ever_deadTime",
+    begin: 0,
+    type: 4,
   },
-  "ever_apple":
-  {
-	new:"ever_apple",
-    begin:0,
-    type:1
+  ever_apple: {
+    new: "ever_apple",
+    begin: 0,
+    type: 1,
   },
-  "ever_book":
-  {
-	new:"ever_book",
-    begin:0,
-    type:1
-  }
+  ever_book: {
+    new: "ever_book",
+    begin: 0,
+    type: 1,
+  },
 };
 
-
-export async function stats_transfert(f_userdata)
-{
+export async function stats_transfert(f_userdata) {
   //getting the value
-  const h_transfert=await api.KiraUsers.findOne(f_userdata.id,{
-    "stats":true
-  }).then(obj => obj["stats"]);
+  const h_transfert = await api.KiraUsers.findOne(f_userdata.id, {
+    stats: true,
+  }).then((obj) => obj["stats"]);
 
-  for (const k in stats_old)
-  {
-	if (stats_old[k].new && h_transfert[k])
-	{
-		await stats_simple_set(f_userdata.statPtr.id, stats_old[k].new, h_transfert[k]);
-	}
+  for (const k in stats_old) {
+    if (stats_old[k].new && h_transfert[k]) {
+      await stats_simple_set(
+        f_userdata.statPtr.id,
+        stats_old[k].new,
+        h_transfert[k]
+      );
+    }
   }
 
-  for (const victimId in h_transfert["book_kill"])
-  {
-	
-  	const victimData = await kira_user_get(victimId, false);
-	const h_pair=await stats_pair_get_id(f_userdata.id, f_userdata.userId, victimData.id, victimId);
-    await stats_pair_set(h_pair, "note_kill", h_transfert["book_kill"][victimId]);//return the value
+  for (const victimId in h_transfert["book_kill"]) {
+    const victimData = await kira_user_get(victimId, false);
+    const h_pair = await stats_pair_get_id(
+      f_userdata.id,
+      f_userdata.userId,
+      victimData.id,
+      victimId
+    );
+    await stats_pair_set(
+      h_pair,
+      "note_kill",
+      h_transfert["book_kill"][victimId]
+    ); //return the value
   }
 }
 
-export async function stats_checkup(f_userdata)
-{
-}
+export async function stats_checkup(f_userdata) {}
 
 //--- RANKING ---
 
-export async function stats_simple_rank(f_onKey)
-{
-  return await api.KiraUserStats.findMany(
-    {
-      sort: {
-        [f_onKey]: "Descending",
-      },
-      select: {
-        userId: true,
-        [f_onKey]: true,
-      },
+export async function stats_simple_rank(f_onKey) {
+  return await api.KiraUserStats.findMany({
+    sort: {
+      [f_onKey]: "Descending",
+    },
+    select: {
+      userId: true,
+      [f_onKey]: true,
+    },
 
-      first: 3
-    }
-  );
-}//return 3 best userdata on [f_onKey]
+    first: 3,
+  });
+} //return 3 best userdata on [f_onKey]

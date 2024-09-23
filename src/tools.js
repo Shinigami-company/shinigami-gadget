@@ -1,27 +1,25 @@
-import { translate } from "./lang.js"
+import { translate } from "./lang.js";
 
 const times = [
   {
     divider: 86400,
-    key: "day"
+    key: "day",
   },
   {
-    divider : 3600,
-    key : "hour"
+    divider: 3600,
+    key: "hour",
   },
   {
-    divider : 60,
-    key : "minute"
+    divider: 60,
+    key: "minute",
   },
   {
-    divider : 1,
-    key : "second"
-  }
-]
+    divider: 1,
+    key: "second",
+  },
+];
 
-
-export function format_time_string_from_int(f_s, lang)
-{
+export function format_time_string_from_int(f_s, lang) {
   //console.log("timef :",f_s)
   let r_texts = [];
 
@@ -29,13 +27,19 @@ export function format_time_string_from_int(f_s, lang)
   {
     //let i = 0;//can be set to the shortest
     //console.log("timef : values (loop ", times.length, "times)");
-    for (let i = 0;i<times.length;i++)
-    {
-      let f_v = parseInt(f_s/times[i].divider);
-      if (f_v>0)
-      {
+    for (let i = 0; i < times.length; i++) {
+      let f_v = parseInt(f_s / times[i].divider);
+      if (f_v > 0) {
         f_s = f_s % times[i].divider;
-        r_texts.push(translate(lang, `format.time.between.unit`,{"number":f_v,"unit":translate(lang, `format.time.unit.${times[i].key}${(f_v > 1) ? "s" : ""}`)}));
+        r_texts.push(
+          translate(lang, `format.time.between.unit`, {
+            number: f_v,
+            unit: translate(
+              lang,
+              `format.time.unit.${times[i].key}${f_v > 1 ? "s" : ""}`
+            ),
+          })
+        );
       }
       //console.log("timef : values :",i);
     }
@@ -45,25 +49,24 @@ export function format_time_string_from_int(f_s, lang)
   {
     let r_text = r_texts[0];
     //console.log("timef : between", r_texts);
-    if (r_texts.length > 1)
-    {
-      for (var i = 1;i<r_texts.length-1;i++)
-      {
-        r_text = translate(lang, `format.time.between.other`, { "chunk": r_text, "piece": r_texts[i] });
+    if (r_texts.length > 1) {
+      for (var i = 1; i < r_texts.length - 1; i++) {
+        r_text = translate(lang, `format.time.between.other`, {
+          chunk: r_text,
+          piece: r_texts[i],
+        });
       }
       //console.log("timef : lester",i);
-      r_text = translate(lang, `format.time.between.last`, { "chunk": r_text, "piece": r_texts[i] });
+      r_text = translate(lang, `format.time.between.last`, {
+        chunk: r_text,
+        piece: r_texts[i],
+      });
     }
     return r_text;
   }
-};
+}
 
-export function format_time_int_from_string(f_text)
-{ };
-
-
-
-
+export function format_time_int_from_string(f_text) {}
 
 //rules
 const all_rules = [
@@ -113,17 +116,14 @@ const all_rules = [
 "Some limited number of Death Notes have white or red front covers, but they would make no difference in their effects, as compared with the black cover Death Notes.",
 "**All humans will, without exception, eventually die.**",
 "After they die, the place they go is MU. (Nothingness)",
-  "Once dead, they can never come back to life."
-]
+"Once dead, they can never come back to life.",
+];
 
-export function random_rule()
-{
-  let h_index=Math.floor(Math.random() * all_rules.length);
+export function random_rule() {
+  let h_index = Math.floor(Math.random() * all_rules.length);
   return all_rules[h_index];
 }
 
-
-export const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+export const sleep = (delay) =>
+  new Promise((resolve) => setTimeout(resolve, delay));
 //export async function sleep(f_delay) {await setTimeout((), f_delay);}
-
-
