@@ -80,15 +80,23 @@ export const schema: GadgetModel = {
       type: "string",
       storageKey: "talKrltdWT_C::DmyRhXFBFJYQ",
     },
+    pairsPtr: {
+      type: "hasMany",
+      children: {
+        model: "KiraUserPair",
+        belongsToField: "userPtr_two",
+      },
+      storageKey: "Kj8rEbQNOmvL",
+    },
+    statPtr: {
+      type: "hasOne",
+      child: { model: "KiraUserStats", belongsToField: "userPtr" },
+      storageKey: "vver91mvgQ50",
+    },
     stats: {
       type: "json",
       default: {},
       storageKey: "Z_qznoOqayeX::jqMjB6Km3Hj8",
-    },
-    statsPtr: {
-      type: "hasOne",
-      child: { model: "KiraUserStats", belongsToField: "userPtr" },
-      storageKey: "vver91mvgQ50",
     },
     userId: {
       type: "string",

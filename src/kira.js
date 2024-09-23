@@ -29,7 +29,7 @@ export async function kira_user_get(f_userId, f_createIfNot=false)
       },
       select: {
         id: true,
-        statsPtr: {id: true},
+        statPtr: {id: true},
         achivPtr: {id: true}
       }
     }
@@ -40,8 +40,8 @@ export async function kira_user_get(f_userId, f_createIfNot=false)
     return await kira_user_create(f_userId);
   } else {
 	//get it
-	//and create
-	if (!h_preData.statsPtr)
+	//and create submodel
+	if (!h_preData.statPtr)
 	{
 		await api.KiraUserStats.create({userPtr: { _link: h_preData.id }, userId: f_userId });
 	}
@@ -67,7 +67,7 @@ export async function kira_user_get(f_userId, f_createIfNot=false)
           lang: true,
           backDate: true,
           deathDate: true,
-          statsPtr: {id: true},
+          statPtr: {id: true},
           achivPtr: {id: true}
         }
       }
@@ -107,12 +107,18 @@ export async function kira_user_get(f_userId, f_createIfNot=false)
 }//return the userdata from user
 
 
-export async function kira_user_create_achiv(f_userId)
+
+export async function kira_user_create(f_userId)
 {
-  return await api.KiraUserAchiv.create({
+  return await api.KiraUsers.create({
     userId: f_userId,
-    }
-  );
+	statPtr: {
+		create: [{userId: f_userId }]
+		},
+	achivPtr: {
+		create: [{userId: f_userId }]
+		}
+  });
 }//return the created element
 
 //capsule

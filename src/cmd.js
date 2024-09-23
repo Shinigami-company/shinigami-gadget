@@ -76,8 +76,10 @@ import { kira_run_create, kira_run_delete, kira_run_get, kira_run_of, kira_run_p
 import { kira_line_append, kira_line_get_page, kira_line_get_last_indexPage, kira_line_if_pageGood, kira_line_taste } from './kira.js';//kira line
 import { kira_apple_claims_set, kira_apple_claims_add, kira_apple_claims_get, kira_format_applemoji } from './apple.js';//kira apples
 
+import { stats_simple_get, stats_simple_is_default, stats_simple_set, stats_simple_add, stats_simple_bulkadd, stats_parse, stats_order_misc } from './stats.js';
+import { stats_pair_get_id, stats_pair_get_value, stats_pair_get_multiples, stats_pair_add } from './stats.js';
+
 import { random_rule, format_time_string_from_int } from './tools.js';
-import { stats_geter, stats_get, stats_get_data, stats_add, stats_order, stats_all } from './stats.js';
 
 import { linkme } from './remember.js';
 linkme("linked from cmd");//need to use a function from there
@@ -705,15 +707,61 @@ async function cmd_god({ userdata, data, lang }) {
   
     //#test subcommand
     case ("test"): {
-
+		let r;
 		
+		//if (false)
+		{
+  			const arg_user_data = await kira_user_get(arg_user, false);
+			const h_pair = await stats_pair_get_id(userdata.id, userdata.userId, arg_user_data.id, arg_user);
+
+			console.time("test:cost");
+			const repeat=(arg_amount) ? arg_amount : (11);
+			let r_som=0;
+			let r_all=[];
+			for (let i=0;i<repeat;i++)
+			{
+				const start = Date.now();
+				//console.log("test:cost:operation:",);
+				//the operation to test
+				
+    			const h_value = await stats_pair_add(h_pair, "test", 1);//return the value
+				//await stats_pair_get_id(userdata.id, userdata.userId, arg_user_data.id, arg_user);
+				//await stats_simple_bulkadd(userdata.statPtr.id, {"ever_test":1,"ever_test2":1});
+				//await stats_simple_add(userdata.statPtr.id, "ever_test");
+				//await stats_simple_add(userdata.statPtr.id, "ever_test2");
+				//await stats_simple_get(userdata.statPtr.id, "ever_test")
+				const end = Date.now();
+				const gap_ms = (end-start);
+				console.log("test:cost:time:",gap_ms);
+				r_som+=gap_ms;
+				r_all.push(gap_ms);
+			}
+			r_all.sort((a,b)=> a - b);
+			console.log(r_all);
+			r= `operation repeated ${repeat} times.\ntotal=${Math.round(r_som)}ms  average=${Math.round(r_som/repeat)}ms  median=${Math.round(r_all[Math.floor(repeat/2)])}ms  min=${Math.round(r_all[0])}ms  max=${Math.round(r_all[repeat-1])}ms`;
+			console.log(r);
+			console.timeEnd("test:cost");
+		}
+
+		if (false)
+		{
+			console.time("test:things");
+  			const arg_user_data = await kira_user_get(arg_user, false);
+			const h_pair = await stats_pair_get_id(userdata.id, userdata.userId, arg_user_data.id, arg_user);
+    		const h_value = await stats_pair_add(h_pair, "test", 1);//return the value
+			console.log(`details:`,[userdata.id, userdata.userId, arg_user_data.id, arg_user]);
+			r=`added to pair. value=${h_value}.`;
+			console.timeEnd("test:things");
+		}
+
+		/*
 		console.time("test");
 		console.log("time('test') started");
 		let v;
 		console.timeEnd("test");
 		
 		console.time("test");
-		v= await stats_get(userdata.id, "ever_book");
+		v= await stats_simple_get(userdata.statPtr.id, "ever_book");
 		console.log("get stat:",v);
 		console.timeEnd("test");
 		
@@ -736,11 +784,12 @@ async function cmd_god({ userdata, data, lang }) {
 		v= await kira_user_get_daily(userdata.id);
 		console.log("get daily:",v);
 		console.timeEnd("test");
+		*/
   
       return {
         method: 'PATCH',
         body: {
-          content: translate(lang, "cmd.god.test.done"),
+          content: translate(lang, "cmd.god.test.done")+ ((r) ? (" `"+r+"`") : ""),
         },
       };
     } break;
@@ -782,7 +831,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
 
       //
       if (h_price > 0) {
-        let h_book_amount = await stats_get(userdata.id, "ever_book");
+        let h_book_amount = await stats_simple_get(userdata.statPtr.id, "ever_book");
         if (!h_book_amount > 0) {//cant pay your first death note
           return {
             method: 'PATCH',
@@ -835,7 +884,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
     }
 
     await kira_book_create(userdata, h_color);
-    await stats_add(userdata.id, "ever_book");
+    await stats_simple_add(userdata.statPtr.id, "ever_book");
     
     return {
       method: 'PATCH',
@@ -959,7 +1008,7 @@ async function cmd_apple({ userdata, lang }) {
   }
 
   await kira_user_add_apple(userdata, h_apples_claimed);
-  await stats_add(userdata.id, "ever_apple", h_apples_claimed);//stats
+  await stats_add(userdata.statPtr.id, "ever_apple", h_apples_claimed);//stats
 
 
   return {
@@ -1042,7 +1091,6 @@ async function cmd_rules({ lang }) {
 //#stats command
 async function cmd_stats({ data, userdata, lang }) {
   let h_match = data.options[0].value
-  let h_stats = await stats_get_data(userdata.id);
 
   let r_text;
   let r_lore = "";
@@ -1050,18 +1098,24 @@ async function cmd_stats({ data, userdata, lang }) {
   switch (h_match) {
 
     case "misc": {
-      if (Object.keys(h_stats).length > 0) {
-        r_text = translate(lang, `stats.misc.show`);
-        for (let k of stats_order) {
-          if (h_stats[k])
-            r_lore = `${r_lore}\n${translate(lang, `stats.misc.show.${k}`, { "value": stats_geter(h_stats[k], k, lang) })}`;
-        }
-      } else {
+        for (let k of stats_order_misc) {
+        	const value = await stats_simple_get(userdata.statPtr.id, k);
+			//if (!stats_simple_is_default(k, value))
+			if (value)
+			{
+				console.log("YEEEEEE ",k);
+            	r_lore = `${r_lore}\n${translate(lang, `stats.misc.show.${k}`, { "value": stats_parse(k, value, lang) })}`;
+			}
+		};
+      if (r_lore==="") {
         r_text = translate(lang, `stats.misc.fail.nothing`);
+      } else {
+        r_text = translate(lang, `stats.misc.show`);
       }
     } break;
 
     case "relation": {
+	  throw Error("todo");
 
       if (h_stats.book_kill) {
         r_text = translate(lang, `stats.relation.show`);
@@ -1370,7 +1424,7 @@ async function cmd_kira({ request, user, userdata, data, userbook, channel, lang
   const h_note = await kira_line_append(userdata, userbook, h_line);
 
   //stat
-  await stats_add(userdata.id, "book_try");
+  await stats_simple_add(userdata.id, "note_try");
 
   //creat kira run
   const h_run = await kira_run_create(h_span, user.id, h_victim_id, h_victim_data?.id, run_combo);
@@ -1646,14 +1700,18 @@ export async function cmd_kira_execute({ more }) {
     if (h_will_book_victim) await kira_line_taste(pack.note_id, 1);//note need to exist
 
     //stats
-    await stats_add(userdata.id, "book_hit");
-    await stats_add(h_victim_data.id, "ever_death");
-    await stats_add(h_victim_data.id, "ever_deathTime", pack.span);
-    await stats_add(userdata.id, "book_kill", pack.victim_id);
-    const h_repetition = await stats_get(userdata.id, "book_kill", undefined, pack.victim_id);
+    await stats_simple_add(userdata.statPtr.id, "note_hit");
+    await stats_simple_add(h_victim_data.statPtr.id, "ever_death");
+    await stats_simple_add(h_victim_data.statPtr.id, "ever_deathTime", pack.span);
+    
+	const h_pair=await stats_pair_get_id(userdata.id, user.id, h_victim_data.id, pack.victim_id);
+    const h_repetition=await stats_pair_add(h_pair, "note_kill", 1);//return the value
 
-    if (h_repetition == 1) {
-      let h_victim_kills = await stats_get(h_victim_data.id, "book_kill");
+    if (h_repetition === 1) {//first time attacker kill victim
+      await stats_simple_add( userdata.statPtr.id, "all_kill", 1);//!
+      
+	  //monetize kill
+	  let h_victim_kills = await stats_simple_get(h_victim_data.statPtr.id, "all_kill");
       console.log("DBUG : kira : kills by victim for apples : ", h_victim_kills);
       let h_apples = 0;//default
       if (h_victim_kills) {

@@ -133,12 +133,13 @@
 
 "stats.misc.fail.nothing": "you are responsible of absolutely nothing (yet)",
 "stats.misc.show": "here's what you've done :",
-"stats.misc.show.book_kill": "**differents victims killed** = $[value]",
-"stats.misc.show.book_hit": "total number of murderer = $[value]",
-"stats.misc.show.book_try": "total attempts of murderer = $[value]",
+"stats.misc.show.note_kill": "**differents victims killed** = $[value]",
+"stats.misc.show.note_hit": "total number of murderer = $[value]",
+"stats.misc.show.note_try": "total attempts of murderer = $[value]",
+"stats.misc.show.note_counter": "total number of counter = $[value]",
 "stats.misc.show.ever_apple": "total of apples = $[value]",
 "stats.misc.show.ever_death": "total death amount = $[value]",
-"stats.misc.show.ever_deathTime": "total death time = $[value]",
+"stats.misc.show.ever_deadTime": "total death time = $[value]",
 "stats.misc.show.ever_book": "death notes ever touched = $[value]",
 
 "stats.relation.fail.nothing": "you are friendly with everyone (for now)",
