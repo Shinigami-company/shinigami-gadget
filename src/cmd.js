@@ -78,6 +78,7 @@ import { kira_apple_claims_set, kira_apple_claims_add, kira_apple_claims_get, ki
 
 import { stats_simple_get, stats_simple_is_default, stats_simple_set, stats_simple_add, stats_simple_bulkadd, stats_parse, stats_order_misc } from './stats.js';
 import { stats_pair_get_id, stats_pair_get_value, stats_pair_get_multiples, stats_pair_add } from './stats.js';
+import { stats_transfert } from './stats.js';
 
 import { random_rule, format_time_string_from_int } from './tools.js';
 
@@ -112,6 +113,7 @@ const commands_structure =
           required: true,
           choices: [
             { name: "test", value: "test", description: 'execute the test script' },
+            { name: "update", value: "update", description: 'update an user' },
             { name: "revive", value: "revive", description: 'revive someone' },
             { name: "kill", value: "kill", description: 'kill someone' },
             { name: "mercy", value: "mercy", description: 'cancel someone\'s death' },
@@ -709,7 +711,7 @@ async function cmd_god({ userdata, data, lang }) {
     case ("test"): {
 		let r;
 		
-		//if (false)
+		if (false)
 		{
   			const arg_user_data = await kira_user_get(arg_user, false);
 			const h_pair = await stats_pair_get_id(userdata.id, userdata.userId, arg_user_data.id, arg_user);
@@ -754,6 +756,13 @@ async function cmd_god({ userdata, data, lang }) {
 			console.timeEnd("test:things");
 		}
 
+		{
+			console.time("test:transfert");
+  			const arg_user_data = await kira_user_get(arg_user, false);
+			await stats_transfert(arg_user_data);
+			console.timeEnd("test:transfert");
+		}
+
 		/*
 		console.time("test");
 		console.log("time('test') started");
@@ -793,7 +802,45 @@ async function cmd_god({ userdata, data, lang }) {
         },
       };
     } break;
-  
+
+
+    //#update subcommand
+    case ("update"): {
+	      if (!arg_user) {
+	        return {
+	          method: 'PATCH',
+	          body: {
+	            content: translate(lang, "cmd.god.update.fail.missing.user")
+	          }
+	        };
+	      }
+	  
+	      const targetdata = await kira_user_get(arg_user, false);
+	  
+	      if (!targetdata) {
+	        return {
+	          method: 'PATCH',
+	          body: {
+	            content: translate(lang, "cmd.god.update.fail.notplayer")
+	          }
+	        };
+	      }
+
+		{
+			console.time("transfert");
+			console.log("transfering user id=",arg_user);
+			await stats_transfert(targetdata);
+			console.timeEnd("transfert");
+		}
+
+      return {
+        method: 'PATCH',
+        body: {
+          embeds: [{description: translate(lang, "cmd.god.update.done",{"targetId":arg_user}), color: (255*256)}],
+        },
+      };
+    } break;
+
   
     default: {
       return {
@@ -1103,7 +1150,6 @@ async function cmd_stats({ data, userdata, lang }) {
 			//if (!stats_simple_is_default(k, value))
 			if (value)
 			{
-				console.log("YEEEEEE ",k);
             	r_lore = `${r_lore}\n${translate(lang, `stats.misc.show.${k}`, { "value": stats_parse(k, value, lang) })}`;
 			}
 		};
@@ -1387,6 +1433,8 @@ async function cmd_kira({ request, user, userdata, data, userbook, channel, lang
       console.log("LOG : kira : countering... comobo=",run_combo);
       await cmd_kira_cancel({ more: { runId: h_run_reverse.id } });
       console.log("LOG : kira : countered");
+      await stats_pair_add(h_pair, "by_counter", 1);//return the value
+      await stats_simple_add(h_pair, "note_counter");
       //and continue
     }
   }
@@ -1705,7 +1753,7 @@ export async function cmd_kira_execute({ more }) {
     await stats_simple_add(h_victim_data.statPtr.id, "ever_deathTime", pack.span);
     
 	const h_pair=await stats_pair_get_id(userdata.id, user.id, h_victim_data.id, pack.victim_id);
-    const h_repetition=await stats_pair_add(h_pair, "note_kill", 1);//return the value
+    const h_repetition=await stats_pair_add(h_pair, "by_hit", 1);//return the value
 
     if (h_repetition === 1) {//first time attacker kill victim
       await stats_simple_add( userdata.statPtr.id, "all_kill", 1);//!

@@ -7,11 +7,6 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "eImas_skswE4",
   fields: {
-    all_kill: {
-      type: "number",
-      default: 0,
-      storageKey: "zHeIEuJsJI3x",
-    },
     ever_apple: {
       type: "number",
       default: 0,
@@ -51,6 +46,11 @@ export const schema: GadgetModel = {
       type: "number",
       default: 0,
       storageKey: "4Dm5OSvFPNSB",
+    },
+    note_kill: {
+      type: "number",
+      default: 0,
+      storageKey: "zHeIEuJsJI3x",
     },
     note_try: {
       type: "number",
