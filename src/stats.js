@@ -11,52 +11,48 @@ import { kira_user_get } from "./kira.js";
 //4 = time (int in s) [you can use the lang parameter]
 
 const stats_simple_all = {
-  note_kill: {
-    type: 1,
-    begin: 0,
-  },
-  note_hit: {
-    type: 1,
-    begin: 0,
-  },
-  note_try: {
-    type: 1,
-    begin: 0,
-  },
-  note_counter: {
-    type: 1,
-    begin: 0,
-  },
+do_kill: {type: 1},
+do_hit: {type: 1},
+do_try: {type: 1},
+do_counter: {type: 1},
+do_outerTime: {type: 4},
 
-  ever_death: {
-    type: 1,
-    begin: 0,
-  },
-  ever_deadTime: {
-    type: 3,
-    begin: 0,
-  },
-  ever_apple: {
-    type: 1,
-    begin: 0,
-  },
-  ever_book: {
-    type: 1,
-    begin: 0,
-  },
+is_killed: {type: 1},
+is_hited: {type: 1},
+is_tried: {type: 1},
+is_countered: {type: 1},
+is_outedTime: {type: 4},
+
+ever_apple: {type: 1},
+ever_book: {type: 1},
+ever_test: {type: 1},
+
+misc_match: {type: 1},
+
+streak_appleDay: {type: 1},
+streak_pageGreat: {type: 1},
 };
 
 //used in #stats command
-export const stats_order_misc = [
-  "note_kill",
-  "note_hit",
-  "note_try",
-  "note_counter",
-  "ever_death",
-  "ever_deadTime",
-  "ever_apple",
+export const stats_order_broad = [
+  "do_kill",
+  "do_hit",
+  "do_try",
+  "do_counter",
+  "do_outerTime",
+  "is_hited",
+  "is_outedTime",
   "ever_book",
+  "ever_apple",
+  "streak_appleDay",
 ];
+
+export const stats_order_ratio = {
+  "hit":["do_hit","is_hited"],
+  "kill":["do_kill","is_killed"],
+  "counter":["do_counter","is_countered"],
+  "time":["do_outerTime","is_outedTime"],
+};
 
 //GET
 
@@ -72,14 +68,13 @@ export async function stats_simple_get(f_modelStatsId, f_statKey) {
 export function stats_simple_is_default(f_statKey, f_value) {
   //getting the value
   return (
-    f_value ===
-    (stats_simple_all[f_statKey] ? stats_simple_all[f_statKey].begin : 0)
+    f_value === (stats_simple_all[f_statKey]?.begin ? stats_simple_all[f_statKey].begin : 0)
   );
 }
 
 export function stats_parse(f_statKey, f_value, f_lang = undefined) {
   switch (stats_simple_all[f_statKey].type) {
-    case 3:
+    case 4:
       return format_time_string_from_int(f_value, f_lang);
     default:
       return f_value;
@@ -240,14 +235,10 @@ const stats_pair_place = ["_one", "_two"];
 const stats_pair_place_reverse = ["_two", "_one"];
 const stats_pair_all = {
   by_hit: {
-    type: 1,
-    //cousin:"all_kill"
-    //amount of differents pair hited
+    type: 1
   },
   by_counter: {
-    type: 1,
-    //cousin:"note_counter"
-    //add all counters
+    type: 1
   },
 };
 
@@ -326,35 +317,54 @@ export async function stats_pair_get_value(f_pair, f_key) {
 export async function stats_pair_get_multiples(f_pair, f_keysDict) {
   const h_places = f_pair[1] ? stats_pair_place_reverse : stats_pair_place;
 
-  keysToReturnAs = {};
-  for (let k of f_keysDict) {
-    switch (f_keysDict[k]) {
-      case 3:
-      case 1:
-        {
-          keysToReturnAs[k + h_places[0]] = 1;
-        }
-        break;
-      case 3:
-      case 2:
-        {
-          keysToReturnAs[k + h_places[1]] = 2;
-        }
-        break;
+  let keys_returnAs = {};
+  let keys_select = {};
+  for (const k in f_keysDict) {
+		if (f_keysDict[k]==1 || f_keysDict[k]==3)
+    {
+      keys_returnAs[k + h_places[0]] = [0,k];
+			keys_select[k + h_places[0]] = true;
+    }
+		if (f_keysDict[k]==2 || f_keysDict[k]==3)
+    {
+      keys_returnAs[k + h_places[1]] = [1,k];
+			keys_select[k + h_places[1]] = true;
     }
   }
 
   const h_data = await api.KiraUserPair.findOne(f_pair[0], {
-    select: keysToReturnAs,
+    select: keys_select,
   });
 
   let r = [{}, {}];
-  for (let k of keysToReturnAs) {
-    r[keysToReturnAs[k] - 1] = h_data[k];
+  for (let k in keys_returnAs) {
+    r[keys_returnAs[k][0]][keys_returnAs[k][1]] = h_data[k];
   }
   return r;
 }
 //return [{<keyFrom>: <value>},{<keyTo>: <value>}]
+
+//f_keysDict : {<key> : <wanted>...}
+//wanted : 0=no, 1=from, 2=to, 3=both
+export async function stats_pairs_get_all(f_userId) {
+	
+	let r=[]
+	for (const place of stats_pair_place)
+	{
+	  const h_pairs = await api.KiraUserPair.findMany({
+	    filter: {
+	      [`userId${place}`]: { equals: f_userId },
+	    },
+			select: {
+				id: true
+			}
+	  });
+		for (let i=0;i<h_pairs.length;i++)
+			r.push([h_pairs[i].id, place==stats_pair_place[1]]);
+	}
+  return r;
+}
+
 
 //SET
 
@@ -389,25 +399,25 @@ export const stats_old = {
     cousinRaw: false,
   },
   book_hit: {
-    new: "note_hit",
+    new: "do_hit",
     begin: 0,
     type: 1,
     cousin: "hits",
     cousinRaw: false,
   },
   book_try: {
-    new: "note_try",
+    new: "do_try",
     begin: 0,
     type: 1,
   },
 
   ever_death: {
-    new: "ever_death",
+    new: "is_hited",
     begin: 0,
     type: 1,
   },
   ever_deathTime: {
-    new: "ever_deadTime",
+    new: "is_outedTime",
     begin: 0,
     type: 4,
   },
@@ -449,13 +459,45 @@ export async function stats_transfert(f_userdata) {
     );
     await stats_pair_set(
       h_pair,
-      "note_kill",
+      "by_hit",
       h_transfert["book_kill"][victimId]
     ); //return the value
   }
 }
 
-export async function stats_checkup(f_userdata) {}
+export async function stats_checkup(f_userdata) {
+
+	let patch = {
+		"do_kill":0,
+		"do_counter":0,
+		"is_killed":0,
+		"is_countered":0,
+	};
+
+	for (const places of [stats_pair_place, stats_pair_place_reverse])
+	{
+	  const h_founds = await api.KiraUserPair.findMany({
+	    filter: {
+	      [`userId${places[0]}`]: { equals: f_userdata.userId },
+	    },
+	  });
+  	
+		for (let i = 0; i < h_founds.length; i++) 
+		{
+
+			if (h_founds[i][`by_hit${places[0]}`]>1)
+				patch["do_kill"]+=1;
+			if (h_founds[i][`by_hit${places[1]}`]>1)
+				patch["is_killed"]+=1;
+			if (h_founds[i][`by_counter${places[0]}`])
+				patch["do_counter"]+=h_founds[i][`by_counter${places[0]}`];
+			if (h_founds[i][`by_counter${places[1]}`])
+				patch["is_countered"]+=h_founds[i][`by_counter${places[1]}`];
+
+		}
+	}
+  await api.KiraUserStats.update(f_userdata.statPtr.id,patch);
+}
 
 //--- RANKING ---
 

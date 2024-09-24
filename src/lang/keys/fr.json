@@ -40,7 +40,6 @@
 "cmd.claim.done.free": "**Voici ton death note !** $[emoji]",
 "cmd.claim.done.paid": "Miam ! **Voici ton death note coloré !** $[emoji]",
 
-
 "cmd.burn.already": "*Tu as brûlé un livre, mais ce n'était pas le death note*",
 "cmd.burn.confirm": "*Tu as allumé une alumette... 🧨*\n**Attends !**\nHumain, veux-tu vraiment brûler ton death note et tout ce qu'il contient ?\nAprès tout, si tu veux vraiment le faire, fais le.",
 "cmd.burn.confirm.button.ok": "LE BRÛLER",
@@ -136,19 +135,30 @@
 "format.time.between.unit": "$[number] $[unit]",
 
 
-"stats.misc.fail.nothing": "tu n'es responsable de rien (pour l'instant)",
-"stats.misc.show": "voici ce que tu as causé :",
-"stats.misc.show.book_kill": "**personnes tués** = $[value]",
-"stats.misc.show.book_hit": "nombre total de meurtres = $[value]",
-"stats.misc.show.book_try": "tentatives de meurtres = $[value]",
-"stats.misc.show.ever_apple": "nombre de pommes totales = $[value]",
-"stats.misc.show.ever_death": "décès = $[value]",
-"stats.misc.show.ever_deathTime": "temps total décédé = $[value]",
-"stats.misc.show.ever_book": "différents death notes touchés = $[value]",
+"stats.broad.fail.nothing": "tu n'es responsable de rien (pour l'instant)",
+"stats.broad.show": "voici ce que tu as causé :",
+"stats.broad.show.do_kill": "**personnes tués** = $[value]",
+"stats.broad.show.do_hit": "nombre total de meurtres = $[value]",
+"stats.broad.show.do_try": "tentatives de meurtres = $[value]",
+"stats.broad.show.do_counter": "nombre de contres attaques = $[value]",
+"stats.broad.show.do_outerTime": "temps de décès infligé = $[value]",
+"stats.broad.show.is_hited": "décès = $[value]",
+"stats.broad.show.is_outedTime": "temps total décédé = $[value]",
+"stats.broad.show.ever_apple": "nombre de pommes totales = $[value]",
+"stats.broad.show.ever_book": "différents death notes touchés = $[value]",
 
 "stats.relation.fail.nothing": "tu es amical avec tout le monde (pour l'instant)",
 "stats.relation.show": "voici le résumé de tes relations :",
-"stats.relation.person": "tu as tué <@$[whoId]> **$[value]** $[unit]",
+"stats.relation.self": "tu t'es tué **$[value]** $[unit]",
+"stats.relation.person.u": "tu as tué <@$[whoId]> **$[value]** $[unit]",
+"stats.relation.person.e": "<@$[whoId]> t'as tué **$[value]** $[unit]",
+
+"stats.ratio.fail.nothing": "tu n'es pas intéressé par ça (pour l'instant)",
+"stats.ratio.show": "voici tes performances :",
+"stats.ratio.show.kill": "ton ratio de différentes personnes tués : **$[value]** ($[dividend]/$[divider])",
+"stats.ratio.show.hit": "ton ratio de meurtres : **$[value]** ($[dividend]/$[divider])",
+"stats.ratio.show.counter": "ton ratio de contre attaque : **$[value]** ($[dividend]/$[divider])",
+"stats.ratio.show.time": "ton ratio de temps décédé : **$[value]** ($[dividend]/$[divider])",
 
 "stats.running.fail.nothing": "tu ne tues personne",
 "stats.running.show": "voici ce qui va arriver :",

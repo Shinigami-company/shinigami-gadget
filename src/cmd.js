@@ -123,15 +123,21 @@ import {
   stats_simple_bulkadd,
   stats_parse,
   stats_simple_rank,
-  stats_order_misc,
+  stats_order_broad,
+	stats_order_ratio,
 } from "./stats.js";
 import {
   stats_pair_get_id,
   stats_pair_get_value,
-  stats_pair_get_multiples,
   stats_pair_add,
+  stats_pair_set,
+	stats_pairs_get_all,
+  stats_pair_get_multiples,
 } from "./stats.js";
-import { stats_transfert } from "./stats.js";
+import { 
+	stats_transfert,
+	stats_checkup 
+} from "./stats.js";
 
 import { random_rule, format_time_string_from_int } from "./tools.js";
 
@@ -288,7 +294,8 @@ const commands_structure = {
           description: "stats about...",
           required: true,
           choices: [
-            { name: "General", value: "misc" },
+            { name: "General", value: "broad" },
+            { name: "Performance", value: "ratio" },
             { name: "People", value: "relation" },
           ],
         },
@@ -973,6 +980,7 @@ async function cmd_god({ userdata, data, lang }) {
           console.time("transfert");
           console.log("transfering user id=", arg_user);
           await stats_transfert(targetdata);
+					await stats_checkup(targetdata);
           console.timeEnd("transfert");
         }
 
@@ -1255,14 +1263,14 @@ async function cmd_top({ data, lang }) {
       break;
     case "kill":
       {
-        h_ranks = await stats_simple_rank("note_kill");
-        h_amountK = "note_kill";
+        h_ranks = await stats_simple_rank("do_kill");
+        h_amountK = "do_kill";
       }
       break;
     case "murder":
       {
-        h_ranks = await stats_simple_rank("note_hit");
-        h_amountK = "note_hit";
+        h_ranks = await stats_simple_rank("do_hit");
+        h_amountK = "do_hit";
       }
       break;
   }
@@ -1318,50 +1326,126 @@ async function cmd_rules({ lang }) {
 
 //#stats command
 async function cmd_stats({ data, userdata, lang }) {
-  let h_match = data.options[0].value;
 
   let r_text;
   let r_lore = "";
 
-  switch (h_match) {
-    case "misc":
+  switch (data.options[0].value) {
+    case "broad":
       {
-        for (let k of stats_order_misc) {
+        for (const k of stats_order_broad) {
           const value = await stats_simple_get(userdata.statPtr.id, k);
           //if (!stats_simple_is_default(k, value))
           if (value && !stats_simple_is_default(k, value)) {
-            r_lore = `${r_lore}\n${translate(lang, `stats.misc.show.${k}`, {
+            r_lore = `${r_lore}\n${translate(lang, `stats.broad.show.${k}`, {
               value: stats_parse(k, value, lang),
             })}`;
           }
         }
         if (r_lore === "") {
-          r_text = translate(lang, `stats.misc.fail.nothing`);
+          r_text = translate(lang, `stats.broad.fail.nothing`);
         } else {
-          r_text = translate(lang, `stats.misc.show`);
+          r_text = translate(lang, `stats.broad.show`);
         }
       }
       break;
 
     case "relation":
       {
-        throw Error("todo");
-
-        if (h_stats.book_kill) {
+				const pairs=await stats_pairs_get_all(userdata.userId);
+        if (pairs.length>0) {
+					
           r_text = translate(lang, `stats.relation.show`);
-          for (let k in h_stats.book_kill) {
-            r_lore = `${r_lore}\n${translate(lang, `stats.relation.person`, {
-              whoId: k,
-              value: h_stats.book_kill[k],
-              unit: translate(
-                lang,
-                `word.time${h_stats.book_kill[k] > 1 ? "s" : ""}`
-              ),
-            })}`;
+          for (const v of pairs) {
+						const pair_datas=await stats_pair_get_multiples(v,{"by_hit":3,"userId":2});
+						const hits=[pair_datas[0]["by_hit"],pair_datas[1]["by_hit"]];
+						
+						if (pair_datas[1]["userId"]==userdata.userId)
+						{//suscide message
+						
+							if (hits[0]>0)
+							{
+		            r_lore = `${r_lore}\n${translate(lang, `stats.relation.self`, {
+		              whoId: userdata.userId,
+		              value: hits[0],
+		              unit: translate(
+		                lang,
+		                `word.time${hits[0] > 1 ? "s" : ""}`
+		              ),
+		            })}`;
+							}
+
+						} else {
+
+							if (hits[0]>0)
+							{//you killed message
+		            r_lore = `${r_lore}\n${translate(lang, `stats.relation.person.u`, {
+		              whoId: pair_datas[1]["userId"],
+		              value: hits[0],
+		              unit: translate(
+		                lang,
+		                `word.time${hits[0] > 1 ? "s" : ""}`
+		              ),
+		            })}`;
+							}
+							if (hits[1]>0)
+							{//killed you message
+		            r_lore = `${r_lore}\n${translate(lang, `stats.relation.person.e`, {
+		              whoId: pair_datas[1]["userId"],
+		              value: hits[1],
+		              unit: translate(
+		                lang,
+		                `word.time${hits[1] > 1 ? "s" : ""}`
+		              ),
+		            })}`;
+							}
+						}
           }
         } else {
           r_text = translate(lang, `stats.relation.fail.nothing`);
         }
+      }
+      break;
+
+			case "ratio": 
+			{
+        for (const ratioKey in stats_order_ratio) {
+          const dividend = await stats_simple_get(userdata.statPtr.id, stats_order_ratio[ratioKey][0]);
+          const divider = await stats_simple_get(userdata.statPtr.id, stats_order_ratio[ratioKey][1]);
+          if (
+						!stats_simple_is_default(stats_order_ratio[ratioKey][0], dividend)
+					 	&& !stats_simple_is_default(stats_order_ratio[ratioKey][1], divider)
+						)
+					{
+            r_lore = `${r_lore}\n${translate(lang, `stats.ratio.show.${ratioKey}`, {
+              value: Math.round((dividend/divider)*1000)/1000,
+							dividend: dividend,
+							divider: divider
+							//dividend: stats_parse(stats_order_ratio[ratioKey][0], dividend, lang),
+							//divider: stats_parse(stats_order_ratio[ratioKey][1], divider, lang)
+            })}`;
+          }
+        }
+        if (r_lore === "") {
+          r_text = translate(lang, `stats.ratio.fail.nothing`);
+        } else {
+          r_text = translate(lang, `stats.ratio.show`);
+        }
+			}
+			break;
+    	
+			default:
+      {
+        return {
+          method: "PATCH",
+          body: {
+            content: kira_error_msg(
+              "error.point.404",
+              { message: `unknow stats page [${data.options[0].value}]` },
+              lang
+            ),
+          },
+        };
       }
       break;
   }
@@ -1648,8 +1732,10 @@ async function cmd_kira({
         h_victim_data.id,
         pack.victim_id
       );
+			//simpler pair
       await stats_pair_add(h_pair, "by_counter", 1); //return the value
-      await stats_simple_add(h_pair, "note_counter");
+      await stats_simple_add(userdata.statPtr.id, "do_counter");
+      await stats_simple_add(h_victim_data.statPtr.id, "is_countered");
       //and continue
     }
   }
@@ -1692,7 +1778,9 @@ async function cmd_kira({
   const h_note = await kira_line_append(userdata, userbook, h_line);
 
   //stat
-  await stats_simple_add(userdata.id, "note_try");
+  await stats_simple_add(userdata.id, "do_try");
+  if (h_victim_data?.id)
+		await stats_simple_add(h_victim_data?.id, "is_tried");
 
   //creat kira run
   const h_run = await kira_run_create(
@@ -1989,13 +2077,9 @@ export async function cmd_kira_execute({ more }) {
     if (h_will_book_victim) await kira_line_taste(pack.note_id, 1); //note need to exist
 
     //stats
-    await stats_simple_add(userdata.statPtr.id, "note_hit");
-    await stats_simple_add(h_victim_data.statPtr.id, "ever_death");
-    await stats_simple_add(
-      h_victim_data.statPtr.id,
-      "ever_deadTime",
-      pack.span
-    );
+		//simpler pair
+    await stats_simple_bulkadd(userdata.statPtr.id, {"do_hit":1, "do_outerTime":pack.span});
+    await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_hited":1, "is_outedTime":pack.span});
 
     const h_pair = await stats_pair_get_id(
       userdata.id,
@@ -2007,12 +2091,13 @@ export async function cmd_kira_execute({ more }) {
 
     if (h_repetition === 1) {
       //first time attacker kill victim
-      await stats_simple_add(userdata.statPtr.id, "all_kill", 1); //!
+      await stats_simple_add(userdata.statPtr.id, "do_kill", 1);
+      await stats_simple_add(h_victim_data.statPtr.id, "is_killed", 1);
 
       //monetize kill
       let h_victim_kills = await stats_simple_get(
         h_victim_data.statPtr.id,
-        "all_kill"
+        "do_kill"
       );
       console.log(
         "DBUG : kira : kills by victim for apples : ",
