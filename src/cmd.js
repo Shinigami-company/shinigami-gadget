@@ -1255,9 +1255,11 @@ async function cmd_top({ data, lang }) {
   //get
   let h_ranks;
   let h_amountK;
+	let if_parse=false;
   switch (h_on) {
     case "apple":
       {
+				if_parse=false;
         h_ranks = await kira_users_rank("apples");
         h_amountK = "apples";
       }
@@ -1276,6 +1278,7 @@ async function cmd_top({ data, lang }) {
       break;
     case "time":
       {
+				if_parse=true;
         h_ranks = await stats_simple_rank("do_outerTime");
         h_amountK = "do_outerTime";
       }
@@ -1288,12 +1291,14 @@ async function cmd_top({ data, lang }) {
 
     let h_nl = "";
     for (let i = 0; i < 3; i++) {
+			let h_amount=h_ranks[i][h_amountK];
+			if (if_parse) h_amount=stats_parse(h_amountK, h_amount);
       h_txt +=
         h_nl +
         translate(lang, `cmd.top.get.${h_on}.place`, {
           rank: i + 1,
           playerId: h_ranks[i].userId,
-          amount: stats_parse(h_amountK, h_ranks[i][h_amountK]),
+          amount: h_amount,
         });
       h_nl = "\n";
     }
