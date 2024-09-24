@@ -1225,7 +1225,7 @@ async function cmd_apple({ userdata, lang }) {
   }
 
   await kira_user_add_apple(userdata, h_apples_claimed);
-  await stats_add(userdata.statPtr.id, "ever_apple", h_apples_claimed); //stats
+  await stats_simple_add(userdata.statPtr.id, "ever_apple", h_apples_claimed); //stats
 
   return {
     method: "PATCH",
