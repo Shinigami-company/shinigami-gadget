@@ -359,6 +359,7 @@ const commands_structure = {
             { name: "Apples", value: "apple" },
             { name: "Kills", value: "kill" },
             { name: "Murders", value: "murder" },
+            { name: "Time", value: "time" },
           ],
         },
       ],
@@ -1273,6 +1274,12 @@ async function cmd_top({ data, lang }) {
         h_amountK = "do_hit";
       }
       break;
+    case "time":
+      {
+        h_ranks = await stats_simple_rank("do_outerTime");
+        h_amountK = "do_outerTime";
+      }
+      break;
   }
 
   //formating
@@ -1283,10 +1290,10 @@ async function cmd_top({ data, lang }) {
     for (let i = 0; i < 3; i++) {
       h_txt +=
         h_nl +
-        translate(lang, `cmd.best.get.${h_on}.place`, {
+        translate(lang, `cmd.top.get.${h_on}.place`, {
           rank: i + 1,
           playerId: h_ranks[i].userId,
-          amount: h_ranks[i][h_amountK],
+          amount: stats_parse(h_amountK, h_ranks[i][h_amountK]),
         });
       h_nl = "\n";
     }
@@ -1294,7 +1301,7 @@ async function cmd_top({ data, lang }) {
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, `cmd.best.get.${h_on}.title`),
+        content: translate(lang, `cmd.top.get.${h_on}.title`),
         embeds: [
           {
             description: h_txt,
