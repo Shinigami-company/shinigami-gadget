@@ -1,8 +1,9 @@
 {
   "en":
   {
-    "selectable": true,
-    "keys": true,
+		"timezone": "Europe/London",
+    "keys": false,
+
     "name": "English",
     "hlore": "bilang",
     "progress": 100
@@ -10,8 +11,10 @@
 
   "fr":
   {
+		"timezone": "Europe/Paris",
     "selectable": true,
     "keys": true,
+
     "name": "Français",
     "hlore": "bilang",
     "progress": 100,
@@ -20,8 +23,10 @@
 
   "de":
   {
+		"timezone": "Europe/Berlin",
     "selectable": true,
     "keys": true,
+
     "name": "Deutsch",
     "progress": 10,
     "sublang": "en"
@@ -29,10 +34,18 @@
 
   "en-US":
   {
+    "name": "English (US)",
+
+		"timezone": "Europe/USA",
+    "selectable": true,
     "sublang": "en"
   },
   "en-GB":
   {
+    "name": "English (GB)",
+
+		"timezone": "Europe/London",
+    "selectable": true,
     "sublang": "en"
   },
 

@@ -1,5 +1,5 @@
 import { api } from "gadget-server";
-import { format_time_string_from_int } from "./tools.js";
+import { time_format_string_from_int } from "./tools.js";
 import { kira_user_get } from "./kira.js";
 
 //--- SIMPLE ---
@@ -75,7 +75,7 @@ export function stats_simple_is_default(f_statKey, f_value) {
 export function stats_parse(f_statKey, f_value, f_lang = undefined) {
   switch (stats_simple_all[f_statKey].type) {
     case 4:
-      return format_time_string_from_int(f_value, f_lang);
+      return time_format_string_from_int(f_value, f_lang);
     default:
       return f_value;
   }
@@ -107,7 +107,7 @@ export function stats_parse(f_stat, f_statKey, f_lang=undefined, f_dictKey=undef
     case 4:
     {
       if (f_lang)
-        return format_time_string_from_int(f_stat, f_lang);
+        return time_format_string_from_int(f_stat, f_lang);
       else
         return f_stat;
     } break;

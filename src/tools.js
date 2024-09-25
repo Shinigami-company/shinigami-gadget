@@ -1,4 +1,4 @@
-import { translate } from "./lang.js";
+import { translate, lang_get_timezone } from "./lang.js";
 
 const times = [
   {
@@ -19,7 +19,7 @@ const times = [
   },
 ];
 
-export function format_time_string_from_int(f_s, lang) {
+export function time_format_string_from_int(f_s, lang) {
   //console.log("timef :",f_s)
   let r_texts = [];
 
@@ -66,7 +66,45 @@ export function format_time_string_from_int(f_s, lang) {
   }
 }
 
-export function format_time_int_from_string(f_text) {}
+function time_format_int_from_string(f_text) {}
+
+function time_now_utc(f_offset=0, f_timeMs=undefined) {
+  const now = (f_timeMs) ? new Date(f_timeMs) : new Date();
+  const localTime = now.getTime();
+  const localOffset = now.getTimezoneOffset() * 60000;
+  // obtain UTC time in msec
+  const utc = localTime + localOffset;
+
+  return new Date(utc + (3600000*f_offset));
+}
+
+function time_get_offset(f_timezone) {
+  const now = new Date();
+  // Use Intl.DateTimeFormat with timeZone option
+  const options = { timeZone: f_timezone, hour12: false, timeZoneName: "short" };
+  const formatter = new Intl.DateTimeFormat([], options);
+  // Format the date and extract the time zone name (e.g., "GMT+2")
+  const parts = formatter.formatToParts(now);
+  const timeZoneName = parts.find(part => part.type === "timeZoneName").value;
+  // Extract the UTC offset from the time zone name (e.g., "+2" from "GMT+2")
+  const match = timeZoneName.match(/([+-]\d+)/);
+  return match ? parseInt(match[1]) : 0;
+}
+
+function time_format_day(f_date) {
+	return f_date.toLocaleDateString(
+    "es-ES",
+    {
+		  day: "numeric",
+		  month: "numeric",
+		  year: "2-digit",
+		}
+  );
+}
+
+export function time_userday(f_lang, f_dateArg=undefined) {
+	return time_format_day(time_now_utc(time_get_offset(lang_get_timezone(f_lang)),f_dateArg));
+}
 
 //rules
 const all_rules = [

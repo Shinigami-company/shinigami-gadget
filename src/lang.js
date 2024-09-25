@@ -84,10 +84,8 @@ const lang_texts = lang_load();
 
 //for translations
 export function translate(f_lang, f_key, f_dolarValues) {
-  //return `\`ERROR [404] : lang/lang_translate/f_lang/unknown : unknown lang [${f_lang}]\``;
   if (!lang_texts[f_lang]) {
-    //return `\`unknown lang [${f_lang}]\``;
-    console.log(`unknown lang [${f_lang}]`);
+    console.log(`ERROR : lang : unknown lang [${f_lang}]`);
     f_lang = "en";
   }
   while (!lang_texts[f_lang].keys || !lang_texts[f_lang].key[f_key]) {
@@ -99,6 +97,20 @@ export function translate(f_lang, f_key, f_dolarValues) {
   return varEx(lang_texts[f_lang].key[f_key], f_dolarValues);
   //return lang_texts[f_lang].key[f_key](f_dolarValues);
 }
+
+export function lang_get_timezone(f_lang) {
+  if (!lang_texts[f_lang]) {
+    console.log(`ERROR : lang : unknown lang [${f_lang}]`);
+    f_lang = "en";
+  }
+  while (!lang_texts[f_lang].timezone) {
+    if (!lang_texts[f_lang].sublang)
+      return `\`unknown translate key [${f_key}] for lang [${f_lang}]\``;
+    else f_lang = lang_texts[f_lang].sublang;
+  }
+  return varEx(lang_texts[f_lang].timezone);
+}
+
 
 //for lang command
 export function lang_choice(r_choices = []) {

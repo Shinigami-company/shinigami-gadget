@@ -3,14 +3,6 @@ import { api } from "gadget-server";
 const settings_max_pages = 60;
 const settings_max_lines = 10; //38
 
-const settings_date_zone = "es-ES";
-
-const settings_date_options = {
-  day: "numeric",
-  month: "numeric",
-  year: "2-digit",
-};
-
 //{
 //  console.log(new Date().toLocaleDateString(settings_date_zone, settings_date_options));
 //}
@@ -273,19 +265,15 @@ export async function kira_book_delete(f_book) {
 
 //uses
 //kira_line : DATA
+import { time_userday } from "./tools";
 
-export async function kira_line_append(f_userdata, f_book, f_line) {
+export async function kira_line_append(f_book, f_line, f_lang) {
   let h_indexLine = f_book.index;
 
   //date
-  let h_date_book = new Date(f_book.updatedAt).toLocaleDateString(
-    settings_date_zone,
-    settings_date_options
-  );
-  let h_date_now = new Date().toLocaleDateString(
-    settings_date_zone,
-    settings_date_options
-  );
+  const h_date_book = time_userday(f_lang,f_book.updatedAt);
+  const h_date_now = time_userday(f_lang);
+	console.log("appendtime: book=",h_date_book," now=",h_date_now);
 
   if (f_book.index === 0 || h_date_book != h_date_now) {
     await api.KiraNotes.create({

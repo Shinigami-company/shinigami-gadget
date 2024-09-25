@@ -139,7 +139,7 @@ import {
 	stats_checkup 
 } from "./stats.js";
 
-import { random_rule, format_time_string_from_int } from "./tools.js";
+import { random_rule, time_format_string_from_int, time_userday } from "./tools.js";
 
 import { linkme } from "./remember.js";
 linkme("linked from cmd"); //need to use a function from there
@@ -682,7 +682,7 @@ async function check_can_alive(dig) {
         method: "PATCH",
         body: {
           content: translate(dig.lang, "check.alive.not", {
-            time: format_time_string_from_int(h_ping, dig.lang),
+            time: time_format_string_from_int(h_ping, dig.lang),
           }),
         },
       };
@@ -843,7 +843,15 @@ async function cmd_god({ userdata, data, lang }) {
         let r;
 				
 				{
-					r="nothing here for now";
+					const h_zone = "fr-FR";
+					const h_options = {
+						hour: "numeric",
+					  day: "numeric",
+					  month: "numeric",
+					  year: "2-digit",
+					};
+					r=`${time_userday(userdata.lang)}`;
+					//r=`${Intl.DateTimeFormat(h_zone,h_options)}`;
 				}
 
         return {
@@ -1097,16 +1105,11 @@ async function cmd_apple({ userdata, lang }) {
   let h_apples_claimed = 0;
   let h_txt_claims = "";
 
-  let date_day = await kira_user_get_daily(userdata.id);
-  let date_now = new Date();
-  const date_diff_seconds = (date_now.getTime() - date_day.getTime()) / 1000;
+  const date_day = time_userday(lang, await kira_user_get_daily(userdata.id));
+  const date_now = time_userday(lang);
 
   //claims
-
-  //60 * 60 = 3600
-  //60 * 60 * 12 = 43200
-  //60 * 60 * 24 = 86400
-  if (date_diff_seconds > 43200) {
+  if (date_day!=date_now) {
     //claim you daily
     await kira_user_set_daily(userdata.id);
     h_apples_claimed += sett_daily_amount;
@@ -1395,7 +1398,7 @@ async function cmd_running({ data, userbook, user, lang }) {
       );
       r_lore += `\n${translate(lang, `stats.running.attacker`, {
         victimId: v.victimId,
-        span: format_time_string_from_int(h_ping, lang),
+        span: time_format_string_from_int(h_ping, lang),
       })}`;
     }
   } else {
@@ -1668,7 +1671,7 @@ async function cmd_kira({
   }
 
   //line
-  let h_txt_span = format_time_string_from_int(h_span, lang);
+  let h_txt_span = time_format_string_from_int(h_span, lang);
   const h_line = translate(lang, "format.line", {
     victim: h_victim_name,
     reason: h_txt_reason,
