@@ -484,7 +484,6 @@ export async function stats_checkup(f_userdata) {
   	
 		for (let i = 0; i < h_founds.length; i++) 
 		{
-
 			if (h_founds[i][`by_hit${places[0]}`]>1)
 				patch["do_kill"]+=1;
 			if (h_founds[i][`by_hit${places[1]}`]>1)
