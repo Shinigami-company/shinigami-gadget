@@ -493,6 +493,10 @@ export async function stats_checkup(f_userdata) {
 				patch["do_counter"]+=h_founds[i][`by_counter${places[0]}`];
 			if (h_founds[i][`by_counter${places[1]}`])
 				patch["is_countered"]+=h_founds[i][`by_counter${places[1]}`];
+			if (h_founds[i][`by_avenge${places[0]}`])
+				patch["do_avenger"]+=h_founds[i][`by_avenge${places[0]}`];
+			if (h_founds[i][`by_avenge${places[1]}`])
+				patch["is_avenged"]+=h_founds[i][`by_avenge${places[1]}`];
 
 		}
 	}

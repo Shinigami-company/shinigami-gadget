@@ -7,6 +7,11 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "eImas_skswE4",
   fields: {
+    do_avenger: {
+      type: "number",
+      default: 0,
+      storageKey: "iHsR6rR52kGj",
+    },
     do_counter: {
       type: "number",
       default: 0,
@@ -46,6 +51,11 @@ export const schema: GadgetModel = {
       type: "number",
       default: 0,
       storageKey: "1qzux-ugEPd0",
+    },
+    is_avenged: {
+      type: "number",
+      default: 0,
+      storageKey: "oeWqhkzbWJC_",
     },
     is_countered: {
       type: "number",

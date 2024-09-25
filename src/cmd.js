@@ -1742,7 +1742,7 @@ async function cmd_kira({
         userdata.id,
         user.id,
         h_victim_data.id,
-        pack.victim_id
+        h_victim_data.userId
       );
 			//simpler pair
       await stats_pair_add(h_pair, "by_counter", 1); //return the value
@@ -1790,9 +1790,9 @@ async function cmd_kira({
   const h_note = await kira_line_append(userdata, userbook, h_line);
 
   //stat
-  await stats_simple_add(userdata.id, "do_try");
+  await stats_simple_add(userdata.statPtr.id, "do_try");
   if (h_victim_data?.id)
-		await stats_simple_add(h_victim_data?.id, "is_tried");
+		await stats_simple_add(h_victim_data?.statPtr.id, "is_tried");
 
   //creat kira run
   const h_run = await kira_run_create(
@@ -2103,10 +2103,8 @@ export async function cmd_kira_execute({ more }) {
 
     if (h_repetition === 1) {
       //first time attacker kill victim
-      await stats_simple_add(userdata.statPtr.id, "do_kill", 1);
-      await stats_simple_add(h_victim_data.statPtr.id, "is_killed", 1);
-
-      //monetize kill
+      
+			//monetize kill
       let h_victim_kills = await stats_simple_get(
         h_victim_data.statPtr.id,
         "do_kill"
@@ -2115,6 +2113,12 @@ export async function cmd_kira_execute({ more }) {
         "DBUG : kira : kills by victim for apples : ",
         h_victim_kills
       );
+
+			//statistics
+			await stats_pair_set(h_pair, "by_avenge", h_victim_kills);
+      await stats_simple_bulkadd(userdata.statPtr.id, {"do_kill": 1, "do_avenger": h_victim_kills});
+      await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_killed": 1, "is_avenged": h_victim_kills});
+
       let h_apples = 0; //default
       if (h_victim_kills) {
         h_apples = sett_apples_byVictimKills(h_victim_kills);
