@@ -179,14 +179,14 @@ export const book_colors = [
     int: 16711680,
     emoji: "<:book_red:1281258840570204283>",
     emojiObj: { id: "1281258840570204283" },
-    price: 10,
+    price: 42,
   },
   {
     color: "white",
     int: 16777215,
     emoji: "<:book_white:1281258835214073972>",
     emojiObj: { id: "1281258835214073972" },
-    price: 100,
+    price: 333,
   },
   {
     color: "purple",
