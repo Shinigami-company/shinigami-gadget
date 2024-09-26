@@ -102,8 +102,8 @@ function time_format_day(f_date) {
   );
 }
 
-export function time_userday(f_lang, f_dateArg=undefined) {
-	return time_format_day(time_now_utc(time_get_offset(lang_get_timezone(f_lang)),f_dateArg));
+export function time_userday(f_discordLang, f_dateArg=undefined) {
+	return time_format_day(time_now_utc(time_get_offset(lang_get_timezone(f_discordLang)),f_dateArg));
 }
 
 //rules

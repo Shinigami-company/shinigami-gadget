@@ -56,6 +56,7 @@
 "cmd.apples.claim.admin.real.add": "you found a package at your door, with apples in it  **+$[displayed]**",
 "cmd.apples.claim.admin.fake.remove": "someone wanted to eat some, but decided not to  ~~-$[displayed]~~  **-$[added]**",
 "cmd.apples.claim.admin.fake.add": "you found a package at your door, but in fact it was empty  ~~+$[displayed]~~  **+$[added]**",
+"cmd.apples.claim.quest": "You done something cool $[achievementKey] to level $[levelNew]  **+$[added]**",
 "cmd.apples.get.same": "You have **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.changed": "Now you have **$[amount]** $[word] $[emoji]",
 
@@ -120,6 +121,9 @@
 "cmd.know.get.delmsg": "Yum! This message is no longer there.   `-$[price]🍎`",
 "cmd.know.get.fullwho": "Yum! It's **$[wh]** who has written your name.   `-$[price]🍎`",
 "cmd.know.get.fullwhere": "Yum! It happened in **$[wh]**.   `-$[price]🍎`",
+
+"achievement.done.yay":"you've done the achievement **$[achievementKey]** to the level $[levelNew].",
+"achievement.done.apple":"you get $[number] $[unit]!",
 
 
 "format.line": "$[victim] die of $[reason] in $[time]",

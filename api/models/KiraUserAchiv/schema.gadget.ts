@@ -7,6 +7,16 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "LAh9i2LlL1o3",
   fields: {
+    done_test1: {
+      type: "number",
+      default: 0,
+      storageKey: "TMxqggYdUD2l",
+    },
+    level_test2: {
+      type: "number",
+      default: 0,
+      storageKey: "-KyrrpjDsO8V",
+    },
     userId: { type: "string", storageKey: "zY03WKPyvCHu" },
     userPtr: {
       type: "belongsTo",

@@ -98,17 +98,44 @@ export function translate(f_lang, f_key, f_dolarValues) {
   //return lang_texts[f_lang].key[f_key](f_dolarValues);
 }
 
-export function lang_get_timezone(f_lang) {
-  if (!lang_texts[f_lang]) {
-    console.log(`ERROR : lang : unknown lang [${f_lang}]`);
-    f_lang = "en";
-  }
-  while (!lang_texts[f_lang].timezone) {
-    if (!lang_texts[f_lang].sublang)
-      return `\`unknown translate key [${f_key}] for lang [${f_lang}]\``;
-    else f_lang = lang_texts[f_lang].sublang;
-  }
-  return varEx(lang_texts[f_lang].timezone);
+const discordLang_to_timezone = {//updated the 25/9/24
+"id":"Asia/Jakarta",
+"da":"Europe/Copenhagen",
+"de":"Europe/Berlin",
+"en-GB":"Europe/London",
+"en-US":"America/New_York",
+"es-ES":"Europe/Madrid",
+"es-419":"Europe/Madrid",
+"fr":"Europe/Paris",
+"hr":"Europe/Zagreb",
+"it":"Europe/Rome",
+"lt":"Europe/Vilnius",
+"hu":"Europe/Budapest",
+"nl":"Europe/Amsterdam",
+"no":"Europe/Oslo",
+"pl":"Europe/Warsaw",
+"pt-BR":"Europe/Lisbon",
+"ro":"Europe/Bucharest",
+"fi":"Europe/Helsinki",
+"sv-SE":"Europe/Stockholm",
+"vi":"Asia/Ho_Chi_Minh",
+"tr":"Europe/Istanbul",
+"cs":"Europe/Prague",
+"el":"Europe/Athens",
+"bg":"Europe/Sofia",
+"ru":"Europe/Moscow",
+"uk":"Europe/Athens",
+"hi":"Asia/Dili",
+"th":"Asia/Bangkok",
+"zh-CN":"Asia/Shanghai",
+"ja":"Asia/Tokyo",
+"zh-TW":"Asia/Hong_Kong",
+"ko":"Asia/Seoul",
+}
+
+export function lang_get_timezone(f_discordLang) {
+	console.log("lang_get_timezone=",f_discordLang,"=",discordLang_to_timezone[f_discordLang]);
+  return discordLang_to_timezone[f_discordLang];
 }
 
 

@@ -138,6 +138,9 @@ import {
 	stats_transfert,
 	stats_checkup 
 } from "./stats.js";
+import {
+	achiv_grant_level
+} from "./achiv.js";
 
 import { random_rule, time_format_string_from_int, time_userday } from "./tools.js";
 
@@ -711,7 +714,7 @@ function check_has_book(dig) {
 //--- the commands ---
 
 //#god command
-async function cmd_god({ userdata, data, lang }) {
+async function cmd_god({ request, userdata, data, lang }) {
   const arg_sub = data.options.find((opt) => opt.name === "action")?.value; // also data.options[0].value
   const arg_user = data.options.find((opt) => opt.name === "user")?.value;
   const arg_amount = data.options.find((opt) => opt.name === "amount")?.value;
@@ -842,7 +845,7 @@ async function cmd_god({ userdata, data, lang }) {
       {
         let r;
 				
-				{
+				if (false) {
 					const h_zone = "fr-FR";
 					const h_options = {
 						hour: "numeric",
@@ -850,9 +853,10 @@ async function cmd_god({ userdata, data, lang }) {
 					  month: "numeric",
 					  year: "2-digit",
 					};
-					r=`${time_userday(userdata.lang)}`;
+					r=`${time_userday(request.body.locale)}`;
 					//r=`${Intl.DateTimeFormat(h_zone,h_options)}`;
 				}
+				await achiv_grant_level(userdata, lang, "test2", 100);
 
         return {
           method: "PATCH",
@@ -1101,12 +1105,12 @@ async function cmd_burn({ request, data, userbook, lang }) {
 }
 
 //#apples command
-async function cmd_apple({ userdata, lang }) {
+async function cmd_apple({ request, userdata, lang }) {
   let h_apples_claimed = 0;
   let h_txt_claims = "";
 
-  const date_day = time_userday(lang, await kira_user_get_daily(userdata.id));
-  const date_now = time_userday(lang);
+  const date_day = time_userday(request.body.locale, await kira_user_get_daily(userdata.id));
+  const date_now = time_userday(request.body.locale);
 
   //claims
   if (date_day!=date_now) {
@@ -1692,7 +1696,7 @@ async function cmd_kira({
   //checked !
 
   //validate writting
-  const h_note = await kira_line_append(userdata, userbook, h_line);
+  const h_note = await kira_line_append(userbook, h_line, request.body.locale);
 
   //stat
   await stats_simple_add(userdata.statPtr.id, "do_try");

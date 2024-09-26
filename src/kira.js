@@ -267,12 +267,12 @@ export async function kira_book_delete(f_book) {
 //kira_line : DATA
 import { time_userday } from "./tools";
 
-export async function kira_line_append(f_book, f_line, f_lang) {
+export async function kira_line_append(f_book, f_line, f_discordLang) {
   let h_indexLine = f_book.index;
 
   //date
-  const h_date_book = time_userday(f_lang,f_book.updatedAt);
-  const h_date_now = time_userday(f_lang);
+  const h_date_book = time_userday(f_discordLang,f_book.updatedAt);
+  const h_date_now = time_userday(f_discordLang);
 	console.log("appendtime: book=",h_date_book," now=",h_date_now);
 
   if (f_book.index === 0 || h_date_book != h_date_now) {

@@ -298,8 +298,8 @@ export async function stats_pair_get_id(
   return [h_found.id, f_user1_userId > f_user2_userId];
 }
 
-async function stats_pair_get_bykey(f_pairId, f_fullKey) {
-  return await api.KiraUserPair.findOne(f_pairId, {
+async function stats_pair_get_bykey(f_pairModelId, f_fullKey) {
+  return await api.KiraUserPair.findOne(f_pairModelId, {
     select: { [f_fullKey]: true },
   }).then((obj) => obj[f_fullKey]);
 }
