@@ -30,8 +30,9 @@ const apples_emoji = {
   4: "<:apples_4:1256013377151569972>",
   5: "<:apples_5:1256013392158658632>",
   10: "<:apples_10:1281258612299137075>",
+	100: "<:apples_100:1288987115736273048>"
 };
-const apples_stack = [10, 5, 4, 3, 2, 1];
+const apples_stack = [100, 10, 5, 4, 3, 2, 1];
 
 export function kira_format_applemoji(f_apples) {
   if (f_apples === 0) return apples_emoji[0];
