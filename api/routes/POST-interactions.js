@@ -44,7 +44,7 @@ export default async function route({ request, reply, api, logger, connections }
   
   const calling_command =  async commandName => {
       console.log(`
-	  DBUG : route : call command
+	  LOG : route : call command
 	  user=${user.id} (${user.username}) command=${commandName} options=${data.options}
 	  RESP_URL=webhooks/${process.env.APP_ID}/${token}/messages/@original
 	  `);

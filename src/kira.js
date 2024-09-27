@@ -3,10 +3,6 @@ import { api } from "gadget-server";
 const settings_max_pages = 60;
 const settings_max_lines = 10; //38
 
-//{
-//  console.log(new Date().toLocaleDateString(settings_date_zone, settings_date_options));
-//}
-
 //---kira_user---
 //DATA about the user
 
@@ -273,7 +269,7 @@ export async function kira_line_append(f_book, f_line, f_discordLang) {
   //date
   const h_date_book = time_userday(f_discordLang,f_book.updatedAt);
   const h_date_now = time_userday(f_discordLang);
-	console.log("appendtime: book=",h_date_book," now=",h_date_now);
+	console.log("DBUG : kira : appendtime of book=",h_date_book," now=",h_date_now);
 
   if (f_book.index === 0 || h_date_book != h_date_now) {
     await api.KiraNotes.create({
@@ -389,7 +385,6 @@ export async function kira_run_create(
   f_victimDataId,
   f_counterCombo
 ) {
-  //console.log("create c & g :", f_channelId, f_guildId);
   let h_finalDate = new Date();
   h_finalDate.setSeconds(h_finalDate.getSeconds() + f_span);
 

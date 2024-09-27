@@ -15,8 +15,9 @@ const achievements = {
 		modelKey: "level_test2",
 		maxLevel: 5,
 		rewards: [1, 2, 3, 4, 5],
-		//graduateValues: {"common":1, "nice":2, "cool":3, "great":4, "increadible":5},
-		graduateFunction: (value) => (Math.floor(value/10))
+		graduations: [],
+		//rewardCalc: (level) => (level),
+		//graduationCalc: (value) => (Math.floor(value/10))
 	}
 }
 

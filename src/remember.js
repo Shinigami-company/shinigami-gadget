@@ -7,7 +7,7 @@ import { kira_runs_after } from './kira.js';
 //this one not working
 //function cmd_kira_wait({ api, more, user, lang }, f_time_ms, f_itr=0)
 //{
-//  console.log(`WAIT. wait for id=${more.runId}, minute=${f_itr}`);
+//  console.log(`DBUG : kira : WAIT. wait for id=${more.runId}, minute=${f_itr}`);
 //  if (f_time_ms < 60000)
 //    setTimeout(() => { cmd_kira_execute({ api, more, user, lang }); }, f_time_ms);
 //  else
@@ -38,10 +38,10 @@ async function kira_remember_checkup()
   //execute
   if (f_runs.length>0)
   {
-    console.log(`LOG : rem3mber : execute ${f_runs.length} runs...`);
+    //console.log(`LOG : rem3mber : execute ${f_runs.length} runs...`);
     for (let i=0;i<f_runs.length;i+=1)
     {
-      //console.log(`DBUG : rem3mber : run ${i} : `, f_runs[i]);
+      console.log(`LOG : rem3mber : execute run ${i} : `, f_runs[i]);
       await cmd_kira_execute({ more: { runId: f_runs[i].id}});
     }
   }

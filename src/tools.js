@@ -20,13 +20,11 @@ const times = [
 ];
 
 export function time_format_string_from_int(f_s, lang) {
-  //console.log("timef :",f_s)
   let r_texts = [];
 
   //find values
   {
     //let i = 0;//can be set to the shortest
-    //console.log("timef : values (loop ", times.length, "times)");
     for (let i = 0; i < times.length; i++) {
       let f_v = parseInt(f_s / times[i].divider);
       if (f_v > 0) {
@@ -41,14 +39,11 @@ export function time_format_string_from_int(f_s, lang) {
           })
         );
       }
-      //console.log("timef : values :",i);
     }
-    //console.log("timef : values ebd");
   }
 
   {
     let r_text = r_texts[0];
-    //console.log("timef : between", r_texts);
     if (r_texts.length > 1) {
       for (var i = 1; i < r_texts.length - 1; i++) {
         r_text = translate(lang, `format.time.between.other`, {
@@ -56,7 +51,6 @@ export function time_format_string_from_int(f_s, lang) {
           piece: r_texts[i],
         });
       }
-      //console.log("timef : lester",i);
       r_text = translate(lang, `format.time.between.last`, {
         chunk: r_text,
         piece: r_texts[i],

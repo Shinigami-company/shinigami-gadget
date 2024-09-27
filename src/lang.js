@@ -4,7 +4,6 @@ import { api } from "gadget-server";
 //the gpt tag function
 function lb(strings, ...keys) {//lb = langbed
   return function (...values) {
-    console.log("1:",strings,"2:",keys,"3:",strings);
     const dict = values[values.length - 1] || {};
     const result = [strings[0]];
     keys.forEach((key, i) => {
@@ -134,7 +133,6 @@ const discordLang_to_timezone = {//updated the 25/9/24
 }
 
 export function lang_get_timezone(f_discordLang) {
-	console.log("lang_get_timezone=",f_discordLang,"=",discordLang_to_timezone[f_discordLang]);
   return discordLang_to_timezone[f_discordLang];
 }
 

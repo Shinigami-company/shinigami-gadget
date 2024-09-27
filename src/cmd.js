@@ -893,7 +893,7 @@ async function cmd_god({ request, userdata, data, lang }) {
 
         {
           console.time("transfert");
-          console.log("transfering user id=", arg_user);
+          console.log("LOG : cmd : transfering user id=", arg_user);
           await stats_transfert(targetdata);
 					await stats_checkup(targetdata);
           console.timeEnd("transfert");
@@ -2018,10 +2018,7 @@ export async function cmd_kira_execute({ more }) {
         h_victim_data.statPtr.id,
         "do_kill"
       );
-      console.log(
-        "DBUG : kira : kills by victim for apples : ",
-        h_victim_kills
-      );
+      console.log("DBUG : kira : kills by victim for apples : ",h_victim_kills);
 
 			//statistics
 			await stats_pair_set(h_pair, "by_avenge", h_victim_kills);
@@ -2087,7 +2084,7 @@ export async function cmd_kira_execute({ more }) {
 
 //is not executed by [./remember.js]
 export async function cmd_kira_cancel({ more }) {
-  console.log(`kira : CANCEL. runId=${more.runId}`);
+  console.log(`LOG : kira : CANCEL. runId=${more.runId}`);
 
   //run reading
   if (!more.runId) {
