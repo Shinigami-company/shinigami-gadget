@@ -140,7 +140,8 @@ import {
 } from "./stats.js"; // update user statistics
 import {
 	achiv_graduate_level,
-	achiv_grant_level
+	achiv_grant_level,
+	achiv_list_get
 } from "./achiv.js"; // user achivements
 
 import { random_rule, time_format_string_from_int, time_userday, roman_from_int } from "./tools.js";// tools
@@ -281,29 +282,17 @@ const commands_structure = {
   },
 
   //GET
-  stats: {
+  apple: {
     functions: {
-      exe: cmd_stats,
+      exe: cmd_apple,
       checks: [[check_can_alive, false]],
     },
     register: {
-      name: "stats",
-      description: "Getting your stats",
+      name: "apple",
+      description:
+        "Claim your daily apple, claim obtained apples, and get your number of apples",
       contexts: [0],
       type: 1,
-      options: [
-        {
-          type: 3,
-          name: "categorie",
-          description: "stats about...",
-          required: true,
-          choices: [
-            { name: "General", value: "broad" },
-            { name: "Performance", value: "ratio" },
-            { name: "People", value: "relation" },
-          ],
-        },
-      ],
     },
   },
 
@@ -329,16 +318,53 @@ const commands_structure = {
     },
   },
 
-  //GET
-  apple: {
+  stats: {
     functions: {
-      exe: cmd_apple,
+      exe: cmd_stats,
       checks: [[check_can_alive, false]],
     },
     register: {
-      name: "apple",
-      description:
-        "Claim your daily apple, claim obtained apples, and get your number of apples",
+      name: "stats",
+      description: "Getting your stats",
+      contexts: [0],
+      type: 1,
+      options: [
+        {
+          type: 3,
+          name: "categorie",
+          description: "stats about...",
+          required: true,
+          choices: [
+            { name: "General", value: "broad" },
+            { name: "Performance", value: "ratio" },
+            { name: "People", value: "relation" },
+          ],
+        },
+      ],
+    },
+  },
+	
+  running: {
+    functions: {
+      exe: cmd_running,
+      checks: [[check_can_alive, false]],
+    },
+    register: {
+      name: "running",
+      description: "See who will be killed",
+      contexts: [0],
+      type: 1,
+    },
+  },
+	
+  quest: {
+    functions: {
+      exe: cmd_quest,
+      checks: [[check_can_alive, false]],
+    },
+    register: {
+      name: "quest",
+      description: "Your achievements",
       contexts: [0],
       type: 1,
     },
@@ -411,7 +437,6 @@ const commands_structure = {
       type: 1,
     },
   },
-
 
   //SET
   kira: {
@@ -1416,6 +1441,17 @@ async function cmd_running({ data, userbook, user, lang }) {
     },
   };
 }
+
+
+//#quest
+async function cmd_quest({ userdata, lang }) {
+
+  return {
+    method: "PATCH",
+    body: await achiv_list_get(userdata, lang)
+  };
+}
+
 
 //#lang command
 async function cmd_lang({ data, userdata, request, lang }) {

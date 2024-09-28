@@ -172,3 +172,12 @@ export async function achiv_grant_level(f_userModel, f_lang, f_achivKey, f_newLe
 	}
 	return h_gap;
 }
+
+
+//STRING
+export async function achiv_list_get(f_userdata, f_lang)
+{
+	return {
+		content: translate(f_lang, "achievement.show", {"amount":0, "max":1})
+	};
+}
