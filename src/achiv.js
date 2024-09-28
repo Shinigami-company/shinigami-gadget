@@ -18,6 +18,7 @@ const achievements = {
 		maxLevel: 8,
 		rewards: [1, 2, 3, 4, 5, 6, 7, 8],
 		graduations: [5, 10, 20, 50, 100, 200, 500, 1000],
+		hidden: false,
 		//rewardCalc: (level) => (level),
 		//graduationCalc: (value) => (Math.floor(value/10))
 	},
@@ -26,48 +27,60 @@ const achievements = {
 		modelKey: "level_kill",
 		maxLevel: 5,
 		graduations: [5, 10, 20, 50, 100],
+		hidden: false,
 	},
 	"counter": {
 		modelKey: "level_counter",
 		maxLevel: 5,
 		graduations: [5, 10, 20, 50, 100],
+		hidden: false,
 	},
 	"outerTime": {
 		modelKey: "level_outerTime",
 		maxLevel: 5,
 		graduations: [3600, 86400, 604800, 2592000, 31557600],
+		hidden: false,
 	},
 	
 	"writtenPage": {
 		modelKey: "level_writtenPage",
 		maxLevel: 3,
 		graduations: [3, 10, 70],
+		hidden: false,
 	},
 	"killKiller": {
 		modelKey: "level_killKiller",
 		maxLevel: 3,
 		graduations: [5, 15, 100],
+		hidden: false,
 	},
 	"appleStreak": {
 		modelKey: "level_appleStreak",
 		maxLevel: 3,
 		graduations: [3, 7, 30],
+		hidden: false,
 	},
 	
 	"outer23d": {
 		modelKey: "done_outer23d",
 		maxLevel: 1,
+		hidden: false,
 	},
 	"counterMax": {
 		modelKey: "done_counterMax",
 		maxLevel: 1,
+		hidden: false,
 	},
 	"murdersOn": {
 		modelKey: "done_murdersOn",
 		maxLevel: 1,
 		graduations: [10],
+		hidden: true,
 	},
 }
+const achievements_list = [
+"kill", "counter", "outerTime", "writtenPage", "killKiller", "appleStreak", "outer23d", "counterMax", "murdersOn",
+];
 
 //GET
 async function achiv_get_level(f_achivModelId, f_achivKey)
@@ -177,7 +190,68 @@ export async function achiv_grant_level(f_userModel, f_lang, f_achivKey, f_newLe
 //STRING
 export async function achiv_list_get(f_userdata, f_lang)
 {
+	const userAchiv=await api.KiraUserAchiv.findOne(f_userdata.statPtr.id);
+	let r_list_txt="";
+	let h_displayedLines=0;
+	
+	for (const achivKey of achievements_list)
+	{
+		const achivValue=userAchiv[achievements[achivKey].modelKey];
+		let translateKey="achievement.line";
+		let translateInfos={};
+
+		if (achivValue===undefined)
+		{
+			throw new Error(`KiraUserAchiv attribute is expected, but is not defined.\nis key [${achievements[achivKey].modelKey}] in the database?`);
+		}
+		
+		if (achievements[achivKey].hidden && (achivValue===0 || achivValue===null))
+		{//hidden
+			translateKey+=".hidden";
+		} else {
+			translateInfos={
+				"title": translate(f_lang, `achievements.${achivKey}.title`),
+				"lore": translate(f_lang, `achievements.${achivKey}.lore`),
+			};
+			if (achievements[achivKey].maxLevel===1)
+			{
+				translateKey+=".done";
+				if (achievements[achivKey].maxLevel===achivValue) {
+					translateKey+=".finish";
+				} else {
+					translateKey+=".zero";
+				}
+			} else {
+				translateKey+=".level";
+				//translateInfos["level"]="<"+achivValue+">";
+				translateInfos["level"]=roman_from_int(achivValue);
+				translateInfos["max"]=roman_from_int(achievements[achivKey].maxLevel);
+				if (achivValue===0 || achivValue===null)
+				{
+					translateKey+=".zero";
+				} else if (achievements[achivKey].maxLevel===achivValue) {
+					translateKey+=".finish";
+				} else {
+					translateKey+=".step";
+				}
+			}
+		}
+		
+		{
+			if (h_displayedLines>0) r_list_txt+="\n";
+			h_displayedLines+=1;
+			r_list_txt+=translate(f_lang, translateKey, translateInfos);
+		}
+		;
+	}
+
 	return {
-		content: translate(f_lang, "achievement.show", {"amount":0, "max":1})
+		content: translate(f_lang, "achievement.show", {"amount":0, "max":1}),
+    embeds: [
+      {
+        description: r_list_txt
+        //color: book_colors[userbook.color].int,
+      },
+    ],
 	};
 }

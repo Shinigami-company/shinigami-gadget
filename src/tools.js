@@ -103,7 +103,7 @@ export function time_userday(f_discordLang, f_dateArg=undefined) {
 
 //
 const roman_letters = {
-  0: "0",
+  0: "-",
   1: "I",
   4: "IV",
   5: "V",
