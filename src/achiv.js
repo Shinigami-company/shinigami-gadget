@@ -2,6 +2,8 @@ import { api } from "gadget-server";
 
 import { kira_apple_claims_add } from "./apple.js";
 import { translate } from "./lang.js";
+import { roman_from_int } from "./tools.js";
+
 import { DiscordRequest } from "../utils.js";
 
 
@@ -13,12 +15,58 @@ const achievements = {
 	},
 	"test2": {
 		modelKey: "level_test2",
-		maxLevel: 5,
-		rewards: [1, 2, 3, 4, 5],
-		graduations: [],
+		maxLevel: 8,
+		rewards: [1, 2, 3, 4, 5, 6, 7, 8],
+		graduations: [5, 10, 20, 50, 100, 200, 500, 1000],
 		//rewardCalc: (level) => (level),
 		//graduationCalc: (value) => (Math.floor(value/10))
-	}
+	},
+
+	"kill": {
+		modelKey: "level_kill",
+		maxLevel: 5,
+		graduations: [5, 10, 20, 50, 100],
+	},
+	"counter": {
+		modelKey: "level_counter",
+		maxLevel: 5,
+		graduations: [5, 10, 20, 50, 100],
+	},
+	"outerTime": {
+		modelKey: "level_outerTime",
+		maxLevel: 5,
+		graduations: [3600, 86400, 604800, 2592000, 31557600],
+	},
+	
+	"writtenPage": {
+		modelKey: "level_writtenPage",
+		maxLevel: 3,
+		graduations: [3, 10, 70],
+	},
+	"killKiller": {
+		modelKey: "level_killKiller",
+		maxLevel: 3,
+		graduations: [5, 15, 100],
+	},
+	"appleStreak": {
+		modelKey: "level_appleStreak",
+		maxLevel: 3,
+		graduations: [3, 7, 30],
+	},
+	
+	"outer23d": {
+		modelKey: "done_outer23d",
+		maxLevel: 1,
+	},
+	"counterMax": {
+		modelKey: "done_counterMax",
+		maxLevel: 1,
+	},
+	"murdersOn": {
+		modelKey: "done_murdersOn",
+		maxLevel: 1,
+		graduations: [10],
+	},
 }
 
 //GET
@@ -33,23 +81,30 @@ async function achiv_set_level(f_achivModelId, f_achivKey, f_setLevel)
 	await api.KiraUserAchiv.update(f_achivModelId, {[achievements[f_achivKey].modelKey]: f_setLevel});
 }
 
-export async function achiv_graduate_level(f_achivKey, f_value)
+export function achiv_graduate_level(f_achivKey, f_value)
 {
 	//if (achievements[f_achivKey].graduateValues && achievements[f_achivKey].graduateValues[f_value])
 	//	return achievements[f_achivKey].graduateValues[f_value];
-	return achievements[f_achivKey].graduateFunction(f_value);
+	//return achievements[f_achivKey].graduationCalc(f_value);
+	if (achievements[f_achivKey].graduations)
+	{
+		let i=0;
+		for (i=0;i<achievements[f_achivKey].graduations.length && f_value>=achievements[f_achivKey].graduations[i];i++)
+		return i;
+	}
 }
 
 
 //SET
-export async function achiv_grant_level(f_userModel, f_lang, f_achivKey, f_newLevel=1)
+export async function achiv_grant_level(f_userModel, f_lang, f_achivKey, f_newLevel=1, f_doneDolarValues={})
 {
 	const achivModelId=f_userModel.achivPtr.id;
 	//get actual level
 	const h_registerLevel=await achiv_get_level(achivModelId, f_achivKey);
 	//new level maxed to maxlevel
-	if (f_newLevel>achievements[f_achivKey].maxLevel)
-		f_newLevel=achievements[f_achivKey].maxLevel;
+	const maxLevel=achievements[f_achivKey].maxLevel;
+	if (f_newLevel>maxLevel)
+		f_newLevel=maxLevel;
 	//values
 	const h_gap=f_newLevel - h_registerLevel;
 	let h_apples=0;
@@ -59,26 +114,33 @@ export async function achiv_grant_level(f_userModel, f_lang, f_achivKey, f_newLe
 		console.log(`DBUG : achiv : pass [${f_achivKey}] from ${f_newLevel} to ${h_registerLevel}`)
 		//set the level
 		await achiv_set_level(achivModelId, f_achivKey, f_newLevel);
-		//all level passed
-		for (let level=h_registerLevel;level<f_newLevel;level++)
+		if (achievements[f_achivKey].rewards)
 		{
-			console.log(`HI : ${h_apples}+=${achievements[f_achivKey].rewards[level]}=achievements[${f_achivKey}].rewards[${level}]`);
-			h_apples+=achievements[f_achivKey].rewards[level];
-		}
-		console.log(`HI : ${h_registerLevel}<${f_newLevel} : ${h_apples} | ${achievements[f_achivKey].rewards}`);
+			//all level passed
+			for (let level=h_registerLevel;level<f_newLevel;level++)
+			{
+				console.log(`HI : ${h_apples}+=${achievements[f_achivKey].rewards[level]}=achievements[${f_achivKey}].rewards[${level}]`);
+				h_apples+=achievements[f_achivKey].rewards[level];
+			}
+			console.log(`HI : ${h_registerLevel}<${f_newLevel} : ${h_apples} | ${achievements[f_achivKey].rewards}`);
 
-		//add apple
-		if (h_apples>0)
-	    await kira_apple_claims_add(f_userModel.id, {
-	      added: h_apples,
-	      type: "quest",
-	      achievementKey: f_achivKey,
-				levelNew: f_newLevel,
-	    });
+			//add apple
+			if (h_apples>0)
+		    await kira_apple_claims_add(f_userModel.id, {
+		      added: h_apples,
+		      type: "quest",
+		      achievementKey: f_achivKey,
+					levelNew: f_newLevel,
+		    });
+		}
 
 		//message
 		{
-			let sending_content=translate(f_lang, "achievement.done.yay", {achievementKey: f_achivKey, levelNew: f_newLevel});
+			const yayTypeStr=(maxLevel===1) ? "unic" : (maxLevel===f_newLevel) ? "maxed" : "level";
+			let sending_content=translate(f_lang, `achievement.done.yay.${yayTypeStr}`, {name: translate(f_lang, `achievements.${f_achivKey}.title`), level: roman_from_int(f_newLevel)});;
+			const doneMessage=translate(f_lang, `achievements.${f_achivKey}.done`, f_doneDolarValues);
+			sending_content+="\n"+doneMessage;
+
 			if (h_apples>0)
 				sending_content+="\n"+translate(f_lang, "achievement.done.apple", {number: h_apples, unit: translate(f_lang, `word.apple${h_apples > 1 ? "s" : ""}`),});
 

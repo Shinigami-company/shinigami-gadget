@@ -100,6 +100,42 @@ export function time_userday(f_discordLang, f_dateArg=undefined) {
 	return time_format_day(time_now_utc(time_get_offset(lang_get_timezone(f_discordLang)),f_dateArg));
 }
 
+
+//
+const roman_letters = {
+  0: "0",
+  1: "I",
+  4: "IV",
+  5: "V",
+  9: "IX",
+  10: "X",
+  40: "XL",
+  50: "L",
+  90: "XC",
+  100: "C",
+  400: "CD",
+  500: "D",
+  900: "CM",
+  1000: "M",
+};
+const roman_stack = [1000,900, 500,400, 100,90, 50,40, 10,9, 5,4, 1];
+export function roman_from_int(f_int)
+{
+  if (f_int === 0) return roman_stack[0];
+
+  let r_txt = "";
+  let i = 0;
+  while (f_int > 0) {
+    if (f_int < roman_stack[i]) {
+      i++;
+    } else {
+      f_int -= roman_stack[i];
+      r_txt = r_txt + roman_letters[roman_stack[i]];
+    }
+  }
+  return r_txt;
+}
+
 //rules
 const all_rules = [
 //custom ones

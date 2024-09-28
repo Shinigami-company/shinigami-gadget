@@ -74,7 +74,7 @@ import {
   lang_lore,
   lang_get,
   lang_set,
-} from "./lang.js";
+} from "./lang.js"; //all user langugage things
 
 import {
   kira_user_get,
@@ -125,7 +125,7 @@ import {
   stats_simple_rank,
   stats_order_broad,
 	stats_order_ratio,
-} from "./stats.js";
+} from "./stats.js"; // simple user statistics
 import {
   stats_pair_get_id,
   stats_pair_get_value,
@@ -133,16 +133,17 @@ import {
   stats_pair_set,
 	stats_pairs_get_all,
   stats_pair_get_multiples,
-} from "./stats.js";
+} from "./stats.js"; // pair user statstics
 import { 
 	stats_transfert,
 	stats_checkup 
-} from "./stats.js";
+} from "./stats.js"; // update user statistics
 import {
+	achiv_graduate_level,
 	achiv_grant_level
-} from "./achiv.js";
+} from "./achiv.js"; // user achivements
 
-import { random_rule, time_format_string_from_int, time_userday } from "./tools.js";
+import { random_rule, time_format_string_from_int, time_userday, roman_from_int } from "./tools.js";// tools
 
 import { linkme } from "./remember.js";
 linkme("linked from cmd"); //need to use a function from there
@@ -411,18 +412,6 @@ const commands_structure = {
     },
   },
 
-  running: {
-    functions: {
-      exe: cmd_running,
-      checks: [[check_can_alive, false]],
-    },
-    register: {
-      name: "running",
-      description: "See who will be killed",
-      contexts: [0],
-      type: 1,
-    },
-  },
 
   //SET
   kira: {
@@ -856,7 +845,10 @@ async function cmd_god({ request, userdata, data, lang }) {
 					r=`${time_userday(request.body.locale)}`;
 					//r=`${Intl.DateTimeFormat(h_zone,h_options)}`;
 				}
-				await achiv_grant_level(userdata, lang, "test2", 100);
+
+				const here_level=achiv_graduate_level("test2", arg_amount);
+				r="level "+roman_from_int(arg_amount);
+				await achiv_grant_level(userdata, lang, "test2", here_level);
 
         return {
           method: "PATCH",
