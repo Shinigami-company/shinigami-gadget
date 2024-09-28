@@ -50,7 +50,7 @@ async function kira_remember_checkup()
   if (ocurence%60===0)
   {
     console.log(`LOG : rem3mber : mrew (min=${ocurence/60})`);
-    let response = await fetch('https://shinigami--development.gadget.app/awake').then(raw => raw.json());
+    let response = await fetch(`${process.env.URL}/awake`).then(raw => raw.json());
     if (response.code!==200)
     console.log(`ERROR : rem3mber : mrew failed`,response);
   }
