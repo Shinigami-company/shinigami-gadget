@@ -7,11 +7,6 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "oi3a16gtOqDz",
   fields: {
-    achiv: {
-      type: "json",
-      default: {},
-      storageKey: "xwo1onpC7DuG::iar1JPeY3FTM",
-    },
     achivPtr: {
       type: "hasOne",
       child: { model: "KiraUserAchiv", belongsToField: "userPtr" },
@@ -48,7 +43,6 @@ export const schema: GadgetModel = {
       includeTime: true,
       storageKey: "bRmM-ugIUS1a::_hVDoSZAH3eF",
     },
-    hits: { type: "number", storageKey: "iWLmQPtoMtqH" },
     is_alive: {
       type: "boolean",
       default: true,
@@ -58,11 +52,6 @@ export const schema: GadgetModel = {
       type: "boolean",
       default: false,
       storageKey: "lx7fjOHlG4_e::7QkcSAaYuiF8",
-    },
-    kills: {
-      type: "number",
-      default: 0,
-      storageKey: "G6pQJoy1QYhM::VwDUNOV78ccf",
     },
     lang: {
       type: "string",
@@ -92,11 +81,6 @@ export const schema: GadgetModel = {
       type: "hasOne",
       child: { model: "KiraUserStats", belongsToField: "userPtr" },
       storageKey: "vver91mvgQ50",
-    },
-    stats: {
-      type: "json",
-      default: {},
-      storageKey: "Z_qznoOqayeX::jqMjB6Km3Hj8",
     },
     userId: {
       type: "string",

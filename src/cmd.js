@@ -134,8 +134,7 @@ import {
 	stats_pairs_get_all,
   stats_pair_get_multiples,
 } from "./stats.js"; // pair user statstics
-import { 
-	stats_transfert,
+import {
 	stats_checkup
 } from "./stats.js"; // update user statistics
 import {
@@ -909,11 +908,10 @@ async function cmd_god({ request, userdata, data, lang }) {
         }
 
         {
-          console.time("transfert");
-          console.log("LOG : cmd : transfering user id=", arg_user);
-          await stats_transfert(targetdata);
+          console.time("checkup");
+          console.log("LOG : cmd : checkup user id=", arg_user);
 					await stats_checkup(targetdata);
-          console.timeEnd("transfert");
+          console.timeEnd("checkup");
         }
 
         return {
