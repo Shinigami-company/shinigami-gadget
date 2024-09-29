@@ -7,17 +7,32 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "LAh9i2LlL1o3",
   fields: {
-    done_counterMax: { type: "number", storageKey: "SazWQFr9BA9J" },
-    done_murdersOn: { type: "number", storageKey: "sFgvupAv1nja" },
-    done_outer23d: { type: "number", storageKey: "zHzmUbljK8-Z" },
+    done_counterMax: { type: "number", storageKey: "KD5akNfwxXEy" },
+    done_counterShort: { type: "number", storageKey: "ymPoh5WS76ci" },
+    done_killDailyComeback: {
+      type: "number",
+      storageKey: "oCNto3mBnRsx",
+    },
+    done_killShini: { type: "number", storageKey: "SazWQFr9BA9J" },
+    done_killU: { type: "number", storageKey: "zHzmUbljK8-Z" },
+    done_murdersOn: { type: "number", storageKey: "NGUeqCB5WA9J" },
+    done_onLeaderboard: {
+      type: "number",
+      storageKey: "8adKvUMuiExN",
+    },
+    done_outer23d: { type: "number", storageKey: "sFgvupAv1nja" },
+    done_secretRule: { type: "number", storageKey: "DAyFzbNa3vNb" },
     done_test1: {
       type: "number",
       default: 0,
       storageKey: "TMxqggYdUD2l",
     },
-    level_appleStreak: { type: "number", storageKey: "kvrTXv7E0_8W" },
     level_counter: { type: "number", storageKey: "1TygINI1K0Wx" },
     level_kill: { type: "number", storageKey: "C2LK2FkrNIfD" },
+    level_killDailyStreak: {
+      type: "number",
+      storageKey: "kvrTXv7E0_8W",
+    },
     level_killKiller: { type: "number", storageKey: "V19WHtlTcAJl" },
     level_outerTime: { type: "number", storageKey: "L0BCxHZN5Kqx" },
     level_test2: {

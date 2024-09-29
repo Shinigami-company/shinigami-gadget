@@ -136,7 +136,7 @@ import {
 } from "./stats.js"; // pair user statstics
 import { 
 	stats_transfert,
-	stats_checkup 
+	stats_checkup
 } from "./stats.js"; // update user statistics
 import {
 	achiv_graduate_level,

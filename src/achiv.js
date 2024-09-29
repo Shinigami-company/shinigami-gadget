@@ -38,7 +38,7 @@ const achievements = {
 	"outerTime": {
 		modelKey: "level_outerTime",
 		maxLevel: 5,
-		graduations: [3600, 86400, 604800, 2592000, 31557600],
+		graduations: [1*3600, 5*3600, 10*3600, 50*3600, 100*3600],
 		hidden: false,
 	},
 	
@@ -51,16 +51,26 @@ const achievements = {
 	"killKiller": {
 		modelKey: "level_killKiller",
 		maxLevel: 3,
-		graduations: [5, 15, 100],
+		graduations: [5, 30, 100],
 		hidden: false,
 	},
-	"appleStreak": {
-		modelKey: "level_appleStreak",
+	"killDailyStreak": {
+		modelKey: "level_killDailyStreak",
 		maxLevel: 3,
 		graduations: [3, 7, 30],
 		hidden: false,
 	},
 	
+	"killU": {
+		modelKey: "done_killU",
+		maxLevel: 1,
+		hidden: false,
+	},
+	"killShini": {
+		modelKey: "done_killShini",
+		maxLevel: 1,
+		hidden: false,
+	},
 	"outer23d": {
 		modelKey: "done_outer23d",
 		maxLevel: 1,
@@ -71,15 +81,50 @@ const achievements = {
 		maxLevel: 1,
 		hidden: false,
 	},
+	"counterShort": {
+		modelKey: "done_counterShort",
+		maxLevel: 1,
+		hidden: false,
+	},
 	"murdersOn": {
 		modelKey: "done_murdersOn",
 		maxLevel: 1,
 		graduations: [10],
-		hidden: true,
+		hidden: false,
+	},
+	"onLeaderboard": {
+		modelKey: "done_onLeaderboard",
+		maxLevel: 1,
+		hidden: false,
+	},
+	"secretRule": {
+		modelKey: "done_secretRule",
+		maxLevel: 1,
+		hidden: false,
+	},
+	"killDailyComeback": {
+		modelKey: "done_killDailyComeback",
+		maxLevel: 1,
+		hidden: false,
 	},
 }
+//dont put the achievement here to be invisible
 const achievements_list = [
-"kill", "counter", "outerTime", "writtenPage", "killKiller", "appleStreak", "outer23d", "counterMax", "murdersOn",
+"kill",
+"counter",
+"outerTime",
+"writtenPage",
+"killKiller",
+"killDailyStreak",
+"killU",
+"killShini",
+"outer23d",
+"counterMax",
+"counterShort",
+"murdersOn",
+"onLeaderboard",
+"secretRule",
+"killDailyComeback",
 ];
 
 //GET
@@ -193,6 +238,9 @@ export async function achiv_list_get(f_userdata, f_lang)
 	const userAchiv=await api.KiraUserAchiv.findOne(f_userdata.statPtr.id);
 	let r_list_txt="";
 	let h_displayedLines=0;
+
+	let countAchivShowed=0;
+	let countAchivFinish=0;
 	
 	for (const achivKey of achievements_list)
 	{
@@ -240,13 +288,17 @@ export async function achiv_list_get(f_userdata, f_lang)
 		{
 			if (h_displayedLines>0) r_list_txt+="\n";
 			h_displayedLines+=1;
+			
+			countAchivShowed+=1;
+			 if (achievements[achivKey].maxLevel===achivValue)
+				countAchivFinish+=1;
 			r_list_txt+=translate(f_lang, translateKey, translateInfos);
 		}
 		;
 	}
 
 	return {
-		content: translate(f_lang, "achievement.show", {"amount":0, "max":1}),
+		content: translate(f_lang, "achievement.show", {"amount":countAchivFinish, "max":countAchivShowed}),
     embeds: [
       {
         description: r_list_txt
