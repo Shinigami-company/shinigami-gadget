@@ -144,7 +144,7 @@ import {
 	achiv_list_get
 } from "./achiv.js"; // user achivements
 
-import { random_rule, time_format_string_from_int, time_userday, roman_from_int } from "./tools.js";// tools
+import { rule_key_random, rule_key_parse, time_format_string_from_int, time_userday, roman_from_int } from "./tools.js";// tools
 
 import { linkme } from "./remember.js";
 linkme("linked from cmd"); //need to use a function from there
@@ -1245,6 +1245,7 @@ async function cmd_top({ data, lang }) {
 
 //#rules command
 async function cmd_rules({ lang }) {
+	const ruleKey=rule_key_random();
   return {
     method: "PATCH",
     body: {
@@ -1254,8 +1255,8 @@ async function cmd_rules({ lang }) {
         translate(lang, "cmd.rules.preamble"),
       embeds: [
         {
-          description: random_rule(),
-          //footer: {text: `how to use it I`}
+          description: translate(lang, "rule."+ruleKey),
+          footer: {text: rule_key_parse(ruleKey)}
         },
       ],
     },
