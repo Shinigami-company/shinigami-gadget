@@ -68,7 +68,8 @@ export async function stats_simple_get(f_modelStatsId, f_statKey) {
 export function stats_simple_is_default(f_statKey, f_value) {
   //getting the value
   return (
-    f_value === (stats_simple_all[f_statKey]?.begin ? stats_simple_all[f_statKey].begin : 0)
+    f_value === 0 || f_value === null
+    //f_value === (stats_simple_all[f_statKey]?.begin ? stats_simple_all[f_statKey].begin : 0)
   );
 }
 
