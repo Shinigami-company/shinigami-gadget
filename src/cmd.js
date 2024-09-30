@@ -90,6 +90,7 @@ import {
   kira_book_get,
   kira_book_color_choice,
   book_colors,
+	settings_max_lines
 } from "./kira.js"; //kira book
 import {
   kira_run_create,
@@ -138,12 +139,13 @@ import {
 	stats_checkup
 } from "./stats.js"; // update user statistics
 import {
-	achiv_graduate_level,
-	achiv_grant_level,
+	achiv_level_graduate,
+	achiv_level_grant,
+	achiv_level_check,
 	achiv_list_get
 } from "./achiv.js"; // user achivements
 
-import { rule_key_random, rule_key_parse, time_format_string_from_int, time_userday, roman_from_int } from "./tools.js";// tools
+import { rule_key_random, rule_key_parse, time_format_string_from_int, time_userday_get, time_day_int, time_day_format, time_day_gap, roman_from_int } from "./tools.js";// tools
 
 import { linkme } from "./remember.js";
 linkme("linked from cmd"); //need to use a function from there
@@ -858,21 +860,23 @@ async function cmd_god({ request, userdata, data, lang }) {
       {
         let r;
 				
-				if (false) {
-					const h_zone = "fr-FR";
-					const h_options = {
-						hour: "numeric",
-					  day: "numeric",
-					  month: "numeric",
-					  year: "2-digit",
-					};
-					r=`${time_userday(request.body.locale)}`;
-					//r=`${Intl.DateTimeFormat(h_zone,h_options)}`;
+				if (false)
+				{
+					const stat=await stats_simple_get(userdata.statPtr.id, "do_outerTime");
+					r=stat+"_"+String(await achiv_level_check(userdata, "outerTime", stat, lang, {"time": time_format_string_from_int(stat, lang)}));
 				}
 
-				const here_level=achiv_graduate_level("test2", arg_amount);
-				r="level "+roman_from_int(arg_amount);
-				await achiv_grant_level(userdata, lang, "test2", here_level);
+				{
+					const userDay=time_userday_get(request.body.locale);
+					r=`${userDay} - ${time_day_int(userDay)} - ${time_day_format(userDay)}`;
+				}
+
+				if (false)
+				{
+					const here_level=achiv_level_graduate("test2", arg_amount);
+					r="level "+roman_from_int(arg_amount);
+					await achiv_level_grant(userdata, lang, "test2", here_level);
+				}
 
         return {
           method: "PATCH",
@@ -1030,7 +1034,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
     }
 
     await kira_book_create(userdata, h_color);
-    await stats_simple_add(userdata.statPtr.id, "ever_book");
+    await stats_simple_add(userdata.statPtr.id, "ever_book");//+stats
 
     return {
       method: "PATCH",
@@ -1046,7 +1050,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
 }
 
 //#burn command
-async function cmd_burn({ request, data, userbook, lang }) {
+async function cmd_burn({ request, data, userbook, userdata, lang }) {
   if (!userbook) {
     return {
       method: "PATCH",
@@ -1057,6 +1061,7 @@ async function cmd_burn({ request, data, userbook, lang }) {
   }
 
   if (!data.options) {
+		await stats_simple_add(userdata, "misc_match");//+stats
     return {
       method: "PATCH",
       body: {
@@ -1124,16 +1129,24 @@ async function cmd_apple({ request, userdata, lang }) {
   let h_apples_claimed = 0;
   let h_txt_claims = "";
 
-  const date_day = time_userday(request.body.locale, await kira_user_get_daily(userdata.id));
-  const date_now = time_userday(request.body.locale);
+  const h_dayGap = time_day_gap(await kira_user_get_daily(userdata.id), request.body.locale, true);
+	const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
 
   //claims
-  if (date_day!=date_now) {
+  if (h_dayGapDiff!=0) {
     //claim you daily
     await kira_user_set_daily(userdata.id);
     h_apples_claimed += sett_daily_amount;
     h_txt_claims +=
       translate(lang, `cmd.apples.claim.daily`, { added: 1 }) + "\n";
+		{//+stats
+			const stat = (h_dayGapDiff===1)
+			?
+			  await stats_simple_add(userdata.statPtr.id, "streak_appleDay")
+			:
+			  await stats_simple_set(userdata.statPtr.id, "streak_appleDay", 0);
+			//await achiv_level_check(userdata, "appleDailyStreak", stat, lang);
+		}
   }
 
   const h_claims = await kira_apple_claims_get(userdata.id);
@@ -1149,7 +1162,7 @@ async function cmd_apple({ request, userdata, lang }) {
   }
 
   await kira_user_add_apple(userdata, h_apples_claimed);
-  await stats_simple_add(userdata.statPtr.id, "ever_apple", h_apples_claimed); //stats
+  await stats_simple_add(userdata.statPtr.id, "ever_apple", h_apples_claimed); //+stats
 
   return {
     method: "PATCH",
@@ -1174,7 +1187,7 @@ async function cmd_apple({ request, userdata, lang }) {
 }
 
 //#top command
-async function cmd_top({ data, lang }) {
+async function cmd_top({ data, userdata, lang }) {
   const h_on = data.options[0].value;
   //get
   let h_ranks;
@@ -1211,12 +1224,14 @@ async function cmd_top({ data, lang }) {
 
   //formating
   {
+		let ifSelfOn = false;
     let h_txt = "";
 
     let h_nl = "";
     for (let i = 0; i < 3; i++) {
 			let h_amount=h_ranks[i][h_amountK];
 			if (if_parse) h_amount=stats_parse(h_amountK, h_amount);
+			if (h_ranks[i].userId===userdata.userId) ifSelfOn=true;
       h_txt +=
         h_nl +
         translate(lang, `cmd.top.get.${h_on}.place`, {
@@ -1226,6 +1241,13 @@ async function cmd_top({ data, lang }) {
         });
       h_nl = "\n";
     }
+		
+		{//+stat
+			if (ifSelfOn)
+			{
+				await achiv_level_grant(userdata, "onLeaderboard", lang, 1, {"name": translate(lang, `cmd.top.get.${h_on}.name`)});
+			}
+		}
 
     return {
       method: "PATCH",
@@ -1242,9 +1264,17 @@ async function cmd_top({ data, lang }) {
 }
 
 //#rules command
-async function cmd_rules({ lang }) {
+async function cmd_rules({ userdata, lang }) {
 	const ruleKey=rule_key_random();
-  return {
+	
+	{//+achiv
+		if (ruleKey==="new.2")
+		{
+			await achiv_level_grant(userdata, "secretRule", lang);
+		}
+	}
+  
+	return {
     method: "PATCH",
     body: {
       content:
@@ -1297,7 +1327,7 @@ async function cmd_stats({ data, userdata, lang }) {
 						const pair_datas=await stats_pair_get_multiples(v,{"by_hit":3,"userId":2});
 						const hits=[pair_datas[0]["by_hit"],pair_datas[1]["by_hit"]];
 						
-						if (pair_datas[1]["userId"]==userdata.userId)
+						if (pair_datas[1]["userId"]===userdata.userId)
 						{//suscide message
 						
 							if (hits[0]>0)
@@ -1660,6 +1690,9 @@ async function cmd_kira({
       if (run_combo > sett_counter_combo_max) {
         // too much combo
         console.log("LOG : kira : counter is max comobo=", run_combo);
+				{//+achiv
+					await achiv_level_grant(userdata, "counterMax", lang, 1, {"personId": h_victim_id});
+				}
         return {
           method: "PATCH",
           body: {
@@ -1670,20 +1703,36 @@ async function cmd_kira({
         };
       }
 
+
       //cancel death if itself
       console.log("LOG : kira : countering... comobo=", run_combo);
       await cmd_kira_cancel({ more: { runId: h_run_reverse.id } });
       console.log("LOG : kira : countered");
-      const h_pair = await stats_pair_get_id(
-        userdata.id,
-        user.id,
-        h_victim_data.id,
-        h_victim_data.userId
-      );
-			//simpler pair
-      await stats_pair_add(h_pair, "by_counter", 1); //return the value
-      await stats_simple_add(userdata.statPtr.id, "do_counter");
-      await stats_simple_add(h_victim_data.statPtr.id, "is_countered");
+			{//+stats
+	      const h_pair = await stats_pair_get_id(
+	        userdata.id,
+	        user.id,
+	        h_victim_data.id,
+	        h_victim_data.userId
+	      );
+				//simpler pair
+				{
+	      	const stat=await stats_simple_add(userdata.statPtr.id, "do_counter");
+					await achiv_level_check(userdata, "counter", stat, lang, {"amount": stat});
+				}
+	      await stats_simple_add(h_victim_data.statPtr.id, "is_countered");
+	      await stats_pair_add(h_pair, "by_counter", 1); //return the value
+				
+				{//+achiv
+		      const h_ping = parseInt(
+		        (new Date(v.finalDate).getTime() - new Date().getTime()) / 1000
+		      );
+					if (h_ping<6)
+					{
+						await achiv_level_grant(userdata, "counterShort", lang);
+					}
+				}
+			}
       //and continue
     }
   }
@@ -1723,12 +1772,36 @@ async function cmd_kira({
   //checked !
 
   //validate writting
-  const h_note = await kira_line_append(userbook, h_line, request.body.locale);
-
-  //stat
-  await stats_simple_add(userdata.statPtr.id, "do_try");
-  if (h_victim_data?.id)
-		await stats_simple_add(h_victim_data?.statPtr.id, "is_tried");
+  const h_dayGap = time_day_gap(userbook.updatedAt, request.body.locale, true, true);
+	console.log("DBUG : h_dayGap=",h_dayGap);
+	const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
+  const h_note = await kira_line_append(userbook, h_line, h_dayGap);
+	
+	{//+stats
+	  await stats_simple_add(userdata.statPtr.id, "do_try");
+	  if (h_victim_data?.id)
+			await stats_simple_add(h_victim_data?.statPtr.id, "is_tried");
+		
+		if (h_dayGapDiff != 0)
+		{//not the same day
+			const stat = (h_dayGapDiff === 1)
+			?
+			  await stats_simple_add(userdata.statPtr.id, "streak_killDay")
+			:
+			  await stats_simple_set(userdata.statPtr.id, "streak_killDay", 0);
+			if (h_dayGapDiff === 1)
+				await achiv_level_check(userdata, "killDailyStreak", stat, lang, {"amount": stat});
+			if (h_dayGapDiff >= 13)
+				await achiv_level_check(userdata, "killDailyComeback", stat, lang, {"amount": stat});
+			
+		}
+		
+		if ((userbook.index+1) % settings_max_lines === 0)
+		{
+	  	const stat=await stats_simple_add(userdata.statPtr.id, "streak_pageFilled");
+	  	await achiv_level_check(userdata, "writtenPage", stat, lang, {"amount": stat});
+		}
+	}
 
   //creat kira run
   const h_run = await kira_run_create(
@@ -2024,18 +2097,23 @@ export async function cmd_kira_execute({ more }) {
     await kira_user_set_life(h_victim_data.id, false, pack.span);
     if (h_will_book_victim) await kira_line_taste(pack.note_id, 1); //note need to exist
 
-    //stats
-		//simpler pair
-    await stats_simple_bulkadd(userdata.statPtr.id, {"do_hit":1, "do_outerTime":pack.span});
-    await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_hited":1, "is_outedTime":pack.span});
+    {//+stats
+			//simpler pair
+			{
+      	const stat_bulk=await stats_simple_bulkadd(userdata.statPtr.id, {"do_hit":1, "do_outerTime":pack.span});
+				await achiv_level_check(userdata, "outerTime", stat_bulk["do_outerTime"], lang, {"time": time_format_string_from_int(stat_bulk["do_outerTime"], lang)});
+			}
+	    await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_hited":1, "is_outedTime":pack.span});
+	    const h_pair = await stats_pair_get_id(
+	      userdata.id,
+	      user.id,
+	      h_victim_data.id,
+	      pack.victim_id
+	    );
+	    var h_repetition = await stats_pair_add(h_pair, "by_hit", 1); //return the value
+		}
+		
 
-    const h_pair = await stats_pair_get_id(
-      userdata.id,
-      user.id,
-      h_victim_data.id,
-      pack.victim_id
-    );
-    const h_repetition = await stats_pair_add(h_pair, "by_hit", 1); //return the value
 
     if (h_repetition === 1) {
       //first time attacker kill victim
@@ -2047,10 +2125,15 @@ export async function cmd_kira_execute({ more }) {
       );
       console.log("DBUG : kira : kills by victim for apples : ",h_victim_kills);
 
-			//statistics
-			await stats_pair_set(h_pair, "by_avenge", h_victim_kills);
-      await stats_simple_bulkadd(userdata.statPtr.id, {"do_kill": 1, "do_avenger": h_victim_kills});
-      await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_killed": 1, "is_avenged": h_victim_kills});
+			{//+stats
+				await stats_pair_set(h_pair, "by_avenge", h_victim_kills);
+				{
+	      	const stat_bulk=await stats_simple_bulkadd(userdata.statPtr.id, {"do_kill": 1, "do_avenger": h_victim_kills});
+					var stat_kill=stat_bulk["do_kill"];
+					var stat_avenge=h_victim_kills;
+				}
+	      await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_killed": 1, "is_avenged": h_victim_kills});
+			}
 
       let h_apples = 0; //default
       if (h_victim_kills) {
@@ -2107,6 +2190,23 @@ export async function cmd_kira_execute({ more }) {
     let errorMsg = JSON.parse(e.message);
     if (!(errorMsg?.code === 50007)) throw e;
   }
+
+	//+achievements
+	{
+		if (pack.victim_id === pack.attacker_id)
+			await achiv_level_grant(userdata, "killU", lang);
+		else//only if not itself
+			await achiv_level_check(userdata, "murdersOn", h_repetition, lang, {"personId": pack.victim_id});//h_repetition is a var
+		
+		if (pack.victim_id === process.env.APP_ID)
+			await achiv_level_grant(userdata, "killShini", lang);
+		
+		if (pack.span === 1987200)
+			await achiv_level_grant(userdata, "outer23d", lang, 1, {"personId": pack.victim_id});
+		
+		await achiv_level_check(userdata, "kill", stat_kill, lang, {"amount": stat_kill});
+		await achiv_level_check(userdata, "avengeBest", stat_avenge, lang, {"amount": stat_avenge});
+	}
 }
 
 //is not executed by [./remember.js]

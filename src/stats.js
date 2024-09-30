@@ -1,6 +1,5 @@
 import { api } from "gadget-server";
 import { time_format_string_from_int } from "./tools.js";
-import { kira_user_get } from "./kira.js";
 
 //--- SIMPLE ---
 
@@ -30,7 +29,8 @@ ever_test: {type: 1},
 misc_match: {type: 1},
 
 streak_appleDay: {type: 1},
-streak_pageGreat: {type: 1},
+streak_killDay: {type: 1},
+streak_pageFilled: {type: 1},
 };
 
 //used in #stats command
@@ -61,8 +61,8 @@ export async function stats_simple_get(f_modelStatsId, f_statKey) {
   //getting the value
   return await api.KiraUserStats.findOne(f_modelStatsId, {
     [f_statKey]: true,
-  }).then((obj) => obj[f_statKey]);
-  //.then(elem => (f_begin && elem===null) ? stats_simple_all[f_statKey].begin : elem);
+  }).then((obj) => obj[f_statKey])
+  .then(elem => (elem===null) ? 0 : elem);
 }
 
 export function stats_simple_is_default(f_statKey, f_value) {
@@ -113,6 +113,7 @@ export async function stats_simple_bulkadd(f_modelStatsId, f_dictionnary) {
   }
   //getting the value
   await api.KiraUserStats.update(f_modelStatsId, f_dictionnary);
+	return f_dictionnary;
 }
 
 //--- PAIR ---

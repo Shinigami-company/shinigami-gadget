@@ -85,7 +85,15 @@ function time_get_offset(f_timezone) {
   return match ? parseInt(match[1]) : 0;
 }
 
-function time_format_day(f_date) {
+export function time_userday_get(f_discordLang, f_dateArg=undefined) {
+	return time_now_utc(time_get_offset(lang_get_timezone(f_discordLang)),f_dateArg);
+}
+
+export function time_day_int(f_date) {
+	return Math.floor(f_date.getTime()/86400000);
+}
+
+export function time_day_format(f_date) {
 	return f_date.toLocaleDateString(
     "es-ES",
     {
@@ -96,10 +104,31 @@ function time_format_day(f_date) {
   );
 }
 
-export function time_userday(f_discordLang, f_dateArg=undefined) {
-	return time_format_day(time_now_utc(time_get_offset(lang_get_timezone(f_discordLang)),f_dateArg));
+export function time_day_gap(f_lastDateArg, f_discordLang, f_ifGetDayInt, f_ifGetDayFormated) {
+	let r = {
+		last: {
+			date: time_userday_get(f_discordLang, f_lastDateArg)
+		},
+		now: {
+			date: time_userday_get(f_discordLang)
+		}
+	}
+	if (f_ifGetDayInt)
+	{
+		for (const k in r)
+		{
+			r[k].day = time_day_int(r[k].date);
+		}
+	}
+	if (f_ifGetDayFormated)
+	{
+		for (const k in r)
+		{
+			r[k].format = time_day_format(r[k].date);
+		}
+	}
+	return r;
 }
-
 
 //
 const roman_letters = {

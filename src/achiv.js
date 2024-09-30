@@ -48,8 +48,8 @@ const achievements = {
 		graduations: [3, 10, 70],
 		hidden: false,
 	},
-	"killKiller": {
-		modelKey: "level_killKiller",
+	"avengeBest": {
+		modelKey: "level_avengeBest",
 		maxLevel: 3,
 		graduations: [5, 30, 100],
 		hidden: false,
@@ -114,7 +114,7 @@ const achievements_list = [
 "counter",
 "outerTime",
 "writtenPage",
-"killKiller",
+"avengeBest",
 "killDailyStreak",
 "killU",
 "killShini",
@@ -128,18 +128,18 @@ const achievements_list = [
 ];
 
 //GET
-async function achiv_get_level(f_achivModelId, f_achivKey)
+async function achiv_level_get(f_achivModelId, f_achivKey)
 {
 	const received_level=await api.KiraUserAchiv.findOne(f_achivModelId, {select: {[achievements[f_achivKey].modelKey]: true}}).then(obj => obj[achievements[f_achivKey].modelKey]);
 	return ((received_level===null) ? 0 : received_level);//need in particular for when new achievements added
 }
 
-async function achiv_set_level(f_achivModelId, f_achivKey, f_setLevel)
+async function achiv_level_set(f_achivModelId, f_achivKey, f_setLevel)
 {
 	await api.KiraUserAchiv.update(f_achivModelId, {[achievements[f_achivKey].modelKey]: f_setLevel});
 }
 
-export function achiv_graduate_level(f_achivKey, f_value)
+function achiv_level_graduate(f_achivKey, f_value)
 {
 	//if (achievements[f_achivKey].graduateValues && achievements[f_achivKey].graduateValues[f_value])
 	//	return achievements[f_achivKey].graduateValues[f_value];
@@ -147,31 +147,37 @@ export function achiv_graduate_level(f_achivKey, f_value)
 	if (achievements[f_achivKey].graduations)
 	{
 		let i=0;
-		for (i=0;i<achievements[f_achivKey].graduations.length && f_value>=achievements[f_achivKey].graduations[i];i++)
+		for (;i<achievements[f_achivKey].graduations.length && f_value>=achievements[f_achivKey].graduations[i];i++);//must have  ;  or  {}  at the end !
 		return i;
 	}
 }
 
 
 //SET
-export async function achiv_grant_level(f_userModel, f_lang, f_achivKey, f_newLevel=1, f_doneDolarValues={})
+export async function achiv_level_check(f_userModel, f_achivKey, f_value, f_lang, f_doneDolarValues={})
 {
+	return await achiv_level_grant(f_userModel, f_achivKey, f_lang, achiv_level_graduate(f_achivKey, f_value), f_doneDolarValues);
+}
+
+export async function achiv_level_grant(f_userModel, f_achivKey, f_lang, f_newLevel=1, f_doneDolarValues={})
+{
+	//values
 	const achivModelId=f_userModel.achivPtr.id;
-	//get actual level
-	const h_registerLevel=await achiv_get_level(achivModelId, f_achivKey);
 	//new level maxed to maxlevel
 	const maxLevel=achievements[f_achivKey].maxLevel;
 	if (f_newLevel>maxLevel)
 		f_newLevel=maxLevel;
-	//values
+	//get actual level
+	const h_registerLevel=await achiv_level_get(achivModelId, f_achivKey);
+	//used
 	const h_gap=f_newLevel - h_registerLevel;
 	let h_apples=0;
-	//if has a greater level
+
 	if (f_newLevel > h_registerLevel)
-	{
+	{//if has a greater level
 		console.log(`DBUG : achiv : pass [${f_achivKey}] from ${f_newLevel} to ${h_registerLevel}`)
 		//set the level
-		await achiv_set_level(achivModelId, f_achivKey, f_newLevel);
+		await achiv_level_set(achivModelId, f_achivKey, f_newLevel);
 		if (achievements[f_achivKey].rewards)
 		{
 			//all level passed
@@ -226,7 +232,6 @@ export async function achiv_grant_level(f_userModel, f_lang, f_achivKey, f_newLe
 	      } else throw e;
 	    }
 		}
-
 	}
 	return h_gap;
 }
@@ -256,22 +261,28 @@ export async function achiv_list_get(f_userdata, f_lang)
 		if (achievements[achivKey].hidden && (achivValue===0 || achivValue===null))
 		{//hidden
 			translateKey+=".hidden";
-		} else {
+		}
+		else 
+		{//show
 			translateInfos={
 				"title": translate(f_lang, `achievements.${achivKey}.title`),
 				"lore": translate(f_lang, `achievements.${achivKey}.lore`),
 			};
+
 			if (achievements[achivKey].maxLevel===1)
-			{
+			{//unic level
 				translateKey+=".done";
+				countAchivShowed+=1;
 				if (achievements[achivKey].maxLevel===achivValue) {
+					countAchivFinish+=1;
 					translateKey+=".finish";
 				} else {
 					translateKey+=".zero";
 				}
 			} else {
 				translateKey+=".level";
-				//translateInfos["level"]="<"+achivValue+">";
+				countAchivShowed+=achievements[achivKey].maxLevel;
+				countAchivFinish+=achivValue;
 				translateInfos["level"]=roman_from_int(achivValue);
 				translateInfos["max"]=roman_from_int(achievements[achivKey].maxLevel);
 				if (achivValue===0 || achivValue===null)
@@ -289,9 +300,6 @@ export async function achiv_list_get(f_userdata, f_lang)
 			if (h_displayedLines>0) r_list_txt+="\n";
 			h_displayedLines+=1;
 			
-			countAchivShowed+=1;
-			 if (achievements[achivKey].maxLevel===achivValue)
-				countAchivFinish+=1;
 			r_list_txt+=translate(f_lang, translateKey, translateInfos);
 		}
 		;

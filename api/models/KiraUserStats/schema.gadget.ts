@@ -24,7 +24,8 @@ export const schema: GadgetModel = {
     is_tried: { type: "number", storageKey: "AJjNLP5o-rcG" },
     misc_match: { type: "number", storageKey: "xnOBXeUaGutL" },
     streak_appleDay: { type: "number", storageKey: "EPnR1n-P3hCd" },
-    streak_pageGreat: { type: "number", storageKey: "1BOv7cNjsgwu" },
+    streak_killDay: { type: "number", storageKey: "I5tCeWryk-UW" },
+    streak_pageFilled: { type: "number", storageKey: "1BOv7cNjsgwu" },
     userId: { type: "string", storageKey: "LQwQf84POQ71" },
     userPtr: {
       type: "belongsTo",

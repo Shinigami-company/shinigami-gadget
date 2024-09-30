@@ -261,21 +261,16 @@ export async function kira_book_delete(f_book) {
 
 //uses
 //kira_line : DATA
-import { time_userday } from "./tools";
 
-export async function kira_line_append(f_book, f_line, f_discordLang) {
+export async function kira_line_append(f_book, f_line, f_TimeDayGapObject) {
   let h_indexLine = f_book.index;
 
   //date
-  const h_date_book = time_userday(f_discordLang,f_book.updatedAt);
-  const h_date_now = time_userday(f_discordLang);
-	console.log("DBUG : kira : appendtime of book=",h_date_book," now=",h_date_now);
-
-  if (f_book.index === 0 || h_date_book != h_date_now) {
+  if (f_book.index === 0 || f_TimeDayGapObject.now.day != f_TimeDayGapObject.last.day) {
     await api.KiraNotes.create({
       indexLine: h_indexLine,
       line: {
-        markdown: `*${h_date_now}*`,
+        markdown: `*${f_TimeDayGapObject.now.format}*`,
       },
       attackerBookPtr: {
         _link: f_book.id,
