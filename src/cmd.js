@@ -1061,7 +1061,7 @@ async function cmd_burn({ request, data, userbook, userdata, lang }) {
   }
 
   if (!data.options) {
-		await stats_simple_add(userdata, "misc_match");//+stats
+		await stats_simple_add(userdata.statPtr.id, "misc_match");//+stats
     return {
       method: "PATCH",
       body: {
@@ -1687,9 +1687,9 @@ async function cmd_kira({
       console.log("LOG : kira : V already killing A : ", h_run_reverse);
       run_combo = h_run_reverse.counterCombo + 1;
 
-      if (run_combo > sett_counter_combo_max) {
+      if (run_combo >= sett_counter_combo_max) {
         // too much combo
-        console.log("LOG : kira : counter is max comobo=", run_combo);
+        console.log("LOG : kira : counter is max combo=", run_combo);
 				{//+achiv
 					await achiv_level_grant(userdata, "counterMax", lang, 1, {"personId": h_victim_id});
 				}
@@ -1725,8 +1725,9 @@ async function cmd_kira({
 				
 				{//+achiv
 		      const h_ping = parseInt(
-		        (new Date(v.finalDate).getTime() - new Date().getTime()) / 1000
+		        (new Date(userdata.finalDate).getTime() - new Date().getTime()) / 1000
 		      );
+					console.log(`HI : ${userdata.finalDate} - ${new Date()} = ${h_ping}`);
 					if (h_ping<6)
 					{
 						await achiv_level_grant(userdata, "counterShort", lang);
@@ -2104,14 +2105,15 @@ export async function cmd_kira_execute({ more }) {
 				await achiv_level_check(userdata, "outerTime", stat_bulk["do_outerTime"], lang, {"time": time_format_string_from_int(stat_bulk["do_outerTime"], lang)});
 			}
 	    await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_hited":1, "is_outedTime":pack.span});
-	    const h_pair = await stats_pair_get_id(
-	      userdata.id,
-	      user.id,
-	      h_victim_data.id,
-	      pack.victim_id
-	    );
-	    var h_repetition = await stats_pair_add(h_pair, "by_hit", 1); //return the value
 		}
+		//need to be out in this scope because used after
+    let h_pair = await stats_pair_get_id(
+      userdata.id,
+      user.id,
+      h_victim_data.id,
+      pack.victim_id
+    );
+    let h_repetition = await stats_pair_add(h_pair, "by_hit", 1); //return the value
 		
 
 
@@ -2193,16 +2195,18 @@ export async function cmd_kira_execute({ more }) {
 
 	//+achievements
 	{
-		if (pack.victim_id === pack.attacker_id)
-			await achiv_level_grant(userdata, "killU", lang);
-		else//only if not itself
-			await achiv_level_check(userdata, "murdersOn", h_repetition, lang, {"personId": pack.victim_id});//h_repetition is a var
-		
 		if (pack.victim_id === process.env.APP_ID)
 			await achiv_level_grant(userdata, "killShini", lang);
-		
-		if (pack.span === 1987200)
-			await achiv_level_grant(userdata, "outer23d", lang, 1, {"personId": pack.victim_id});
+
+		else if (pack.victim_id === pack.attacker_id)
+			await achiv_level_grant(userdata, "killU", lang);
+		else//only if not itself
+		{
+			await achiv_level_check(userdata, "murdersOn", h_repetition, lang, {"personId": pack.victim_id});//h_repetition is a var
+
+			if (pack.span === 1987200)
+				await achiv_level_grant(userdata, "outer23d", lang, 1, {"personId": pack.victim_id});
+		}
 		
 		await achiv_level_check(userdata, "kill", stat_kill, lang, {"amount": stat_kill});
 		await achiv_level_check(userdata, "avengeBest", stat_avenge, lang, {"amount": stat_avenge});

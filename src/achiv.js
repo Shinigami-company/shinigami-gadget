@@ -175,7 +175,7 @@ export async function achiv_level_grant(f_userModel, f_achivKey, f_lang, f_newLe
 
 	if (f_newLevel > h_registerLevel)
 	{//if has a greater level
-		console.log(`DBUG : achiv : pass [${f_achivKey}] from ${f_newLevel} to ${h_registerLevel}`)
+		console.log(`LOG : achiv.js : model [${f_userModel}]  pass [${f_achivKey}] from ${f_newLevel} to ${h_registerLevel}`);
 		//set the level
 		await achiv_level_set(achivModelId, f_achivKey, f_newLevel);
 		if (achievements[f_achivKey].rewards)
