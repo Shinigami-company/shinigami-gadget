@@ -923,10 +923,10 @@ async function cmd_god({ request, userdata, data, lang }) {
           body: {
             embeds: [
               {
+                color: 255 * 256,
                 description: translate(lang, "cmd.god.update.done", {
                   targetId: arg_user,
                 }),
-                color: 255 * 256,
               },
             ],
           },
@@ -1187,7 +1187,7 @@ async function cmd_apple({ request, userdata, lang }) {
 }
 
 //#top command
-async function cmd_top({ data, userdata, lang }) {
+async function cmd_top({ data, userdata, userbook, lang }) {
   const h_on = data.options[0].value;
   //get
   let h_ranks;
@@ -1255,6 +1255,7 @@ async function cmd_top({ data, userdata, lang }) {
         content: translate(lang, `cmd.top.get.${h_on}.title`),
         embeds: [
           {
+						color: book_colors[userbook.color].int,
             description: h_txt,
           },
         ],
@@ -1264,7 +1265,7 @@ async function cmd_top({ data, userdata, lang }) {
 }
 
 //#rules command
-async function cmd_rules({ userdata, lang }) {
+async function cmd_rules({ userdata, userbook, lang }) {
 	const ruleKey=rule_key_random();
 	
 	{//+achiv
@@ -1283,6 +1284,7 @@ async function cmd_rules({ userdata, lang }) {
         translate(lang, "cmd.rules.preamble"),
       embeds: [
         {
+					color: book_colors[userbook.color].int,
           description: translate(lang, "rule."+ruleKey),
           footer: {text: rule_key_parse(ruleKey)}
         },
@@ -1292,7 +1294,7 @@ async function cmd_rules({ userdata, lang }) {
 }
 
 //#stats command
-async function cmd_stats({ data, userdata, lang }) {
+async function cmd_stats({ data, userdata, userbook, lang }) {
 
   let r_text;
   let r_lore = "";
@@ -1426,6 +1428,7 @@ async function cmd_stats({ data, userdata, lang }) {
           ? undefined
           : [
               {
+								color: book_colors[userbook.color].int,
                 description: r_lore,
               },
             ],
@@ -1464,6 +1467,7 @@ async function cmd_running({ data, userbook, user, lang }) {
           ? undefined
           : [
               {
+								color: book_colors[userbook.color].int,
                 description: r_lore,
               },
             ],
@@ -1473,11 +1477,11 @@ async function cmd_running({ data, userbook, user, lang }) {
 
 
 //#quest
-async function cmd_quest({ userdata, lang }) {
+async function cmd_quest({ userdata, userbook, lang }) {
 
   return {
     method: "PATCH",
-    body: await achiv_list_get(userdata, lang)
+    body: await achiv_list_get(userdata, book_colors[userbook.color].int, lang)
   };
 }
 

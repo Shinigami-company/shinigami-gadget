@@ -238,7 +238,7 @@ export async function achiv_level_grant(f_userModel, f_achivKey, f_lang, f_newLe
 
 
 //STRING
-export async function achiv_list_get(f_userdata, f_lang)
+export async function achiv_list_get(f_userdata, f_bookColor, f_lang)
 {
 	const userAchiv=await api.KiraUserAchiv.findOne(f_userdata.statPtr.id);
 	let r_list_txt="";
@@ -309,6 +309,7 @@ export async function achiv_list_get(f_userdata, f_lang)
 		content: translate(f_lang, "achievement.show", {"amount":countAchivFinish, "max":countAchivShowed}),
     embeds: [
       {
+				color: f_bookColor,
         description: r_list_txt
         //color: book_colors[userbook.color].int,
       },
