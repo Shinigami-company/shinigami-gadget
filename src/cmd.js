@@ -1220,7 +1220,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
     let h_nl = "";
     for (let i = 0; i < 3; i++) {
 			let h_amount=h_ranks[i][h_amountK];
-			if (if_parse) h_amount=stats_parse(h_amountK, h_amount);
+			if (if_parse) h_amount=stats_parse(h_amountK, h_amount, lang);
 			if (h_ranks[i].userId===userdata.userId) ifSelfOn=true;
       h_txt +=
         h_nl +

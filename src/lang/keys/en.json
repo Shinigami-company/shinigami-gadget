@@ -6,7 +6,6 @@
 "error.point.404": "how did you get there? `ERROR [404]=$[message]`",
 
 
-
 "check.god.not": "**Nope!** You dont have the power of a god.",
 "check.alive.not": "*You are dead for another **$[time]***",
 "check.hasbook.not": "*You don't own a death note*\n`/claim` *to get one*",
@@ -56,7 +55,8 @@
 "cmd.apples.claim.admin.real.add": "you found a package at your door, with apples in it  **+$[displayed]**",
 "cmd.apples.claim.admin.fake.remove": "someone wanted to eat some, but decided not to  ~~-$[displayed]~~  **-$[added]**",
 "cmd.apples.claim.admin.fake.add": "you found a package at your door, but in fact it was empty  ~~+$[displayed]~~  **+$[added]**",
-"cmd.apples.claim.quest": "You done something cool $[achievementKey] to level $[levelNew]  **+$[added]**",
+"cmd.apples.claim.quest.level": "you achieved $[name] to level $[level]  **+$[added]**",
+"cmd.apples.claim.quest.done": "you achieved $[name]  **+$[added]**",
 "cmd.apples.get.same": "You have **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.changed": "Now you have **$[amount]** $[word] $[emoji]",
 
@@ -177,13 +177,13 @@
 "achievements.counter.title":"best defence is attack",
 "achievements.counter.lore":"counter attacks from others",
 "achievements.counter.done":"by countering $[amount] times",
-"achievements.outerTime.title":"banishment guy",
+"achievements.outerTime.title":"the banisher",
 "achievements.outerTime.lore":"kill people for long",
 "achievements.outerTime.done":"by killing people for $[time] in total",
 
 "achievements.writtenPage.title":"writer at heart",
 "achievements.writtenPage.lore":"write pages of names",
-"achievements.writtenPage.done":"by writing $[amount] pages of name in the death note",
+"achievements.writtenPage.done":"by writing $[amount] pages of names in the death note",
 "achievements.avengeBest.title":"if you kill i kill you",
 "achievements.avengeBest.lore":"kill person with lot of kills",
 "achievements.avengeBest.done":"by killing someone with $[amount] kills",
@@ -194,7 +194,7 @@
 "achievements.killU.title":"Keep Yourself Safe",
 "achievements.killU.lore":"kill yourself with your own death note",
 "achievements.killU.done":"by writing your own name in the death note",
-"achievements.killShini.title":"god of death cant be dead",
+"achievements.killShini.title":"immortal god of death",
 "achievements.killShini.lore":"try to kill a god of death",
 "achievements.killShini.done":"by trying to kill a god of death",
 "achievements.outer23d.title":"the 23 day rule",
@@ -204,8 +204,8 @@
 "achievements.counterMax.lore":"counter 13 times in the same combo",
 "achievements.counterMax.done":"while countering <@$[personId]> up to the end",
 "achievements.counterShort.title":"actually i'm not dead",
-"achievements.counterShort.lore":"counter an attack less than 6 seconds before it ends",
-"achievements.counterShort.done":"by countering $[second] seconds before you death",
+"achievements.counterShort.lore":"counter an attack 6 seconds before it applies",
+"achievements.counterShort.done":"by countering $[time] before you death",
 "achievements.murdersOn.title":"relentlessness",
 "achievements.murdersOn.lore":"murder the same person 10 times",
 "achievements.murdersOn.done":"by murdering <@$[personId]> 10 times",
