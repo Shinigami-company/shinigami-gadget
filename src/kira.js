@@ -21,46 +21,30 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
   if (!h_preData) {
     if (f_createIfNot)
       //create it
-      return await kira_user_create(f_userId);
+      await kira_user_create(f_userId);
     //not created
     else return undefined;
-  } else {
-    //get it
-    //and create submodel
-    if (!h_preData.statPtr) {
-      await api.KiraUserStats.create({
-        userPtr: { _link: h_preData.id },
-        userId: f_userId,
-      });
-    }
-
-    if (!h_preData.achivPtr) {
-      await api.KiraUserAchiv.create({
-        userPtr: { _link: h_preData.id },
-        userId: f_userId,
-      });
-    }
-
-    return await api.KiraUsers.maybeFindFirst({
-      filter: {
-        userId: { equals: f_userId },
-      },
-      select: {
-        id: true,
-        userId: true,
-        is_alive: true,
-        is_god: true,
-        apples: true,
-        apples_daily: true,
-        lang: true,
-        backDate: true,
-        deathDate: true,
-        statPtr: { id: true },
-        achivPtr: { id: true },
-      },
-    });
   }
-  return r_data;
+	
+  //get it
+  return await api.KiraUsers.findFirst({
+    filter: {
+      userId: { equals: f_userId },
+    },
+    select: {
+      id: true,
+      userId: true,
+      is_alive: true,
+      is_god: true,
+      apples: true,
+      apples_daily: true,
+      lang: true,
+      backDate: true,
+      deathDate: true,
+      statPtr: { id: true },
+      achivPtr: { id: true },
+    },
+  });
 
   /*
   let r_data=await api.KiraUsers.maybeFindFirst(
@@ -93,18 +77,16 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
 } //return the userdata from user
 
 export async function kira_user_create(f_userId) {
-  return await api.KiraUsers.create({
+  await api.KiraUsers.create({
     userId: f_userId,
-    statPtr: [
-      {
-        create: { userId: f_userId },
-      },
-    ],
-    achivPtr: [
-      {
-        create: { userId: f_userId },
-      },
-    ],
+    statPtr:
+    {
+      create: { userId: f_userId },
+    },
+    achivPtr:
+    {
+      create: { userId: f_userId },
+    },
   });
 } //return the created element
 

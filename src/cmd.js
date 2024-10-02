@@ -139,10 +139,7 @@ import {
 	stats_checkup
 } from "./stats.js"; // update user statistics
 import {
-	achiv_level_graduate,
-	achiv_level_grant,
-	achiv_level_check,
-	achiv_list_get
+	Achievement
 } from "./achiv.js"; // user achivements
 
 import { rule_key_random, rule_key_parse, time_format_string_from_int, time_userday_get, time_day_int, time_day_format, time_day_gap, roman_from_int } from "./tools.js";// tools
@@ -863,19 +860,12 @@ async function cmd_god({ request, userdata, data, lang }) {
 				if (false)
 				{
 					const stat=await stats_simple_get(userdata.statPtr.id, "do_outerTime");
-					r=stat+"_"+String(await achiv_level_check(userdata, "outerTime", stat, lang, {"time": time_format_string_from_int(stat, lang)}));
+					r=stat+"_"+String(await Achievement.list["outerTime"].do_check(userdata, stat, lang, {"time": time_format_string_from_int(stat, lang)}));
 				}
 
 				{
 					const userDay=time_userday_get(request.body.locale);
 					r=`${userDay} - ${time_day_int(userDay)} - ${time_day_format(userDay)}`;
-				}
-
-				if (false)
-				{
-					const here_level=achiv_level_graduate("test2", arg_amount);
-					r="level "+roman_from_int(arg_amount);
-					await achiv_level_grant(userdata, lang, "test2", here_level);
 				}
 
         return {
@@ -1145,7 +1135,7 @@ async function cmd_apple({ request, userdata, lang }) {
 			  await stats_simple_add(userdata.statPtr.id, "streak_appleDay")
 			:
 			  await stats_simple_set(userdata.statPtr.id, "streak_appleDay", 0);
-			//await achiv_level_check(userdata, "appleDailyStreak", stat, lang);
+			//await Achievement.list["appleDailyStreak"].do_check(userdata, stat, lang);
 		}
   }
 
@@ -1245,7 +1235,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
 		{//+stat
 			if (ifSelfOn)
 			{
-				await achiv_level_grant(userdata, "onLeaderboard", lang, 1, {"name": translate(lang, `cmd.top.get.${h_on}.name`)});
+				await Achievement.list["onLeaderboard"].do_grant(userdata, lang, 1, {"name": translate(lang, `cmd.top.get.${h_on}.name`)});
 			}
 		}
 
@@ -1271,7 +1261,7 @@ async function cmd_rules({ userdata, userbook, lang }) {
 	{//+achiv
 		if (ruleKey==="new.2")
 		{
-			await achiv_level_grant(userdata, "secretRule", lang);
+			await Achievement.list["secretRule"].do_grant(userdata, lang);
 		}
 	}
   
@@ -1481,7 +1471,7 @@ async function cmd_quest({ userdata, userbook, lang }) {
 
   return {
     method: "PATCH",
-    body: await achiv_list_get(userdata, book_colors[userbook.color].int, lang)
+    body: await Achievement.display_get(userdata, book_colors[userbook.color].int, lang)
   };
 }
 
@@ -1537,7 +1527,7 @@ async function cmd_see({ data, userbook, lang }) {
   let t_delim = "";
   for (let i = 0; i < h_lines.length; i++) {
     if (h_lines[i]) h_content += t_delim + h_lines[i].line.markdown;
-    else h_content += t_delim + "———————————————————";
+    else h_content += t_delim + "—————————————————————";
     t_delim = "\n";
   }
 
@@ -1666,6 +1656,7 @@ async function cmd_kira({
   }
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
+	console.log("HI : h_victim_data=",h_victim_data," createdIfNot=",!h_will_fail);
 
   //check/others runs
   let run_combo = 1;
@@ -1695,7 +1686,7 @@ async function cmd_kira({
         // too much combo
         console.log("LOG : kira : counter is max combo=", run_combo);
 				{//+achiv
-					await achiv_level_grant(userdata, "counterMax", lang, 1, {"personId": h_victim_id});
+					await Achievement.list["counterMax"].do_grant(userdata, lang, 1, {"personId": h_victim_id});
 				}
         return {
           method: "PATCH",
@@ -1722,7 +1713,7 @@ async function cmd_kira({
 				//simpler pair
 				{
 	      	const stat=await stats_simple_add(userdata.statPtr.id, "do_counter");
-					await achiv_level_check(userdata, "counter", stat, lang, {"amount": stat});
+					await Achievement.list["counter"].do_check(userdata, stat, lang, {"amount": stat});
 				}
 	      await stats_simple_add(h_victim_data.statPtr.id, "is_countered");
 	      await stats_pair_add(h_pair, "by_counter", 1); //return the value
@@ -1734,7 +1725,7 @@ async function cmd_kira({
 					console.log(`HI : ${userdata.finalDate} - ${new Date()} = ${h_ping}`);
 					if (h_ping<6)
 					{
-						await achiv_level_grant(userdata, "counterShort", lang);
+						await Achievement.list["counterShort"].do_grant(userdata, lang, {"time": time_format_string_from_int(lang, "cmd.kira.fail.maxcombo")});
 					}
 				}
 			}
@@ -1795,16 +1786,16 @@ async function cmd_kira({
 			:
 			  await stats_simple_set(userdata.statPtr.id, "streak_killDay", 0);
 			if (h_dayGapDiff === 1)
-				await achiv_level_check(userdata, "killDailyStreak", stat, lang, {"amount": stat});
+				await Achievement.list["killDailyStreak"].do_check(userdata, stat, lang, {"amount": stat});
 			if (h_dayGapDiff >= 13)
-				await achiv_level_check(userdata, "killDailyComeback", stat, lang, {"amount": stat});
+				await Achievement.list["killDailyComeback"].do_check(userdata, stat, lang, {"amount": stat});
 			
 		}
 		
 		if ((userbook.index+1) % settings_max_lines === 0)
 		{
 	  	const stat=await stats_simple_add(userdata.statPtr.id, "streak_pageFilled");
-	  	await achiv_level_check(userdata, "writtenPage", stat, lang, {"amount": stat});
+	  	await Achievement.list["writtenPage"].do_check(userdata, stat, lang, {"amount": stat});
 		}
 	}
 
@@ -2064,6 +2055,8 @@ export async function cmd_kira_execute({ more }) {
       message_id: pack.victim_message_id,
     },
   };
+	let stat_kill;
+	let stat_avenge;
 
   if (pack.victim_id === process.env.APP_ID) {
     //fail/god
@@ -2106,7 +2099,7 @@ export async function cmd_kira_execute({ more }) {
 			//simpler pair
 			{
       	const stat_bulk=await stats_simple_bulkadd(userdata.statPtr.id, {"do_hit":1, "do_outerTime":pack.span});
-				await achiv_level_check(userdata, "outerTime", stat_bulk["do_outerTime"], lang, {"time": time_format_string_from_int(stat_bulk["do_outerTime"], lang)});
+				await Achievement.list["outerTime"].do_check(userdata, stat_bulk["do_outerTime"], lang, {"time": time_format_string_from_int(stat_bulk["do_outerTime"], lang)});
 			}
 	    await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_hited":1, "is_outedTime":pack.span});
 		}
@@ -2118,7 +2111,6 @@ export async function cmd_kira_execute({ more }) {
       pack.victim_id
     );
     let h_repetition = await stats_pair_add(h_pair, "by_hit", 1); //return the value
-		
 
 
     if (h_repetition === 1) {
@@ -2135,8 +2127,8 @@ export async function cmd_kira_execute({ more }) {
 				await stats_pair_set(h_pair, "by_avenge", h_victim_kills);
 				{
 	      	const stat_bulk=await stats_simple_bulkadd(userdata.statPtr.id, {"do_kill": 1, "do_avenger": h_victim_kills});
-					var stat_kill=stat_bulk["do_kill"];
-					var stat_avenge=h_victim_kills;
+					stat_kill=stat_bulk["do_kill"];
+					stat_avenge=h_victim_kills;
 				}
 	      await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_killed": 1, "is_avenged": h_victim_kills});
 			}
@@ -2199,21 +2191,24 @@ export async function cmd_kira_execute({ more }) {
 
 	//+achievements
 	{
+		if (stat_kill)
+		{//only if new kill
+			await Achievement.list["kill"].do_check(userdata, stat_kill, lang, {"amount": stat_kill});
+			await Achievement.list["avengeBest"].do_check(userdata, stat_avenge, lang, {"amount": stat_avenge});
+		}
+
 		if (pack.victim_id === process.env.APP_ID)
-			await achiv_level_grant(userdata, "killShini", lang);
+			await Achievement.list["killShini"].do_grant(userdata, lang);
 
 		else if (pack.victim_id === pack.attacker_id)
-			await achiv_level_grant(userdata, "killU", lang);
+			await Achievement.list["killU"].do_grant(userdata, lang);
 		else//only if not itself
 		{
-			await achiv_level_check(userdata, "murdersOn", h_repetition, lang, {"personId": pack.victim_id});//h_repetition is a var
+			await Achievement.list["murdersOn"].do_check(userdata, h_repetition, lang, {"personId": pack.victim_id});//h_repetition is a var
 
 			if (pack.span === 1987200)
-				await achiv_level_grant(userdata, "outer23d", lang, 1, {"personId": pack.victim_id});
+				await Achievement.list["outer23d"].do_grant(userdata, lang, 1, {"personId": pack.victim_id});
 		}
-		
-		await achiv_level_check(userdata, "kill", stat_kill, lang, {"amount": stat_kill});
-		await achiv_level_check(userdata, "avengeBest", stat_avenge, lang, {"amount": stat_avenge});
 	}
 }
 
