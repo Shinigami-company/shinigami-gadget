@@ -1,8 +1,7 @@
 import { api } from "gadget-server";
 
-import { cmd_kira_execute } from './cmd.js';
-import { kira_runs_after } from './kira.js';
-
+import { cmd_kira_execute } from "./cmd.js";
+import { kira_runs_after } from "./kira.js";
 
 //this one not working
 //function cmd_kira_wait({ api, more, user, lang }, f_time_ms, f_itr=0)
@@ -14,52 +13,48 @@ import { kira_runs_after } from './kira.js';
 //    setTimeout(() => { cmd_kira_wait({ api, more, user, lang }, f_time_ms-60000, f_itr+1); }, 60000);
 //}
 
-
 //this works FOREVER (and that cool)
 setInterval(kira_remember_checkup, 1000);
 
 var remembering = 0;
 var ocurence = 0;
-async function kira_remember_checkup()
-{
+async function kira_remember_checkup() {
   //remembering
-  if (remembering>0)
-  {
-    remembering+=1;
-    console.log(`ERROR : rem3mber : already remembering. remembering=${remembering} ocurence=${ocurence}`);
-    if (remembering<10) return;//!only if AFK < 10s
+  if (remembering > 0) {
+    remembering += 1;
+    console.log(
+      `ERROR : rem3mber : already remembering. remembering=${remembering} ocurence=${ocurence}`
+    );
+    if (remembering < 10) return; //!only if AFK < 10s
   }
-  remembering=1;
-
+  remembering = 1;
 
   //retrive
   let f_runs = await kira_runs_after(new Date());
 
   //execute
-  if (f_runs.length>0)
-  {
+  if (f_runs.length > 0) {
     //console.log(`LOG : rem3mber : execute ${f_runs.length} runs...`);
-    for (let i=0;i<f_runs.length;i+=1)
-    {
+    for (let i = 0; i < f_runs.length; i += 1) {
       console.log(`LOG : rem3mber : execute run ${i} : `, f_runs[i]);
-      await cmd_kira_execute({ more: { runId: f_runs[i].id}});
+      await cmd_kira_execute({ more: { runId: f_runs[i].id } });
     }
   }
-  
-  //log
-  if (ocurence%60===0)
-  {
-    console.log(`LOG : rem3mber : mrew (min=${ocurence/60})`);
-    let response = await fetch(`${process.env.URL}/awake`).then(raw => raw.json());
-    if (response.code!==200)
-    console.log(`ERROR : rem3mber : mrew failed`,response);
-  }
-  ocurence+=1;
-  remembering=0;
-};
 
-export function linkme(f_txt) 
-{
-  console.log("LOG : rem3mber : LINKED : ",f_txt)
-  remembering=0;
-};
+  //log
+  if (ocurence % 60 === 0) {
+    console.log(`LOG : rem3mber : mrew (min=${ocurence / 60})`);
+    let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
+      raw.json()
+    );
+    if (response.code !== 200)
+      console.log(`ERROR : rem3mber : mrew failed`, response);
+  }
+  ocurence += 1;
+  remembering = 0;
+}
+
+export function linkme(f_txt) {
+  console.log("LOG : rem3mber : LINKED : ", f_txt);
+  remembering = 0;
+}

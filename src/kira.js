@@ -25,7 +25,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
     //not created
     else return undefined;
   }
-	
+
   //get it
   return await api.KiraUsers.findFirst({
     filter: {
@@ -79,12 +79,10 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
 export async function kira_user_create(f_userId) {
   await api.KiraUsers.create({
     userId: f_userId,
-    statPtr:
-    {
+    statPtr: {
       create: { userId: f_userId },
     },
-    achivPtr:
-    {
+    achivPtr: {
       create: { userId: f_userId },
     },
   });
@@ -248,7 +246,10 @@ export async function kira_line_append(f_book, f_line, f_TimeDayGapObject) {
   let h_indexLine = f_book.index;
 
   //date
-  if (f_book.index === 0 || f_TimeDayGapObject.now.day != f_TimeDayGapObject.last.day) {
+  if (
+    f_book.index === 0 ||
+    f_TimeDayGapObject.now.day != f_TimeDayGapObject.last.day
+  ) {
     await api.KiraNotes.create({
       indexLine: h_indexLine,
       line: {

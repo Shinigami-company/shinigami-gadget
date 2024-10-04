@@ -90,7 +90,7 @@ import {
   kira_book_get,
   kira_book_color_choice,
   book_colors,
-	settings_max_lines
+  settings_max_lines,
 } from "./kira.js"; //kira book
 import {
   kira_run_create,
@@ -125,24 +125,29 @@ import {
   stats_parse,
   stats_simple_rank,
   stats_order_broad,
-	stats_order_ratio,
+  stats_order_ratio,
 } from "./stats.js"; // simple user statistics
 import {
   stats_pair_get_id,
   stats_pair_get_value,
   stats_pair_add,
   stats_pair_set,
-	stats_pairs_get_all,
+  stats_pairs_get_all,
   stats_pair_get_multiples,
 } from "./stats.js"; // pair user statstics
-import {
-	stats_checkup
-} from "./stats.js"; // update user statistics
-import {
-	Achievement
-} from "./achiv.js"; // user achivements
+import { stats_checkup } from "./stats.js"; // update user statistics
+import { Achievement } from "./achiv.js"; // user achivements
 
-import { rule_key_random, rule_key_parse, time_format_string_from_int, time_userday_get, time_day_int, time_day_format, time_day_gap, roman_from_int } from "./tools.js";// tools
+import {
+  rule_key_random,
+  rule_key_parse,
+  time_format_string_from_int,
+  time_userday_get,
+  time_day_int,
+  time_day_format,
+  time_day_gap,
+  roman_from_int,
+} from "./tools.js"; // tools
 
 import { linkme } from "./remember.js";
 linkme("linked from cmd"); //need to use a function from there
@@ -341,7 +346,7 @@ const commands_structure = {
       ],
     },
   },
-	
+
   running: {
     functions: {
       exe: cmd_running,
@@ -354,7 +359,7 @@ const commands_structure = {
       type: 1,
     },
   },
-	
+
   quest: {
     functions: {
       exe: cmd_quest,
@@ -856,17 +861,31 @@ async function cmd_god({ request, userdata, data, lang }) {
     case "test":
       {
         let r;
-				
-				if (false)
-				{
-					const stat=await stats_simple_get(userdata.statPtr.id, "do_outerTime");
-					r=stat+"_"+String(await Achievement.list["outerTime"].do_check(userdata, stat, lang, {"time": time_format_string_from_int(stat, lang)}));
-				}
 
-				{
-					const userDay=time_userday_get(request.body.locale);
-					r=`${userDay} - ${time_day_int(userDay)} - ${time_day_format(userDay)}`;
-				}
+        if (false) {
+          const stat = await stats_simple_get(
+            userdata.statPtr.id,
+            "do_outerTime"
+          );
+          r =
+            stat +
+            "_" +
+            String(
+              await Achievement.list["outerTime"].do_check(
+                userdata,
+                stat,
+                lang,
+                { time: time_format_string_from_int(stat, lang) }
+              )
+            );
+        }
+
+        {
+          const userDay = time_userday_get(request.body.locale);
+          r = `${userDay} - ${time_day_int(userDay)} - ${time_day_format(
+            userDay
+          )}`;
+        }
 
         return {
           method: "PATCH",
@@ -904,7 +923,7 @@ async function cmd_god({ request, userdata, data, lang }) {
         {
           console.time("checkup");
           console.log("LOG : cmd : checkup user id=", arg_user);
-					await stats_checkup(targetdata);
+          await stats_checkup(targetdata);
           console.timeEnd("checkup");
         }
 
@@ -1024,7 +1043,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
     }
 
     await kira_book_create(userdata, h_color);
-    await stats_simple_add(userdata.statPtr.id, "ever_book");//+stats
+    await stats_simple_add(userdata.statPtr.id, "ever_book"); //+stats
 
     return {
       method: "PATCH",
@@ -1051,7 +1070,7 @@ async function cmd_burn({ request, data, userbook, userdata, lang }) {
   }
 
   if (!data.options) {
-		await stats_simple_add(userdata.statPtr.id, "misc_match");//+stats
+    await stats_simple_add(userdata.statPtr.id, "misc_match"); //+stats
     return {
       method: "PATCH",
       body: {
@@ -1119,24 +1138,28 @@ async function cmd_apple({ request, userdata, lang }) {
   let h_apples_claimed = 0;
   let h_txt_claims = "";
 
-  const h_dayGap = time_day_gap(await kira_user_get_daily(userdata.id), request.body.locale, true);
-	const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
+  const h_dayGap = time_day_gap(
+    await kira_user_get_daily(userdata.id),
+    request.body.locale,
+    true
+  );
+  const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
 
   //claims
-  if (h_dayGapDiff!=0) {
+  if (h_dayGapDiff != 0) {
     //claim you daily
     await kira_user_set_daily(userdata.id);
     h_apples_claimed += sett_daily_amount;
     h_txt_claims +=
       translate(lang, `cmd.apples.claim.daily`, { added: 1 }) + "\n";
-		{//+stats
-			const stat = (h_dayGapDiff===1)
-			?
-			  await stats_simple_add(userdata.statPtr.id, "streak_appleDay")
-			:
-			  await stats_simple_set(userdata.statPtr.id, "streak_appleDay", 0);
-			//await Achievement.list["appleDailyStreak"].do_check(userdata, stat, lang);
-		}
+    {
+      //+stats
+      const stat =
+        h_dayGapDiff === 1
+          ? await stats_simple_add(userdata.statPtr.id, "streak_appleDay")
+          : await stats_simple_set(userdata.statPtr.id, "streak_appleDay", 0);
+      //await Achievement.list["appleDailyStreak"].do_check(userdata, stat, lang);
+    }
   }
 
   const h_claims = await kira_apple_claims_get(userdata.id);
@@ -1182,11 +1205,11 @@ async function cmd_top({ data, userdata, userbook, lang }) {
   //get
   let h_ranks;
   let h_amountK;
-	let if_parse=false;
+  let if_parse = false;
   switch (h_on) {
     case "apple":
       {
-				if_parse=false;
+        if_parse = false;
         h_ranks = await kira_users_rank("apples");
         h_amountK = "apples";
       }
@@ -1205,7 +1228,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
       break;
     case "time":
       {
-				if_parse=true;
+        if_parse = true;
         h_ranks = await stats_simple_rank("do_outerTime");
         h_amountK = "do_outerTime";
       }
@@ -1214,14 +1237,14 @@ async function cmd_top({ data, userdata, userbook, lang }) {
 
   //formating
   {
-		let ifSelfOn = false;
+    let ifSelfOn = false;
     let h_txt = "";
 
     let h_nl = "";
     for (let i = 0; i < 3; i++) {
-			let h_amount=h_ranks[i][h_amountK];
-			if (if_parse) h_amount=stats_parse(h_amountK, h_amount, lang);
-			if (h_ranks[i].userId===userdata.userId) ifSelfOn=true;
+      let h_amount = h_ranks[i][h_amountK];
+      if (if_parse) h_amount = stats_parse(h_amountK, h_amount, lang);
+      if (h_ranks[i].userId === userdata.userId) ifSelfOn = true;
       h_txt +=
         h_nl +
         translate(lang, `cmd.top.get.${h_on}.place`, {
@@ -1231,13 +1254,15 @@ async function cmd_top({ data, userdata, userbook, lang }) {
         });
       h_nl = "\n";
     }
-		
-		{//+stat
-			if (ifSelfOn)
-			{
-				await Achievement.list["onLeaderboard"].do_grant(userdata, lang, 1, {"name": translate(lang, `cmd.top.get.${h_on}.name`)});
-			}
-		}
+
+    {
+      //+stat
+      if (ifSelfOn) {
+        await Achievement.list["onLeaderboard"].do_grant(userdata, lang, 1, {
+          name: translate(lang, `cmd.top.get.${h_on}.name`),
+        });
+      }
+    }
 
     return {
       method: "PATCH",
@@ -1245,7 +1270,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
         content: translate(lang, `cmd.top.get.${h_on}.title`),
         embeds: [
           {
-						color: book_colors[userbook.color].int,
+            color: book_colors[userbook.color].int,
             description: h_txt,
           },
         ],
@@ -1256,16 +1281,16 @@ async function cmd_top({ data, userdata, userbook, lang }) {
 
 //#rules command
 async function cmd_rules({ userdata, userbook, lang }) {
-	const ruleKey=rule_key_random();
-	
-	{//+achiv
-		if (ruleKey==="new.2")
-		{
-			await Achievement.list["secretRule"].do_grant(userdata, lang);
-		}
-	}
-  
-	return {
+  const ruleKey = rule_key_random();
+
+  {
+    //+achiv
+    if (ruleKey === "new.2") {
+      await Achievement.list["secretRule"].do_grant(userdata, lang);
+    }
+  }
+
+  return {
     method: "PATCH",
     body: {
       content:
@@ -1274,9 +1299,9 @@ async function cmd_rules({ userdata, userbook, lang }) {
         translate(lang, "cmd.rules.preamble"),
       embeds: [
         {
-					color: book_colors[userbook.color].int,
-          description: translate(lang, "rule."+ruleKey),
-          footer: {text: rule_key_parse(ruleKey)}
+          color: book_colors[userbook.color].int,
+          description: translate(lang, "rule." + ruleKey),
+          footer: { text: rule_key_parse(ruleKey) },
         },
       ],
     },
@@ -1285,7 +1310,6 @@ async function cmd_rules({ userdata, userbook, lang }) {
 
 //#stats command
 async function cmd_stats({ data, userdata, userbook, lang }) {
-
   let r_text;
   let r_lore = "";
 
@@ -1311,54 +1335,52 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
 
     case "relation":
       {
-				const pairs=await stats_pairs_get_all(userdata.userId);
-        if (pairs.length>0) {
-					
+        const pairs = await stats_pairs_get_all(userdata.userId);
+        if (pairs.length > 0) {
           r_text = translate(lang, `stats.relation.show`);
           for (const v of pairs) {
-						const pair_datas=await stats_pair_get_multiples(v,{"by_hit":3,"userId":2});
-						const hits=[pair_datas[0]["by_hit"],pair_datas[1]["by_hit"]];
-						
-						if (pair_datas[1]["userId"]===userdata.userId)
-						{//suscide message
-						
-							if (hits[0]>0)
-							{
-		            r_lore = `${r_lore}\n${translate(lang, `stats.relation.self`, {
-		              whoId: userdata.userId,
-		              value: hits[0],
-		              unit: translate(
-		                lang,
-		                `word.time${hits[0] > 1 ? "s" : ""}`
-		              ),
-		            })}`;
-							}
+            const pair_datas = await stats_pair_get_multiples(v, {
+              by_hit: 3,
+              userId: 2,
+            });
+            const hits = [pair_datas[0]["by_hit"], pair_datas[1]["by_hit"]];
 
-						} else {
+            if (pair_datas[1]["userId"] === userdata.userId) {
+              //suscide message
 
-							if (hits[0]>0)
-							{//you killed message
-		            r_lore = `${r_lore}\n${translate(lang, `stats.relation.person.u`, {
-		              whoId: pair_datas[1]["userId"],
-		              value: hits[0],
-		              unit: translate(
-		                lang,
-		                `word.time${hits[0] > 1 ? "s" : ""}`
-		              ),
-		            })}`;
-							}
-							if (hits[1]>0)
-							{//killed you message
-		            r_lore = `${r_lore}\n${translate(lang, `stats.relation.person.e`, {
-		              whoId: pair_datas[1]["userId"],
-		              value: hits[1],
-		              unit: translate(
-		                lang,
-		                `word.time${hits[1] > 1 ? "s" : ""}`
-		              ),
-		            })}`;
-							}
-						}
+              if (hits[0] > 0) {
+                r_lore = `${r_lore}\n${translate(lang, `stats.relation.self`, {
+                  whoId: userdata.userId,
+                  value: hits[0],
+                  unit: translate(lang, `word.time${hits[0] > 1 ? "s" : ""}`),
+                })}`;
+              }
+            } else {
+              if (hits[0] > 0) {
+                //you killed message
+                r_lore = `${r_lore}\n${translate(
+                  lang,
+                  `stats.relation.person.u`,
+                  {
+                    whoId: pair_datas[1]["userId"],
+                    value: hits[0],
+                    unit: translate(lang, `word.time${hits[0] > 1 ? "s" : ""}`),
+                  }
+                )}`;
+              }
+              if (hits[1] > 0) {
+                //killed you message
+                r_lore = `${r_lore}\n${translate(
+                  lang,
+                  `stats.relation.person.e`,
+                  {
+                    whoId: pair_datas[1]["userId"],
+                    value: hits[1],
+                    unit: translate(lang, `word.time${hits[1] > 1 ? "s" : ""}`),
+                  }
+                )}`;
+              }
+            }
           }
         } else {
           r_text = translate(lang, `stats.relation.fail.nothing`);
@@ -1366,23 +1388,35 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
       }
       break;
 
-			case "ratio": 
-			{
+    case "ratio":
+      {
         for (const ratioKey in stats_order_ratio) {
-          const dividend = await stats_simple_get(userdata.statPtr.id, stats_order_ratio[ratioKey][0]);
-          const divider = await stats_simple_get(userdata.statPtr.id, stats_order_ratio[ratioKey][1]);
+          const dividend = await stats_simple_get(
+            userdata.statPtr.id,
+            stats_order_ratio[ratioKey][0]
+          );
+          const divider = await stats_simple_get(
+            userdata.statPtr.id,
+            stats_order_ratio[ratioKey][1]
+          );
           if (
-						!stats_simple_is_default(stats_order_ratio[ratioKey][0], dividend)
-					 	&& !stats_simple_is_default(stats_order_ratio[ratioKey][1], divider)
-						)
-					{
-            r_lore = `${r_lore}\n${translate(lang, `stats.ratio.show.${ratioKey}`, {
-              value: Math.round((dividend/divider)*1000)/1000,
-							dividend: dividend,
-							divider: divider
-							//dividend: stats_parse(stats_order_ratio[ratioKey][0], dividend, lang),
-							//divider: stats_parse(stats_order_ratio[ratioKey][1], divider, lang)
-            })}`;
+            !stats_simple_is_default(
+              stats_order_ratio[ratioKey][0],
+              dividend
+            ) &&
+            !stats_simple_is_default(stats_order_ratio[ratioKey][1], divider)
+          ) {
+            r_lore = `${r_lore}\n${translate(
+              lang,
+              `stats.ratio.show.${ratioKey}`,
+              {
+                value: Math.round((dividend / divider) * 1000) / 1000,
+                dividend: dividend,
+                divider: divider,
+                //dividend: stats_parse(stats_order_ratio[ratioKey][0], dividend, lang),
+                //divider: stats_parse(stats_order_ratio[ratioKey][1], divider, lang)
+              }
+            )}`;
           }
         }
         if (r_lore === "") {
@@ -1390,10 +1424,10 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
         } else {
           r_text = translate(lang, `stats.ratio.show`);
         }
-			}
-			break;
-    	
-			default:
+      }
+      break;
+
+    default:
       {
         return {
           method: "PATCH",
@@ -1418,7 +1452,7 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
           ? undefined
           : [
               {
-								color: book_colors[userbook.color].int,
+                color: book_colors[userbook.color].int,
                 description: r_lore,
               },
             ],
@@ -1457,7 +1491,7 @@ async function cmd_running({ data, userbook, user, lang }) {
           ? undefined
           : [
               {
-								color: book_colors[userbook.color].int,
+                color: book_colors[userbook.color].int,
                 description: r_lore,
               },
             ],
@@ -1465,16 +1499,17 @@ async function cmd_running({ data, userbook, user, lang }) {
   };
 }
 
-
 //#quest
 async function cmd_quest({ userdata, userbook, lang }) {
-
   return {
     method: "PATCH",
-    body: await Achievement.display_get(userdata, book_colors[userbook.color].int, lang)
+    body: await Achievement.display_get(
+      userdata,
+      book_colors[userbook.color].int,
+      lang
+    ),
   };
 }
-
 
 //#lang command
 async function cmd_lang({ data, userdata, request, lang }) {
@@ -1656,7 +1691,12 @@ async function cmd_kira({
   }
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
-	console.log("HI : h_victim_data=",h_victim_data," createdIfNot=",!h_will_fail);
+  console.log(
+    "HI : h_victim_data=",
+    h_victim_data,
+    " createdIfNot=",
+    !h_will_fail
+  );
 
   //check/others runs
   let run_combo = 1;
@@ -1685,9 +1725,12 @@ async function cmd_kira({
       if (run_combo >= sett_counter_combo_max) {
         // too much combo
         console.log("LOG : kira : counter is max combo=", run_combo);
-				{//+achiv
-					await Achievement.list["counterMax"].do_grant(userdata, lang, 1, {"personId": h_victim_id});
-				}
+        {
+          //+achiv
+          await Achievement.list["counterMax"].do_grant(userdata, lang, 1, {
+            personId: h_victim_id,
+          });
+        }
         return {
           method: "PATCH",
           body: {
@@ -1698,37 +1741,45 @@ async function cmd_kira({
         };
       }
 
-
       //cancel death if itself
       console.log("LOG : kira : countering... comobo=", run_combo);
       await cmd_kira_cancel({ more: { runId: h_run_reverse.id } });
       console.log("LOG : kira : countered");
-			{//+stats
-	      const h_pair = await stats_pair_get_id(
-	        userdata.id,
-	        user.id,
-	        h_victim_data.id,
-	        h_victim_data.userId
-	      );
-				//simpler pair
-				{
-	      	const stat=await stats_simple_add(userdata.statPtr.id, "do_counter");
-					await Achievement.list["counter"].do_check(userdata, stat, lang, {"amount": stat});
-				}
-	      await stats_simple_add(h_victim_data.statPtr.id, "is_countered");
-	      await stats_pair_add(h_pair, "by_counter", 1); //return the value
-				
-				{//+achiv
-		      const h_ping = parseInt(
-		        (new Date(userdata.finalDate).getTime() - new Date().getTime()) / 1000
-		      );
-					console.log(`HI : ${userdata.finalDate} - ${new Date()} = ${h_ping}`);
-					if (h_ping<6)
-					{
-						await Achievement.list["counterShort"].do_grant(userdata, lang, {"time": time_format_string_from_int(lang, "cmd.kira.fail.maxcombo")});
-					}
-				}
-			}
+      {
+        //+stats
+        const h_pair = await stats_pair_get_id(
+          userdata.id,
+          user.id,
+          h_victim_data.id,
+          h_victim_data.userId
+        );
+        //simpler pair
+        {
+          const stat = await stats_simple_add(
+            userdata.statPtr.id,
+            "do_counter"
+          );
+          await Achievement.list["counter"].do_check(userdata, stat, lang, {
+            amount: stat,
+          });
+        }
+        await stats_simple_add(h_victim_data.statPtr.id, "is_countered");
+        await stats_pair_add(h_pair, "by_counter", 1); //return the value
+
+        {
+          //+achiv
+          const h_ping = parseInt(
+            (new Date(userdata.finalDate).getTime() - new Date().getTime()) /
+              1000
+          );
+          console.log(`HI : ${userdata.finalDate} - ${new Date()} = ${h_ping}`);
+          if (h_ping < 6) {
+            await Achievement.list["counterShort"].do_grant(userdata, lang, {
+              time: time_format_string_from_int(lang, "cmd.kira.fail.maxcombo"),
+            });
+          }
+        }
+      }
       //and continue
     }
   }
@@ -1768,36 +1819,54 @@ async function cmd_kira({
   //checked !
 
   //validate writting
-  const h_dayGap = time_day_gap(userbook.updatedAt, request.body.locale, true, true);
-	console.log("DBUG : h_dayGap=",h_dayGap);
-	const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
+  const h_dayGap = time_day_gap(
+    userbook.updatedAt,
+    request.body.locale,
+    true,
+    true
+  );
+  console.log("DBUG : h_dayGap=", h_dayGap);
+  const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
   const h_note = await kira_line_append(userbook, h_line, h_dayGap);
-	
-	{//+stats
-	  await stats_simple_add(userdata.statPtr.id, "do_try");
-	  if (h_victim_data?.id)
-			await stats_simple_add(h_victim_data?.statPtr.id, "is_tried");
-		
-		if (h_dayGapDiff != 0)
-		{//not the same day
-			const stat = (h_dayGapDiff === 1)
-			?
-			  await stats_simple_add(userdata.statPtr.id, "streak_killDay")
-			:
-			  await stats_simple_set(userdata.statPtr.id, "streak_killDay", 0);
-			if (h_dayGapDiff === 1)
-				await Achievement.list["killDailyStreak"].do_check(userdata, stat, lang, {"amount": stat});
-			if (h_dayGapDiff >= 13)
-				await Achievement.list["killDailyComeback"].do_check(userdata, stat, lang, {"amount": stat});
-			
-		}
-		
-		if ((userbook.index+1) % settings_max_lines === 0)
-		{
-	  	const stat=await stats_simple_add(userdata.statPtr.id, "streak_pageFilled");
-	  	await Achievement.list["writtenPage"].do_check(userdata, stat, lang, {"amount": stat});
-		}
-	}
+
+  {
+    //+stats
+    await stats_simple_add(userdata.statPtr.id, "do_try");
+    if (h_victim_data?.id)
+      await stats_simple_add(h_victim_data?.statPtr.id, "is_tried");
+
+    if (h_dayGapDiff != 0) {
+      //not the same day
+      const stat =
+        h_dayGapDiff === 1
+          ? await stats_simple_add(userdata.statPtr.id, "streak_killDay")
+          : await stats_simple_set(userdata.statPtr.id, "streak_killDay", 0);
+      if (h_dayGapDiff === 1)
+        await Achievement.list["killDailyStreak"].do_check(
+          userdata,
+          stat,
+          lang,
+          { amount: stat }
+        );
+      if (h_dayGapDiff >= 13)
+        await Achievement.list["killDailyComeback"].do_check(
+          userdata,
+          stat,
+          lang,
+          { amount: stat }
+        );
+    }
+
+    if ((userbook.index + 1) % settings_max_lines === 0) {
+      const stat = await stats_simple_add(
+        userdata.statPtr.id,
+        "streak_pageFilled"
+      );
+      await Achievement.list["writtenPage"].do_check(userdata, stat, lang, {
+        amount: stat,
+      });
+    }
+  }
 
   //creat kira run
   const h_run = await kira_run_create(
@@ -2055,8 +2124,8 @@ export async function cmd_kira_execute({ more }) {
       message_id: pack.victim_message_id,
     },
   };
-	let stat_kill;
-	let stat_avenge;
+  let stat_kill;
+  let stat_avenge;
 
   if (pack.victim_id === process.env.APP_ID) {
     //fail/god
@@ -2095,15 +2164,27 @@ export async function cmd_kira_execute({ more }) {
     await kira_user_set_life(h_victim_data.id, false, pack.span);
     if (h_will_book_victim) await kira_line_taste(pack.note_id, 1); //note need to exist
 
-    {//+stats
-			//simpler pair
-			{
-      	const stat_bulk=await stats_simple_bulkadd(userdata.statPtr.id, {"do_hit":1, "do_outerTime":pack.span});
-				await Achievement.list["outerTime"].do_check(userdata, stat_bulk["do_outerTime"], lang, {"time": time_format_string_from_int(stat_bulk["do_outerTime"], lang)});
-			}
-	    await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_hited":1, "is_outedTime":pack.span});
-		}
-		//need to be out in this scope because used after
+    {
+      //+stats
+      //simpler pair
+      {
+        const stat_bulk = await stats_simple_bulkadd(userdata.statPtr.id, {
+          do_hit: 1,
+          do_outerTime: pack.span,
+        });
+        await Achievement.list["outerTime"].do_check(
+          userdata,
+          stat_bulk["do_outerTime"],
+          lang,
+          { time: time_format_string_from_int(stat_bulk["do_outerTime"], lang) }
+        );
+      }
+      await stats_simple_bulkadd(h_victim_data.statPtr.id, {
+        is_hited: 1,
+        is_outedTime: pack.span,
+      });
+    }
+    //need to be out in this scope because used after
     let h_pair = await stats_pair_get_id(
       userdata.id,
       user.id,
@@ -2112,26 +2193,35 @@ export async function cmd_kira_execute({ more }) {
     );
     let h_repetition = await stats_pair_add(h_pair, "by_hit", 1); //return the value
 
-
     if (h_repetition === 1) {
       //first time attacker kill victim
-      
-			//monetize kill
+
+      //monetize kill
       let h_victim_kills = await stats_simple_get(
         h_victim_data.statPtr.id,
         "do_kill"
       );
-      console.log("DBUG : kira : kills by victim for apples : ",h_victim_kills);
+      console.log(
+        "DBUG : kira : kills by victim for apples : ",
+        h_victim_kills
+      );
 
-			{//+stats
-				await stats_pair_set(h_pair, "by_avenge", h_victim_kills);
-				{
-	      	const stat_bulk=await stats_simple_bulkadd(userdata.statPtr.id, {"do_kill": 1, "do_avenger": h_victim_kills});
-					stat_kill=stat_bulk["do_kill"];
-					stat_avenge=h_victim_kills;
-				}
-	      await stats_simple_bulkadd(h_victim_data.statPtr.id, {"is_killed": 1, "is_avenged": h_victim_kills});
-			}
+      {
+        //+stats
+        await stats_pair_set(h_pair, "by_avenge", h_victim_kills);
+        {
+          const stat_bulk = await stats_simple_bulkadd(userdata.statPtr.id, {
+            do_kill: 1,
+            do_avenger: h_victim_kills,
+          });
+          stat_kill = stat_bulk["do_kill"];
+          stat_avenge = h_victim_kills;
+        }
+        await stats_simple_bulkadd(h_victim_data.statPtr.id, {
+          is_killed: 1,
+          is_avenged: h_victim_kills,
+        });
+      }
 
       let h_apples = 0; //default
       if (h_victim_kills) {
@@ -2189,27 +2279,40 @@ export async function cmd_kira_execute({ more }) {
     if (!(errorMsg?.code === 50007)) throw e;
   }
 
-	//+achievements
-	{
-		if (stat_kill)
-		{//only if new kill
-			await Achievement.list["kill"].do_check(userdata, stat_kill, lang, {"amount": stat_kill});
-			await Achievement.list["avengeBest"].do_check(userdata, stat_avenge, lang, {"amount": stat_avenge});
-		}
+  //+achievements
+  {
+    if (stat_kill) {
+      //only if new kill
+      await Achievement.list["kill"].do_check(userdata, stat_kill, lang, {
+        amount: stat_kill,
+      });
+      await Achievement.list["avengeBest"].do_check(
+        userdata,
+        stat_avenge,
+        lang,
+        { amount: stat_avenge }
+      );
+    }
 
-		if (pack.victim_id === process.env.APP_ID)
-			await Achievement.list["killShini"].do_grant(userdata, lang);
+    if (pack.victim_id === process.env.APP_ID)
+      await Achievement.list["killShini"].do_grant(userdata, lang);
+    else if (pack.victim_id === pack.attacker_id)
+      await Achievement.list["killU"].do_grant(userdata, lang);
+    //only if not itself
+    else {
+      await Achievement.list["murdersOn"].do_check(
+        userdata,
+        h_repetition,
+        lang,
+        { personId: pack.victim_id }
+      ); //h_repetition is a var
 
-		else if (pack.victim_id === pack.attacker_id)
-			await Achievement.list["killU"].do_grant(userdata, lang);
-		else//only if not itself
-		{
-			await Achievement.list["murdersOn"].do_check(userdata, h_repetition, lang, {"personId": pack.victim_id});//h_repetition is a var
-
-			if (pack.span === 1987200)
-				await Achievement.list["outer23d"].do_grant(userdata, lang, 1, {"personId": pack.victim_id});
-		}
-	}
+      if (pack.span === 1987200)
+        await Achievement.list["outer23d"].do_grant(userdata, lang, 1, {
+          personId: pack.victim_id,
+        });
+    }
+  }
 }
 
 //is not executed by [./remember.js]
