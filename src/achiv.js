@@ -243,6 +243,26 @@ export class Achievement {
   }
 }
 
+class Schedule {
+  constructor()
+  {
+    this.tasks = [];
+  }
+  
+  add(f_task)
+  {
+    this.tasks.push(f_task);
+  }
+  async do()
+  {
+    for (v of this.tasks)
+    {
+      await v();
+    }
+    this.tasks = [];
+  }
+}
+
 new Achievement("test1", "done_test1", 1, undefined, undefined, [10]);
 new Achievement(
   "test2",

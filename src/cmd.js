@@ -136,7 +136,7 @@ import {
   stats_pair_get_multiples,
 } from "./stats.js"; // pair user statstics
 import { stats_checkup } from "./stats.js"; // update user statistics
-import { Achievement } from "./achiv.js"; // user achivements
+import { Achievement, Schedule } from "./achiv.js"; // user achivements
 
 import {
   rule_key_random,
@@ -862,6 +862,17 @@ async function cmd_god({ request, userdata, data, lang }) {
       {
         let r;
 
+        {
+          let glob;
+          {
+            let local = " me";
+            glob = () => {
+              return "im" + local;
+            };
+          }
+          r = glob();
+        }
+
         if (false) {
           const stat = await stats_simple_get(
             userdata.statPtr.id,
@@ -880,7 +891,7 @@ async function cmd_god({ request, userdata, data, lang }) {
             );
         }
 
-        {
+        if (false) {
           const userDay = time_userday_get(request.body.locale);
           r = `${userDay} - ${time_day_int(userDay)} - ${time_day_format(
             userDay
@@ -1729,7 +1740,7 @@ async function cmd_kira({
           //+achiv
           await Achievement.list["counterMax"].do_grant(userdata, lang, 1, {
             personId: h_victim_id,
-          });
+          })
         }
         return {
           method: "PATCH",
@@ -2126,6 +2137,8 @@ export async function cmd_kira_execute({ more }) {
   };
   let stat_kill;
   let stat_avenge;
+  let stat_repetition;
+  let stat_outerTime;
 
   if (pack.victim_id === process.env.APP_ID) {
     //fail/god
@@ -2172,12 +2185,7 @@ export async function cmd_kira_execute({ more }) {
           do_hit: 1,
           do_outerTime: pack.span,
         });
-        await Achievement.list["outerTime"].do_check(
-          userdata,
-          stat_bulk["do_outerTime"],
-          lang,
-          { time: time_format_string_from_int(stat_bulk["do_outerTime"], lang) }
-        );
+        stat_outerTime=stat_bulk["do_outerTime"];
       }
       await stats_simple_bulkadd(h_victim_data.statPtr.id, {
         is_hited: 1,
@@ -2191,9 +2199,9 @@ export async function cmd_kira_execute({ more }) {
       h_victim_data.id,
       pack.victim_id
     );
-    let h_repetition = await stats_pair_add(h_pair, "by_hit", 1); //return the value
+    stat_repetition = await stats_pair_add(h_pair, "by_hit", 1); //return the value
 
-    if (h_repetition === 1) {
+    if (stat_repetition === 1) {
       //first time attacker kill victim
 
       //monetize kill
@@ -2251,7 +2259,7 @@ export async function cmd_kira_execute({ more }) {
       h_return_msg_attacker.content +=
         "\n" +
         translate(lang, "cmd.kira.finish.attacker.count", {
-          number: h_repetition,
+          number: stat_repetition,
         });
     }
   }
@@ -2293,6 +2301,15 @@ export async function cmd_kira_execute({ more }) {
         { amount: stat_avenge }
       );
     }
+    
+    if (stat_outerTime) {
+      await Achievement.list["outerTime"].do_check(
+        userdata,
+        stat_outerTime,
+        lang,
+        { time: time_format_string_from_int(stat_outerTime, lang) }
+      )
+    }
 
     if (pack.victim_id === process.env.APP_ID)
       await Achievement.list["killShini"].do_grant(userdata, lang);
@@ -2300,12 +2317,13 @@ export async function cmd_kira_execute({ more }) {
       await Achievement.list["killU"].do_grant(userdata, lang);
     //only if not itself
     else {
+      
       await Achievement.list["murdersOn"].do_check(
         userdata,
-        h_repetition,
+        stat_repetition,
         lang,
         { personId: pack.victim_id }
-      ); //h_repetition is a var
+      )
 
       if (pack.span === 1987200)
         await Achievement.list["outer23d"].do_grant(userdata, lang, 1, {
