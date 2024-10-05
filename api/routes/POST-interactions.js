@@ -25,9 +25,10 @@ import { sleep } from "../../src/tools.js"
  */
 export default async function route({ request, reply, api, logger, connections }) {
   // Interaction type and data
-  const { type, id, member, token, message, channel } = request.body;//default
-  let { data } = request.body;
-  const user = member ? member.user : request.body.user;
+  const source = request.body;
+  const { type, id, member, token, message, channel } = source;//default
+  let { data } = source;
+  const user = member ? member.user : source.user;
   
   //console.log("DBUG : route : get [request.body] :");//dbug
   //console.log(request.body);//dbug
@@ -48,7 +49,7 @@ export default async function route({ request, reply, api, logger, connections }
 	  user=${user.id} (${user.username}) command=${commandName} options=${data.options}
 	  RESP_URL=webhooks/${process.env.APP_ID}/${token}/messages/@original
 	  `);
-      const return_patch = await kira_cmd({ api, reply, request, user, data, member, channel, token, id }, commandName);
+      const return_patch = await kira_cmd({ source, type, user, data, member, channel, token, id }, commandName);
       // return_patch.method must be 'PATCH'
       
       for (let i=1; i<=10;i+=1)

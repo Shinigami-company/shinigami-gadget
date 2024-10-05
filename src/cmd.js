@@ -521,22 +521,26 @@ const commands_structure = {
 export async function kira_cmd(f_deep, f_cmd) {
   /**f_deep :
    * - (api)
-   * - (reply)
-   * - user
+   * - ~~reply~~
    * - |lang|
-   * body
-   * - ~~type~~
-   * - (id)
-   * - data
-   * - member
-   * - ([token])
-   * - (message)
+   * - source
+   *  - type
+   *  - user
+   *  body
+   *  - ~~type~~
+   *  - (id)
+   *  - data
+   *  - member
+   *  - ([token])
+   *  - (message)
    * datamodels
    * - |userdata|
    * - |userbook|
    */
   // usable ~~unusable~~ (unused) [used here] |created here|
 
+  //console.log("DBUG : cmd : f_deep=", f_deep);
+  
   //new datas
 
   //get the user data element.
@@ -728,10 +732,26 @@ function check_has_book(dig) {
   return undefined;
 }
 
+//react check
+function check_react_is_self(dig) {
+  if (
+    !dig.type === InteractionType.MESSAGE_COMPONENT &&
+    dig.message.interaction.user.id === dig.user.id
+  ) {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(dig.lang, "check.react.self.not"),
+      },
+    };
+  }
+  return undefined;
+}
+
 //--- the commands ---
 
 //#god command
-async function cmd_god({ request, userdata, data, lang }) {
+async function cmd_god({ source, userdata, data, lang }) {
   const arg_sub = data.options.find((opt) => opt.name === "action")?.value; // also data.options[0].value
   const arg_user = data.options.find((opt) => opt.name === "user")?.value;
   const arg_amount = data.options.find((opt) => opt.name === "amount")?.value;
@@ -874,7 +894,7 @@ async function cmd_god({ request, userdata, data, lang }) {
         }
 
         if (false) {
-          const userDay = time_userday_get(request.body.locale);
+          const userDay = time_userday_get(source.locale);
           r = `${userDay} - ${time_day_int(userDay)} - ${time_day_format(
             userDay
           )}`;
@@ -1007,7 +1027,10 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
           ? translate(lang, "cmd.claim.fail.already.free")
           : translate(lang, "cmd.claim.fail.already.paid", {
               price: h_price,
-              color: translate(lang, `word.color.${book_colors[h_color].color}`),
+              color: translate(
+                lang,
+                `word.color.${book_colors[h_color].color}`
+              ),
             }),
       },
     };
@@ -1094,7 +1117,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
 }
 
 //#burn command
-async function cmd_burn({ request, data, userbook, userdata, lang }) {
+async function cmd_burn({ source, data, userbook, userdata, lang }) {
   if (!userbook) {
     return {
       method: "PATCH",
@@ -1136,11 +1159,24 @@ async function cmd_burn({ request, data, userbook, userdata, lang }) {
     };
   }
 
+  if (false && (!data.options[0] || data.options[0].value != userdata.userId)) {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, `cmd.burn.fail.notu`),
+      },
+    };
+  }
+
+  console.log(source.message);
+  console.log(source.message.timestap);
+  console.log(source.message.interaction.user);
+
   if (!data.options[0] || !data.options[0].value) {
     //remove components from the message
     //this does not works if know is used as a command
     await DiscordRequest(
-      `channels/${request.body.channel_id}/messages/${request.body.message.id}`,
+      `channels/${source.channel_id}/messages/${source.message.id}`,
       {
         method: "PATCH",
         body: {
@@ -1157,7 +1193,7 @@ async function cmd_burn({ request, data, userbook, userdata, lang }) {
   }
 
   console.log("DBUG : cmd : burn userbook=", userbook);
-  // throw new Error("you would have burned it with sucress.");
+  throw new Error("you would have burned it with sucress.");
   await kira_book_delete(userbook);
 
   return {
@@ -1169,13 +1205,13 @@ async function cmd_burn({ request, data, userbook, userdata, lang }) {
 }
 
 //#apples command
-async function cmd_apple({ request, userdata, lang }) {
+async function cmd_apple({ source, userdata, lang }) {
   let h_apples_claimed = 0;
   let h_txt_claims = "";
 
   const h_dayGap = time_day_gap(
     await kira_user_get_daily(userdata.id),
-    request.body.locale,
+    source.locale,
     true
   );
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
@@ -1547,14 +1583,14 @@ async function cmd_quest({ userdata, userbook, lang }) {
 }
 
 //#lang command
-async function cmd_lang({ data, userdata, request, lang }) {
+async function cmd_lang({ source, data, userdata, lang }) {
   let r_txt;
   if (data.options) {
     let h_lang = data.options[0].value;
     if (h_lang === "mine") {
-      let lore = lang_lore(request.body.locale);
+      let lore = lang_lore(source.locale);
       await lang_set(userdata.id, null);
-      r_txt = translate(request.body.locale, "cmd.lang.your.set") + lore;
+      r_txt = translate(source.locale, "cmd.lang.your.set") + lore;
     } else {
       let lore = lang_lore(h_lang);
       await lang_set(userdata.id, h_lang);
@@ -1650,7 +1686,7 @@ async function cmd_see({ data, userbook, lang }) {
 
 //#kira command
 async function cmd_kira({
-  request,
+  source,
   user,
   userdata,
   data,
@@ -1691,7 +1727,7 @@ async function cmd_kira({
     h_will_ping_attacker = false;
   }
 
-  if (!request.body.guild) {
+  if (!source.guild) {
     //instant fail because victim not here
     return {
       method: "PATCH",
@@ -1703,7 +1739,7 @@ async function cmd_kira({
 
   try {
     let user = await DiscordRequest(
-      `/guilds/${request.body.guild.id}/members/${h_victim_id}`,
+      `/guilds/${source.guild.id}/members/${h_victim_id}`,
       //`/users/${h_victim_id}`,
       {
         method: "GET",
@@ -1852,12 +1888,7 @@ async function cmd_kira({
   //checked !
 
   //validate writting
-  const h_dayGap = time_day_gap(
-    userbook.updatedAt,
-    request.body.locale,
-    true,
-    true
-  );
+  const h_dayGap = time_day_gap(userbook.updatedAt, source.locale, true, true);
   console.log("DBUG : h_dayGap=", h_dayGap);
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
   const h_note = await kira_line_append(userbook, h_line, h_dayGap);
@@ -2441,7 +2472,7 @@ export async function cmd_kira_cancel({ more }) {
 
 //#know command
 
-async function cmd_know({ data, request, userdata, lang }) {
+async function cmd_know({ data, source, userdata, lang }) {
   //args
 
   let h_wh = data.options[0].value;
@@ -2497,7 +2528,7 @@ async function cmd_know({ data, request, userdata, lang }) {
   //remove components from the message
   //this does not works if know is used as a command
   await DiscordRequest(
-    `channels/${request.body.channel_id}/messages/${request.body.message.id}`,
+    `channels/${source.channel_id}/messages/${source.message.id}`,
     {
       method: "PATCH",
       body: {
