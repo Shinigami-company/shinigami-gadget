@@ -54,18 +54,20 @@ export class Achievement {
   //VALUE/GET
   #level_graduate(f_value) {
     if (!this.graduations) return null;
-    
+
     let i = 0;
-    for (
-      ;
-      i < this.graduations.length && f_value >= this.graduations[i];
-      i++
-    ); //must have  ;  or  {}  at the end !
+    for (; i < this.graduations.length && f_value >= this.graduations[i]; i++); //must have  ;  or  {}  at the end !
     return i;
   }
 
   //USER/SET
-  async do_check(f_userModel, f_value, f_lang, f_doneDolarValues = {}, parseGrad = (it) => it) {
+  async do_check(
+    f_userModel,
+    f_value,
+    f_lang,
+    f_doneDolarValues = {},
+    parseGrad = (it) => it
+  ) {
     return await this.do_grant(
       f_userModel,
       f_lang,
@@ -75,7 +77,13 @@ export class Achievement {
     );
   }
 
-  async do_grant(f_userModel, f_lang, f_newLevel = 1, f_doneDolarValues = {}, parseGrad = (it) => it) {
+  async do_grant(
+    f_userModel,
+    f_lang,
+    f_newLevel = 1,
+    f_doneDolarValues = {},
+    parseGrad = (it) => it
+  ) {
     //values
     const achivModelId = f_userModel.achivPtr.id;
     //new level maxed to maxlevel
@@ -87,7 +95,8 @@ export class Achievement {
     const h_gap = f_newLevel - h_registerLevel;
     let h_apples = 0;
 
-    if (!(f_newLevel > h_registerLevel)) {//didnt has a greater level
+    if (!(f_newLevel > h_registerLevel)) {
+      //didnt has a greater level
       return h_gap;
     }
 
@@ -122,18 +131,17 @@ export class Achievement {
         f_lang,
         `achievement.done.yay.${yayTypeStr}`,
         {
-          "name": translate(f_lang, `achievements.${this.name}.title`),
-          "level": roman_from_int(f_newLevel),
+          name: translate(f_lang, `achievements.${this.name}.title`),
+          level: roman_from_int(f_newLevel),
         }
       );
 
-      if (this.graduations && this.graduations[f_newLevel])
-      {
+      if (this.graduations && this.graduations[f_newLevel]) {
         //show landing amount
         //if must be 15, and your are at 17, show parseGrad(17)
-        f_doneDolarValues["landing"]=parseGrad(this.graduations[f_newLevel]);
+        f_doneDolarValues["landing"] = parseGrad(this.graduations[f_newLevel]);
       }
-      
+
       const doneMessage = translate(
         f_lang,
         `achievements.${this.name}.done`,
@@ -257,19 +265,15 @@ export class Achievement {
 }
 
 class Schedule {
-  constructor()
-  {
+  constructor() {
     this.tasks = [];
   }
-  
-  add(f_task)
-  {
+
+  add(f_task) {
     this.tasks.push(f_task);
   }
-  async do()
-  {
-    for (v of this.tasks)
-    {
+  async do() {
+    for (v of this.tasks) {
       await v();
     }
     this.tasks = [];

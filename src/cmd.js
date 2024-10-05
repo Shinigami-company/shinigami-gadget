@@ -862,8 +862,7 @@ async function cmd_god({ request, userdata, data, lang }) {
       {
         let r;
 
-        if (false)
-        {
+        if (false) {
           let glob;
           {
             let local = " me";
@@ -874,14 +873,13 @@ async function cmd_god({ request, userdata, data, lang }) {
           r = glob();
         }
 
-        if (false) 
-        {
+        if (false) {
           const userDay = time_userday_get(request.body.locale);
           r = `${userDay} - ${time_day_int(userDay)} - ${time_day_format(
             userDay
           )}`;
         }
-        
+
         {
           //const arg_user_data = await kira_user_get(arg_user, false);
           console.time("test:cost");
@@ -891,15 +889,15 @@ async function cmd_god({ request, userdata, data, lang }) {
           for (let i = 0; i < repeat; i++) {
             const start = Date.now();
             //the operation to test
-            
+
             await Achievement.list["outerTime"].do_check(
               userdata,
               10000000,
               lang,
               {},
               (it) => time_format_string_from_int(it, lang)
-            )
-            
+            );
+
             const end = Date.now();
             const gap_ms = end - start;
             r_som += gap_ms;
@@ -1760,7 +1758,7 @@ async function cmd_kira({
           //+achiv
           await Achievement.list["counterMax"].do_grant(userdata, lang, 1, {
             personId: h_victim_id,
-          })
+          });
         }
         return {
           method: "PATCH",
@@ -1874,13 +1872,13 @@ async function cmd_kira({
         await Achievement.list["killDailyStreak"].do_check(
           userdata,
           stat,
-          lang,
+          lang
         );
       if (h_dayGapDiff >= 13)
         await Achievement.list["killDailyComeback"].do_check(
           userdata,
           stat,
-          lang,
+          lang
         );
     }
 
@@ -2199,7 +2197,7 @@ export async function cmd_kira_execute({ more }) {
           do_hit: 1,
           do_outerTime: pack.span,
         });
-        stat_outerTime=stat_bulk["do_outerTime"];
+        stat_outerTime = stat_bulk["do_outerTime"];
       }
       await stats_simple_bulkadd(h_victim_data.statPtr.id, {
         is_hited: 1,
@@ -2309,10 +2307,10 @@ export async function cmd_kira_execute({ more }) {
       await Achievement.list["avengeBest"].do_check(
         userdata,
         stat_avenge,
-        lang,
+        lang
       );
     }
-    
+
     if (stat_outerTime) {
       await Achievement.list["outerTime"].do_check(
         userdata,
@@ -2320,7 +2318,7 @@ export async function cmd_kira_execute({ more }) {
         lang,
         {},
         (it) => time_format_string_from_int(it, lang)
-      )
+      );
     }
 
     if (pack.victim_id === process.env.APP_ID)
@@ -2329,16 +2327,14 @@ export async function cmd_kira_execute({ more }) {
       await Achievement.list["killU"].do_grant(userdata, lang);
     //only if not itself
     else {
-      
-      console.log("DBUG : stat_repetition=",stat_repetition);
-      if (stat_repetition)
-      {
+      console.log("DBUG : stat_repetition=", stat_repetition);
+      if (stat_repetition) {
         await Achievement.list["murdersOn"].do_check(
           userdata,
           stat_repetition,
           lang,
           { personId: pack.victim_id }
-        )
+        );
       }
 
       if (pack.span === 1987200)
