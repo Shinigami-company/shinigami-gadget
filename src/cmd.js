@@ -1351,7 +1351,7 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
           const value = await stats_simple_get(userdata.statPtr.id, k);
           //if (!stats_simple_is_default(k, value))
           if (value && !stats_simple_is_default(k, value)) {
-            r_lore = `${r_lore}\n${translate(lang, `stats.broad.show.${k}`, {
+            r_lore = `${r_lore}\n${translate(lang, `stat.broad.show.${k}`, {
               value: stats_parse(k, value, lang),
             })}`;
           }
@@ -1439,7 +1439,7 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
           ) {
             r_lore = `${r_lore}\n${translate(
               lang,
-              `stats.ratio.show.${ratioKey}`,
+              `stat.ratio.show.${ratioKey}`,
               {
                 value: Math.round((dividend / divider) * 1000) / 1000,
                 dividend: dividend,
