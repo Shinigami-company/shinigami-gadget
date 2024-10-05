@@ -612,7 +612,7 @@ export async function kira_cmd(f_deep, f_cmd) {
           },
         }
       );
-    console.log("ERROR : cmd wrong js : ", e);
+    console.log("ERROR : cmd : wrong js : ", e);
     kira_error_throw(
       "error.system.wrongjs",
       e,
@@ -735,10 +735,11 @@ function check_has_book(dig) {
 
 //react check
 function check_react_is_self(dig) {
-  console.log(`DBUG : temp : check_react_is_self IM=${dig.message.interaction?.user.id} I=${dig.message.interaction_metadata?.user.id} dig.message=`,dig.message);
+  console.log(`DBUG : temp : check_react_is_self IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`);
   if (
     (dig.type === InteractionType.MESSAGE_COMPONENT) &&
-    dig.message.interaction_metadata.user.id !== dig.user.id
+    //dig.message.interaction_metadata.user.id !== dig.user.id
+    dig.message.interaction.user.id !== dig.user.id
   ) {
     return {
       method: "PATCH",
@@ -926,7 +927,6 @@ async function cmd_god({ userdata, data, lang, locale }) {
             r_all.push(gap_ms);
           }
           r_all.sort((a, b) => a - b);
-          console.log(r_all);
           r = `operation repeated ${repeat} times.\ntotal=${Math.round(
             r_som
           )}ms  average=${Math.round(r_som / repeat)}ms  median=${Math.round(
@@ -934,7 +934,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           )}ms  min=${Math.round(r_all[0])}ms  max=${Math.round(
             r_all[repeat - 1]
           )}ms`;
-          console.log(r);
+          console.log("LOG : cmd : perf tester", r);
           console.timeEnd("test:cost");
         }
 
@@ -1192,7 +1192,6 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
     const h_gap = parseInt(
       (new Date().getTime() - new Date(message.timestamp).getTime()) / 1000
     );
-    console.log("DBUG : temp : gap : ", h_gap);
     if (h_gap>60)
     {
       return {
@@ -1787,12 +1786,6 @@ async function cmd_kira({
   }
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
-  console.log(
-    "HI : h_victim_data=",
-    h_victim_data,
-    " createdIfNot=",
-    !h_will_fail
-  );
 
   //check/others runs
   let run_combo = 1;
@@ -1866,7 +1859,7 @@ async function cmd_kira({
             (new Date(userdata.finalDate).getTime() - new Date().getTime()) /
               1000
           );
-          console.log(`HI : ${userdata.finalDate} - ${new Date()} = ${h_gap}`);
+          console.log(`DBUG : kira : countershort gap=${userdata.finalDate} - ${new Date()} = ${h_gap}`);
           if (h_gap < 6) {
             await Achievement.list["counterShort"].do_grant(userdata, lang, {
               time: time_format_string_from_int(lang, "cmd.kira.fail.maxcombo"),
@@ -1914,7 +1907,6 @@ async function cmd_kira({
 
   //validate writting
   const h_dayGap = time_day_gap(userbook.updatedAt, locale, true, true);
-  console.log("DBUG : h_dayGap=", h_dayGap);
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
   const h_note = await kira_line_append(userbook, h_line, h_dayGap);
 
@@ -2389,7 +2381,6 @@ export async function cmd_kira_execute({ more }) {
       await Achievement.list["killU"].do_grant(userdata, lang);
     //only if not itself
     else {
-      console.log("DBUG : stat_repetition=", stat_repetition);
       if (stat_repetition) {
         await Achievement.list["murdersOn"].do_check(
           userdata,
@@ -2413,12 +2404,12 @@ export async function cmd_kira_cancel({ more }) {
 
   //run reading
   if (!more.runId) {
-    console.log(`ERROR : runId not defined. more=`, more);
+    console.log(`ERROR : kira : runId not defined. more=`, more);
     return;
   }
   const pack = await kira_run_unpack_execute(more.runId);
   if (!pack) {
-    console.log(`ERROR : run deleted. more=`, more);
+    console.log(`ERROR : kira : run deleted. more=`, more);
     await kira_run_delete(more.runId);
     return;
   }

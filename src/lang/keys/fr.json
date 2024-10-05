@@ -53,7 +53,7 @@
 
 "cmd.apples.claim.daily": "Tu récupères ta pomme journalière !  **+$[added]**",
 "cmd.apples.claim.murderer": "tu as tué **$[victim]**, meurtrier de $[kill] personnes !  **+$[added]**",
-"cmd.apples.claim.harmless": "tu as tué **$[victim]**, c'était un humain plut├┤t inoffensif  **+$[added]**",
+"cmd.apples.claim.harmless": "tu as tué **$[victim]**, c'était un humain plutôt inoffensif  **+$[added]**",
 "cmd.apples.claim.admin.test": "Qldslmqsd  **+$[added]**",
 "cmd.apples.claim.admin.real.remove": "quelqu'un en a mangé  **-$[displayed]**",
 "cmd.apples.claim.admin.real.add": "tu as trouvé un colis devant ta porte, il y avais des pommes dedans  **+$[displayed]**",

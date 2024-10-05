@@ -101,7 +101,7 @@ export class Achievement {
     }
 
     console.log(
-      `LOG : achiv.js : model id [${f_userModel.statPtr.id}]  pass [${this.name}] from ${f_newLevel} to ${h_registerLevel}`
+      `LOG : achiv.js : model id [${f_userModel.statPtr.id}]  pass [${this.name}] from ${h_registerLevel} to ${f_newLevel}`
     );
     //set the level
     await this.#level_set(achivModelId, f_newLevel);
