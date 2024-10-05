@@ -991,100 +991,106 @@ async function cmd_god({ request, userdata, data, lang }) {
 
 //#claim command
 async function cmd_claim({ userdata, data, userbook, lang }) {
+  //variables
+  let h_color = 0;
+  let h_price = 0;
+  if (data.options) {
+    h_color = data.options[0].value;
+    h_price = book_colors[h_color].price;
+  }
+
   if (userbook) {
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, "cmd.claim.fail.already"),
-      },
-    };
-  } else {
-    let h_color = 0;
-    let h_price = 0;
-
-    if (data.options) {
-      h_color = data.options[0].value;
-      h_price = book_colors[h_color].price;
-
-      //
-      if (h_price > 0) {
-        let h_book_amount = await stats_simple_get(
-          userdata.statPtr.id,
-          "ever_book"
-        );
-        if (!h_book_amount > 0) {
-          //cant pay your first death note
-          return {
-            method: "PATCH",
-            body: {
-              content: translate(lang, "cmd.claim.fail.color.young"),
-            },
-          };
-        }
-
-        if (data.options[1]) {
-          //has clicked on the button
-          if (userdata.apples < h_price) {
-            //fail because too poor
-            return {
-              method: "PATCH",
-              body: {
-                content: translate(lang, "cmd.claim.fail.color.poor"),
-              },
-            };
-          } else {
-            //do it
-            kira_user_add_apple(userdata, h_price * -1);
-          }
-        } else {
-          //send the button
-          return {
-            method: "PATCH",
-            body: {
-              content: translate(
-                lang,
-                `cmd.claim.confirm.color.${book_colors[h_color].color}`
-              ),
-              components: [
-                {
-                  type: MessageComponentTypes.ACTION_ROW,
-                  components: [
-                    {
-                      type: MessageComponentTypes.BUTTON,
-                      custom_id: `makecmd claim ${h_color}+true`,
-                      label: translate(lang, `cmd.claim.confirm.button`, {
-                        price: h_price,
-                      }),
-                      emoji: sett_emoji_apple_eat,
-                      style:
-                        userdata.apples < h_price
-                          ? ButtonStyleTypes.SECONDARY
-                          : ButtonStyleTypes.SUCCESS,
-                      disabled: false,
-                    },
-                  ],
-                },
-              ],
-            },
-          };
-        }
-      }
-    }
-
-    await kira_book_create(userdata, h_color);
-    await stats_simple_add(userdata.statPtr.id, "ever_book"); //+stats
-
-    return {
-      method: "PATCH",
-      body: {
-        content: translate(
-          lang,
-          `cmd.claim.done.${h_price === 0 ? "free" : "paid"}`,
-          { emoji: book_colors[h_color].emoji }
-        ),
+        content: !h_price
+          ? translate(lang, "cmd.claim.fail.already.free")
+          : translate(lang, "cmd.claim.fail.already.paid", {
+              price: h_price,
+              color: translate(lang, `word.color.${book_colors[h_color].color}`),
+            }),
       },
     };
   }
+
+  if (data.options) {
+    if (h_price > 0) {
+      let h_book_amount = await stats_simple_get(
+        userdata.statPtr.id,
+        "ever_book"
+      );
+      if (!h_book_amount > 0) {
+        //cant pay your first death note
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.claim.fail.color.young"),
+          },
+        };
+      }
+
+      if (data.options[1]) {
+        //has clicked on the button
+        if (userdata.apples < h_price) {
+          //fail because too poor
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.claim.fail.color.poor"),
+            },
+          };
+        } else {
+          //do it
+          kira_user_add_apple(userdata, h_price * -1);
+        }
+      } else {
+        //send the button
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(
+              lang,
+              `cmd.claim.confirm.color.${book_colors[h_color].color}`
+            ),
+            components: [
+              {
+                type: MessageComponentTypes.ACTION_ROW,
+                components: [
+                  {
+                    type: MessageComponentTypes.BUTTON,
+                    custom_id: `makecmd claim ${h_color}+true`,
+                    label: translate(lang, `cmd.claim.confirm.button`, {
+                      price: h_price,
+                    }),
+                    emoji: sett_emoji_apple_eat,
+                    style:
+                      userdata.apples < h_price
+                        ? ButtonStyleTypes.SECONDARY
+                        : ButtonStyleTypes.SUCCESS,
+                    disabled: false,
+                  },
+                ],
+              },
+            ],
+          },
+        };
+      }
+    }
+  }
+
+  await kira_book_create(userdata, h_color);
+  await stats_simple_add(userdata.statPtr.id, "ever_book"); //+stats
+
+  return {
+    method: "PATCH",
+    body: {
+      content: translate(
+        lang,
+        `cmd.claim.done.${h_price === 0 ? "free" : "paid"}`,
+        { emoji: book_colors[h_color].emoji }
+      ),
+    },
+  };
 }
 
 //#burn command

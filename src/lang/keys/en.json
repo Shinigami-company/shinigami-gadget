@@ -30,9 +30,10 @@
 "cmd.god.apple.done.fake.add": "<@$[targetId]> **recived** $[displayed] $[word]",
 "cmd.god.apple.done.fake.remove": "<@$[targetId]> **lost** $[displayed] $[word]",
 
-"cmd.claim.fail.already": "**Nope!** You already have a death note.",
+"cmd.claim.fail.already.free": "**Nope!** You already have a death note.",
+"cmd.claim.fail.already.paid": "**Nope!** You already have a death note.\nThe $[color] one cost $[price] :apple:",
 "cmd.claim.fail.color.young": "*you cant pick this color for your first death note*",
-"cmd.claim.fail.color.poor": "You don't have enough apples to convince me... Just, take the black one.",
+"cmd.claim.fail.color.poor": "You don't have enough apples to take this color... Just, take the black one.",
 "cmd.claim.confirm.color.red": "The red one is pretty rare, you have to deserve it.",
 "cmd.claim.confirm.color.white": "The white one is extremly rare, you have to deserve it.",
 "cmd.claim.confirm.button": "$[price] - i REALLY want it",
@@ -281,6 +282,8 @@
 "format.time.between.unit": "$[number] $[unit]",
 
 
+"word.color.red": "red",
+"word.color.white": "white",
 "word.apple": "apple",
 "word.apples": "apples",
 "word.time": "time",

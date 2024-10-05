@@ -23,7 +23,8 @@
 "cmd.god.apple.done.fake.add": "gyft <@$[targetId]> $[displayed] $[word]",
 "cmd.god.apple.done.fake.remove": "seal <@$[targetId]> $[displayed] $[word]",
 
-"cmd.claim.fail.already": "**Mrew!** uve alredy feather book.",
+"cmd.claim.fail.already.free": "**Mrew!** uve alredy feather book.",
+"cmd.claim.fail.already.paid": "**Mrew!** uve alredy feather book.\nnd th $[color] buk kost $[price]",
 "cmd.claim.fail.color.young": "*nut kustom colr 4 ur 1 feather book*",
 "cmd.claim.fail.color.poor": "just get blak 1.",
 "cmd.claim.confirm.color.red": "ys 2 kul 4 i give 2 u",
@@ -228,6 +229,8 @@
 "format.time.between.unit": "$[number] $[unit]",
 
 
+"word.color.red": "rd",
+"word.color.white": "whit",
 "word.apple": "appl",
 "word.apples": "appls",
 "word.time": "tim",

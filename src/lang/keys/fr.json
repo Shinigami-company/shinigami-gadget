@@ -31,7 +31,8 @@
 "cmd.god.apple.done.fake.add": "**<@$[targetId]> a reçu $[displayed] $[word]**",
 "cmd.god.apple.done.fake.remove": "**<@$[targetId]> a perdu $[displayed] $[word]**",
 
-"cmd.claim.fail.already": "**Nope !** Tu as déjà un death note.",
+"cmd.claim.fail.already.free": "**Nope !** Tu as déjà un death note.",
+"cmd.claim.fail.already.paid": "**Nope !** Tu as déjà un death note.\nUn death note $[color] coûte $[price] :apple:",
 "cmd.claim.fail.color.young": "*tu ne peux pas prendre cette couleur pour ton premier death note*",
 "cmd.claim.fail.color.poor": "Tu n'as pas assez de pommes pour me convaincre... Prends le death note noir et tout ira bien.",
 "cmd.claim.confirm.color.red": "Le death note rouge est rare, tu dois le mériter.",
@@ -91,7 +92,7 @@
 "cmd.kira.fail.blind": "<@$[victimId]> n'est pas là",
 "cmd.kira.fail.isdead": "tu ne peux pas tuer un mort",
 "cmd.kira.fail.maxcombo": "tu ne peux pas continuer un combo au dessus de **$[max]** échanges",
-"cmd.kira.fail.remind": "tu me rappelles que je devais le tuer",
+"cmd.kira.fail.remind": "tu me rappelles que je devais tuer cette personne",
 "cmd.kira.fail.text.max": "c'est trop long",
 "cmd.kira.fail.time.max": "tu ne peux pas noter de date plus longue que $[time]",
 "cmd.kira.start.mp.victim": "quelqu'un a utilisé le death note sur toi !\ntu as **$[time]** pour le tuer avant de mourir",
@@ -236,6 +237,8 @@
 "format.time.between.unit": "$[number] $[unit]",
 
 
+"word.color.red": "rouge",
+"word.color.white": "blanc",
 "word.apple": "pomme",
 "word.apples": "pommes",
 "word.time": "fois",
