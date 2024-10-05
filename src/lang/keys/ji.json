@@ -9,6 +9,7 @@
 "check.god.not": "❌",
 "check.alive.not": "*👈💀⏲️**$[time]***",
 "check.hasbook.not": "*👈❌<:book_black:1281258833271849050>*",
+"check.react.self.not": "❌▶🫵",
 
 
 "cmd.god.life.fail.missing.user": "⁉️👥",
@@ -44,8 +45,9 @@
 "cmd.burn.confirm": "*🧨*\n**‼️**\n⚠️🔥🟰❌🔙",
 "cmd.burn.confirm.button.ok": "🔥🔥🔥",
 "cmd.burn.confirm.button.no": "💧",
+"cmd.burn.fail.notu": "🧨❌🫵",
+"cmd.burn.fail.expired": "🧨❌🔥",
 "cmd.burn.cancel": "💧👉🧨",
-"cmd.burn.expired": "🧨❌🔥",
 "cmd.burn.done": "🔥<:book_black:1281258833271849050>🔥\n👋💨",
 
 "cmd.apples.claim.daily": "☀️🍎  **+$[added]**",

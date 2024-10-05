@@ -10,6 +10,7 @@
 "check.god.not": "**Nope !** Tu n'as pas le pouvoir d'un dieu.",
 "check.alive.not": "*tu es mort·e pendant encore **$[time]***",
 "check.hasbook.not": "*tu ne détiens pas de death note*\n`/claim` *pour en avoir un*",
+"check.react.self.not": "*ce n'est pas ton bouton*",
 
 
 "cmd.god.life.fail.missing.user": "spécifie un utilisateur",
@@ -42,12 +43,13 @@
 "cmd.claim.done.paid": "Miam ! **Voici ton death note coloré !** $[emoji]",
 
 "cmd.burn.already": "*Tu as brûlé un livre, mais ce n'était pas le death note*",
-"cmd.burn.confirm": "*Tu as allumé une alumette... ­ƒº¿*\n**Attends !**\nHumain, veux-tu vraiment brûler ton death note et tout ce qu'il contient ?\nAprès tout, si tu veux vraiment le faire, fais le.",
-"cmd.burn.confirm.button.ok": "LE BRûLER",
+"cmd.burn.confirm": "*Tu as allumé une alumette... 🧨*\n**Attends !**\nHumain, veux-tu vraiment brûler ton death note et tout ce qu'il contient ?\nAprès tout, si tu veux vraiment le faire, fais le.",
+"cmd.burn.confirm.button.ok": "LE BRÛLER",
 "cmd.burn.confirm.button.no": "non",
+"cmd.burn.fail.notu": "*ce n'est pas ton alumette*",
+"cmd.burn.fail.expired": "*l'alumette a eu le temps de s'éteindre*",
 "cmd.burn.cancel": "*tu éteins l'alumette*\nJouer avec le feu peut être dangereux, c'est ce qui le rend si amusant.",
-"cmd.burn.expired": "*l'alumette a eu le temps de s'éteindre*",
-"cmd.burn.done": "**Tu as brûlé ton death note.** ­ƒöÑ­ƒöÑ­ƒöÑ\nOn se reverra, humain·e.\n*Le shinigami disparait*",
+"cmd.burn.done": "**Tu as brûlé ton death note.** 🔥🔥🔥\nOn se reverra, humain·e.\n*Le shinigami disparait*",
 
 "cmd.apples.claim.daily": "Tu récupères ta pomme journalière !  **+$[added]**",
 "cmd.apples.claim.murderer": "tu as tué **$[victim]**, meurtrier de $[kill] personnes !  **+$[added]**",

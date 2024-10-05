@@ -253,7 +253,7 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [[check_can_alive, false]],
+      checks: [[check_can_alive, false],[check_react_is_self, true]],
     },
     register: {
       name: "claim",
@@ -274,7 +274,7 @@ const commands_structure = {
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [[check_can_alive, false]],
+      checks: [[check_can_alive, false],[check_react_is_self, true]],
     },
     register: {
       name: "burn",
@@ -486,6 +486,7 @@ const commands_structure = {
       checks: [
         [check_can_alive, true],
         [check_has_book, true],
+        [check_react_is_self, true]
       ],
     },
     systemOnly: true,
@@ -532,7 +533,7 @@ export async function kira_cmd(f_deep, f_cmd) {
    *  - data
    *  - member
    *  - ([token])
-   *  - (message)
+   *  - message
    * datamodels
    * - |userdata|
    * - |userbook|
@@ -540,11 +541,11 @@ export async function kira_cmd(f_deep, f_cmd) {
   // usable ~~unusable~~ (unused) [used here] |created here|
 
   //console.log("DBUG : cmd : f_deep=", f_deep);
-  
+
   //new datas
 
-  //get the user data element.
-  //if dont exist, it's automaticly created.
+  //get the user data element
+  //if dont exist, it's automaticly created
   f_deep.userdata = await kira_user_get(f_deep.user.id, true);
   //get the user's book
   //if dont exist, is undefined
@@ -697,16 +698,16 @@ function check_is_alive(dig) {
 async function check_can_alive(dig) {
   if (!dig.userdata.is_alive) {
     //is not alive
-    const h_ping = parseInt(
+    const h_gap = parseInt(
       (new Date(dig.userdata.backDate).getTime() - new Date().getTime()) / 1000
     );
-    if (h_ping > 0) {
+    if (h_gap > 0) {
       //can not be bring back
       return {
         method: "PATCH",
         body: {
           content: translate(dig.lang, "check.alive.not", {
-            time: time_format_string_from_int(h_ping, dig.lang),
+            time: time_format_string_from_int(h_gap, dig.lang),
           }),
         },
       };
@@ -735,8 +736,8 @@ function check_has_book(dig) {
 //react check
 function check_react_is_self(dig) {
   if (
-    !dig.type === InteractionType.MESSAGE_COMPONENT &&
-    dig.message.interaction.user.id === dig.user.id
+    (dig.type === InteractionType.MESSAGE_COMPONENT) &&
+    dig.message.interaction_metadata.user.id !== dig.user.id
   ) {
     return {
       method: "PATCH",
@@ -1117,7 +1118,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
 }
 
 //#burn command
-async function cmd_burn({ source, data, userbook, userdata, lang }) {
+async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
   if (!userbook) {
     return {
       method: "PATCH",
@@ -1127,7 +1128,12 @@ async function cmd_burn({ source, data, userbook, userdata, lang }) {
     };
   }
 
-  if (!data.options) {
+  //confirmation message
+  if (
+    !(type === InteractionType.MESSAGE_COMPONENT) ||
+    !data.options ||
+    !message
+  ) {//that not a message component interaction.
     await stats_simple_add(userdata.statPtr.id, "misc_match"); //+stats
     return {
       method: "PATCH",
@@ -1159,7 +1165,8 @@ async function cmd_burn({ source, data, userbook, userdata, lang }) {
     };
   }
 
-  if (false && (!data.options[0] || data.options[0].value != userdata.userId)) {
+  //if itself
+  if (message.interaction.user.id !== userdata.userId) {
     return {
       method: "PATCH",
       body: {
@@ -1168,22 +1175,38 @@ async function cmd_burn({ source, data, userbook, userdata, lang }) {
     };
   }
 
-  console.log(source.message);
-  console.log(source.message.timestap);
-  console.log(source.message.interaction.user);
+  //remove buttons
+  await DiscordRequest(
+    `channels/${message.channel_id}/messages/${message.id}`,
+    {
+      method: "PATCH",
+      body: {
+        components: [],
+      },
+    }
+  );
 
+  //if time
+  {
+    const h_gap = parseInt(
+      (new Date().getTime() - new Date(message.timestamp).getTime()) / 1000
+    );
+    console.log("DBUG : temp : gap : ", h_gap);
+    if (h_gap>60)
+    {
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, `cmd.burn.fail.expired`),
+        },
+      };
+    }
+  }
+
+  //if cancel
   if (!data.options[0] || !data.options[0].value) {
     //remove components from the message
     //this does not works if know is used as a command
-    await DiscordRequest(
-      `channels/${source.channel_id}/messages/${source.message.id}`,
-      {
-        method: "PATCH",
-        body: {
-          components: [],
-        },
-      }
-    );
     return {
       method: "PATCH",
       body: {
@@ -1541,12 +1564,12 @@ async function cmd_running({ data, userbook, user, lang }) {
   if (h_runs_attacker.length > 0) {
     r_text = translate(lang, `stats.running.show`);
     for (let v of h_runs_attacker) {
-      let h_ping = parseInt(
+      const h_gap = parseInt(
         (new Date(v.finalDate).getTime() - new Date().getTime()) / 1000
       );
       r_lore += `\n${translate(lang, `stats.running.attacker`, {
         victimId: v.victimId,
-        span: time_format_string_from_int(h_ping, lang),
+        span: time_format_string_from_int(h_gap, lang),
       })}`;
     }
   } else {
@@ -1837,12 +1860,12 @@ async function cmd_kira({
 
         {
           //+achiv
-          const h_ping = parseInt(
+          const h_gap = parseInt(
             (new Date(userdata.finalDate).getTime() - new Date().getTime()) /
               1000
           );
-          console.log(`HI : ${userdata.finalDate} - ${new Date()} = ${h_ping}`);
-          if (h_ping < 6) {
+          console.log(`HI : ${userdata.finalDate} - ${new Date()} = ${h_gap}`);
+          if (h_gap < 6) {
             await Achievement.list["counterShort"].do_grant(userdata, lang, {
               time: time_format_string_from_int(lang, "cmd.kira.fail.maxcombo"),
             });

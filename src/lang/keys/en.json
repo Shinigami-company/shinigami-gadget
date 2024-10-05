@@ -9,6 +9,7 @@
 "check.god.not": "**Nope!** You dont have the power of a god.",
 "check.alive.not": "*You are dead for another **$[time]***",
 "check.hasbook.not": "*You don't own a death note*\n`/claim` *to get one*",
+"check.react.self.not": "*that not your button*",
 
 
 "cmd.god.life.fail.missing.user": "specify a user",
@@ -44,8 +45,9 @@
 "cmd.burn.confirm": "*you light up a match... 🧨*\n**Wait!**\nHuman, do you really want to burn your death note and everything you've got in it?\nAfter all, if you really want to, do it.",
 "cmd.burn.confirm.button.ok": "BURN IT",
 "cmd.burn.confirm.button.no": "no!",
+"cmd.burn.fail.notu": "*that not your match*",
+"cmd.burn.fail.expired": "*the match went out in the meantime*",
 "cmd.burn.cancel": "*you light off the match*\nPlaying with fire could be dangerous, but this is what makes it so fun.",
-"cmd.burn.expired": "*the match went out in the meantime*",
 "cmd.burn.done": "**You burnt your death note.** 🔥🔥🔥\nWell, see you later human\n*The shinigami disappears*",
 
 "cmd.apples.claim.daily": "You claimed your daily apple!  **+$[added]**",

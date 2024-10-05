@@ -1,7 +1,8 @@
 {
-"check.god.not": "**Mrew!** u 2 bizy 4 tht.",
-"check.alive.not": "*u ded **$[time]***",
-"check.hasbook.not": "*u donut hv feather buk*",
+"check.god.not": "**Mrew!** u 2 bizy 4 tht",
+"check.alive.not": "*u ded **$[time]*** :(",
+"check.hasbook.not": "*u donut hv feather buk* :(",
+"check.react.self.not": "*nut ur butn* :(",
 
 
 "cmd.god.life.fail.missing.user": "mrw ad som1",
@@ -37,8 +38,9 @@
 "cmd.burn.confirm": "*u fir a match... 🧨*\n**Wayt!**\nKitn, do u wanna burn your feather buk 4 real?\nU can, but tht sad.",
 "cmd.burn.confirm.button.ok": "FIRE IT",
 "cmd.burn.confirm.button.no": "no!",
+"cmd.burn.fail.notu": "*nut ur match*",
+"cmd.burn.fail.expired": "*match expird*",
 "cmd.burn.cancel": "*match dysabl*\nTht ws klos!",
-"cmd.burn.expired": "*match expird*",
 "cmd.burn.done": "**U eat ur feather buk.** 🔥🔥🔥\nBye\n*Th shinigami get owt*",
 
 "cmd.apples.claim.daily": "u get a day appl!  **+$[added]**",

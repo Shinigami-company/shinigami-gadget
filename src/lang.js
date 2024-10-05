@@ -181,6 +181,6 @@ export function lang_get(f_deep) {
   if (f_deep.userdata.lang) {
     return f_deep.userdata.lang;
   } else {
-    return f_deep.request.body.locale;
+    return f_deep.source.locale;
   }
 }
