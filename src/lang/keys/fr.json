@@ -104,7 +104,7 @@
 "cmd.kira.start.mp.victim.pay.fullwhere": "$[price] - o├╣ ?",
 "cmd.kira.start.mp.attacker.pay.delmsg": "$[price] - supprimer le message",
 "cmd.kira.start.mp.attacker": "<@$[victimId]> sera touché·e dans $[time]...",
-"cmd.kira.start.guild": "<@$[attackerId]> écrit dans son **death note** :\n`$[line]` ­ƒ¬Â",
+"cmd.kira.start.guild": "<@$[attackerId]> écrit dans son **death note** :\n`$[line]` 🪶",
 "cmd.kira.warn.nomp": ":warning: <@$[userId]> n'a pas été informé·e car ses mp sont fermés",
 "cmd.kira.fail.shini": "bien essayé, mais un dieu de la mort est immunisé contre le death note.",
 "cmd.kira.fail.notplayer": "mais cette personne ne joue pas",
@@ -185,7 +185,7 @@
 "achievements.outerTime.lore":"tuer des gens longtemps",
 "achievements.outerTime.done":"en tuant des gens pour $[landing] au total",
 
-"achievements.writtenPage.title":"écrivain dans l'├óme",
+"achievements.writtenPage.title":"écrivain dans l'âme",
 "achievements.writtenPage.lore":"écrire des pages de nom",
 "achievements.writtenPage.done":"en écrivant $[landing] pages de noms dans le death note",
 "achievements.avengeBest.title":"si tu tues je te tue",
