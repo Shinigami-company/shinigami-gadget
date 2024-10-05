@@ -862,6 +862,7 @@ async function cmd_god({ request, userdata, data, lang }) {
       {
         let r;
 
+        if (false)
         {
           let glob;
           {
@@ -873,29 +874,48 @@ async function cmd_god({ request, userdata, data, lang }) {
           r = glob();
         }
 
-        if (false) {
-          const stat = await stats_simple_get(
-            userdata.statPtr.id,
-            "do_outerTime"
-          );
-          r =
-            stat +
-            "_" +
-            String(
-              await Achievement.list["outerTime"].do_check(
-                userdata,
-                stat,
-                lang,
-                { time: time_format_string_from_int(stat, lang) }
-              )
-            );
-        }
-
-        if (false) {
+        if (false) 
+        {
           const userDay = time_userday_get(request.body.locale);
           r = `${userDay} - ${time_day_int(userDay)} - ${time_day_format(
             userDay
           )}`;
+        }
+        
+        {
+          //const arg_user_data = await kira_user_get(arg_user, false);
+          console.time("test:cost");
+          const repeat = arg_amount ? arg_amount : 11;
+          let r_som = 0;
+          let r_all = [];
+          for (let i = 0; i < repeat; i++) {
+            const start = Date.now();
+            //the operation to test
+            
+            await Achievement.list["outerTime"].do_check(
+              userdata,
+              10000000,
+              lang,
+              {},
+              (it) => time_format_string_from_int(it, lang)
+            )
+            
+            const end = Date.now();
+            const gap_ms = end - start;
+            r_som += gap_ms;
+            r_all.push(gap_ms);
+          }
+          r_all.sort((a, b) => a - b);
+          console.log(r_all);
+          r = `operation repeated ${repeat} times.\ntotal=${Math.round(
+            r_som
+          )}ms  average=${Math.round(r_som / repeat)}ms  median=${Math.round(
+            r_all[Math.floor(repeat / 2)]
+          )}ms  min=${Math.round(r_all[0])}ms  max=${Math.round(
+            r_all[repeat - 1]
+          )}ms`;
+          console.log(r);
+          console.timeEnd("test:cost");
         }
 
         return {
@@ -1770,9 +1790,7 @@ async function cmd_kira({
             userdata.statPtr.id,
             "do_counter"
           );
-          await Achievement.list["counter"].do_check(userdata, stat, lang, {
-            amount: stat,
-          });
+          await Achievement.list["counter"].do_check(userdata, stat, lang);
         }
         await stats_simple_add(h_victim_data.statPtr.id, "is_countered");
         await stats_pair_add(h_pair, "by_counter", 1); //return the value
@@ -1857,14 +1875,12 @@ async function cmd_kira({
           userdata,
           stat,
           lang,
-          { amount: stat }
         );
       if (h_dayGapDiff >= 13)
         await Achievement.list["killDailyComeback"].do_check(
           userdata,
           stat,
           lang,
-          { amount: stat }
         );
     }
 
@@ -1873,9 +1889,7 @@ async function cmd_kira({
         userdata.statPtr.id,
         "streak_pageFilled"
       );
-      await Achievement.list["writtenPage"].do_check(userdata, stat, lang, {
-        amount: stat,
-      });
+      await Achievement.list["writtenPage"].do_check(userdata, stat, lang);
     }
   }
 
@@ -2291,14 +2305,11 @@ export async function cmd_kira_execute({ more }) {
   {
     if (stat_kill) {
       //only if new kill
-      await Achievement.list["kill"].do_check(userdata, stat_kill, lang, {
-        amount: stat_kill,
-      });
+      await Achievement.list["kill"].do_check(userdata, stat_kill, lang);
       await Achievement.list["avengeBest"].do_check(
         userdata,
         stat_avenge,
         lang,
-        { amount: stat_avenge }
       );
     }
     
@@ -2307,7 +2318,8 @@ export async function cmd_kira_execute({ more }) {
         userdata,
         stat_outerTime,
         lang,
-        { time: time_format_string_from_int(stat_outerTime, lang) }
+        {},
+        (it) => time_format_string_from_int(it, lang)
       )
     }
 
@@ -2318,12 +2330,16 @@ export async function cmd_kira_execute({ more }) {
     //only if not itself
     else {
       
-      await Achievement.list["murdersOn"].do_check(
-        userdata,
-        stat_repetition,
-        lang,
-        { personId: pack.victim_id }
-      )
+      console.log("DBUG : stat_repetition=",stat_repetition);
+      if (stat_repetition)
+      {
+        await Achievement.list["murdersOn"].do_check(
+          userdata,
+          stat_repetition,
+          lang,
+          { personId: pack.victim_id }
+        )
+      }
 
       if (pack.span === 1987200)
         await Achievement.list["outer23d"].do_grant(userdata, lang, 1, {

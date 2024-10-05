@@ -53,28 +53,29 @@ export class Achievement {
 
   //VALUE/GET
   #level_graduate(f_value) {
-    if (this.graduations) {
-      let i = 0;
-      for (
-        ;
-        i < this.graduations.length && f_value >= this.graduations[i];
-        i++
-      ); //must have  ;  or  {}  at the end !
-      return i;
-    }
+    if (!this.graduations) return null;
+    
+    let i = 0;
+    for (
+      ;
+      i < this.graduations.length && f_value >= this.graduations[i];
+      i++
+    ); //must have  ;  or  {}  at the end !
+    return i;
   }
 
   //USER/SET
-  async do_check(f_userModel, f_value, f_lang, f_doneDolarValues = {}) {
-    console.log("DBUG : f_doneDolarValues=", f_doneDolarValues);
+  async do_check(f_userModel, f_value, f_lang, f_doneDolarValues = {}, parseGrad = (it) => it) {
     return await this.do_grant(
       f_userModel,
       f_lang,
       this.#level_graduate(f_value),
-      f_doneDolarValues
+      f_doneDolarValues,
+      parseGrad
     );
   }
-  async do_grant(f_userModel, f_lang, f_newLevel = 1, f_doneDolarValues = {}) {
+
+  async do_grant(f_userModel, f_lang, f_newLevel = 1, f_doneDolarValues = {}, parseGrad = (it) => it) {
     //values
     const achivModelId = f_userModel.achivPtr.id;
     //new level maxed to maxlevel
@@ -86,78 +87,90 @@ export class Achievement {
     const h_gap = f_newLevel - h_registerLevel;
     let h_apples = 0;
 
-    if (f_newLevel > h_registerLevel) {
-      //if has a greater level
-      console.log(
-        `LOG : achiv.js : model id [${f_userModel.statPtr.id}]  pass [${this.name}] from ${f_newLevel} to ${h_registerLevel}`
-      );
-      //set the level
-      await this.#level_set(achivModelId, f_newLevel);
-      if (this.rewards) {
-        //all level passed
-        for (let level = h_registerLevel; level < f_newLevel; level++) {
-          h_apples += this.rewards[level];
-        }
+    if (!(f_newLevel > h_registerLevel)) {//didnt has a greater level
+      return h_gap;
+    }
 
-        //add apple
-        if (h_apples > 0)
-          await kira_apple_claims_add(f_userModel.id, {
-            added: h_apples,
-            type: "quest",
-            name: this.name,
-            level: f_newLevel,
-          });
+    console.log(
+      `LOG : achiv.js : model id [${f_userModel.statPtr.id}]  pass [${this.name}] from ${f_newLevel} to ${h_registerLevel}`
+    );
+    //set the level
+    await this.#level_set(achivModelId, f_newLevel);
+
+    //reward
+    if (this.rewards) {
+      //all level passed
+      for (let level = h_registerLevel; level < f_newLevel; level++) {
+        h_apples += this.rewards[level];
       }
 
-      //message
+      //add apple
+      if (h_apples > 0)
+        await kira_apple_claims_add(f_userModel.id, {
+          added: h_apples,
+          type: "quest",
+          name: this.name,
+          level: f_newLevel,
+        });
+    }
+
+    //message
+    {
+      const yayTypeStr =
+        maxLevel === 1 ? "unic" : maxLevel === f_newLevel ? "maxed" : "level";
+      let sending_content = translate(
+        f_lang,
+        `achievement.done.yay.${yayTypeStr}`,
+        {
+          "name": translate(f_lang, `achievements.${this.name}.title`),
+          "level": roman_from_int(f_newLevel),
+        }
+      );
+
+      if (this.graduations && this.graduations[f_newLevel])
       {
-        const yayTypeStr =
-          maxLevel === 1 ? "unic" : maxLevel === f_newLevel ? "maxed" : "level";
-        let sending_content = translate(
-          f_lang,
-          `achievement.done.yay.${yayTypeStr}`,
-          {
-            name: translate(f_lang, `achievements.${this.name}.title`),
-            level: roman_from_int(f_newLevel),
-          }
-        );
-        const doneMessage = translate(
-          f_lang,
-          `achievements.${this.name}.done`,
-          f_doneDolarValues
-        );
-        sending_content += "\n" + doneMessage;
+        //show landing amount
+        //if must be 15, and your are at 17, show parseGrad(17)
+        f_doneDolarValues["landing"]=parseGrad(this.graduations[f_newLevel]);
+      }
+      
+      const doneMessage = translate(
+        f_lang,
+        `achievements.${this.name}.done`,
+        f_doneDolarValues
+      );
+      sending_content += "\n" + doneMessage;
 
-        if (h_apples > 0)
-          sending_content +=
-            "\n" +
-            translate(f_lang, "achievement.done.apple", {
-              number: h_apples,
-              unit: translate(f_lang, `word.apple${h_apples > 1 ? "s" : ""}`),
-            });
+      if (h_apples > 0)
+        sending_content +=
+          "\n" +
+          translate(f_lang, "achievement.done.apple", {
+            number: h_apples,
+            unit: translate(f_lang, `word.apple${h_apples > 1 ? "s" : ""}`),
+          });
 
-        //open DM
-        const received_dm = await DiscordRequest(`users/@me/channels`, {
+      //open DM
+      const received_dm = await DiscordRequest(`users/@me/channels`, {
+        method: "POST",
+        body: {
+          recipient_id: f_userModel.userId,
+        },
+      }).then((res) => res.json());
+      //send message
+      try {
+        await DiscordRequest(`channels/${received_dm.id}/messages`, {
           method: "POST",
           body: {
-            recipient_id: f_userModel.userId,
+            content: sending_content,
           },
         }).then((res) => res.json());
-        //send message
-        try {
-          await DiscordRequest(`channels/${received_dm.id}/messages`, {
-            method: "POST",
-            body: {
-              content: sending_content,
-            },
-          }).then((res) => res.json());
-        } catch (e) {
-          let errorMsg = JSON.parse(e.message);
-          if (errorMsg?.code === 50007) {
-          } else throw e;
-        }
+      } catch (e) {
+        let errorMsg = JSON.parse(e.message);
+        if (errorMsg?.code === 50007) {
+        } else throw e;
       }
     }
+
     return h_gap;
   }
 
@@ -277,10 +290,10 @@ new Achievement("kill", "level_kill", 5, false[(5, 10, 20, 50, 100)]);
 new Achievement("counter", "level_counter", 5, false, [5, 10, 20, 50, 100]);
 new Achievement("outerTime", "level_outerTime", 5, false, [
   1 * 3600,
-  5 * 3600,
-  10 * 3600,
-  50 * 3600,
-  100 * 3600,
+  24 * 3600,
+  7 * 24 * 3600,
+  30 * 24 * 3600,
+  365.25 * 24 * 3600,
 ]);
 new Achievement("writtenPage", "level_writtenPage", 3, false, [3, 10, 70]);
 new Achievement("avengeBest", "level_avengeBest", 3, false, [5, 30, 100]);
@@ -296,7 +309,7 @@ new Achievement("killShini", "done_killShini", 1, false);
 new Achievement("outer23d", "done_outer23d", 1, false);
 new Achievement("counterMax", "done_counterMax", 1, false);
 new Achievement("counterShort", "done_counterShort", 1, false);
-new Achievement("murdersOn", "done_murdersOn", 1, false);
+new Achievement("murdersOn", "done_murdersOn", 1, false, [10]);
 new Achievement("onLeaderboard", "done_onLeaderboard", 1, false);
 new Achievement("secretRule", "done_secretRule", 1, false);
 new Achievement("killDailyComeback", "done_killDailyComeback", 1, false);
