@@ -2,7 +2,7 @@
 "error.any": "something went wrong : `$[name]=$[message]`\nif this happens again please report to the developer",
 "error.critical": "something went **REALLY** wrong : `$[name]=$[message]`\nplease report to the developer",
 "error.system.wrongjs": "something went wrong : `$[name]=$[message]`\nif this happens again please report to the developer",
-"error.system.protocol": "request refused : `$[name]=$[message]`\ntry to retry",
+"error.system.protocol": "request refused : `$[name]`\nTrying again should fix the problem.",
 "error.point.404": "how did you get there? `ERROR [404]=$[message]`",
 
 

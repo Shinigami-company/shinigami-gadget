@@ -612,7 +612,20 @@ export async function kira_cmd(f_deep, f_cmd) {
           },
         }
       );
-    console.log("ERROR : cmd : wrong js : ", e);
+    console.log("ERROR : cmd : in js error=", e);
+    //specific error
+    if (e.message==="[GraphQL] GGT_INTERNAL_ERROR: Unexpected HTTP error from sandbox: Response code 500 (Internal Server Error)")
+    {
+      kira_error_throw(
+        "error.system.protocol",
+        e,
+        f_deep.lang,
+        f_deep.token,
+        true
+      );
+    }
+    //general error
+    console.log("ERROR : cmd : wrong js code=",e.code," message=",e.message);
     kira_error_throw(
       "error.system.wrongjs",
       e,
@@ -625,6 +638,7 @@ export async function kira_cmd(f_deep, f_cmd) {
 }
 
 export function kira_error_msg(f_errorKey, f_errorObject, f_lang) {
+  console.log("ERROR : cmd : code ", f_errorObject.code);
   return translate(f_lang, f_errorKey, {
     name: f_errorObject.name,
     message: f_errorObject.message,

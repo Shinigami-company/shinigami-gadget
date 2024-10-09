@@ -1,8 +1,8 @@
 {
-"error.any": "quelque chose s'est mal passé : `$[name]=$[message]`\nif this happens again please report to the developer",
-"error.critical": "quelque chose s'est **TRÈS** mal passé : `$[name]=$[message]`\nplease report to the developer",
-"error.system.wrongjs": "quelque chose s'est mal passé : `$[name]=$[message]`\nif this happens again please report to the developer",
-"error.system.protocol": "requête refusée : `$[name]=$[message]`\ntry to retry",
+"error.any": "quelque chose s'est mal passé : `$[name]=$[message]`\nsignale le au développeur si cela se réproduit",
+"error.critical": "quelque chose s'est **TRÈS** mal passé : `$[name]=$[message]`\nsignale le au développeur",
+"error.system.wrongjs": "quelque chose s'est mal passé : `$[name]=$[message]`\nsignale le au développeur si cela se réproduit",
+"error.system.protocol": "requête refusée : `$[name]`\nRéessai, cela devrait régler le problème.",
 "error.point.404": "hé ! comment es-tu arrivé là ? `ERROR [404]=$[message]`",
 
 
