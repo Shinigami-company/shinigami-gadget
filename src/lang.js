@@ -84,7 +84,7 @@ const lang_texts = lang_load();
 //for translations
 export function translate(f_lang, f_key, f_dolarValues) {
   if (!lang_texts[f_lang]) {
-    console.log(`ERROR : lang : unknown lang [${f_lang}]`);
+    console.error(`lang : unknown lang [${f_lang}]`);
     f_lang = "en";
   }
   while (!lang_texts[f_lang].keys || !lang_texts[f_lang].key[f_key]) {

@@ -6,7 +6,7 @@ import { kira_runs_after } from "./kira.js";
 //this one not working
 //function cmd_kira_wait({ api, more, user, lang }, f_time_ms, f_itr=0)
 //{
-//  console.log(`DBUG : kira : WAIT. wait for id=${more.runId}, minute=${f_itr}`);
+//  console.debug(`kira : WAIT. wait for id=${more.runId}, minute=${f_itr}`);
 //  if (f_time_ms < 60000)
 //    setTimeout(() => { cmd_kira_execute({ api, more, user, lang }); }, f_time_ms);
 //  else
@@ -34,27 +34,27 @@ async function kira_remember_checkup() {
 
   //execute
   if (f_runs.length > 0) {
-    //console.log(`LOG : rem3mber : execute ${f_runs.length} runs...`);
+    //console.log(` rem3mber : execute ${f_runs.length} runs...`);
     for (let i = 0; i < f_runs.length; i += 1) {
-      console.log(`LOG : rem3mber : execute run ${i} : `, f_runs[i]);
+      console.log(` rem3mber : execute run ${i} : `, f_runs[i]);
       await cmd_kira_execute({ more: { runId: f_runs[i].id } });
     }
   }
 
   //log
   if (ocurence % 60 === 0) {
-    console.log(`LOG : rem3mber : mrew (min=${ocurence / 60})`);
+    console.log(` rem3mber : mrew (min=${ocurence / 60})`);
     let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
       raw.json()
     );
     if (response.code !== 200)
-      console.log(`ERROR : rem3mber : mrew failed`, response);
+      console.error(`rem3mber : mrew failed`, response);
   }
   ocurence += 1;
   remembering = 0;
 }
 
 export function linkme(f_txt) {
-  console.log("LOG : rem3mber : LINKED : ", f_txt);
+  console.log(` rem3mber : LINKED : `, f_txt);
   remembering = 0;
 }

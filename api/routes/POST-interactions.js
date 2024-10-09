@@ -42,7 +42,7 @@ export default async function route({ request, reply, api, logger, connections }
   
   const calling_command =  async commandName => {
       console.log(`
-	  LOG : route : call command
+	  route : call command
 	  user=${user.id} (${user.username}) command=${commandName} options=${data.options}
 	  RESP_URL=webhooks/${process.env.APP_ID}/${token}/messages/@original
 	  `);
@@ -55,13 +55,13 @@ export default async function route({ request, reply, api, logger, connections }
           return await DiscordRequest(`webhooks/${process.env.APP_ID}/${token}/messages/@original`, return_patch);
         }
         catch (e) {
-          console.log(`CATCH : route : interaction ERROR : `,e);
+          console.debug(`route : catch : interaction ERROR : `,e);
           if (i===0)
             var firstErorr=e;
           if (i>=10)
             throw firstErorr;
           await sleep(1000);
-          console.log(`LOG : route : RETRY ${i+1}`);
+          console.debug(`route : catch : RETRY ${i+1}`);
         }
       }
     }
@@ -131,7 +131,7 @@ export default async function route({ request, reply, api, logger, connections }
         } break;
       }
 
-      console.log("LOG : route : components interaction. created data=", data);
+      console.log(` route : components interaction. created data=`, data);
       return calling_command(h_cmd);
 
     }

@@ -1,4 +1,4 @@
-console.log("LOG : cmd : refresh");
+console.log(` cmd : refresh`);
 //--- sett ---
 
 const enum_know_for = {
@@ -540,7 +540,7 @@ export async function kira_cmd(f_deep, f_cmd) {
    */
   // usable ~~unusable~~ (unused) [used here] |created here|
 
-  //console.log("DBUG : cmd : f_deep=", f_deep);
+  //console.debug(`cmd : f_deep=`, f_deep);
 
   //new datas
 
@@ -612,7 +612,7 @@ export async function kira_cmd(f_deep, f_cmd) {
           },
         }
       );
-    console.log("ERROR : cmd : in js error=", e);
+    console.error(`cmd : in js error=`, e);
     //specific error
     if (e.message==="[GraphQL] GGT_INTERNAL_ERROR: Unexpected HTTP error from sandbox: Response code 500 (Internal Server Error)")
     {
@@ -625,7 +625,7 @@ export async function kira_cmd(f_deep, f_cmd) {
       );
     }
     //general error
-    console.log("ERROR : cmd : wrong js code=",e.code," message=",e.message);
+    console.error(`cmd : wrong js code=${e.code} name=${e.name} message=${e.message}`);
     kira_error_throw(
       "error.system.wrongjs",
       e,
@@ -638,7 +638,7 @@ export async function kira_cmd(f_deep, f_cmd) {
 }
 
 export function kira_error_msg(f_errorKey, f_errorObject, f_lang) {
-  console.log("ERROR : cmd : code ", f_errorObject.code);
+  console.error(`cmd : code=${f_errorObject.code}`);
   return translate(f_lang, f_errorKey, {
     name: f_errorObject.name,
     message: f_errorObject.message,
@@ -749,7 +749,7 @@ function check_has_book(dig) {
 
 //react check
 function check_react_is_self(dig) {
-  console.log(`DBUG : temp : check_react_is_self IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`);
+  console.debug(`check : check_react_is_self IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`);
   if (
     (dig.type === InteractionType.MESSAGE_COMPONENT) &&
     //dig.message.interaction_metadata.user.id !== dig.user.id
@@ -949,7 +949,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           )}ms  min=${Math.round(r_all[0])}ms  max=${Math.round(
             r_all[repeat - 1]
           )}ms`;
-          console.log("LOG : cmd : perf tester", r);
+          console.log(` cmd : perf tester`, r);
           console.timeEnd("test:cost");
         }
 
@@ -992,7 +992,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
 
         {
           console.time("checkup");
-          console.log("LOG : cmd : checkup user id=", arg_user);
+          console.log(` cmd : checkup user id=${arg_user}`);
           await stats_checkup(targetdata);
           console.timeEnd("checkup");
         }
@@ -1234,7 +1234,7 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
     };
   }
 
-  console.log("DBUG : cmd : burn userbook=", userbook);
+  console.debug(`cmd : burn userbook=`,userbook);
   throw new Error("you would have burned it with sucress.");
   await kira_book_delete(userbook);
 
@@ -1789,7 +1789,7 @@ async function cmd_kira({
       }
     ).then((res) => res.json());
   } catch (error) {
-    console.log("DBUG : kira : catch cant acess to user : ", error);
+    console.debug(`kira : catch cant acess to user : ${error}`);
     if (JSON.parse(error.message)?.code === 10007) {
       //instant fail because victim not here
       return {
@@ -1800,8 +1800,8 @@ async function cmd_kira({
           }),
         },
       };
-      throw error;
     }
+    throw error;
   }
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
@@ -1812,7 +1812,7 @@ async function cmd_kira({
     //if attacker is not already killing victim
     let h_run_same = await kira_run_of(h_victim_id, user.id);
     if (h_run_same) {
-      console.log("LOG : kira : A already killing V : ", h_run_same);
+      console.log(` kira : A already killing V : `, h_run_same);
       //if (new Date(h_run_same.finalDate) < new Date(h_now.getTime() + 610000))//!if sentance late of 10 second
       return {
         method: "PATCH",
@@ -1827,12 +1827,12 @@ async function cmd_kira({
     //if victim is not already killing attacker
     let h_run_reverse = await kira_run_of(user.id, h_victim_id);
     if (h_run_reverse) {
-      console.log("LOG : kira : V already killing A : ", h_run_reverse);
+      console.log(` kira : V already killing A : `, h_run_reverse);
       run_combo = h_run_reverse.counterCombo + 1;
 
       if (run_combo >= sett_counter_combo_max) {
         // too much combo
-        console.log("LOG : kira : counter is max combo=", run_combo);
+        console.log(` kira : counter is max combo=`, run_combo);
         {
           //+achiv
           await Achievement.list["counterMax"].do_grant(userdata, lang, 1, {
@@ -1850,9 +1850,9 @@ async function cmd_kira({
       }
 
       //cancel death if itself
-      console.log("LOG : kira : countering... comobo=", run_combo);
+      console.log(` kira : countering... comobo=`, run_combo);
       await cmd_kira_cancel({ more: { runId: h_run_reverse.id } });
-      console.log("LOG : kira : countered");
+      console.log(` kira : countered`);
       {
         //+stats
         const h_pair = await stats_pair_get_id(
@@ -1878,7 +1878,7 @@ async function cmd_kira({
             (new Date(userdata.finalDate).getTime() - new Date().getTime()) /
               1000
           );
-          console.log(`DBUG : kira : countershort gap=${userdata.finalDate} - ${new Date()} = ${h_gap}`);
+          console.debug(`kira : countershort gap=${userdata.finalDate} - ${new Date()} = ${h_gap}`);
           if (h_gap < 6) {
             await Achievement.list["counterShort"].do_grant(userdata, lang, {
               time: time_format_string_from_int(lang, "cmd.kira.fail.maxcombo"),
@@ -2150,16 +2150,16 @@ async function cmd_kira({
 //is executed by [./remember.js]
 export async function cmd_kira_execute({ more }) {
   //if (!more.run)
-  console.log(`LOG : kira : EXECUTE. runId=${more.runId}`);
+  console.log(` kira : EXECUTE. runId=${more.runId}`);
 
   //run reading
   if (!more.runId) {
-    console.log(`ERROR : kira : runId not defined. more=`, more);
+    console.error(`kira : runId not defined. more=`, more);
     return;
   }
   const pack = await kira_run_unpack_execute(more.runId);
   if (!pack) {
-    console.log(`ERROR : kira : run deleted. more=`, more);
+    console.error(`kira : run deleted. more=`, more);
     await kira_run_delete(more.runId);
     return;
   }
@@ -2176,7 +2176,7 @@ export async function cmd_kira_execute({ more }) {
 
   //run delete
   await kira_run_delete(more.runId, h_victim_data?.id);
-  console.log(`LOG : kira : deleted. (runId=${more.runId})`);
+  console.log(` kira : deleted. (runId=${more.runId})`);
 
   try {
     //message/victim/first/edit
@@ -2419,16 +2419,16 @@ export async function cmd_kira_execute({ more }) {
 
 //is not executed by [./remember.js]
 export async function cmd_kira_cancel({ more }) {
-  console.log(`LOG : kira : CANCEL. runId=${more.runId}`);
+  console.log(` kira : CANCEL. runId=${more.runId}`);
 
   //run reading
   if (!more.runId) {
-    console.log(`ERROR : kira : runId not defined. more=`, more);
+    console.error(`kira : runId not defined. more=`, more);
     return;
   }
   const pack = await kira_run_unpack_execute(more.runId);
   if (!pack) {
-    console.log(`ERROR : kira : run deleted. more=`, more);
+    console.error(`kira : run deleted. more=`, more);
     await kira_run_delete(more.runId);
     return;
   }

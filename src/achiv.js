@@ -57,8 +57,7 @@ export class Achievement {
       throw `no graduation.\nkey [${achiv.modelKey}] cant be checked !`;
 
     let i = 0;
-    console.log(`start ${i} < ${this.graduations.length} && ${f_value} >= ${this.graduations[i]}`)
-    for (; i < this.graduations.length && f_value >= this.graduations[i]; i++) {console.log(`iter ${i} < ${this.graduations.length} && ${f_value} >= ${this.graduations[i]}`);} //must have  ;  or  {}  at the end !
+    for (; i < this.graduations.length && f_value >= this.graduations[i]; i++); //must have  ;  or  {}  at the end !
     return i;
   }
   level_graduate(f_value) {
