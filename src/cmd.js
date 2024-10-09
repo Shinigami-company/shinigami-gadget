@@ -617,7 +617,8 @@ export async function kira_cmd(f_deep, f_cmd) {
     if (e.message==="[GraphQL] GGT_INTERNAL_ERROR: Unexpected HTTP error from sandbox: Response code 500 (Internal Server Error)")
     {
       kira_error_throw(
-        "error.system.protocol",
+        //"error.system.protocol",
+        "error.critical",
         e,
         f_deep.lang,
         f_deep.token,
