@@ -162,9 +162,9 @@
 "stats.running.victim": "you shall die in **$[span]**",
 
 
-"achievement.done.yay.unic":"you've finished an achievement : **$[name]**",
-"achievement.done.yay.level":"you've performed an achievement : **$[name]** `$[level]`",
-"achievement.done.yay.maxed":"you've **completed** the achievement : **$[name]** **`$[level]`**",
+"achievement.done.yay.unic":"you've finished an achievement : **$[name]** 🎉",
+"achievement.done.yay.level":"you've performed an achievement : **$[name]** `$[level]` 🎊",
+"achievement.done.yay.maxed":"you've **completed** the achievement : **$[name]** **`$[level]`** 🎉",
 "achievement.done.apple":"you get $[number] $[unit]!",
 "achievement.show":"your achievements ($[amount]/$[max])",
 "achievement.line.hidden":"- ???",

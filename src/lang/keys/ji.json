@@ -164,7 +164,7 @@
 
 
 "achievement.done.yay.unic":"🫵🎉**$[name]**🎉",
-"achievement.done.yay.level":"🫵🎉**$[name]**`$[level]`",
+"achievement.done.yay.level":"🫵🎉**$[name]**`$[level]`🎊",
 "achievement.done.yay.maxed":"🫵🎉**$[name]`$[level]`**🎉",
 "achievement.done.apple":"🎁$[number]$[unit]",
 "achievement.show":"🫵🗃️($[amount]/$[max])",

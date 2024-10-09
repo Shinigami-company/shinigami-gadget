@@ -53,11 +53,16 @@ export class Achievement {
 
   //VALUE/GET
   #level_graduate(f_value) {
-    if (!this.graduations) return null;
+    if (!this.graduations)
+      throw `no graduation.\nkey [${achiv.modelKey}] cant be checked !`;
 
     let i = 0;
-    for (; i < this.graduations.length && f_value >= this.graduations[i]; i++); //must have  ;  or  {}  at the end !
+    console.log(`start ${i} < ${this.graduations.length} && ${f_value} >= ${this.graduations[i]}`)
+    for (; i < this.graduations.length && f_value >= this.graduations[i]; i++) {console.log(`iter ${i} < ${this.graduations.length} && ${f_value} >= ${this.graduations[i]}`);} //must have  ;  or  {}  at the end !
     return i;
+  }
+  level_graduate(f_value) {
+    return this.#level_graduate(f_value);
   }
 
   //USER/SET
@@ -139,7 +144,7 @@ export class Achievement {
       if (this.graduations && this.graduations[f_newLevel]) {
         //show landing amount
         //if must be 15, and your are at 17, show parseGrad(17)
-        f_doneDolarValues["landing"] = parseGrad(this.graduations[f_newLevel]);
+        f_doneDolarValues["landing"] = parseGrad(this.graduations[f_newLevel - 1]);
       }
 
       const doneMessage = translate(

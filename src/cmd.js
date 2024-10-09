@@ -903,6 +903,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           )}`;
         }
 
+        if (false)
         {
           //const arg_user_data = await kira_user_get(arg_user, false);
           console.time("test:cost");
@@ -936,6 +937,10 @@ async function cmd_god({ userdata, data, lang, locale }) {
           )}ms`;
           console.log("LOG : cmd : perf tester", r);
           console.timeEnd("test:cost");
+        }
+
+        {
+          r=Achievement.list["counter"].level_graduate(arg_amount);
         }
 
         return {

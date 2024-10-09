@@ -155,9 +155,9 @@
 "stats.running.victim": "u ded in **$[span]**",
 
 
-"achievement.done.yay.unic":"u do : **$[name]**",
-"achievement.done.yay.level":"u do : **$[name]** `$[level]`",
-"achievement.done.yay.maxed":"u **do** : **$[name]** **`$[level]`**",
+"achievement.done.yay.unic":"u do : **$[name]** 🎉",
+"achievement.done.yay.level":"u do : **$[name]** `$[level]` 🎊",
+"achievement.done.yay.maxed":"u **do** : **$[name]** **`$[level]`** 🎉",
 "achievement.done.apple":"u get $[number] $[unit]!",
 "achievement.show":"u doings ($[amount]/$[max])",
 "achievement.line.hidden":"- ???",
