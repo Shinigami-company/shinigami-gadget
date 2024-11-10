@@ -1929,6 +1929,7 @@ async function cmd_kira({
   const h_dayGap = time_day_gap(userbook.updatedAt, locale, true, true);
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
   const h_note = await kira_line_append(userbook, h_line, h_dayGap);
+  console.debug(`kira : h_dayGapDiff=${h_dayGapDiff}=${locale}-${userbook.updatedAt}`);
 
   {
     //+stats
@@ -1949,10 +1950,11 @@ async function cmd_kira({
           lang
         );
       if (h_dayGapDiff >= 13)
-        await Achievement.list["killDailyComeback"].do_check(
+        await Achievement.list["killDailyComeback"].do_grant(
           userdata,
-          stat,
-          lang
+          lang,
+          1,
+          {"gap":h_dayGapDiff}
         );
     }
 

@@ -114,12 +114,13 @@ export function time_day_gap(
   f_ifGetDayInt,
   f_ifGetDayFormated
 ) {
+  let r_now=time_userday_get(f_discordLang)
   let r = {
     last: {
-      date: time_userday_get(f_discordLang, f_lastDateArg),
+      date: (f_lastDateArg) ? time_userday_get(f_discordLang, f_lastDateArg) : r_now,
     },
     now: {
-      date: time_userday_get(f_discordLang),
+      date: r_now,
     },
   };
   if (f_ifGetDayInt) {

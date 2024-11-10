@@ -54,7 +54,7 @@ export class Achievement {
   //VALUE/GET
   #level_graduate(f_value) {
     if (!this.graduations)
-      throw `no graduation.\nkey [${achiv.modelKey}] cant be checked !`;
+      throw `no graduation.\nkey [${this.modelKey}] cant be checked !`;
 
     let i = 0;
     for (; i < this.graduations.length && f_value >= this.graduations[i]; i++); //must have  ;  or  {}  at the end !
