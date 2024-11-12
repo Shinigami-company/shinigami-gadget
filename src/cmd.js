@@ -51,6 +51,8 @@ function sett_apples_byVictimKills(f_kills) {
 }
 const sett_counter_combo_max = 13;
 
+const sett_disable_suscide = true;
+
 //--- imports ---
 
 //dependancies
@@ -1769,6 +1771,18 @@ async function cmd_kira({
   if (h_victim.id === user.id) {
     //fail because urself
     h_will_ping_attacker = false;
+
+    if (sett_disable_suscide)
+    {
+      //instant fail because suicide disabled
+      await Achievement.list["killU"].do_grant(userdata, lang);
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, "cmd.kira.fail.suicide"),
+        },
+      };
+    }
   }
 
   if (!guild) {
