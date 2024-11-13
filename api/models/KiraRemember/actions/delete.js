@@ -1,7 +1,7 @@
-import { deleteRecord, ActionOptions, DeleteUserActionContext } from "gadget-server";
+import { deleteRecord, ActionOptions, DeleteKiraRememberActionContext } from "gadget-server";
 
 /**
- * @param { DeleteUserActionContext } context
+ * @param { DeleteKiraRememberActionContext } context
  */
 export async function run({ params, record, logger, api, connections }) {
   await deleteRecord(record);

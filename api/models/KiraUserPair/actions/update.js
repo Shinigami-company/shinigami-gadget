@@ -1,7 +1,7 @@
-import { applyParams, save, ActionOptions, UpdateGamesActionContext } from "gadget-server";
+import { applyParams, save, ActionOptions, UpdateKiraUserPairActionContext } from "gadget-server";
 
 /**
- * @param { UpdateGamesActionContext } context
+ * @param { UpdateKiraUserPairActionContext } context
  */
 export async function run({ params, record, logger, api, connections }) {
   applyParams(params, record);
@@ -9,7 +9,7 @@ export async function run({ params, record, logger, api, connections }) {
 };
 
 /**
- * @param { UpdateGamesActionContext } context
+ * @param { UpdateKiraUserPairActionContext } context
  */
 export async function onSuccess({ params, record, logger, api, connections }) {
   // Your logic goes here
@@ -18,5 +18,4 @@ export async function onSuccess({ params, record, logger, api, connections }) {
 /** @type { ActionOptions } */
 export const options = {
   actionType: "update",
-  triggers: { api: true },
 };

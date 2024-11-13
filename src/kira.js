@@ -1,4 +1,5 @@
 import { api } from "gadget-server";
+import { kira_remember_task_add, tasksType } from "./remember.js";
 
 const settings_max_pages = 60;
 const settings_max_lines = 10; //38
@@ -89,16 +90,11 @@ export async function kira_user_create(f_userId) {
 } //return the created element
 
 //capsule
-export async function kira_user_set_life(f_dataId, f_bool, f_span = null) {
-  let h_finalDate = null;
-  if (f_span) {
-    h_finalDate = new Date();
-    h_finalDate.setSeconds(h_finalDate.getSeconds() + f_span);
-  }
-
+export async function kira_user_set_life(f_dataId, f_bool, f_backDate = null) {
+  if (f_backDate) f_backDate = f_backDate.toISOString();
   await api.KiraUsers.update(f_dataId, {
     is_alive: f_bool,
-    backDate: h_finalDate,
+    backDate: f_backDate,
   });
 }
 
@@ -357,20 +353,12 @@ export async function kira_line_get_page(f_book, f_page, f_ifBlank = true) {
 }
 
 export async function kira_run_create(
-  f_span,
+  f_finalDate,
   f_attackerId,
   f_victimId,
   f_victimDataId,
   f_counterCombo
 ) {
-  let h_finalDate = new Date();
-  h_finalDate.setSeconds(h_finalDate.getSeconds() + f_span);
-
-  if (f_victimDataId) {
-    await api.KiraUsers.update(f_victimDataId, {
-      deathDate: h_finalDate,
-    });
-  }
 
   return await api.KiraRun.create({
     //used to find one
@@ -379,7 +367,7 @@ export async function kira_run_create(
     //edit userdata
     victimDataId: f_victimDataId,
     //the date
-    finalDate: h_finalDate,
+    finalDate: f_finalDate,
     //data
     counterCombo: f_counterCombo,
   });
@@ -417,20 +405,6 @@ export async function kira_run_get(f_runId) {
     select: {
       attackerId: true,
       channelId: true,
-    },
-  });
-}
-
-export async function kira_runs_after(f_date) {
-  return await api.KiraRun.findMany({
-    filter: {
-      finalDate: { before: f_date.toISOString() },
-    },
-    //sort: { finalDate: "Ascending" },//!better for manual search, but unefficient here
-    select: {
-      //! acually need only that, but could change
-      id: true,
-      //is unpacked after. unpack here?
     },
   });
 }

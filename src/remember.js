@@ -1,7 +1,44 @@
 import { api } from "gadget-server";
 
-import { cmd_kira_execute } from "./cmd.js";
-import { kira_runs_after } from "./kira.js";
+import { cmd_kira_execute, cmd_comeback } from "./cmd.js";
+
+
+export const tasksType = {
+  KIRA: 1,
+  REVIVE: 2,
+};
+
+
+export async function kira_remember_task_add(f_date, f_type, f_data) {
+  return await api.KiraRemember.create({
+    executeDate: f_date,
+    RememberingType: f_type,
+    //RememberingId: f_id
+    RememberingData: f_data
+  });
+}
+
+export async function kira_remember_task_after(f_date) {
+  return await api.KiraRemember.findMany({
+    filter: {
+      executeDate: { before: f_date.toISOString() },
+    },
+    //sort: { finalDate: "Ascending" },//!better for manual search, but unefficient here
+    /*
+    select: {
+      //! acually need all
+      id: true,
+    },
+    */
+  });
+}
+
+
+export async function kira_remember_task_clean(f_taskId) {
+  return await api.KiraRemember.delete(f_taskId);
+}
+
+
 
 //this one not working
 //function cmd_kira_wait({ api, more, user, lang }, f_time_ms, f_itr=0)
@@ -20,6 +57,8 @@ var remembering = 0;
 var ocurence = 0;
 async function kira_remember_checkup() {
   //remembering
+
+  //already
   if (remembering > 0) {
     remembering += 1;
     console.log(
@@ -30,20 +69,37 @@ async function kira_remember_checkup() {
   remembering = 1;
 
   //retrive
-  let f_runs = await kira_runs_after(new Date());
+  let f_tasks = await kira_remember_task_after(new Date());
 
   //execute
-  if (f_runs.length > 0) {
-    //console.log(` rem3mber : execute ${f_runs.length} runs...`);
-    for (let i = 0; i < f_runs.length; i += 1) {
-      console.log(` rem3mber : execute run ${i} : `, f_runs[i]);
-      await cmd_kira_execute({ more: { runId: f_runs[i].id } });
+  if (f_tasks.length > 0) {
+    //console.log(` rem3mber : execute ${f_tasks.length} runs...`);
+    for (let i = 0; i < f_tasks.length; i += 1) {
+      console.log(` rem3mber : execute ${i} (taskType=${f_tasks[i].RememberingType}) : `, f_tasks[i]);
+      //remove the task from database
+      kira_remember_task_clean(f_tasks[i].id);
+      //data
+      const data=f_tasks[i].RememberingData;
+      //case
+      switch (f_tasks[i].RememberingType)
+      {
+        //remembering type
+        case (tasksType.KIRA):
+        {
+          await cmd_kira_execute(data);
+        } break;
+        
+        case (tasksType.REVIVE):
+        {
+          await cmd_comeback(data);
+        } break;
+      }
     }
   }
 
-  //log
+  //mrewing : log and keep awake
   if (ocurence % 60 === 0) {
-    console.log(` rem3mber : mrew (min=${ocurence / 60})`);
+    console.debug(` rem3mber : mrew (min=${ocurence / 60})`);
     let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
       raw.json()
     );

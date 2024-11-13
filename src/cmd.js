@@ -47,11 +47,20 @@ const sett_emoji_burn_confirm = {
 const sett_daily_amount = 1;
 
 function sett_apples_byVictimKills(f_kills) {
-  return parseInt(f_kills ** 0.5);
+  return parseInt(f_kills ** 0.5);//squareroot
 }
 const sett_counter_combo_max = 13;
 
-const sett_disable_suscide = true;
+const sett_disable_suscide = false;
+const sett_comeback = {
+  time: {//comeback automaticly after the time
+    other: {if: true, message: true},
+    suicide: {if: true, message: true},
+  },
+  check: {//comeback when victim do something
+    all: {if: true, message: true},//just, dont disable that.
+  }
+};
 
 //--- imports ---
 
@@ -65,7 +74,7 @@ import {
   ButtonStyleTypes,
 } from "discord-interactions";
 import { DiscordRequest } from "../utils.js";
-import { DiscordUserById } from "../utils.js";
+import { DiscordUserById, DiscordUserOpenDm } from "../utils.js";
 
 //own
 //import { sleep } from './tools.js';
@@ -151,6 +160,7 @@ import {
   roman_from_int,
 } from "./tools.js"; // tools
 
+import { kira_remember_task_add, tasksType } from "./remember.js";
 import { linkme } from "./remember.js";
 linkme("linked from cmd"); //need to use a function from there
 
@@ -718,7 +728,7 @@ async function check_can_alive(dig) {
     const h_gap = parseInt(
       (new Date(dig.userdata.backDate).getTime() - new Date().getTime()) / 1000
     );
-    if (h_gap > 0) {
+    if (h_gap > 0 || !sett_comeback.check.all.if) {
       //can not be bring back
       return {
         method: "PATCH",
@@ -729,9 +739,33 @@ async function check_can_alive(dig) {
         },
       };
     }
+
     //bring back
     await kira_user_set_life(dig.userdata.id, true);
-    //continue
+
+    //message
+    if (sett_comeback.check.all.message)
+    {
+      //open DM
+      const dm_id = await DiscordUserOpenDm(dig.userdata.userId);
+      //send message
+      try {
+        //var h_victim_message = 
+        await DiscordRequest(
+          `channels/${dm_id}/messages`,
+            {
+              method: "POST",
+              body: {
+                content: translate(dig.lang, "cmd.comeback.check.all"),
+              },
+            }
+          );
+        }
+      catch (e) {
+        let errorMsg = JSON.parse(e.message);
+        if (!(errorMsg?.code === 50007)) throw e;
+      }
+    }
   }
   //gud
   return undefined;
@@ -818,7 +852,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           };
         }
 
-        await kira_user_set_life(targetdata.id, h_life, 120);
+        await kira_user_set_life(targetdata.id, h_life);
 
         return {
           method: "PATCH",
@@ -1238,7 +1272,7 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
   }
 
   console.debug(`cmd : burn userbook=`,userbook);
-  throw new Error("you would have burned it with sucress.");
+  //throw new Error("you would have burned it with sucress.");
   await kira_book_delete(userbook);
 
   return {
@@ -1866,7 +1900,7 @@ async function cmd_kira({
 
       //cancel death if itself
       console.log(` kira : countering... comobo=`, run_combo);
-      await cmd_kira_cancel({ more: { runId: h_run_reverse.id } });
+      await cmd_kira_cancel({ runId: h_run_reverse.id });
       console.log(` kira : countered`);
       {
         //+stats
@@ -1981,14 +2015,18 @@ async function cmd_kira({
     }
   }
 
+  
   //creat kira run
+  let h_finalDate = new Date();
+  h_finalDate.setSeconds(h_finalDate.getSeconds() + h_span);
   const h_run = await kira_run_create(
-    h_span,
+    h_finalDate,
     user.id,
     h_victim_id,
     h_victim_data?.id,
     run_combo
   );
+  kira_remember_task_add(h_finalDate, tasksType.KIRA, {runId: h_run.id});
 
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
@@ -1998,16 +2036,11 @@ async function cmd_kira({
   //message/victim
   if (h_will_ping_victim) {
     //open DM
-    var h_victim_dm = await DiscordRequest(`users/@me/channels`, {
-      method: "POST",
-      body: {
-        recipient_id: h_victim_id,
-      },
-    }).then((res) => res.json());
+    var h_victim_dm_id = await DiscordUserOpenDm(h_victim_id);
     //send message
     try {
       var h_victim_message = await DiscordRequest(
-        `channels/${h_victim_dm.id}/messages`,
+        `channels/${h_victim_dm_id}/messages`,
         {
           method: "POST",
           body: {
@@ -2057,16 +2090,11 @@ async function cmd_kira({
   //message/attacker
   if (h_will_ping_attacker) {
     //open DM
-    var h_attacker_dm = await DiscordRequest(`users/@me/channels`, {
-      method: "POST",
-      body: {
-        recipient_id: user.id,
-      },
-    }).then((res) => res.json());
+    var h_attacker_dm_id = await DiscordUserOpenDm(user.id);
     //send message
     try {
       var h_attacker_message = await DiscordRequest(
-        `channels/${h_attacker_dm.id}/messages`,
+        `channels/${h_attacker_dm_id}/messages`,
         {
           method: "POST",
           body: {
@@ -2132,11 +2160,11 @@ async function cmd_kira({
       victim_id: h_victim.id,
       victim_data_id: h_victim_data?.id, // is possibly undefined (when [will_fail])
       victim_username: h_victim_name,
-      victim_dm_id: h_victim_dm?.id, //can be undefined
+      victim_dm_id: h_victim_dm_id, //can be undefined
       victim_message_id: h_victim_message?.id, //can be undefined
       attacker_id: user.id,
       // attacker_data_id: ?,
-      attacker_dm_id: h_attacker_dm?.id, //can be undefined
+      attacker_dm_id: h_attacker_dm_id, //can be undefined
       attacker_message_id: h_attacker_message?.id, //can be undefined
       attacker_book_id: userbook.id,
     },
@@ -2161,39 +2189,39 @@ async function cmd_kira({
   };
 
   //pretty old method
-  //setTimeout(() => { cmd_kira_execute({ more, user, lang }); }, h_span * 1000);
+  //setTimeout(() => { cmd_kira_execute({ data, user, lang }); }, h_span * 1000);
 }
 
 //is executed by [./remember.js]
-export async function cmd_kira_execute({ more }) {
-  //if (!more.run)
-  console.log(` kira : EXECUTE. runId=${more.runId}`);
+export async function cmd_kira_execute(data) {
+  //if (!data.run)
+  console.log(` kira : EXECUTE. runId=${data.runId}`);
 
   //run reading
-  if (!more.runId) {
-    console.error(`kira : runId not defined. more=`, more);
+  if (!data.runId) {
+    console.error(`kira : runId not defined. data=`, data);
     return;
   }
-  const pack = await kira_run_unpack_execute(more.runId);
+  const pack = await kira_run_unpack_execute(data.runId);
   if (!pack) {
-    console.error(`kira : run deleted. more=`, more);
-    await kira_run_delete(more.runId);
+    console.error(`kira : run deleted. data=`, data);
+    //await kira_run_delete(data.runId);
     return;
   }
 
   //datas reading again
   const user = await DiscordUserById(pack.attacker_id); //!
   const lang = pack.lang; //!
-  let h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
-  let userdata = await kira_user_get(user.id, true);
+  const h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
+  const userdata = await kira_user_get(user.id, true);
   const h_attacker_book = await kira_book_get(userdata.id);
   //handle special case : burned book
   const h_will_book_victim =
     !h_attacker_book || h_attacker_book.id != pack.attacker_book_id;
 
   //run delete
-  await kira_run_delete(more.runId, h_victim_data?.id);
-  console.log(` kira : deleted. (runId=${more.runId})`);
+  await kira_run_delete(data.runId, h_victim_data?.id);
+  console.log(` kira : deleted. (runId=${data.runId})`);
 
   try {
     //message/victim/first/edit
@@ -2276,8 +2304,25 @@ export async function cmd_kira_execute({ more }) {
     });
 
     //kill
-    await kira_user_set_life(h_victim_data.id, false, pack.span);
-    if (h_will_book_victim) await kira_line_taste(pack.note_id, 1); //note need to exist
+    {
+      //date
+      let h_finalDate = null;
+      if (pack.span) {
+        h_finalDate = new Date();
+        h_finalDate.setSeconds(h_finalDate.getSeconds() + pack.span);
+      }
+      //life
+      await kira_user_set_life(h_victim_data.id, false, h_finalDate);
+      //revive
+      kira_remember_task_add(h_finalDate, tasksType.REVIVE, 
+        {
+          userId: pack.victim_id,
+          lang: lang,
+          ifSuicide: (pack.victim_id==pack.attacker_id),
+          msgReference: pack.victim_message_id
+        });
+      if (h_will_book_victim) await kira_line_taste(pack.note_id, 1); //note need to exist
+    }
 
     {
       //+stats
@@ -2435,18 +2480,18 @@ export async function cmd_kira_execute({ more }) {
 }
 
 //is not executed by [./remember.js]
-export async function cmd_kira_cancel({ more }) {
-  console.log(` kira : CANCEL. runId=${more.runId}`);
+export async function cmd_kira_cancel(data) {
+  console.log(` kira : CANCEL. runId=${data.runId}`);
 
   //run reading
-  if (!more.runId) {
-    console.error(`kira : runId not defined. more=`, more);
+  if (!data.runId) {
+    console.error(`kira : runId not defined. data=`, data);
     return;
   }
-  const pack = await kira_run_unpack_execute(more.runId);
+  const pack = await kira_run_unpack_execute(data.runId);
   if (!pack) {
-    console.error(`kira : run deleted. more=`, more);
-    await kira_run_delete(more.runId);
+    console.error(`kira : run deleted. data=`, data);
+    //await kira_run_delete(data.runId);
     return;
   }
 
@@ -2456,7 +2501,7 @@ export async function cmd_kira_cancel({ more }) {
   // let h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail);//needed to know if alive
 
   //run delete
-  await kira_run_delete(more.runId, pack.victim_data_id);
+  await kira_run_delete(data.runId, pack.victim_data_id);
 
   //message/victim/first/edit
   try {
@@ -2522,8 +2567,60 @@ export async function cmd_kira_cancel({ more }) {
   }
 }
 
-//#know command
+//is executed by [./remember.js]
+export async function cmd_comeback(data) {
+  const comeback_type=(data.ifSuicide) ? "suicide" : "other";
+  
+  //if comeback
+  if (!sett_comeback.time[comeback_type].if) return;
 
+  const userdata = await kira_user_get(data.userId, false);
+  const lang = data.lang;
+
+  const h_gap = parseInt(
+    (new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000
+  );
+  if (h_gap > 0) {
+    //can not be bring back
+    console.log(`cmd : comeback : cant bring back [${userdata.userId}] bcs gap=${h_gap}`);
+    return;
+  }
+
+  //bring back
+  console.log(`cmd : comeback : bringing back [${userdata.userId}]`);
+  await kira_user_set_life(userdata.id, true);
+
+  //if send message
+  if (!sett_comeback.time[comeback_type].message) return;
+
+  {
+    //open DM
+    const dm_id = await DiscordUserOpenDm(userdata.userId);
+
+    //send message
+    try {
+      //var h_victim_message = 
+      await DiscordRequest(
+        `channels/${dm_id}/messages`,
+          {
+            method: "POST",
+            body: {
+              message_reference: {
+                message_id: data.msgReference,
+              },
+              content: translate(lang, "cmd.comeback.time."+comeback_type),
+            },
+          }
+        );
+      }
+    catch (e) {
+      let errorMsg = JSON.parse(e.message);
+      if (!(errorMsg?.code === 50007)) throw e;
+    }
+  }
+}
+
+//#know command
 async function cmd_know({ data, message, userdata, lang }) {
   //args
 

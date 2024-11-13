@@ -1,14 +1,14 @@
-import { deleteRecord, ActionOptions, DeleteGamesActionContext } from "gadget-server";
+import { deleteRecord, ActionOptions, DeleteKiraUserPairActionContext } from "gadget-server";
 
 /**
- * @param { DeleteGamesActionContext } context
+ * @param { DeleteKiraUserPairActionContext } context
  */
 export async function run({ params, record, logger, api, connections }) {
   await deleteRecord(record);
 };
 
 /**
- * @param { DeleteGamesActionContext } context
+ * @param { DeleteKiraUserPairActionContext } context
  */
 export async function onSuccess({ params, record, logger, api, connections }) {
   // Your logic goes here
@@ -17,5 +17,4 @@ export async function onSuccess({ params, record, logger, api, connections }) {
 /** @type { ActionOptions } */
 export const options = {
   actionType: "delete",
-  triggers: { api: true },
 };

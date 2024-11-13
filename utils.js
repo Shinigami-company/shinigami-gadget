@@ -47,6 +47,23 @@ export async function DiscordUserById(f_UserId)
   return this_commands;
 }
 
+export async function DiscordUserOpenDm(f_UserId)
+{
+  //https://discord.com/developers/docs/resources/user#get-user
+  //Get User   (GET)   /users/{user.id}
+  //Returns a user object for a given user ID.
+  const this_resp = await DiscordRequest(`users/@me/channels`, {
+        method: "POST",
+        body: {
+          recipient_id: f_UserId,
+        },
+      });
+
+  const this_channel = await this_resp.json();
+  console.debug(`hi : open dm (userId:channelId)=(${f_UserId}:${this_channel.id})`);
+  return this_channel.id;
+}
+
 
 // other usefull things
 

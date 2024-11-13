@@ -16,14 +16,6 @@ export const permissions: GadgetPermissions = {
         action: true,
       },
       models: {
-        games: {
-          read: true,
-          actions: {
-            create: true,
-            delete: true,
-            update: true,
-          },
-        },
         KiraBooks: {
           read: true,
           actions: {
@@ -33,6 +25,14 @@ export const permissions: GadgetPermissions = {
           },
         },
         KiraNotes: {
+          read: true,
+          actions: {
+            create: true,
+            delete: true,
+            update: true,
+          },
+        },
+        KiraRemember: {
           read: true,
           actions: {
             create: true,
@@ -76,16 +76,11 @@ export const permissions: GadgetPermissions = {
           read: true,
         },
         user: {
-          read: {
-            filter: "accessControl/filters/user/tenant.gelly",
-          },
+          read: true,
           actions: {
-            changePassword: {
-              filter: "accessControl/filters/user/tenant.gelly",
-            },
-            signOut: {
-              filter: "accessControl/filters/user/tenant.gelly",
-            },
+            create: true,
+            delete: true,
+            update: true,
           },
         },
       },
@@ -96,18 +91,6 @@ export const permissions: GadgetPermissions = {
     },
     unauthenticated: {
       storageKey: "unauthenticated",
-      models: {
-        user: {
-          actions: {
-            resetPassword: true,
-            sendResetPassword: true,
-            sendVerifyEmail: true,
-            signIn: true,
-            signUp: true,
-            verifyEmail: true,
-          },
-        },
-      },
     },
   },
 };

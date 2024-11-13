@@ -1,7 +1,7 @@
-import { applyParams, save, ActionOptions, UpdateUserActionContext } from "gadget-server";
+import { applyParams, save, ActionOptions, CreateKiraRememberActionContext } from "gadget-server";
 
 /**
- * @param { UpdateUserActionContext } context
+ * @param { CreateKiraRememberActionContext } context
  */
 export async function run({ params, record, logger, api, connections }) {
   applyParams(params, record);
@@ -10,5 +10,5 @@ export async function run({ params, record, logger, api, connections }) {
 
 /** @type { ActionOptions } */
 export const options = {
-  actionType: "update",
+  actionType: "create",
 };

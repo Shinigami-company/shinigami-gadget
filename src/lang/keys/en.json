@@ -122,6 +122,10 @@
 "cmd.kira.counter.attacker": "**but <@$[victimId]> __countered__ the attack**...",
 "cmd.kira.counter.victim": "**but you __counter__ <@$[attackerId]>'s attack**",
 
+"cmd.comeback.time.other": "you came back to life",
+"cmd.comeback.time.suicide": "having killed yourself, you come back to life by yourself",
+"cmd.comeback.check.self": "you came back to life",
+
 "cmd.know.fail.expired": "I don't remember it anymore, it was too long ago.",
 "cmd.know.fail.poor": "You don't have enough apples to convince me...",
 "cmd.know.get.who": "Yum! The name of your killer begins with a **$[wh]**.   `-$[price]🍎`",
