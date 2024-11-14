@@ -93,6 +93,8 @@ import {
   kira_user_get_daily,
   kira_user_set_daily,
   kira_user_add_apple,
+  kira_user_set_drop,
+  kira_user_get_drop,
 } from "./kira.js"; //kira user
 import { kira_users_rank } from "./kira.js"; //kira user
 import {
@@ -192,6 +194,7 @@ const commands_structure = {
             { name: "update", value: "update", description: "update an user" },
             { name: "revive", value: "revive", description: "revive someone" },
             { name: "kill", value: "kill", description: "kill someone" },
+            { name: "drop", value: "drop", description: "drop someone's death note" },
             {
               name: "mercy",
               value: "mercy",
@@ -265,7 +268,7 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [[check_can_alive, false],[check_react_is_self, true]],
+      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noGiveUp, false]],
     },
     register: {
       name: "claim",
@@ -286,7 +289,7 @@ const commands_structure = {
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [[check_can_alive, false],[check_react_is_self, true]],
+      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noGiveUp, false]],
     },
     register: {
       name: "burn",
@@ -300,7 +303,7 @@ const commands_structure = {
   apple: {
     functions: {
       exe: cmd_apple,
-      checks: [[check_can_alive, false]],
+      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
     },
     register: {
       name: "apple",
@@ -314,7 +317,7 @@ const commands_structure = {
   lang: {
     functions: {
       exe: cmd_lang,
-      checks: [[check_can_alive, false]],
+      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
     },
     register: {
       name: "lang",
@@ -336,7 +339,7 @@ const commands_structure = {
   stats: {
     functions: {
       exe: cmd_stats,
-      checks: [[check_can_alive, false]],
+      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
     },
     register: {
       name: "stats",
@@ -362,7 +365,7 @@ const commands_structure = {
   running: {
     functions: {
       exe: cmd_running,
-      checks: [[check_can_alive, false]],
+      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
     },
     register: {
       name: "running",
@@ -375,7 +378,7 @@ const commands_structure = {
   quest: {
     functions: {
       exe: cmd_quest,
-      checks: [[check_can_alive, false]],
+      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
     },
     register: {
       name: "quest",
@@ -388,7 +391,7 @@ const commands_structure = {
   top: {
     functions: {
       exe: cmd_top,
-      checks: [[check_can_alive, false]],
+      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
     },
     register: {
       name: "top",
@@ -417,6 +420,7 @@ const commands_structure = {
       exe: cmd_rules,
       checks: [
         [check_can_alive, false],
+        [check_has_noGiveUp, false],
         [check_has_book, false],
       ],
     },
@@ -433,6 +437,7 @@ const commands_structure = {
       exe: cmd_see,
       checks: [
         [check_can_alive, false],
+        [check_has_noGiveUp, false],
         [check_has_book, false],
       ],
     },
@@ -454,11 +459,39 @@ const commands_structure = {
   },
 
   //SET
+  drop: {
+    functions: {
+      exe: cmd_drop,
+      checks: [
+        [check_can_alive, false],
+        [check_has_noGiveUp, false],
+        [check_has_book, false],
+      ],
+    },
+    register: {
+      name: "drop",
+      description: "Give up your death note and makes your forgetable",
+      contexts: [0],
+      options: [
+        {
+          type: 4,
+          name: "span",
+          description: "the time you drop it",
+          required: false,
+          min_value: 60,
+          max_value: 86400,
+        },
+      ],
+      type: 1,
+    },
+  },
+
   kira: {
     functions: {
       exe: cmd_kira,
       checks: [
         [check_can_alive, false],
+        [check_has_noGiveUp, false],
         [check_has_book, false],
       ],
     },
@@ -497,6 +530,7 @@ const commands_structure = {
       exe: cmd_know,
       checks: [
         [check_can_alive, true],
+        [check_has_noGiveUp, false],
         [check_has_book, true],
         //[check_react_is_self, true]// JUST DONT DO IT NOOOOOOOOOO
       ],
@@ -615,6 +649,8 @@ export async function kira_cmd(f_deep, f_cmd) {
     return await commands_structure[f_cmd].functions.exe(f_deep);
   } catch (e) {
     if (!replyed)
+      //didnt work
+      console.log("hi : this interaction makred as unknow : ",`interactions/${f_deep.id}/${f_deep.token}/callback`);
       await DiscordRequest(
         `interactions/${f_deep.id}/${f_deep.token}/callback`,
         {
@@ -784,6 +820,21 @@ function check_has_book(dig) {
   return undefined;
 }
 
+async function check_has_noGiveUp(dig) {
+  const h_gap=await kira_user_get_drop(dig.userdata.id);
+  if (h_gap>0) {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(dig.lang, "check.nodrop.not",{
+            time: time_format_string_from_int(h_gap, dig.lang),
+            }),
+      },
+    };
+  }
+  return undefined;
+}
+
 //react check
 function check_react_is_self(dig) {
   console.debug(`check : check_react_is_self IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`);
@@ -866,6 +917,38 @@ async function cmd_god({ userdata, data, lang, locale }) {
         };
       }
       break;
+    
+    //#drop subcommand
+    case "drop": {
+      if (!arg_user) {
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.god.life.fail.missing.user"),
+          },
+        };
+      }
+
+      if (arg_amount===null) {
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.god.drop.fail.missing.amount"),
+          },
+        };
+      }
+      
+      const targetdata = await kira_user_get(arg_user, false);
+
+      await kira_user_set_drop(targetdata.id, arg_amount);
+      
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, "cmd.god.drop.done."+((arg_amount==0) ? "zero" : "more"), {targetId: arg_user, time: time_format_string_from_int(arg_amount, lang)}),
+        },
+      };
+    } break;
 
     //#apple subcommand (#apple_fake & #apple_give)
     case "apple_fake": {
@@ -1763,6 +1846,39 @@ async function cmd_see({ data, userbook, lang }) {
   };
 }
 
+//#drop command
+async function cmd_drop({
+  data,
+  locale,
+  user,
+  guild,
+  userdata,
+  userbook,
+  channel,
+  lang,
+  token,
+}) {
+
+  //span
+  let h_span = (data.options) ? data.options[0] : null;
+  if (h_span) h_span = h_span.value;
+  if (!h_span) h_span = 60;
+
+  //set
+  await kira_user_set_drop(userdata.id, h_span);
+
+  //send
+  {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.drop.done", {time: time_format_string_from_int(h_span, lang)})
+      },
+    };
+  }
+}
+
+
 //#kira command
 async function cmd_kira({
   data,
@@ -2312,6 +2428,8 @@ export async function cmd_kira_execute(data) {
         h_finalDate.setSeconds(h_finalDate.getSeconds() + pack.span);
       }
       //life
+      h_finalDate = new Date();
+      h_finalDate.setSeconds(h_finalDate.getSeconds() + 60);
       await kira_user_set_life(h_victim_data.id, false, h_finalDate);
       //revive
       kira_remember_task_add(h_finalDate, tasksType.REVIVE, 

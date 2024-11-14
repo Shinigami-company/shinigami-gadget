@@ -134,6 +134,29 @@ export async function kira_user_get_daily(f_dataId) {
     .then((iso) => new Date(iso));
 }
 
+export async function kira_user_set_drop(f_dataId, f_span) {
+  let h_date=new Date();
+  h_date.setSeconds(h_date.getSeconds()+f_span);
+  await api.KiraUsers.update(f_dataId, {
+    giveUp: h_date.toISOString(),
+  });
+}
+
+export async function kira_user_get_drop(f_dataId) {
+  const iso=await api.KiraUsers.findOne(f_dataId, {
+    select: { giveUp: true },
+  })
+    .then((data) => data.giveUp);
+  if (!iso)
+    return 0;
+  let date=new Date(iso);
+  const span=Math.ceil((new Date(iso).getTime() - new Date().getTime())/1000);
+  if (span<0)
+    return 0;
+  return span;
+
+}
+
 //---kira_book---
 //DATA about the book
 

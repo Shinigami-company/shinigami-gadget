@@ -43,6 +43,11 @@ export const schema: GadgetModel = {
       includeTime: true,
       storageKey: "bRmM-ugIUS1a::_hVDoSZAH3eF",
     },
+    giveUp: {
+      type: "dateTime",
+      includeTime: true,
+      storageKey: "LPUuSjFVw9Qh",
+    },
     is_alive: {
       type: "boolean",
       default: true,
