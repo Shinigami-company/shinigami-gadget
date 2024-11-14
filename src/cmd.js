@@ -649,8 +649,9 @@ export async function kira_cmd(f_deep, f_cmd) {
     return await commands_structure[f_cmd].functions.exe(f_deep);
   } catch (e) {
     if (!replyed)
+    {
       //didnt work
-      console.log("hi : this interaction makred as unknow : ",`interactions/${f_deep.id}/${f_deep.token}/callback`);
+      console.log(`hi : this interaction makred as unknow : interactions/${f_deep.id}/${f_deep.token}/callback`);
       await DiscordRequest(
         `interactions/${f_deep.id}/${f_deep.token}/callback`,
         {
@@ -660,6 +661,7 @@ export async function kira_cmd(f_deep, f_cmd) {
           },
         }
       );
+    }
     console.error(`cmd : in js error=`, e);
     //specific error
     if (e.message==="[GraphQL] GGT_INTERNAL_ERROR: Unexpected HTTP error from sandbox: Response code 500 (Internal Server Error)")
@@ -1913,13 +1915,13 @@ async function cmd_kira({
   let h_will_fail = false;
 
   if (h_victim.id === process.env.APP_ID) {
-    //fail because god of death
+    //will fail because god of death
     h_will_ping_victim = false;
     h_will_fail = true;
   }
 
   if (h_victim.id === user.id) {
-    //fail because urself
+    //will fail because urself
     h_will_ping_attacker = false;
 
     if (sett_disable_suscide)
@@ -1970,6 +1972,20 @@ async function cmd_kira({
   }
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
+  
+  {
+    const h_gap=await kira_user_get_drop(h_victim_data.id);
+    if (h_gap>0) {
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, "cmd.kira.fail.droped",{
+              time: time_format_string_from_int(h_gap, lang),
+              }),
+        },
+      };
+    }
+  }
 
   //check/others runs
   let run_combo = 1;
