@@ -75,14 +75,6 @@ export const permissions: GadgetPermissions = {
         KiraUserStats: {
           read: true,
         },
-        user: {
-          read: true,
-          actions: {
-            create: true,
-            delete: true,
-            update: true,
-          },
-        },
       },
       actions: {
         registerCommands: true,

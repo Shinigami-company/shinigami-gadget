@@ -120,6 +120,11 @@ export default async function route({ request, reply, api, logger, connections }
         {
           data = { name: 'claim', options: [{ name: 'color', value: parseInt(h_arg[0]) }, {name: 'confirm', value: h_arg[1]==="true"}]};
         } break;
+
+        case ("drop"):
+        {
+          data = {name: 'drop', options: [{name:'value', value: parseInt(data.values[0])}]};
+        } break;
           
         case ("burn"):
         {

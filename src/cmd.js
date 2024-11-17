@@ -35,6 +35,25 @@ const sett_know = {
   },
 };
 
+const sett_drop = [
+  {
+    price: 1,
+    span: 600,
+  },
+  {
+    price: 1,
+    span: 3600,
+  },
+  {
+    price: 2,
+    span: 86400,
+  },
+  {
+    price: 5,
+    span: 86400*3,
+  }
+]
+
 const sett_emoji_apple_eat = {
   name: "apple_croc",
   id: "1266010583623532574",
@@ -61,6 +80,9 @@ const sett_comeback = {
     all: {if: true, message: true},//just, dont disable that.
   }
 };
+
+const sett_cancel_when_dead_attacker = true;
+const sett_cancel_when_dead_victim = true;
 
 //--- imports ---
 
@@ -268,7 +290,7 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noGiveUp, false]],
+      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noDrop, false]],
     },
     register: {
       name: "claim",
@@ -289,7 +311,7 @@ const commands_structure = {
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noGiveUp, false]],
+      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noDrop, false]],
     },
     register: {
       name: "burn",
@@ -303,7 +325,7 @@ const commands_structure = {
   apple: {
     functions: {
       exe: cmd_apple,
-      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
+      checks: [[check_can_alive, false],[check_has_noDrop, false]],
     },
     register: {
       name: "apple",
@@ -317,7 +339,7 @@ const commands_structure = {
   lang: {
     functions: {
       exe: cmd_lang,
-      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
+      checks: [[check_can_alive, false],[check_has_noDrop, false]],
     },
     register: {
       name: "lang",
@@ -339,7 +361,7 @@ const commands_structure = {
   stats: {
     functions: {
       exe: cmd_stats,
-      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
+      checks: [[check_can_alive, false],[check_has_noDrop, false]],
     },
     register: {
       name: "stats",
@@ -365,7 +387,7 @@ const commands_structure = {
   running: {
     functions: {
       exe: cmd_running,
-      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
+      checks: [[check_can_alive, false],[check_has_noDrop, false]],
     },
     register: {
       name: "running",
@@ -378,7 +400,7 @@ const commands_structure = {
   quest: {
     functions: {
       exe: cmd_quest,
-      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
+      checks: [[check_can_alive, false],[check_has_noDrop, false]],
     },
     register: {
       name: "quest",
@@ -391,7 +413,7 @@ const commands_structure = {
   top: {
     functions: {
       exe: cmd_top,
-      checks: [[check_can_alive, false],[check_has_noGiveUp, false]],
+      checks: [[check_can_alive, false],[check_has_noDrop, false]],
     },
     register: {
       name: "top",
@@ -420,7 +442,7 @@ const commands_structure = {
       exe: cmd_rules,
       checks: [
         [check_can_alive, false],
-        [check_has_noGiveUp, false],
+        [check_has_noDrop, false],
         [check_has_book, false],
       ],
     },
@@ -437,7 +459,7 @@ const commands_structure = {
       exe: cmd_see,
       checks: [
         [check_can_alive, false],
-        [check_has_noGiveUp, false],
+        [check_has_noDrop, false],
         [check_has_book, false],
       ],
     },
@@ -464,24 +486,14 @@ const commands_structure = {
       exe: cmd_drop,
       checks: [
         [check_can_alive, false],
-        [check_has_noGiveUp, false],
+        [check_has_noDrop, false],
         [check_has_book, false],
       ],
     },
     register: {
       name: "drop",
-      description: "Give up your death note and makes your forgetable",
+      description: "Give up your death note to protect yourself",
       contexts: [0],
-      options: [
-        {
-          type: 4,
-          name: "span",
-          description: "the time you drop it",
-          required: false,
-          min_value: 60,
-          max_value: 86400,
-        },
-      ],
       type: 1,
     },
   },
@@ -491,7 +503,7 @@ const commands_structure = {
       exe: cmd_kira,
       checks: [
         [check_can_alive, false],
-        [check_has_noGiveUp, false],
+        [check_has_noDrop, false],
         [check_has_book, false],
       ],
     },
@@ -530,7 +542,7 @@ const commands_structure = {
       exe: cmd_know,
       checks: [
         [check_can_alive, true],
-        [check_has_noGiveUp, false],
+        [check_has_noDrop, false],
         [check_has_book, true],
         //[check_react_is_self, true]// JUST DONT DO IT NOOOOOOOOOO
       ],
@@ -822,7 +834,7 @@ function check_has_book(dig) {
   return undefined;
 }
 
-async function check_has_noGiveUp(dig) {
+async function check_has_noDrop(dig) {
   const h_gap=await kira_user_get_drop(dig.userdata.id);
   if (h_gap>0) {
     return {
@@ -1206,7 +1218,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
             },
           };
         } else {
-          //do it
+          //pay to continue
           kira_user_add_apple(userdata, h_price * -1);
         }
       } else {
@@ -1849,27 +1861,108 @@ async function cmd_see({ data, userbook, lang }) {
 }
 
 //#drop command
-async function cmd_drop({
-  data,
-  locale,
-  user,
-  guild,
-  userdata,
-  userbook,
-  channel,
-  lang,
-  token,
-}) {
+async function cmd_drop({ data, message, userdata, lang }) {
 
-  //span
-  let h_span = (data.options) ? data.options[0] : null;
-  if (h_span) h_span = h_span.value;
-  if (!h_span) h_span = 60;
+
+  //take confirmation
+  let h_span = 0;
+  let h_price = 0;
+  if (data.options) {
+    h_span = sett_drop[data.options[0].value].span;
+    h_price = sett_drop[data.options[0].value].price;
+  }
+
+  //is the command alone
+  else {
+    //send
+    {
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, "cmd.drop.shop"),
+          components: [
+            {
+              type: MessageComponentTypes.ACTION_ROW,
+              components: [
+                {
+                  type: MessageComponentTypes.STRING_SELECT,
+                  custom_id: `makecmd drop <values>`,//"<values>" useless
+                  placeholder: translate(lang, "cmd.drop.shop.sentence"),
+                  options: (() => {
+                    let buttons = [];
+                    for (let i in sett_drop) {
+                      
+                        buttons.push({
+                          value: String(i),
+                          emoji: sett_emoji_apple_eat,
+                          label: translate(
+                            lang,
+                            `cmd.drop.shop.button.label`,
+                            { 
+                              price: sett_drop[i].price, 
+                              time: time_format_string_from_int(sett_drop[i].span, lang),
+                              unit: translate(lang, `word.apple${sett_drop[i].price > 1 ? "s" : ""}`),
+                            }
+                          ),
+                          description:
+                            userdata.apples < sett_drop[i].price
+                              ? translate(lang,`cmd.drop.shop.button.poor`)
+                              : null
+                        })
+                      }
+                    return buttons;
+                  })()
+                }
+              ]
+            },
+          ],
+        },
+      };
+    }
+  }
+
+  //is confirmed
+  {
+    //price gud?
+    if (h_price > 0) {
+      //if (data.options[1]) 
+      {
+        //has clicked on the button
+        if (userdata.apples < h_price) {
+          //fail because too poor
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.drop.fail.poor"),
+            },
+          };
+        } else {
+          //pay before continue
+          kira_user_add_apple(userdata, -1 * h_price);
+        }
+      }
+    }
+  }
+  //alles kla
+
 
   //set
   await kira_user_set_drop(userdata.id, h_span);
 
-  //send
+  
+  //remove components from the message
+  //this does not works if drop is used as a command
+  await DiscordRequest(
+    `channels/${message.channel_id}/messages/${message.id}`,
+    {
+      method: "PATCH",
+      body: {
+        components: [],
+      },
+    }
+  );
+
+  //send confirmation
   {
     return {
       method: "PATCH",
@@ -2401,6 +2494,10 @@ export async function cmd_kira_execute(data) {
   let stat_avenge;
   let stat_repetition;
   let stat_outerTime;
+  
+  //date
+  h_finalDate = new Date();
+  h_finalDate.setSeconds(h_finalDate.getSeconds() + pack.span);
 
   if (pack.victim_id === process.env.APP_ID) {
     //fail/god
@@ -2408,7 +2505,7 @@ export async function cmd_kira_execute(data) {
   } else if (!h_victim_data) {
     //will never happend
     h_return_msg_attacker.content = translate(lang, "cmd.kira.fail.notplayer");
-  } else if (!h_victim_data.is_alive) {
+  } else if ((sett_cancel_when_dead_victim && !h_victim_data.is_alive)) {
     h_return_msg_attacker.content = translate(
       lang,
       "cmd.kira.fail.victim.dead.attacker"
@@ -2418,10 +2515,10 @@ export async function cmd_kira_execute(data) {
       "cmd.kira.fail.victim.dead.victim"
     );
   }
-  //else if (!userdata.is_alive) {
-  //  h_return_msg_attacker.content = translate(lang, "cmd.kira.fail.attacker.dead.attacker");
-  //  h_return_msg_victim.content = translate(lang, "cmd.kira.fail.attacker.dead.victim");
-  //}
+  else if (sett_cancel_when_dead_attacker && !userdata.is_alive) {
+    h_return_msg_attacker.content = translate(lang, "cmd.kira.fail.attacker.dead.attacker");
+    h_return_msg_victim.content = translate(lang, "cmd.kira.fail.attacker.dead.victim");
+  }
 
   //kill
   else {
@@ -2437,15 +2534,6 @@ export async function cmd_kira_execute(data) {
 
     //kill
     {
-      //date
-      let h_finalDate = null;
-      if (pack.span) {
-        h_finalDate = new Date();
-        h_finalDate.setSeconds(h_finalDate.getSeconds() + pack.span);
-      }
-      //life
-      h_finalDate = new Date();
-      h_finalDate.setSeconds(h_finalDate.getSeconds() + 60);
       await kira_user_set_life(h_victim_data.id, false, h_finalDate);
       //revive
       kira_remember_task_add(h_finalDate, tasksType.REVIVE, 
