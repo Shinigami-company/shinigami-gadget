@@ -290,7 +290,7 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noDrop, false]],
+      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noDrop, true]],
     },
     register: {
       name: "claim",
@@ -311,7 +311,7 @@ const commands_structure = {
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noDrop, false]],
+      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noDrop, true]],
     },
     register: {
       name: "burn",
@@ -325,7 +325,7 @@ const commands_structure = {
   apple: {
     functions: {
       exe: cmd_apple,
-      checks: [[check_can_alive, false],[check_has_noDrop, false]],
+      checks: [[check_can_alive, false]],
     },
     register: {
       name: "apple",
@@ -339,7 +339,7 @@ const commands_structure = {
   lang: {
     functions: {
       exe: cmd_lang,
-      checks: [[check_can_alive, false],[check_has_noDrop, false]],
+      checks: [[check_can_alive, false]],
     },
     register: {
       name: "lang",
@@ -361,7 +361,7 @@ const commands_structure = {
   stats: {
     functions: {
       exe: cmd_stats,
-      checks: [[check_can_alive, false],[check_has_noDrop, false]],
+      checks: [[check_can_alive, false],[check_has_noDrop, true]],
     },
     register: {
       name: "stats",
@@ -387,7 +387,7 @@ const commands_structure = {
   running: {
     functions: {
       exe: cmd_running,
-      checks: [[check_can_alive, false],[check_has_noDrop, false]],
+      checks: [[check_can_alive, false],[check_has_noDrop, true]],
     },
     register: {
       name: "running",
@@ -400,7 +400,7 @@ const commands_structure = {
   quest: {
     functions: {
       exe: cmd_quest,
-      checks: [[check_can_alive, false],[check_has_noDrop, false]],
+      checks: [[check_can_alive, false],[check_has_noDrop, true]],
     },
     register: {
       name: "quest",
@@ -413,7 +413,7 @@ const commands_structure = {
   top: {
     functions: {
       exe: cmd_top,
-      checks: [[check_can_alive, false],[check_has_noDrop, false]],
+      checks: [[check_can_alive, false]],
     },
     register: {
       name: "top",
@@ -442,7 +442,7 @@ const commands_structure = {
       exe: cmd_rules,
       checks: [
         [check_can_alive, false],
-        [check_has_noDrop, false],
+        [check_has_noDrop, true],
         [check_has_book, false],
       ],
     },
@@ -459,7 +459,7 @@ const commands_structure = {
       exe: cmd_see,
       checks: [
         [check_can_alive, false],
-        [check_has_noDrop, false],
+        [check_has_noDrop, true],
         [check_has_book, false],
       ],
     },
@@ -486,7 +486,7 @@ const commands_structure = {
       exe: cmd_drop,
       checks: [
         [check_can_alive, false],
-        [check_has_noDrop, false],
+        [check_has_noDrop, true],
         [check_has_book, false],
       ],
     },
@@ -503,7 +503,7 @@ const commands_structure = {
       exe: cmd_kira,
       checks: [
         [check_can_alive, false],
-        [check_has_noDrop, false],
+        [check_has_noDrop, true],
         [check_has_book, false],
       ],
     },
@@ -542,7 +542,7 @@ const commands_structure = {
       exe: cmd_know,
       checks: [
         [check_can_alive, true],
-        [check_has_noDrop, false],
+        [check_has_noDrop, true],
         [check_has_book, true],
         //[check_react_is_self, true]// JUST DONT DO IT NOOOOOOOOOO
       ],
@@ -1382,47 +1382,63 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
 
 //#apples command
 async function cmd_apple({ userdata, locale, lang }) {
+
+
   let h_apples_claimed = 0;
   let h_txt_claims = "";
-
-  const h_dayGap = time_day_gap(
-    await kira_user_get_daily(userdata.id),
-    locale,
-    true
-  );
-  const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
+  let h_txt_more = "";
+  
+  const droped=(await kira_user_get_drop(userdata.id)>0);
+  if (droped && userdata.apples>=10)
+    h_txt_more = "\n" + translate(
+      lang,
+      `cmd.apples.get.why`,
+    );
 
   //claims
-  if (h_dayGapDiff != 0) {
-    //claim you daily
-    await kira_user_set_daily(userdata.id);
-    h_apples_claimed += sett_daily_amount;
-    h_txt_claims +=
-      translate(lang, `cmd.apples.claim.daily`, { added: 1 }) + "\n";
+  {
+    //claims/daily
     {
-      //+stats
-      const stat =
-        h_dayGapDiff === 1
-          ? await stats_simple_add(userdata.statPtr.id, "streak_appleDay")
-          : await stats_simple_set(userdata.statPtr.id, "streak_appleDay", 0);
-      //await Achievement.list["appleDailyStreak"].do_check(userdata, stat, lang);
+      const h_dayGap = time_day_gap(
+        await kira_user_get_daily(userdata.id),
+        locale,
+        true
+      );
+      const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
+
+      if (h_dayGapDiff != 0) {
+        //claim you daily
+        await kira_user_set_daily(userdata.id);
+        h_apples_claimed += sett_daily_amount;
+        h_txt_claims +=
+          translate(lang, `cmd.apples.claim.daily`, { added: 1 }) + "\n";
+        {
+          //+stats
+          const stat =
+            h_dayGapDiff === 1
+              ? await stats_simple_add(userdata.statPtr.id, "streak_appleDay")
+              : await stats_simple_set(userdata.statPtr.id, "streak_appleDay", 0);
+          //await Achievement.list["appleDailyStreak"].do_check(userdata, stat, lang);
+        }
+      }
     }
-  }
 
-  const h_claims = await kira_apple_claims_get(userdata.id);
-  await kira_apple_claims_set(userdata.id, []);
+    //claims/others
+    const h_claims = await kira_apple_claims_get(userdata.id);
+    await kira_apple_claims_set(userdata.id, []);
 
-  if (h_claims.length > 0) {
-    for (let i = 0; i < h_claims.length; i++) {
-      h_txt_claims +=
-        translate(lang, `cmd.apples.claim.${h_claims[i].type}`, h_claims[i]) +
-        "\n";
-      h_apples_claimed += h_claims[i].added;
+    if (h_claims.length > 0) {
+      for (let i = 0; i < h_claims.length; i++) {
+        h_txt_claims +=
+          translate(lang, `cmd.apples.claim.${h_claims[i].type}`, h_claims[i]) +
+          "\n";
+        h_apples_claimed += h_claims[i].added;
+      }
     }
-  }
 
-  await kira_user_add_apple(userdata, h_apples_claimed);
-  await stats_simple_add(userdata.statPtr.id, "ever_apple", h_apples_claimed); //+stats
+    await kira_user_add_apple(userdata, h_apples_claimed);
+    await stats_simple_add(userdata.statPtr.id, "ever_apple", h_apples_claimed); //+stats
+  }
 
   return {
     method: "PATCH",
@@ -1441,7 +1457,8 @@ async function cmd_apple({ userdata, locale, lang }) {
             ),
             emoji: kira_format_applemoji(userdata.apples + h_apples_claimed),
           }
-        ),
+        ) +
+        h_txt_more,
     },
   };
 }
