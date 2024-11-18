@@ -59,6 +59,11 @@ const sett_emoji_apple_eat = {
   id: "1266010583623532574",
   animated: true,
 };
+const sett_emoji_apple_none = {//from apples_emoji
+  name: "apple_zero",
+  id: "1255900070117773313",
+  animated: true,
+};
 const sett_emoji_burn_confirm = {
   id: null,
   name: "🔥",
@@ -3050,7 +3055,7 @@ async function cmd_trick({ lang })
                   
                   buttons.push({
                     value: `${h_trick.ephemeral ? "trick_resp_eph" : "trick_resp"} ${String(h_trick.name)}`,
-                    emoji: sett_emoji_apple_eat,
+                    emoji: (h_trick.price>0) ? sett_emoji_apple_eat : sett_emoji_apple_none,
                     label: translate(
                       lang,
                       `cmd.trick.item.${h_trick.name}.button.label`,

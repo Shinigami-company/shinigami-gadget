@@ -17,6 +17,36 @@ import { sett_knows, enum_know_for, sett_emoji_apple_eat } from "../cmd.js";
 import { DiscordRequest, DiscordUserOpenDm } from "../../utils";
 
 export const tricks_all = [
+  
+  {
+    name: 'none',
+    price: 0,
+    
+    ephemeral: true,
+    do: 
+    {
+
+ 
+      payoff:
+      async ({ lang }) =>
+      {
+
+        //message back
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(
+              lang,
+              `cmd.trick.item.none.done`, {
+                "price": tricks_all[0].price//self price
+              }
+            )
+          },
+        };
+      }
+    }
+  },
+
   {
     name: 'fakemsg',
     price: 1,
@@ -120,7 +150,10 @@ export const tricks_all = [
                 content: translate(
                   lang,
                   `cmd.trick.item.fakemsg.fail.nomp`,
-                  {"targetId": target_id}
+                  {
+                    "targetId": target_id,
+                    "price": tricks_all[1].price//self price
+                  }
                 )
               },
             };
@@ -136,7 +169,10 @@ export const tricks_all = [
             content: translate(
               lang,
               `cmd.trick.item.fakemsg.done`,
-              {"targetId": target_id}
+              {
+                "targetId": target_id,
+                "price": tricks_all[1].price//self price
+              }
             )
           },
         };
