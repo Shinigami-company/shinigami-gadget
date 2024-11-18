@@ -12,7 +12,7 @@ import { time_format_string_from_int } from "../tools.js";
 
 //things needed from outside
 import { sett_knows, enum_know_for, sett_emoji_apple_eat } from "../cmd.js";
-
+import { kira_user_add_apple, kira_user_get } from "../kira.js";
 
 import { DiscordRequest, DiscordUserOpenDm } from "../../utils";
 
@@ -181,7 +181,7 @@ export const tricks_all = [
   },
   {
     name: 'coinflip',
-    price: 2,
+    price: 3,
     ephemeral: false,
     do: {
       step: [
@@ -190,46 +190,171 @@ export const tricks_all = [
         //step 1
         async ({ data, message, userdata, token, lang }) =>
         {
-          await DiscordRequest(
-            `webhooks/${process.env.APP_ID}/${token}`,
+          return {
+            method: "PATCH",
+            body: 
             {
-              method: "POST",
-              body: 
+              content: translate(lang, "cmd.trick.item.coinflip.pick.user.content",
               {
-                content: translate(lang, "cmd.trick.item.coinflip.call.user",{"userId": userdata.userId}),
+                "userId": userdata.userId,
+                "price": tricks_all[2].price//self price
+              }),
+              components: [
+              {
+                type: MessageComponentTypes.ACTION_ROW,
                 components: [
                   {
-                    type: MessageComponentTypes.ACTION_ROW,
-                    components: [
-                      {
-                        type: MessageComponentTypes.BUTTON,
-                        custom_id: `makecmd trick_resp coinflip+-2+${userdata.userId}`,
-                        label: "hi",
-                        style: ButtonStyleTypes.PRIMARY
-                      }
-                      ]
-                    },
-                  ],
-              }
+                    type: MessageComponentTypes.BUTTON,
+                    custom_id: `makecmd trick_resp coinflip+-1+${userdata.userId}`,
+                    label: translate(lang, "cmd.trick.item.coinflip.pick.user.button", {
+                      "price": tricks_all[2].price//self price
+                    }),
+                    emoji: sett_emoji_apple_eat,
+                    style: ButtonStyleTypes.SUCCESS
+                  }
+                  ]
+                },
+              ],
             }
-          );
-        }
+          };
+        },
+
+
+
+        //step 2
+        async ({ data, message, userdata, token, lang, pile }) =>
+        {
+          const user_1_id = pile;
+          const user_2_id = userdata.userId;
+          const price = tricks_all[2].price;//self price
+          
+          //check apples
+          {
+            const user_1_data=await kira_user_get(user_1_id, true);
+            if (user_1_data.apples < price) {
+              //fail because too poor
+              return {
+                method: "PATCH",
+                body: {
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_1_id}),
+                },
+              };
+            }
+
+            const user_2_data=userdata;
+            if (user_2_data.apples < price) {
+              //fail because too poor
+              return {
+                method: "PATCH",
+                body: {
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_2_id}),
+                },
+              };
+            }
+          }
+
+          return {
+            method: "PATCH",
+            body: 
+            {
+              content: translate(lang, "cmd.trick.item.coinflip.pick.side.content",
+              {
+                "firstUserId": user_1_id,
+                "secondUserId": user_2_id,
+                "price": price
+              }),
+              components: [
+              {
+                type: MessageComponentTypes.ACTION_ROW,
+                components: [
+                  {
+                    type: MessageComponentTypes.BUTTON,
+                    custom_id: `makecmd trick_resp coinflip+1+${user_1_id}_${user_2_id}`,
+                    label: translate(lang, "cmd.trick.item.coinflip.pick.side.button", {
+                      "price": price
+                    }),
+                    emoji: {
+                      "name": "🪙",//coin
+                      "animated": false
+                    },
+                    style: ButtonStyleTypes.DANGER
+                  }
+                  ]
+                },
+              ],
+            }
+          };
+        },
 
 
 
       ],
       
       payoff:
-      async ({ data, message, userdata, lang }) =>
+      async ({ data, message, userdata, lang, pile }) =>
       {
+        pile = pile.split("_");
+        const user_1_winer = (randomInt(2)===0);
+        const user_winer_id = (user_1_winer) ? pile[0]:pile[1];
+        const user_loser_id = (user_1_winer) ? pile[1]:pile[0];
+        const bet = 6;
+        const price = tricks_all[2].price;//self price
+
+        //userdata must be retrive back because kira_user_add_apple cant be used twice on the same
+        {
+          const user_1_data=await kira_user_get(user_winer_id, true);
+          if (user_1_data.apples < price) {
+            //fail because too poor
+            return {
+              method: "PATCH",
+              body: {
+                content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_winer_id}),
+              },
+            };
+          }
+          //remove price apple
+          await kira_user_add_apple(user_1_data, -1*price);
+        }
+        {
+          const user_2_data=await kira_user_get(user_loser_id, true);
+          if (user_2_data.apples < price) {
+            //fail because too poor
+            return {
+              method: "PATCH",
+              body: {
+                content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_loser_id}),
+              },
+            };
+          }
+          //remove price apple
+          await kira_user_add_apple(user_2_data, -1*price);
+        }
+        {
+          //give bet apple
+          const here_data=await kira_user_get(user_winer_id, true);
+          await kira_user_add_apple(here_data, bet);
+        }
+        {
+          //give back apple to the one who clicked on the flip button
+          const here_data=await kira_user_get(userdata.userId, true);
+          await kira_user_add_apple(here_data, price);
+        }
+        
 
         //message back
         return {
           method: "PATCH",
           body: {
-            content: translate(
+            content: translate(lang,`cmd.trick.item.coinflip.done.${(user_1_winer) ? "heads" : "tails"}`)+"\n"+
+              translate(
               lang,
-              `cmd.trick.item.coinflip.done.${(randomInt(2)===0) ? "heads" : "tails"}`,
+              `cmd.trick.item.coinflip.done`,
+              {
+                "winerUserId": user_winer_id,
+                "loserUserId": user_loser_id,
+                "bet": bet,
+                "price": price
+              }
             )
           },
         };

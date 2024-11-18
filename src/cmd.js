@@ -54,7 +54,7 @@ const sett_drops = [
   }
 ]
 
-const sett_emoji_apple_eat = {
+export const sett_emoji_apple_eat = {
   name: "apple_croc",
   id: "1266010583623532574",
   animated: true,
@@ -1271,7 +1271,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
           };
         } else {
           //pay to continue
-          kira_user_add_apple(userdata, h_price * -1);
+          await kira_user_add_apple(userdata, h_price * -1);
         }
       } else {
         //send the button
@@ -2007,7 +2007,7 @@ async function cmd_drop({ data, message, userdata, lang }) {
           };
         } else {
           //pay before continue
-          kira_user_add_apple(userdata, -1 * h_price);
+          await kira_user_add_apple(userdata, -1 * h_price);
         }
       }
     }
@@ -2980,7 +2980,7 @@ async function cmd_know({ data, message, userdata, lang }) {
       },
     };
   }
-  kira_user_add_apple(userdata, -1 * h_price);
+  await kira_user_add_apple(userdata, -1 * h_price);
 
   //wich info/action
   let h_info;
@@ -3110,7 +3110,7 @@ async function cmd_trick_resp({ data, message, userdata, token, lang }) {
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, "cmd.drop.fail.poor"),
+        content: translate(lang, "cmd.trick.fail.poor"),
       },
     };
   }
@@ -3140,7 +3140,7 @@ async function cmd_trick_resp({ data, message, userdata, token, lang }) {
   }
 
   //pay
-  kira_user_add_apple(userdata, -1 * h_trick.price);
+  await kira_user_add_apple(userdata, -1 * h_trick.price);
 
   //set
   //call TRICK's PAYOFF

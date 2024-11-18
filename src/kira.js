@@ -99,6 +99,7 @@ export async function kira_user_set_life(f_dataId, f_bool, f_backDate = null) {
 }
 
 export async function kira_user_add_apple(f_data, f_amount = 1) {
+  console.debug(`kira : kira_user_add_apple : add [${f_amount}] apples to [${f_data.id}] (${f_data.apples})`)
   await api.KiraUsers.update(f_data.id, {
     apples: f_data.apples + f_amount,
   });
