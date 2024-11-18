@@ -2049,7 +2049,7 @@ async function cmd_kira({
     h_will_fail = true;
   }
 
-  else if (h_victim.bot) {
+  else if (h_victim.bot || h_victim.system) {
     //instant fail because bot
     return {
       method: "PATCH",
