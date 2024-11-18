@@ -503,6 +503,7 @@ const commands_structure = {
   trick: {
     functions: {
       exe: cmd_trick,
+      ephemeral: true,
       checks: [
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -673,6 +674,9 @@ export async function kira_cmd(f_deep, f_cmd) {
       method: "POST",
       body: {
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          flags: commands_structure[f_cmd].functions.ephemeral ? InteractionResponseFlags.EPHEMERAL : undefined,
+        },
       },
     });
     replyed = true;
@@ -2998,7 +3002,7 @@ async function cmd_know({ data, message, userdata, lang }) {
 
 
 //#trick command
-async function cmd_trick({ data, message, userdata, lang }) {
+async function cmd_trick({ data, message, userdata, token, lang }) {
 
   //take confirmation
   let h_trick;
@@ -3079,8 +3083,9 @@ async function cmd_trick({ data, message, userdata, lang }) {
   //remove origin components
   if (message)
   {
+    console.log(message);
     await DiscordRequest(
-      `channels/${message.channel_id}/messages/${message.id}`,
+      `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
       {
         method: "PATCH",
         body: {

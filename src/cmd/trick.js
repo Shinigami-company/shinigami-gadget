@@ -144,7 +144,7 @@ export const tricks_all = [
   },
   {
     name: 'coinflip',
-    price: 1,
+    price: 2,
     do: {
       
       payoff:
