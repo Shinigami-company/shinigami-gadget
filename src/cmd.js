@@ -3005,18 +3005,15 @@ async function cmd_know({ data, message, userdata, lang }) {
 async function cmd_trick({ data, message, userdata, token, lang }) {
 
   //take confirmation
-  let h_trick;
-  let h_step;
-  let h_pile;
   if (data.options) {
     //data.options
     //-[0] : trick id
     //-[1] : step index
     //-[2] : arguments pile
     //ALL of them have to be set
-    h_trick = tricks_all.find((trick) => (trick.name)===data.options[0].value);
-    h_step = parseInt(data.options[1].value);
-    h_pile = data.options[2].value;
+    var h_trick = tricks_all.find((trick) => (trick.name)===data.options[0].value);
+    var h_step = parseInt(data.options[1].value);
+    var pile = data.options[2].value;
   }
 
   //is the command alone
@@ -3083,7 +3080,6 @@ async function cmd_trick({ data, message, userdata, token, lang }) {
   //remove origin components
   if (message)
   {
-    console.log(message);
     await DiscordRequest(
       `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
       {
@@ -3099,7 +3095,7 @@ async function cmd_trick({ data, message, userdata, token, lang }) {
   if (h_trick.do?.step && h_step<h_trick.do.step.length)
   {
     //call TRICK's STEP[i]
-    const r_back = h_trick.do.step[h_step*-1]({ data, message, userdata, lang, pile: h_pile });
+    const r_back = h_trick.do.step[h_step*-1]({ data, message, userdata, lang, pile, token });
     if (r_back)
       return r_back;
   }
@@ -3109,5 +3105,5 @@ async function cmd_trick({ data, message, userdata, token, lang }) {
 
   //set
   //call TRICK's PAYOFF
-  return h_trick.do.payoff({ data, message, userdata, lang, pile: h_pile });
+  return h_trick.do.payoff({ data, message, userdata, lang, pile, token });
 }

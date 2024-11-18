@@ -146,9 +146,43 @@ export const tricks_all = [
     name: 'coinflip',
     price: 2,
     do: {
+      step: [
+
+
+        //step 1
+        async ({ data, message, userdata, token, lang }) =>
+        {
+          await DiscordRequest(
+            `webhooks/${process.env.APP_ID}/${token}`,
+            {
+              method: "POST",
+              body: 
+              {
+                content: translate(lang, "cmd.trick.item.coinflip.call.user"),
+                components: [
+                  {
+                    type: MessageComponentTypes.ACTION_ROW,
+                    components: [
+                      {
+                        type: MessageComponentTypes.BUTTON,
+                        custom_id: `makecmd trick coinflip+-2+${userdata.userId}`,
+                        label: "hi",
+                        style: ButtonStyleTypes.PRIMARY
+                      }
+                      ]
+                    },
+                  ],
+              }
+            }
+          );
+        }
+
+
+
+      ],
       
       payoff:
-      ({ data, message, userdata, lang }) =>
+      async ({ data, message, userdata, lang }) =>
       {
 
         //message back
