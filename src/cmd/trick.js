@@ -20,6 +20,7 @@ export const tricks_all = [
   {
     name: 'fakemsg',
     price: 1,
+    ephemeral: true,
     do: {
       step: [
 
@@ -36,7 +37,7 @@ export const tricks_all = [
                 components: [
                   {
                     type: MessageComponentTypes.USER_SELECT,
-                    custom_id: `makecmd trick fakemsg+1+<value>`,
+                    custom_id: `makecmd trick_resp_eph fakemsg+1+<value>`,
                     placeholder: translate(lang, "cmd.trick.shop.step.sentence"),
                   }
                   ]
@@ -145,6 +146,7 @@ export const tricks_all = [
   {
     name: 'coinflip',
     price: 2,
+    ephemeral: false,
     do: {
       step: [
 
@@ -165,7 +167,7 @@ export const tricks_all = [
                     components: [
                       {
                         type: MessageComponentTypes.BUTTON,
-                        custom_id: `makecmd trick coinflip+-2+${userdata.userId}`,
+                        custom_id: `makecmd trick_resp coinflip+-2+${userdata.userId}`,
                         label: "hi",
                         style: ButtonStyleTypes.PRIMARY
                       }

@@ -85,15 +85,17 @@ export default async function route({ request, reply, api, logger, connections }
    */
   if (type === InteractionType.MESSAGE_COMPONENT) {
     // custom_id set in payload when sending message component
-    const componentId = data.custom_id;
-
+    
+    let componentId = data.custom_id;
+    componentId=componentId.replace(/<value>/,(data?.values) ? data?.values[0] : undefined);
+    console.log("componentId=",componentId);
     let h_infos = componentId.split(" ");
 
 
     //make execute a command
     if (h_infos[0] === 'makecmd') {
       const h_cmd=h_infos[1];
-      const h_arg=h_infos[2]?.replace(/<value>/,(data?.values) ? data?.values[0] : undefined).split("+");
+      const h_arg=h_infos[2]?.split("+");
 
       ///data;//changing the var
       //handle different commands
@@ -133,10 +135,11 @@ export default async function route({ request, reply, api, logger, connections }
 
         case ("drop"):
         {
-          data = {name: 'drop', options: [{name:'value', value: parseInt(data.values[0])}]};
+          data = {name: 'drop', options: [{name:'value', value: parseInt(h_arg[0])}]};
         } break;
         
-        case ("trick"):
+        case ("trick_resp_eph"): {}
+        case ("trick_resp"):
         {
           data = {name: 'trick', options: [{name:'trick_index', value: h_arg[0]}, {name: 'trick_step', value: h_arg[1]}, {name: 'trick_pile', value: h_arg[2]}]};
         } break;

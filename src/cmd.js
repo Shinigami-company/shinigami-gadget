@@ -503,7 +503,7 @@ const commands_structure = {
   trick: {
     functions: {
       exe: cmd_trick,
-      ephemeral: false,
+      //ephemeral: true,
       checks: [
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -515,6 +515,30 @@ const commands_structure = {
       description: "Buy funny stuff with apples",
       contexts: [0],
       type: 1,
+    },
+  },
+  
+  trick_resp: {
+    functions: {
+      exe: cmd_trick_resp,
+      ephemeral: false,
+      checks: [
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+        [check_has_book, false],
+      ],
+    },
+  },
+  
+  trick_resp_eph: {
+    functions: {
+      exe: cmd_trick_resp_eph,
+      ephemeral: true,
+      checks: [
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+        [check_has_book, false],
+      ],
     },
   },
 
@@ -1926,7 +1950,7 @@ async function cmd_drop({ data, message, userdata, lang }) {
               components: [
                 {
                   type: MessageComponentTypes.STRING_SELECT,
-                  custom_id: `makecmd drop <values>`,//"<values>" useless
+                  custom_id: `makecmd drop <value>`,//"<value>" will be replaced with "value:" from button selected
                   placeholder: translate(lang, "cmd.drop.shop.sentence"),
                   options: (() => {
                     let buttons = [];
@@ -3002,69 +3026,78 @@ async function cmd_know({ data, message, userdata, lang }) {
 
 
 //#trick command
-async function cmd_trick({ data, message, userdata, token, lang }) {
-
-  //take confirmation
-  if (data.options) {
-    //data.options
-    //-[0] : trick id
-    //-[1] : step index
-    //-[2] : arguments pile
-    //ALL of them have to be set
-    var h_trick = tricks_all.find((trick) => (trick.name)===data.options[0].value);
-    var h_step = parseInt(data.options[1].value);
-    var pile = data.options[2].value;
-  }
-
+async function cmd_trick({ lang })
+{
+  //summon a new trick
   //is the command alone
-  else {
-    //choose-the-trick message
-    {
-      return {
-        method: "PATCH",
-        body: {
-          content: translate(lang, "cmd.trick.shop"),
+  return {
+    method: "PATCH",
+    body: {
+      content: translate(lang, "cmd.trick.shop"),
+      components: [
+        {
+          type: MessageComponentTypes.ACTION_ROW,
           components: [
             {
-              type: MessageComponentTypes.ACTION_ROW,
-              components: [
-                {
-                  type: MessageComponentTypes.STRING_SELECT,
-                  custom_id: `makecmd trick <value>+0`,
-                  placeholder: translate(lang, "cmd.trick.shop.sentence"),
-                  options: (() => {
-                    let buttons = [];
-                    for (let i in tricks_all) {
+              type: MessageComponentTypes.STRING_SELECT,
+              custom_id: `makecmd <value>+0`,//"<value>" will be replaced with "value:" from button selected
+              placeholder: translate(lang, "cmd.trick.shop.sentence"),
+              options: (() => {
+                let buttons = [];
+                for (let i in tricks_all) {
 
-                      let h_trick = tricks_all[i];
-                      
-                      buttons.push({
-                        value: String(h_trick.name),
-                        emoji: sett_emoji_apple_eat,
-                        label: translate(
-                          lang,
-                          `cmd.trick.item.${h_trick.name}.button.label`,
-                          { 
-                            price: h_trick.price, 
-                            unit: translate(lang, `word.apple${h_trick.price > 1 ? "s" : ""}`),
-                          }
-                        ),
-                        description: translate(
-                          lang,
-                          `cmd.trick.item.${h_trick.name}.button.desc`,
-                        )
-                      })
-                    }
-                    return buttons;
-                  })()
+                  let h_trick = tricks_all[i];
+                  
+                  buttons.push({
+                    value: `${h_trick.ephemeral ? "trick_resp_eph" : "trick_resp"} ${String(h_trick.name)}`,
+                    emoji: sett_emoji_apple_eat,
+                    label: translate(
+                      lang,
+                      `cmd.trick.item.${h_trick.name}.button.label`,
+                      { 
+                        price: h_trick.price, 
+                        unit: translate(lang, `word.apple${h_trick.price > 1 ? "s" : ""}`),
+                      }
+                    ),
+                    description: translate(
+                      lang,
+                      `cmd.trick.item.${h_trick.name}.button.desc`,
+                    )
+                  })
                 }
-              ]
-            },
-          ],
+                return buttons;
+              })()
+            }
+          ]
         },
-      };
-    }
-  }
+      ],
+    },
+  };
+}
+
+async function cmd_trick_resp_eph({ data, message, userdata, token, lang }) 
+{
+  return await cmd_trick_resp({ data, message, userdata, token, lang });
+}
+
+async function cmd_trick_resp({ data, message, userdata, token, lang }) {
+
+  //take confirmation
+  if (!data.options) throw Error();
+  
+  //data.options
+  //-[0] : trick id
+  //-[1] : step index
+  //  0 : first step
+  //  -1 : second step
+  //  ...
+  //  -n : n+1 st step
+  //  1 : payoff
+  //-[2] : arguments pile
+  //ALL of them have to be set
+  const h_trick = tricks_all.find((trick) => (trick.name)===data.options[0].value);
+  const h_step = parseInt(data.options[1].value);
+  const pile = data.options[2].value;
 
   //money check
   if (userdata.apples < h_trick.price) {
@@ -3090,10 +3123,11 @@ async function cmd_trick({ data, message, userdata, token, lang }) {
       }
     );
   }
-  
+
   //steps
-  if (h_trick.do?.step && h_step*-1<h_trick.do.step.length)
+  if (h_trick.do?.step && h_step<=0)
   {
+    if (h_step*-1>=h_trick.do.step.length) throw Error(`step [${h_step}] of trick [${h_trick.name}] called but didnt exist.`);
     //call TRICK's STEP[i]
     const r_back = h_trick.do.step[h_step*-1]({ data, message, userdata, lang, pile, token });
     if (r_back)
