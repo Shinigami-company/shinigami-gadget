@@ -2049,6 +2049,17 @@ async function cmd_kira({
     h_will_fail = true;
   }
 
+  else if (h_victim.bot) {
+    //instant fail because bot
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.kira.fail.bot"),
+      },
+    };
+  }
+  
+  
   if (h_victim.id === user.id) {
     //will fail because urself
     h_will_ping_attacker = false;

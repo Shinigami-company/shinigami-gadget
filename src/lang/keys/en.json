@@ -119,6 +119,7 @@
 "cmd.kira.fail.channel": "you cant use your death note here",
 "cmd.kira.fail.blind": "<@$[victimId]> is not here",
 "cmd.kira.fail.isdead": "you can't kill someone who isn't alive",
+"cmd.kira.fail.bot": "a bot is not alive, and so cant be dead",
 "cmd.kira.fail.suicide": "suicide is disabled for now",
 "cmd.kira.fail.droped": "this person has been forgotten for the moment",
 "cmd.kira.fail.maxcombo": "you cant continue a combo above **$[max]** exchanges",
