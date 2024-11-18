@@ -9,6 +9,7 @@
 
 "check.god.not": "**Nope !** Tu n'as pas le pouvoir d'un dieu.",
 "check.alive.not": "*tu es mort·e pendant encore **$[time]***",
+"check.nodrop.not": "*Tu as abandonné ton death note pendant encore **$[time]***.",
 "check.hasbook.not": "*tu ne détiens pas de death note*\n`/claim` *pour en avoir un*",
 "check.react.self.not": "*ce n'est pas ton bouton*",
 
@@ -20,6 +21,10 @@
 "cmd.god.life.done.revive": "**<@$[targetId]> a été ressuscité·e**",
 "cmd.god.life.done.kill": "**<@$[targetId]> a été tué·e**",
 "cmd.god.test.done": "`Script de test exécuté. Voir console.`",
+"cmd.god.drop.fail.missing.amount": "spécifie une quantitée",
+"cmd.god.drop.fail.missing.user": "spécifie un utilisateur",
+"cmd.god.drop.done.zero": "**<@$[targetId]> récupère son livre**",
+"cmd.god.drop.done.more": "**death note de <@$[targetId]> abandonné pendant $[time]**",
 "cmd.god.update.fail.missing.user": "spécifie un utilisateur",
 "cmd.god.update.fail.notplayer": "cette personne ne joue pas",
 "cmd.god.update.fail.already": "<@$[targetId]> est à jour",
@@ -63,6 +68,7 @@
 "cmd.apples.claim.quest.done": "tu as fais l'advancement $[name]  **+$[added]**",
 "cmd.apples.get.same": "Tu as **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.changed": "Tu as désormais **$[amount]** $[word] $[emoji]",
+"cmd.apples.get.why": "Tu ne comprends pas pourquoi tu garde toutes ces pommes avec toi.",
 
 "cmd.top.get.apple.name": "pommes",
 "cmd.top.get.apple.title": "classement des plus riches en pommes :",
@@ -90,9 +96,18 @@
 "cmd.page.get.left": "< page $[page]",
 "cmd.page.get.right": "page $[page] >",
 
+"cmd.drop.shop": "Hum, oui, tu peux te protéger pendant un moment. :thinking:\nPour cela il faut que abandonnes ton death note et je viendrais te le redonner après un certain temps.\nMais j'ai besoin de pommes, pour ne pas être en manque !",
+"cmd.drop.shop.sentence": "Je rennonce à la propriétée du death note...",
+"cmd.drop.shop.button.label": "$[price] $[unit] : pendant $[time]",
+"cmd.drop.shop.button.poor": "mais tu n'en as pas assez",
+"cmd.drop.fail.poor": "J'ai besoin de plus de pomme, pour ne pas être en manque.",
+"cmd.drop.done": "Tu as abandonné ton death note pendant **$[time]**.\nÀ la prochaine humain·e!\n*le shinigami disparait avec le death note...*",
+
 "cmd.kira.fail.channel": "tu ne peux pas utiliser ton death note ici",
 "cmd.kira.fail.blind": "<@$[victimId]> n'est pas là",
 "cmd.kira.fail.isdead": "tu ne peux pas tuer un mort",
+"cmd.kira.fail.suicide": "le suicide est désactivé",
+"cmd.kira.fail.droped": "cette personne s'est faite oublier",
 "cmd.kira.fail.maxcombo": "tu ne peux pas continuer un combo au dessus de **$[max]** échanges",
 "cmd.kira.fail.remind": "tu me rappelles que je devais tuer cette personne",
 "cmd.kira.fail.text.max": "c'est trop long",
@@ -121,6 +136,10 @@
 "cmd.kira.finish.victim": "**tu es mort·e $[reason]**",
 "cmd.kira.counter.attacker": "**mais <@$[victimId]> a __contré__ l'attaque**...",
 "cmd.kira.counter.victim": "**mais tu as __contré__ l'attaque de <@$[attackerId]>**",
+
+"cmd.comeback.time.other": "tu es revenu à la vie",
+"cmd.comeback.time.suicide": "T'étant suicidé, tu reviens à la vie par toi même.",
+"cmd.comeback.check.self": "tu es revenu à la vie",
 
 "cmd.know.fail.expired": "Je ne m'en souviens plus, c'était il y a trop longtemps.",
 "cmd.know.fail.poor": "Tu n'as pas assez de pommes pour me convaincre...",

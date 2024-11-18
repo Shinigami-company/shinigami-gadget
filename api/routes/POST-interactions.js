@@ -49,7 +49,7 @@ export default async function route({ request, reply, api, logger, connections }
       const return_patch = await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild }, commandName);
       // return_patch.method must be 'PATCH'
       
-      for (let i=1; i<=10;i+=1)
+      for (let i=1; i<=3;i+=1)
       {
         try {
           return await DiscordRequest(`webhooks/${process.env.APP_ID}/${token}/messages/@original`, return_patch);
@@ -58,7 +58,7 @@ export default async function route({ request, reply, api, logger, connections }
           console.debug(`route : catch : interaction ERROR : `,e);
           if (i===0)
             var firstErorr=e;
-          if (i>=10)
+          if (i>=3)
             throw firstErorr;
           await sleep(1000);
           console.debug(`route : catch : RETRY ${i+1}`);
@@ -86,13 +86,14 @@ export default async function route({ request, reply, api, logger, connections }
   if (type === InteractionType.MESSAGE_COMPONENT) {
     // custom_id set in payload when sending message component
     const componentId = data.custom_id;
+
     let h_infos = componentId.split(" ");
 
 
     //make execute a command
     if (h_infos[0] === 'makecmd') {
       const h_cmd=h_infos[1];
-      const h_arg=h_infos[2]?.split("+");
+      const h_arg=h_infos[2]?.replace(/<value>/,(data?.values) ? data?.values[0] : undefined).split("+");
 
       ///data;//changing the var
       //handle different commands
@@ -120,11 +121,6 @@ export default async function route({ request, reply, api, logger, connections }
         {
           data = { name: 'claim', options: [{ name: 'color', value: parseInt(h_arg[0]) }, {name: 'confirm', value: h_arg[1]==="true"}]};
         } break;
-
-        case ("drop"):
-        {
-          data = {name: 'drop', options: [{name:'value', value: parseInt(data.values[0])}]};
-        } break;
           
         case ("burn"):
         {
@@ -133,6 +129,16 @@ export default async function route({ request, reply, api, logger, connections }
           {
             data.options.push();
           }
+        } break;
+
+        case ("drop"):
+        {
+          data = {name: 'drop', options: [{name:'value', value: parseInt(data.values[0])}]};
+        } break;
+        
+        case ("trick"):
+        {
+          data = {name: 'trick', options: [{name:'trick_index', value: h_arg[0]}, {name: 'trick_step', value: h_arg[1]}, {name: 'trick_pile', value: h_arg[2]}]};
         } break;
       }
 

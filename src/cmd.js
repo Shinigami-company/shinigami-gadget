@@ -1,13 +1,13 @@
 console.log(` cmd : refresh`);
 //--- sett ---
 
-const enum_know_for = {
+export const enum_know_for = {
   NONE: 0,
   VICTIM: 1,
   ATTACKER: 2,
 };
 
-const sett_know = {
+export const sett_knows = {
   //lang :
   //"cmd.kira.start.mp.<for>.pay.<index>"
   //"cmd.know.get.<index>"
@@ -35,7 +35,7 @@ const sett_know = {
   },
 };
 
-const sett_drop = [
+const sett_drops = [
   {
     price: 1,
     span: 600,
@@ -187,6 +187,8 @@ import {
 import { kira_remember_task_add, tasksType } from "./remember.js";
 import { linkme } from "./remember.js";
 linkme("linked from cmd"); //need to use a function from there
+
+import { tricks_all } from "./cmd/trick.js";
 
 //the structure to describe the command
 const commands_structure = {
@@ -497,6 +499,23 @@ const commands_structure = {
       type: 1,
     },
   },
+  
+  trick: {
+    functions: {
+      exe: cmd_trick,
+      checks: [
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+        [check_has_book, false],
+      ],
+    },
+    register: {
+      name: "trick",
+      description: "Buy funny stuff with apples",
+      contexts: [0],
+      type: 1,
+    },
+  },
 
   kira: {
     functions: {
@@ -633,7 +652,7 @@ export async function kira_cmd(f_deep, f_cmd) {
     for (let v of commands_structure[f_cmd].functions.checks) {
       const r_check = await v[0](f_deep);
       if (r_check) {
-        //if the check is not validated
+        //if the check is not checked
         await DiscordRequest(
           `interactions/${f_deep.id}/${f_deep.token}/callback`,
           {
@@ -1725,7 +1744,7 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
 }
 
 //#running
-async function cmd_running({ data, userbook, user, lang }) {
+async function cmd_running({ userbook, user, lang }) {
   let h_runs_attacker = await kira_runs_by(undefined, user.id);
 
   let r_text;
@@ -1885,8 +1904,8 @@ async function cmd_drop({ data, message, userdata, lang }) {
   let h_span = 0;
   let h_price = 0;
   if (data.options) {
-    h_span = sett_drop[data.options[0].value].span;
-    h_price = sett_drop[data.options[0].value].price;
+    h_span = sett_drops[data.options[0].value].span;
+    h_price = sett_drops[data.options[0].value].price;
   }
 
   //is the command alone
@@ -1907,7 +1926,7 @@ async function cmd_drop({ data, message, userdata, lang }) {
                   placeholder: translate(lang, "cmd.drop.shop.sentence"),
                   options: (() => {
                     let buttons = [];
-                    for (let i in sett_drop) {
+                    for (let i in sett_drops) {
                       
                         buttons.push({
                           value: String(i),
@@ -1916,13 +1935,13 @@ async function cmd_drop({ data, message, userdata, lang }) {
                             lang,
                             `cmd.drop.shop.button.label`,
                             { 
-                              price: sett_drop[i].price, 
-                              time: time_format_string_from_int(sett_drop[i].span, lang),
-                              unit: translate(lang, `word.apple${sett_drop[i].price > 1 ? "s" : ""}`),
+                              price: sett_drops[i].price, 
+                              time: time_format_string_from_int(sett_drops[i].span, lang),
+                              unit: translate(lang, `word.apple${sett_drops[i].price > 1 ? "s" : ""}`),
                             }
                           ),
                           description:
-                            userdata.apples < sett_drop[i].price
+                            userdata.apples < sett_drops[i].price
                               ? translate(lang,`cmd.drop.shop.button.poor`)
                               : null
                         })
@@ -2277,10 +2296,12 @@ async function cmd_kira({
 
   //message/victim
   if (h_will_ping_victim) {
-    //open DM
-    var h_victim_dm_id = await DiscordUserOpenDm(h_victim_id);
-    //send message
     try {
+      
+      //open DM
+      var h_victim_dm_id = await DiscordUserOpenDm(h_victim_id);
+
+      //send message
       var h_victim_message = await DiscordRequest(
         `channels/${h_victim_dm_id}/messages`,
         {
@@ -2294,19 +2315,19 @@ async function cmd_kira({
                 type: MessageComponentTypes.ACTION_ROW,
                 components: (() => {
                   let buttons = [];
-                  for (let i in sett_know) {
-                    if (sett_know[i].for === enum_know_for.VICTIM)
+                  for (let i in sett_knows) {
+                    if (sett_knows[i].for === enum_know_for.VICTIM)
                       buttons.push({
                         type: MessageComponentTypes.BUTTON,
                         custom_id: `makecmd know ${i}+${h_run.id}`,
                         label: translate(
                           lang,
                           `cmd.kira.start.mp.victim.pay.${i}`,
-                          { price: sett_know[i].price }
+                          { price: sett_knows[i].price }
                         ),
                         emoji: sett_emoji_apple_eat,
                         style:
-                          userdata.apples < sett_know[i].price
+                          userdata.apples < sett_knows[i].price
                             ? ButtonStyleTypes.SECONDARY
                             : ButtonStyleTypes.SUCCESS,
                         disabled: false,
@@ -2331,10 +2352,12 @@ async function cmd_kira({
 
   //message/attacker
   if (h_will_ping_attacker) {
-    //open DM
-    var h_attacker_dm_id = await DiscordUserOpenDm(user.id);
-    //send message
     try {
+      
+      //open DM
+      var h_attacker_dm_id = await DiscordUserOpenDm(user.id);
+
+      //send message
       var h_attacker_message = await DiscordRequest(
         `channels/${h_attacker_dm_id}/messages`,
         {
@@ -2349,19 +2372,19 @@ async function cmd_kira({
                 type: MessageComponentTypes.ACTION_ROW,
                 components: (() => {
                   let buttons = [];
-                  for (let i in sett_know) {
-                    if (sett_know[i].for === enum_know_for.ATTACKER)
+                  for (let i in sett_knows) {
+                    if (sett_knows[i].for === enum_know_for.ATTACKER)
                       buttons.push({
                         type: MessageComponentTypes.BUTTON,
                         custom_id: `makecmd know ${i}+${h_run.id}`,
                         label: translate(
                           lang,
                           `cmd.kira.start.mp.attacker.pay.${i}`,
-                          { price: sett_know[i].price }
+                          { price: sett_knows[i].price }
                         ),
                         emoji: sett_emoji_apple_eat,
                         style:
-                          userdata.apples < sett_know[i].price
+                          userdata.apples < sett_knows[i].price
                             ? ButtonStyleTypes.SECONDARY
                             : ButtonStyleTypes.SUCCESS,
                         disabled: false,
@@ -2432,7 +2455,7 @@ async function cmd_kira({
 
   //pretty old method
   //setTimeout(() => { cmd_kira_execute({ data, user, lang }); }, h_span * 1000);
-}
+s}
 
 //is executed by [./remember.js]
 export async function cmd_kira_execute(data) {
@@ -2458,8 +2481,8 @@ export async function cmd_kira_execute(data) {
   const userdata = await kira_user_get(user.id, true);
   const h_attacker_book = await kira_book_get(userdata.id);
   //handle special case : burned book
-  const h_will_book_victim =
-    !h_attacker_book || h_attacker_book.id != pack.attacker_book_id;
+  const h_will_book =
+    (h_attacker_book && (h_attacker_book.id === pack.attacker_book_id));
 
   //run delete
   await kira_run_delete(data.runId, h_victim_data?.id);
@@ -2513,7 +2536,7 @@ export async function cmd_kira_execute(data) {
   let stat_outerTime;
   
   //date
-  h_finalDate = new Date();
+  let h_finalDate = new Date();
   h_finalDate.setSeconds(h_finalDate.getSeconds() + pack.span);
 
   if (pack.victim_id === process.env.APP_ID) {
@@ -2560,7 +2583,7 @@ export async function cmd_kira_execute(data) {
           ifSuicide: (pack.victim_id==pack.attacker_id),
           msgReference: pack.victim_message_id
         });
-      if (h_will_book_victim) await kira_line_taste(pack.note_id, 1); //note need to exist
+      if (h_will_book) await kira_line_taste(pack.note_id, 1); //note need to exist
     }
 
     {
@@ -2866,6 +2889,29 @@ async function cmd_know({ data, message, userdata, lang }) {
   let h_wh = data.options[0].value;
   let h_id = data.options[1].value;
 
+  //if is a fake one
+  if (h_wh<0)
+  {
+    //remove components from the message
+    //this does not works if know is used as a command
+    await DiscordRequest(
+      `channels/${message.channel_id}/messages/${message.id}`,
+      {
+        method: "PATCH",
+        body: {
+          components: [],
+        },
+      }
+    );
+
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.know.fail.fake"),
+      },
+    };
+  }
+
   const pack = await kira_run_unpack_know(h_id);
 
   //fail bcs too late
@@ -2878,7 +2924,7 @@ async function cmd_know({ data, message, userdata, lang }) {
     };
   }
 
-  const h_price = sett_know[h_wh].price;
+  const h_price = sett_knows[h_wh].price;
 
   //apples
   if (userdata.apples < h_price) {
@@ -2937,4 +2983,115 @@ async function cmd_know({ data, message, userdata, lang }) {
       }),
     },
   };
+}
+
+
+//#trick command
+async function cmd_trick({ data, message, userdata, lang }) {
+
+  //take confirmation
+  let h_trick;
+  let h_step;
+  let h_pile;
+  if (data.options) {
+    //data.options
+    //-[0] : trick id
+    //-[1] : step index
+    //-[2] : arguments pile
+    //ALL of them have to be set
+    h_trick = tricks_all.find((trick) => (trick.name)===data.options[0].value);
+    h_step = parseInt(data.options[1].value);
+    h_pile = data.options[2].value;
+  }
+
+  //is the command alone
+  else {
+    //choose-the-trick message
+    {
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, "cmd.trick.shop"),
+          components: [
+            {
+              type: MessageComponentTypes.ACTION_ROW,
+              components: [
+                {
+                  type: MessageComponentTypes.STRING_SELECT,
+                  custom_id: `makecmd trick <value>+0`,
+                  placeholder: translate(lang, "cmd.trick.shop.sentence"),
+                  options: (() => {
+                    let buttons = [];
+                    for (let i in tricks_all) {
+
+                      let h_trick = tricks_all[i];
+                      
+                      buttons.push({
+                        value: String(h_trick.name),
+                        emoji: sett_emoji_apple_eat,
+                        label: translate(
+                          lang,
+                          `cmd.trick.item.${h_trick.name}.button.label`,
+                          { 
+                            price: h_trick.price, 
+                            unit: translate(lang, `word.apple${h_trick.price > 1 ? "s" : ""}`),
+                          }
+                        ),
+                        description: translate(
+                          lang,
+                          `cmd.trick.item.${h_trick.name}.button.desc`,
+                        )
+                      })
+                    }
+                    return buttons;
+                  })()
+                }
+              ]
+            },
+          ],
+        },
+      };
+    }
+  }
+
+  //money check
+  if (userdata.apples < h_trick.price) {
+    //fail because too poor
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.drop.fail.poor"),
+      },
+    };
+  }
+  
+  //remove origin components
+  if (message)
+  {
+    await DiscordRequest(
+      `channels/${message.channel_id}/messages/${message.id}`,
+      {
+        method: "PATCH",
+        body: {
+          components: [],
+        },
+      }
+    );
+  }
+  
+  //steps
+  if (h_trick.do?.step && h_step<h_trick.do.step.length)
+  {
+    //call TRICK's STEP[i]
+    const r_back = h_trick.do.step[h_step*-1]({ data, message, userdata, lang, pile: h_pile });
+    if (r_back)
+      return r_back;
+  }
+
+  //pay
+  kira_user_add_apple(userdata, -1 * h_trick.price);
+
+  //set
+  //call TRICK's PAYOFF
+  return h_trick.do.payoff({ data, message, userdata, lang, pile: h_pile });
 }

@@ -8,6 +8,7 @@
 
 "check.god.not": "❌",
 "check.alive.not": "*👈💀⏲️**$[time]***",
+"check.nodrop.not": "*<:book_black:1281258833271849050>❌🗄",
 "check.hasbook.not": "*👈❌<:book_black:1281258833271849050>*",
 "check.react.self.not": "❌▶🫵",
 
@@ -19,6 +20,10 @@
 "cmd.god.life.done.revive": "🩹🤜**<@$[targetId]>**",
 "cmd.god.life.done.kill": "**💀🤜<@$[targetId]>**",
 "cmd.god.test.done": "`✔️`",
+"cmd.god.drop.fail.missing.amount": "⁉️🛒",
+"cmd.god.drop.fail.missing.user": "⁉️👥",
+"cmd.god.drop.done.zero": "**<@$[targetId]><:book_black:1281258833271849050>⬅️🗑️**",
+"cmd.god.drop.done.more": "**<@$[targetId]><:book_black:1281258833271849050>➡️🗑️⏲️$[time]**",
 "cmd.god.update.fail.missing.user": "⁉️👥",
 "cmd.god.update.fail.notplayer": "👤👉🙅",
 "cmd.god.update.fail.already": "<@$[targetId]>❗🔄",
@@ -62,6 +67,7 @@
 "cmd.apples.claim.quest.done": "🎉$[name]  **+$[added]**",
 "cmd.apples.get.same": "🫵$[emoji]",
 "cmd.apples.get.changed": "🫵$[emoji]",
+"cmd.apples.get.why": "🍎⁉",
 
 "cmd.top.get.apple.name": "🍎",
 "cmd.top.get.apple.title": "🏅🍎",
@@ -89,9 +95,18 @@
 "cmd.page.get.left": "< 📄$[page]",
 "cmd.page.get.right": "📄$[page] >",
 
+"cmd.drop.shop": "🗑️⬅️<:book_black:1281258833271849050>🤔\n⏲️🫵🛡️🔪\n⏲️⏲️🗑️➡️<:book_black:1281258833271849050>🫵",
+"cmd.drop.shop.sentence": "🗑️⬅️📓⏲️❔",
+"cmd.drop.shop.button.label": "$[price] $[unit] : ⏲️$[time]",
+"cmd.drop.shop.button.poor": "❌🍎",
+"cmd.drop.fail.poor": "👈<:apples_0:1255900070117773313>🫵",
+"cmd.drop.done": "🗑️⬅️<:book_black:1281258833271849050>\n👋💨⏲️",
+
 "cmd.kira.fail.channel": "❌⏬",
 "cmd.kira.fail.blind": "<@$[victimId]>❌⏬",
 "cmd.kira.fail.isdead": "👤👈💀",
+"cmd.kira.fail.suicide": "❌🔪🫵",
+"cmd.kira.fail.droped": "👤🛡️",
 "cmd.kira.fail.maxcombo": "❌↪️ 🚫➕**$[max]**🔁",
 "cmd.kira.fail.remind": "👈💡 👤👈💀",
 "cmd.kira.fail.text.max": "🚫✏️🔤⬆️",
@@ -120,6 +135,10 @@
 "cmd.kira.finish.victim": "**🫵💀$[reason]**",
 "cmd.kira.counter.attacker": "**❗<@$[victimId]>🛡️↪️**...",
 "cmd.kira.counter.victim": "**❗🫵🛡️↪️**",
+
+"cmd.comeback.time.other": "🫵⚰⬆🚶‍♀️",
+"cmd.comeback.time.suicide": "🫵⚰⬆🚶‍♀️",
+"cmd.comeback.check.self": "🫵⚰⬆🚶‍♀️",
 
 "cmd.know.fail.expired": "🕳️",
 "cmd.know.fail.poor": "👈<:apples_0:1255900070117773313>🫵",
