@@ -503,7 +503,7 @@ const commands_structure = {
   trick: {
     functions: {
       exe: cmd_trick,
-      ephemeral: true,
+      ephemeral: false,
       checks: [
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -3092,7 +3092,7 @@ async function cmd_trick({ data, message, userdata, token, lang }) {
   }
   
   //steps
-  if (h_trick.do?.step && h_step<h_trick.do.step.length)
+  if (h_trick.do?.step && h_step*-1<h_trick.do.step.length)
   {
     //call TRICK's STEP[i]
     const r_back = h_trick.do.step[h_step*-1]({ data, message, userdata, lang, pile, token });

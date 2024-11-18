@@ -158,7 +158,7 @@ export const tricks_all = [
               method: "POST",
               body: 
               {
-                content: translate(lang, "cmd.trick.item.coinflip.call.user"),
+                content: translate(lang, "cmd.trick.item.coinflip.call.user",{"userId": userdata.userId}),
                 components: [
                   {
                     type: MessageComponentTypes.ACTION_ROW,

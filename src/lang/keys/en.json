@@ -112,7 +112,7 @@
 "cmd.trick.item.fakemsg.done": "lets scare <@$[targetId]> a bit",
 "cmd.trick.item.coinflip.button.label": "$[price] $[unit] : flip a coin with someone",
 "cmd.trick.item.coinflip.button.desc": "winer will win 3 apple",
-"cmd.trick.item.coinflip.call.user": "who want to do a coinflip with <@${userId}>?\nIt cost 2 :apple:",
+"cmd.trick.item.coinflip.call.user": "who want to do a coinflip with <@$[userId]>?\nIt cost 2 :apple:",
 "cmd.trick.item.coinflip.done.heads": "coin fall in heads",
 "cmd.trick.item.coinflip.done.tails": "coin fall in tails",
 "cmd.trick.fail.poor": "I want more apples.",
