@@ -294,8 +294,8 @@ new Achievement(
   [1, 2, 3, 4, 5, 6, 7, 8]
 );
 
-new Achievement("kill", "level_kill", 5, false[(5, 10, 20, 50, 100)]);
-new Achievement("counter", "level_counter", 5, false, [5, 10, 20, 50, 100]);
+new Achievement("kill", "level_kill", 5, false, [5, 10, 20, 50, 100]);
+new Achievement("counter", "level_counter", 5, false, [5, 20, 50, 200, 500]);
 new Achievement("outerTime", "level_outerTime", 5, false, [
   1 * 3600,
   24 * 3600,
@@ -303,7 +303,7 @@ new Achievement("outerTime", "level_outerTime", 5, false, [
   30 * 24 * 3600,
   365.25 * 24 * 3600,
 ]);
-new Achievement("writtenPage", "level_writtenPage", 3, false, [3, 10, 70]);
+new Achievement("writtenPage", "level_writtenPage", 3, false, [1, 10, 70]);
 new Achievement("avengeBest", "level_avengeBest", 3, false, [5, 30, 100]);
 new Achievement(
   "killDailyStreak",
