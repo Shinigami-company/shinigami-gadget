@@ -8,7 +8,7 @@ import {
 } from 'discord-interactions';
 
 import { translate } from "../lang.js";
-import { time_format_string_from_int } from "../tools.js";
+import { time_format_string_from_int, sleep } from "../tools.js";
 
 //things needed from outside
 import { sett_knows, enum_know_for, sett_emoji_apple_eat } from "../cmd.js";
@@ -190,6 +190,9 @@ export const tricks_all = [
         //step 1
         async ({ data, message, userdata, token, lang }) =>
         {
+          const bet = 6;
+          const price = tricks_all[2].price;//self price
+          
           return {
             method: "PATCH",
             body: 
@@ -197,7 +200,8 @@ export const tricks_all = [
               content: translate(lang, "cmd.trick.item.coinflip.pick.user.content",
               {
                 "userId": userdata.userId,
-                "price": tricks_all[2].price//self price
+                "bet": bet,
+                "price": price
               }),
               components: [
               {
@@ -207,7 +211,7 @@ export const tricks_all = [
                     type: MessageComponentTypes.BUTTON,
                     custom_id: `makecmd trick_resp coinflip+-1+${userdata.userId}`,
                     label: translate(lang, "cmd.trick.item.coinflip.pick.user.button", {
-                      "price": tricks_all[2].price//self price
+                      "price": price
                     }),
                     emoji: sett_emoji_apple_eat,
                     style: ButtonStyleTypes.SUCCESS
@@ -222,7 +226,7 @@ export const tricks_all = [
 
 
         //step 2
-        async ({ data, message, userdata, token, lang, pile }) =>
+        async ({ data, message, userdata, lang, pile }) =>
         {
           const user_1_id = pile;
           const user_2_id = userdata.userId;
@@ -291,7 +295,7 @@ export const tricks_all = [
       ],
       
       payoff:
-      async ({ data, message, userdata, lang, pile }) =>
+      async ({ data, message, userdata, token, lang, pile }) =>
       {
         pile = pile.split("_");
         const user_1_winer = (randomInt(2)===0);
@@ -340,22 +344,34 @@ export const tricks_all = [
           await kira_user_add_apple(here_data, price);
         }
         
+        (async () => {
+          await sleep(3000);
+          await DiscordRequest(
+            `webhooks/${process.env.APP_ID}/${token}`,
+            {
+              method: "POST",
+              body: 
+              {
+                content: translate(
+                  lang,
+                  `cmd.trick.item.coinflip.done`,
+                  {
+                    "winerUserId": user_winer_id,
+                    "loserUserId": user_loser_id,
+                    "bet": bet,
+                    "price": price
+                  }
+                )
+              }
+            }
+          );
+        })();
 
         //message back
         return {
           method: "PATCH",
           body: {
-            content: translate(lang,`cmd.trick.item.coinflip.done.${(user_1_winer) ? "heads" : "tails"}`)+"\n"+
-              translate(
-              lang,
-              `cmd.trick.item.coinflip.done`,
-              {
-                "winerUserId": user_winer_id,
-                "loserUserId": user_loser_id,
-                "bet": bet,
-                "price": price
-              }
-            )
+            content: translate(lang,`cmd.trick.item.coinflip.done.${(user_1_winer) ? "heads" : "tails"}`)
           },
         };
       }

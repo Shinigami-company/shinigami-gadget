@@ -903,11 +903,11 @@ async function check_has_noDrop(dig) {
 
 //react check
 function check_react_is_self(dig) {
-  console.debug(`check : check_react_is_self IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`);
+  console.log(`check : check_react_is_self IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`);
   if (
     (dig.type === InteractionType.MESSAGE_COMPONENT) &&
     //dig.message.interaction_metadata.user.id !== dig.user.id
-    dig.message.interaction.user.id !== dig.user.id
+    (dig.message.interaction.user.id !== dig.user.id)
   ) {
     return {
       method: "PATCH",
