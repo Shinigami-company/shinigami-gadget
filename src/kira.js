@@ -99,7 +99,9 @@ export async function kira_user_set_life(f_dataId, f_bool, f_backDate = null) {
 }
 
 export async function kira_user_add_apple(f_data, f_amount = 1) {
-  console.debug(`kira : kira_user_add_apple : add [${f_amount}] apples to [${f_data.id}] (${f_data.apples})`)
+  console.debug(
+    `kira : kira_user_add_apple : add [${f_amount}] apples to [${f_data.id}] (${f_data.apples})`
+  );
   await api.KiraUsers.update(f_data.id, {
     apples: f_data.apples + f_amount,
   });
@@ -136,26 +138,24 @@ export async function kira_user_get_daily(f_dataId) {
 }
 
 export async function kira_user_set_drop(f_dataId, f_span) {
-  let h_date=new Date();
-  h_date.setSeconds(h_date.getSeconds()+f_span);
+  let h_date = new Date();
+  h_date.setSeconds(h_date.getSeconds() + f_span);
   await api.KiraUsers.update(f_dataId, {
     giveUp: h_date.toISOString(),
   });
 }
 
 export async function kira_user_get_drop(f_dataId) {
-  const iso=await api.KiraUsers.findOne(f_dataId, {
+  const iso = await api.KiraUsers.findOne(f_dataId, {
     select: { giveUp: true },
-  })
-    .then((data) => data.giveUp);
-  if (!iso)
-    return 0;
-  let date=new Date(iso);
-  const span=Math.ceil((new Date(iso).getTime() - new Date().getTime())/1000);
-  if (span<0)
-    return 0;
+  }).then((data) => data.giveUp);
+  if (!iso) return 0;
+  let date = new Date(iso);
+  const span = Math.ceil(
+    (new Date(iso).getTime() - new Date().getTime()) / 1000
+  );
+  if (span < 0) return 0;
   return span;
-
 }
 
 //---kira_book---
@@ -383,7 +383,6 @@ export async function kira_run_create(
   f_victimDataId,
   f_counterCombo
 ) {
-
   return await api.KiraRun.create({
     //used to find one
     victimId: f_victimId,

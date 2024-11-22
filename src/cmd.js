@@ -50,16 +50,17 @@ const sett_drops = [
   },
   {
     price: 5,
-    span: 86400*3,
-  }
-]
+    span: 86400 * 3,
+  },
+];
 
 export const sett_emoji_apple_eat = {
   name: "apple_croc",
   id: "1266010583623532574",
   animated: true,
 };
-const sett_emoji_apple_none = {//from apples_emoji
+const sett_emoji_apple_none = {
+  //from apples_emoji
   name: "apple_zero",
   id: "1255900070117773313",
   animated: true,
@@ -71,19 +72,21 @@ const sett_emoji_burn_confirm = {
 const sett_daily_amount = 1;
 
 function sett_apples_byVictimKills(f_kills) {
-  return parseInt(f_kills ** 0.5);//squareroot
+  return parseInt(f_kills ** 0.5); //squareroot
 }
 const sett_counter_combo_max = 13;
 
 const sett_disable_suscide = false;
 const sett_comeback = {
-  time: {//comeback automaticly after the time
-    other: {if: true, message: true},
-    suicide: {if: true, message: true},
+  time: {
+    //comeback automaticly after the time
+    other: { if: true, message: true },
+    suicide: { if: true, message: true },
   },
-  check: {//comeback when victim do something
-    all: {if: true, message: true},//just, dont disable that.
-  }
+  check: {
+    //comeback when victim do something
+    all: { if: true, message: true }, //just, dont disable that.
+  },
 };
 
 const sett_cancel_when_dead_attacker = true;
@@ -223,7 +226,11 @@ const commands_structure = {
             { name: "update", value: "update", description: "update an user" },
             { name: "revive", value: "revive", description: "revive someone" },
             { name: "kill", value: "kill", description: "kill someone" },
-            { name: "drop", value: "drop", description: "drop someone's death note" },
+            {
+              name: "drop",
+              value: "drop",
+              description: "drop someone's death note",
+            },
             {
               name: "mercy",
               value: "mercy",
@@ -297,7 +304,11 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noDrop, true]],
+      checks: [
+        [check_can_alive, false],
+        [check_react_is_self, true],
+        [check_has_noDrop, true],
+      ],
     },
     register: {
       name: "claim",
@@ -318,7 +329,11 @@ const commands_structure = {
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [[check_can_alive, false],[check_react_is_self, true],[check_has_noDrop, true]],
+      checks: [
+        [check_can_alive, false],
+        [check_react_is_self, true],
+        [check_has_noDrop, true],
+      ],
     },
     register: {
       name: "burn",
@@ -368,7 +383,10 @@ const commands_structure = {
   stats: {
     functions: {
       exe: cmd_stats,
-      checks: [[check_can_alive, false],[check_has_noDrop, true]],
+      checks: [
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
     },
     register: {
       name: "stats",
@@ -394,7 +412,10 @@ const commands_structure = {
   running: {
     functions: {
       exe: cmd_running,
-      checks: [[check_can_alive, false],[check_has_noDrop, true]],
+      checks: [
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
     },
     register: {
       name: "running",
@@ -407,7 +428,10 @@ const commands_structure = {
   quest: {
     functions: {
       exe: cmd_quest,
-      checks: [[check_can_alive, false],[check_has_noDrop, true]],
+      checks: [
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
     },
     register: {
       name: "quest",
@@ -504,7 +528,7 @@ const commands_structure = {
       type: 1,
     },
   },
-  
+
   trick: {
     functions: {
       exe: cmd_trick,
@@ -522,7 +546,7 @@ const commands_structure = {
       type: 1,
     },
   },
-  
+
   trick_resp: {
     functions: {
       exe: cmd_trick_resp,
@@ -534,7 +558,7 @@ const commands_structure = {
       ],
     },
   },
-  
+
   trick_resp_eph: {
     functions: {
       exe: cmd_trick_resp_eph,
@@ -704,7 +728,9 @@ export async function kira_cmd(f_deep, f_cmd) {
       body: {
         type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          flags: commands_structure[f_cmd].functions.ephemeral ? InteractionResponseFlags.EPHEMERAL : undefined,
+          flags: commands_structure[f_cmd].functions.ephemeral
+            ? InteractionResponseFlags.EPHEMERAL
+            : undefined,
         },
       },
     });
@@ -712,10 +738,11 @@ export async function kira_cmd(f_deep, f_cmd) {
 
     return await commands_structure[f_cmd].functions.exe(f_deep);
   } catch (e) {
-    if (!replyed)
-    {
+    if (!replyed) {
       //didnt work
-      console.log(`hi : this interaction makred as unknow : interactions/${f_deep.id}/${f_deep.token}/callback`);
+      console.log(
+        `hi : this interaction makred as unknow : interactions/${f_deep.id}/${f_deep.token}/callback`
+      );
       await DiscordRequest(
         `interactions/${f_deep.id}/${f_deep.token}/callback`,
         {
@@ -728,8 +755,10 @@ export async function kira_cmd(f_deep, f_cmd) {
     }
     console.error(`cmd : in js error=`, e);
     //specific error
-    if (e.message==="[GraphQL] GGT_INTERNAL_ERROR: Unexpected HTTP error from sandbox: Response code 500 (Internal Server Error)")
-    {
+    if (
+      e.message ===
+      "[GraphQL] GGT_INTERNAL_ERROR: Unexpected HTTP error from sandbox: Response code 500 (Internal Server Error)"
+    ) {
       kira_error_throw(
         //"error.system.protocol",
         "error.critical",
@@ -740,7 +769,9 @@ export async function kira_cmd(f_deep, f_cmd) {
       );
     }
     //general error
-    console.error(`cmd : wrong js code=${e.code} name=${e.name} message=${e.message}`);
+    console.error(
+      `cmd : wrong js code=${e.code} name=${e.name} message=${e.message}`
+    );
     kira_error_throw(
       "error.system.wrongjs",
       e,
@@ -846,24 +877,19 @@ async function check_can_alive(dig) {
     await kira_user_set_life(dig.userdata.id, true);
 
     //message
-    if (sett_comeback.check.all.message)
-    {
+    if (sett_comeback.check.all.message) {
       //open DM
       const dm_id = await DiscordUserOpenDm(dig.userdata.userId);
       //send message
       try {
-        //var h_victim_message = 
-        await DiscordRequest(
-          `channels/${dm_id}/messages`,
-            {
-              method: "POST",
-              body: {
-                content: translate(dig.lang, "cmd.comeback.check.all"),
-              },
-            }
-          );
-        }
-      catch (e) {
+        //var h_victim_message =
+        await DiscordRequest(`channels/${dm_id}/messages`, {
+          method: "POST",
+          body: {
+            content: translate(dig.lang, "cmd.comeback.check.all"),
+          },
+        });
+      } catch (e) {
         let errorMsg = JSON.parse(e.message);
         if (!(errorMsg?.code === 50007)) throw e;
       }
@@ -887,14 +913,14 @@ function check_has_book(dig) {
 }
 
 async function check_has_noDrop(dig) {
-  const h_gap=await kira_user_get_drop(dig.userdata.id);
-  if (h_gap>0) {
+  const h_gap = await kira_user_get_drop(dig.userdata.id);
+  if (h_gap > 0) {
     return {
       method: "PATCH",
       body: {
-        content: translate(dig.lang, "check.nodrop.not",{
-            time: time_format_string_from_int(h_gap, dig.lang),
-            }),
+        content: translate(dig.lang, "check.nodrop.not", {
+          time: time_format_string_from_int(h_gap, dig.lang),
+        }),
       },
     };
   }
@@ -903,11 +929,13 @@ async function check_has_noDrop(dig) {
 
 //react check
 function check_react_is_self(dig) {
-  console.log(`check : check_react_is_self IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`);
+  console.log(
+    `check : check_react_is_self IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`
+  );
   if (
-    (dig.type === InteractionType.MESSAGE_COMPONENT) &&
+    dig.type === InteractionType.MESSAGE_COMPONENT &&
     //dig.message.interaction_metadata.user.id !== dig.user.id
-    (dig.message.interaction.user.id !== dig.user.id)
+    dig.message.interaction.user.id !== dig.user.id
   ) {
     return {
       method: "PATCH",
@@ -983,38 +1011,47 @@ async function cmd_god({ userdata, data, lang, locale }) {
         };
       }
       break;
-    
+
     //#drop subcommand
-    case "drop": {
-      if (!arg_user) {
+    case "drop":
+      {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.life.fail.missing.user"),
+            },
+          };
+        }
+
+        if (arg_amount === null) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.drop.fail.missing.amount"),
+            },
+          };
+        }
+
+        const targetdata = await kira_user_get(arg_user, false);
+
+        await kira_user_set_drop(targetdata.id, arg_amount);
+
         return {
           method: "PATCH",
           body: {
-            content: translate(lang, "cmd.god.life.fail.missing.user"),
+            content: translate(
+              lang,
+              "cmd.god.drop.done." + (arg_amount == 0 ? "zero" : "more"),
+              {
+                targetId: arg_user,
+                time: time_format_string_from_int(arg_amount, lang),
+              }
+            ),
           },
         };
       }
-
-      if (arg_amount===null) {
-        return {
-          method: "PATCH",
-          body: {
-            content: translate(lang, "cmd.god.drop.fail.missing.amount"),
-          },
-        };
-      }
-      
-      const targetdata = await kira_user_get(arg_user, false);
-
-      await kira_user_set_drop(targetdata.id, arg_amount);
-      
-      return {
-        method: "PATCH",
-        body: {
-          content: translate(lang, "cmd.god.drop.done."+((arg_amount==0) ? "zero" : "more"), {targetId: arg_user, time: time_format_string_from_int(arg_amount, lang)}),
-        },
-      };
-    } break;
+      break;
 
     //#apple subcommand (#apple_fake & #apple_give)
     case "apple_fake": {
@@ -1103,8 +1140,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           )}`;
         }
 
-        if (false)
-        {
+        if (false) {
           //const arg_user_data = await kira_user_get(arg_user, false);
           console.time("test:cost");
           const repeat = arg_amount ? arg_amount : 11;
@@ -1140,7 +1176,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
         }
 
         {
-          r=Achievement.list["counter"].level_graduate(arg_amount);
+          r = Achievement.list["counter"].level_graduate(arg_amount);
         }
 
         return {
@@ -1339,7 +1375,8 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
     !(type === InteractionType.MESSAGE_COMPONENT) ||
     !data.options ||
     !message
-  ) {//that not a message component interaction.
+  ) {
+    //that not a message component interaction.
     await stats_simple_add(userdata.statPtr.id, "misc_match"); //+stats
     return {
       method: "PATCH",
@@ -1397,8 +1434,7 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
     const h_gap = parseInt(
       (new Date().getTime() - new Date(message.timestamp).getTime()) / 1000
     );
-    if (h_gap>60)
-    {
+    if (h_gap > 60) {
       return {
         method: "PATCH",
         body: {
@@ -1420,7 +1456,7 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
     };
   }
 
-  console.debug(`cmd : burn userbook=`,userbook);
+  console.debug(`cmd : burn userbook=`, userbook);
   //throw new Error("you would have burned it with sucress.");
   await kira_book_delete(userbook);
 
@@ -1434,18 +1470,13 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
 
 //#apples command
 async function cmd_apple({ userdata, locale, lang }) {
-
-
   let h_apples_claimed = 0;
   let h_txt_claims = "";
   let h_txt_more = "";
-  
-  const droped=(await kira_user_get_drop(userdata.id)>0);
-  if (droped && userdata.apples>=10)
-    h_txt_more = "\n" + translate(
-      lang,
-      `cmd.apples.get.why`,
-    );
+
+  const droped = (await kira_user_get_drop(userdata.id)) > 0;
+  if (droped && userdata.apples >= 10)
+    h_txt_more = "\n" + translate(lang, `cmd.apples.get.why`);
 
   //claims
   {
@@ -1469,7 +1500,11 @@ async function cmd_apple({ userdata, locale, lang }) {
           const stat =
             h_dayGapDiff === 1
               ? await stats_simple_add(userdata.statPtr.id, "streak_appleDay")
-              : await stats_simple_set(userdata.statPtr.id, "streak_appleDay", 0);
+              : await stats_simple_set(
+                  userdata.statPtr.id,
+                  "streak_appleDay",
+                  0
+                );
           //await Achievement.list["appleDailyStreak"].do_check(userdata, stat, lang);
         }
       }
@@ -1931,8 +1966,6 @@ async function cmd_see({ data, userbook, lang }) {
 
 //#drop command
 async function cmd_drop({ data, message, userdata, lang }) {
-
-
   //take confirmation
   let h_span = 0;
   let h_price = 0;
@@ -1955,34 +1988,35 @@ async function cmd_drop({ data, message, userdata, lang }) {
               components: [
                 {
                   type: MessageComponentTypes.STRING_SELECT,
-                  custom_id: `makecmd drop <value>`,//"<value>" will be replaced with "value:" from button selected
+                  custom_id: `makecmd drop <value>`, //"<value>" will be replaced with "value:" from button selected
                   placeholder: translate(lang, "cmd.drop.shop.sentence"),
                   options: (() => {
                     let buttons = [];
                     for (let i in sett_drops) {
-                      
-                        buttons.push({
-                          value: String(i),
-                          emoji: sett_emoji_apple_eat,
-                          label: translate(
-                            lang,
-                            `cmd.drop.shop.button.label`,
-                            { 
-                              price: sett_drops[i].price, 
-                              time: time_format_string_from_int(sett_drops[i].span, lang),
-                              unit: translate(lang, `word.apple${sett_drops[i].price > 1 ? "s" : ""}`),
-                            }
+                      buttons.push({
+                        value: String(i),
+                        emoji: sett_emoji_apple_eat,
+                        label: translate(lang, `cmd.drop.shop.button.label`, {
+                          price: sett_drops[i].price,
+                          time: time_format_string_from_int(
+                            sett_drops[i].span,
+                            lang
                           ),
-                          description:
-                            userdata.apples < sett_drops[i].price
-                              ? translate(lang,`cmd.drop.shop.button.poor`)
-                              : null
-                        })
-                      }
+                          unit: translate(
+                            lang,
+                            `word.apple${sett_drops[i].price > 1 ? "s" : ""}`
+                          ),
+                        }),
+                        description:
+                          userdata.apples < sett_drops[i].price
+                            ? translate(lang, `cmd.drop.shop.button.poor`)
+                            : null,
+                      });
+                    }
                     return buttons;
-                  })()
-                }
-              ]
+                  })(),
+                },
+              ],
             },
           ],
         },
@@ -1994,7 +2028,7 @@ async function cmd_drop({ data, message, userdata, lang }) {
   {
     //price gud?
     if (h_price > 0) {
-      //if (data.options[1]) 
+      //if (data.options[1])
       {
         //has clicked on the button
         if (userdata.apples < h_price) {
@@ -2014,11 +2048,9 @@ async function cmd_drop({ data, message, userdata, lang }) {
   }
   //alles kla
 
-
   //set
   await kira_user_set_drop(userdata.id, h_span);
 
-  
   //remove components from the message
   //this does not works if drop is used as a command
   await DiscordRequest(
@@ -2036,12 +2068,13 @@ async function cmd_drop({ data, message, userdata, lang }) {
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, "cmd.drop.done", {time: time_format_string_from_int(h_span, lang)})
+        content: translate(lang, "cmd.drop.done", {
+          time: time_format_string_from_int(h_span, lang),
+        }),
       },
     };
   }
 }
-
 
 //#kira command
 async function cmd_kira({
@@ -2080,9 +2113,7 @@ async function cmd_kira({
     //will fail because god of death
     h_will_ping_victim = false;
     h_will_fail = true;
-  }
-
-  else if (h_victim.bot || h_victim.system) {
+  } else if (h_victim.bot || h_victim.system) {
     //instant fail because bot
     return {
       method: "PATCH",
@@ -2091,14 +2122,12 @@ async function cmd_kira({
       },
     };
   }
-  
-  
+
   if (h_victim.id === user.id) {
     //will fail because urself
     h_will_ping_attacker = false;
 
-    if (sett_disable_suscide)
-    {
+    if (sett_disable_suscide) {
       //instant fail because suicide disabled
       await Achievement.list["killU"].do_grant(userdata, lang);
       return {
@@ -2145,16 +2174,16 @@ async function cmd_kira({
   }
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
-  
+
   {
-    const h_gap=await kira_user_get_drop(h_victim_data.id);
-    if (h_gap>0) {
+    const h_gap = await kira_user_get_drop(h_victim_data.id);
+    if (h_gap > 0) {
       return {
         method: "PATCH",
         body: {
-          content: translate(lang, "cmd.kira.fail.droped",{
-              time: time_format_string_from_int(h_gap, lang),
-              }),
+          content: translate(lang, "cmd.kira.fail.droped", {
+            time: time_format_string_from_int(h_gap, lang),
+          }),
         },
       };
     }
@@ -2232,7 +2261,11 @@ async function cmd_kira({
             (new Date(userdata.finalDate).getTime() - new Date().getTime()) /
               1000
           );
-          console.debug(`kira : countershort gap=${userdata.finalDate} - ${new Date()} = ${h_gap}`);
+          console.debug(
+            `kira : countershort gap=${
+              userdata.finalDate
+            } - ${new Date()} = ${h_gap}`
+          );
           if (h_gap < 6) {
             await Achievement.list["counterShort"].do_grant(userdata, lang, {
               time: time_format_string_from_int(lang, "cmd.kira.fail.maxcombo"),
@@ -2282,7 +2315,9 @@ async function cmd_kira({
   const h_dayGap = time_day_gap(userbook.updatedAt, locale, true, true);
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
   const h_note = await kira_line_append(userbook, h_line, h_dayGap);
-  console.debug(`kira : h_dayGapDiff=${h_dayGapDiff}=${locale}-${userbook.updatedAt}`);
+  console.debug(
+    `kira : h_dayGapDiff=${h_dayGapDiff}=${locale}-${userbook.updatedAt}`
+  );
 
   {
     //+stats
@@ -2307,7 +2342,7 @@ async function cmd_kira({
           userdata,
           lang,
           1,
-          {"gap":h_dayGapDiff}
+          { gap: h_dayGapDiff }
         );
     }
 
@@ -2320,7 +2355,6 @@ async function cmd_kira({
     }
   }
 
-  
   //creat kira run
   let h_finalDate = new Date();
   h_finalDate.setSeconds(h_finalDate.getSeconds() + h_span);
@@ -2331,7 +2365,7 @@ async function cmd_kira({
     h_victim_data?.id,
     run_combo
   );
-  kira_remember_task_add(h_finalDate, tasksType.KIRA, {runId: h_run.id});
+  kira_remember_task_add(h_finalDate, tasksType.KIRA, { runId: h_run.id });
 
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
@@ -2341,7 +2375,6 @@ async function cmd_kira({
   //message/victim
   if (h_will_ping_victim) {
     try {
-      
       //open DM
       var h_victim_dm_id = await DiscordUserOpenDm(h_victim_id);
 
@@ -2397,7 +2430,6 @@ async function cmd_kira({
   //message/attacker
   if (h_will_ping_attacker) {
     try {
-      
       //open DM
       var h_attacker_dm_id = await DiscordUserOpenDm(user.id);
 
@@ -2499,7 +2531,8 @@ async function cmd_kira({
 
   //pretty old method
   //setTimeout(() => { cmd_kira_execute({ data, user, lang }); }, h_span * 1000);
-s}
+  s;
+}
 
 //is executed by [./remember.js]
 export async function cmd_kira_execute(data) {
@@ -2526,7 +2559,7 @@ export async function cmd_kira_execute(data) {
   const h_attacker_book = await kira_book_get(userdata.id);
   //handle special case : burned book
   const h_will_book =
-    (h_attacker_book && (h_attacker_book.id === pack.attacker_book_id));
+    h_attacker_book && h_attacker_book.id === pack.attacker_book_id;
 
   //run delete
   await kira_run_delete(data.runId, h_victim_data?.id);
@@ -2578,7 +2611,7 @@ export async function cmd_kira_execute(data) {
   let stat_avenge;
   let stat_repetition;
   let stat_outerTime;
-  
+
   //date
   let h_finalDate = new Date();
   h_finalDate.setSeconds(h_finalDate.getSeconds() + pack.span);
@@ -2589,7 +2622,7 @@ export async function cmd_kira_execute(data) {
   } else if (!h_victim_data) {
     //will never happend
     h_return_msg_attacker.content = translate(lang, "cmd.kira.fail.notplayer");
-  } else if ((sett_cancel_when_dead_victim && !h_victim_data.is_alive)) {
+  } else if (sett_cancel_when_dead_victim && !h_victim_data.is_alive) {
     h_return_msg_attacker.content = translate(
       lang,
       "cmd.kira.fail.victim.dead.attacker"
@@ -2598,10 +2631,15 @@ export async function cmd_kira_execute(data) {
       lang,
       "cmd.kira.fail.victim.dead.victim"
     );
-  }
-  else if (sett_cancel_when_dead_attacker && !userdata.is_alive) {
-    h_return_msg_attacker.content = translate(lang, "cmd.kira.fail.attacker.dead.attacker");
-    h_return_msg_victim.content = translate(lang, "cmd.kira.fail.attacker.dead.victim");
+  } else if (sett_cancel_when_dead_attacker && !userdata.is_alive) {
+    h_return_msg_attacker.content = translate(
+      lang,
+      "cmd.kira.fail.attacker.dead.attacker"
+    );
+    h_return_msg_victim.content = translate(
+      lang,
+      "cmd.kira.fail.attacker.dead.victim"
+    );
   }
 
   //kill
@@ -2620,13 +2658,12 @@ export async function cmd_kira_execute(data) {
     {
       await kira_user_set_life(h_victim_data.id, false, h_finalDate);
       //revive
-      kira_remember_task_add(h_finalDate, tasksType.REVIVE, 
-        {
-          userId: pack.victim_id,
-          lang: lang,
-          ifSuicide: (pack.victim_id==pack.attacker_id),
-          msgReference: pack.victim_message_id
-        });
+      kira_remember_task_add(h_finalDate, tasksType.REVIVE, {
+        userId: pack.victim_id,
+        lang: lang,
+        ifSuicide: pack.victim_id == pack.attacker_id,
+        msgReference: pack.victim_message_id,
+      });
       if (h_will_book) await kira_line_taste(pack.note_id, 1); //note need to exist
     }
 
@@ -2875,8 +2912,8 @@ export async function cmd_kira_cancel(data) {
 
 //is executed by [./remember.js]
 export async function cmd_comeback(data) {
-  const comeback_type=(data.ifSuicide) ? "suicide" : "other";
-  
+  const comeback_type = data.ifSuicide ? "suicide" : "other";
+
   //if comeback
   if (!sett_comeback.time[comeback_type].if) return;
 
@@ -2888,7 +2925,9 @@ export async function cmd_comeback(data) {
   );
   if (h_gap > 0) {
     //can not be bring back
-    console.log(`cmd : comeback : cant bring back [${userdata.userId}] bcs gap=${h_gap}`);
+    console.log(
+      `cmd : comeback : cant bring back [${userdata.userId}] bcs gap=${h_gap}`
+    );
     return;
   }
 
@@ -2905,21 +2944,17 @@ export async function cmd_comeback(data) {
 
     //send message
     try {
-      //var h_victim_message = 
-      await DiscordRequest(
-        `channels/${dm_id}/messages`,
-          {
-            method: "POST",
-            body: {
-              message_reference: {
-                message_id: data.msgReference,
-              },
-              content: translate(lang, "cmd.comeback.time."+comeback_type),
-            },
-          }
-        );
-      }
-    catch (e) {
+      //var h_victim_message =
+      await DiscordRequest(`channels/${dm_id}/messages`, {
+        method: "POST",
+        body: {
+          message_reference: {
+            message_id: data.msgReference,
+          },
+          content: translate(lang, "cmd.comeback.time." + comeback_type),
+        },
+      });
+    } catch (e) {
       let errorMsg = JSON.parse(e.message);
       if (!(errorMsg?.code === 50007)) throw e;
     }
@@ -2934,8 +2969,7 @@ async function cmd_know({ data, message, userdata, lang }) {
   let h_id = data.options[1].value;
 
   //if is a fake one
-  if (h_wh<0)
-  {
+  if (h_wh < 0) {
     //remove components from the message
     //this does not works if know is used as a command
     await DiscordRequest(
@@ -3029,10 +3063,8 @@ async function cmd_know({ data, message, userdata, lang }) {
   };
 }
 
-
 //#trick command
-async function cmd_trick({ lang })
-{
+async function cmd_trick({ lang }) {
   //summon a new trick
   //is the command alone
   return {
@@ -3045,51 +3077,56 @@ async function cmd_trick({ lang })
           components: [
             {
               type: MessageComponentTypes.STRING_SELECT,
-              custom_id: `makecmd <value>+0`,//"<value>" will be replaced with "value:" from button selected
+              custom_id: `makecmd <value>+0`, //"<value>" will be replaced with "value:" from button selected
               placeholder: translate(lang, "cmd.trick.shop.sentence"),
               options: (() => {
                 let buttons = [];
                 for (let i in tricks_all) {
-
                   let h_trick = tricks_all[i];
-                  
+
                   buttons.push({
-                    value: `${h_trick.ephemeral ? "trick_resp_eph" : "trick_resp"} ${String(h_trick.name)}`,
-                    emoji: (h_trick.price>0) ? sett_emoji_apple_eat : sett_emoji_apple_none,
+                    value: `${
+                      h_trick.ephemeral ? "trick_resp_eph" : "trick_resp"
+                    } ${String(h_trick.name)}`,
+                    emoji:
+                      h_trick.price > 0
+                        ? sett_emoji_apple_eat
+                        : sett_emoji_apple_none,
                     label: translate(
                       lang,
                       `cmd.trick.item.${h_trick.name}.button.label`,
-                      { 
-                        price: h_trick.price, 
-                        unit: translate(lang, `word.apple${h_trick.price > 1 ? "s" : ""}`),
+                      {
+                        price: h_trick.price,
+                        unit: translate(
+                          lang,
+                          `word.apple${h_trick.price > 1 ? "s" : ""}`
+                        ),
                       }
                     ),
                     description: translate(
                       lang,
-                      `cmd.trick.item.${h_trick.name}.button.desc`,
-                    )
-                  })
+                      `cmd.trick.item.${h_trick.name}.button.desc`
+                    ),
+                  });
                 }
                 return buttons;
-              })()
-            }
-          ]
+              })(),
+            },
+          ],
         },
       ],
     },
   };
 }
 
-async function cmd_trick_resp_eph({ data, message, userdata, token, lang }) 
-{
+async function cmd_trick_resp_eph({ data, message, userdata, token, lang }) {
   return await cmd_trick_resp({ data, message, userdata, token, lang });
 }
 
 async function cmd_trick_resp({ data, message, userdata, token, lang }) {
-
   //take confirmation
   if (!data.options) throw Error();
-  
+
   //data.options
   //-[0] : trick id
   //-[1] : step index
@@ -3100,7 +3137,9 @@ async function cmd_trick_resp({ data, message, userdata, token, lang }) {
   //  1 : payoff
   //-[2] : arguments pile
   //ALL of them have to be set
-  const h_trick = tricks_all.find((trick) => (trick.name)===data.options[0].value);
+  const h_trick = tricks_all.find(
+    (trick) => trick.name === data.options[0].value
+  );
   const h_step = parseInt(data.options[1].value);
   const pile = data.options[2].value;
 
@@ -3114,10 +3153,9 @@ async function cmd_trick_resp({ data, message, userdata, token, lang }) {
       },
     };
   }
-  
+
   //remove origin components
-  if (message)
-  {
+  if (message) {
     await DiscordRequest(
       `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
       {
@@ -3130,13 +3168,21 @@ async function cmd_trick_resp({ data, message, userdata, token, lang }) {
   }
 
   //steps
-  if (h_trick.do?.step && h_step<=0)
-  {
-    if (h_step*-1>=h_trick.do.step.length) throw Error(`step [${h_step}] of trick [${h_trick.name}] called but didnt exist.`);
+  if (h_trick.do?.step && h_step <= 0) {
+    if (h_step * -1 >= h_trick.do.step.length)
+      throw Error(
+        `step [${h_step}] of trick [${h_trick.name}] called but didnt exist.`
+      );
     //call TRICK's STEP[i]
-    const r_back = h_trick.do.step[h_step*-1]({ data, message, userdata, lang, pile, token });
-    if (r_back)
-      return r_back;
+    const r_back = h_trick.do.step[h_step * -1]({
+      data,
+      message,
+      userdata,
+      lang,
+      pile,
+      token,
+    });
+    if (r_back) return r_back;
   }
 
   //pay

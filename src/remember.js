@@ -2,19 +2,17 @@ import { api } from "gadget-server";
 
 import { cmd_kira_execute, cmd_comeback } from "./cmd.js";
 
-
 export const tasksType = {
   KIRA: 1,
   REVIVE: 2,
 };
-
 
 export async function kira_remember_task_add(f_date, f_type, f_data) {
   return await api.KiraRemember.create({
     executeDate: f_date,
     RememberingType: f_type,
     //RememberingId: f_id
-    RememberingData: f_data
+    RememberingData: f_data,
   });
 }
 
@@ -33,12 +31,9 @@ export async function kira_remember_task_after(f_date) {
   });
 }
 
-
 export async function kira_remember_task_clean(f_taskId) {
   return await api.KiraRemember.delete(f_taskId);
 }
-
-
 
 //this one not working
 //function cmd_kira_wait({ api, more, user, lang }, f_time_ms, f_itr=0)
@@ -75,24 +70,28 @@ async function kira_remember_checkup() {
   if (f_tasks.length > 0) {
     //console.log(` rem3mber : execute ${f_tasks.length} runs...`);
     for (let i = 0; i < f_tasks.length; i += 1) {
-      console.log(` rem3mber : execute ${i} (taskType=${f_tasks[i].RememberingType}) : `, f_tasks[i]);
+      console.log(
+        ` rem3mber : execute ${i} (taskType=${f_tasks[i].RememberingType}) : `,
+        f_tasks[i]
+      );
       //remove the task from database
       kira_remember_task_clean(f_tasks[i].id);
       //data
-      const data=f_tasks[i].RememberingData;
+      const data = f_tasks[i].RememberingData;
       //case
-      switch (f_tasks[i].RememberingType)
-      {
+      switch (f_tasks[i].RememberingType) {
         //remembering type
-        case (tasksType.KIRA):
-        {
-          await cmd_kira_execute(data);
-        } break;
-        
-        case (tasksType.REVIVE):
-        {
-          await cmd_comeback(data);
-        } break;
+        case tasksType.KIRA:
+          {
+            await cmd_kira_execute(data);
+          }
+          break;
+
+        case tasksType.REVIVE:
+          {
+            await cmd_comeback(data);
+          }
+          break;
       }
     }
   }

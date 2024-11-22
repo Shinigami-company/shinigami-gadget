@@ -143,7 +143,9 @@ export class Achievement {
       if (this.graduations && this.graduations[f_newLevel]) {
         //show landing amount
         //if must be 15, and your are at 17, show parseGrad(17)
-        f_doneDolarValues["landing"] = parseGrad(this.graduations[f_newLevel - 1]);
+        f_doneDolarValues["landing"] = parseGrad(
+          this.graduations[f_newLevel - 1]
+        );
       }
 
       const doneMessage = translate(
