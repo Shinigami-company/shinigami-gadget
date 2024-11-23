@@ -1,96 +1,9 @@
 console.log(` cmd : refresh`);
 //--- sett ---
 
-export const enum_know_for = {
-  NONE: 0,
-  VICTIM: 1,
-  ATTACKER: 2,
-};
+import { KnowUsableBy } from "./enum.ts";
 
-export const sett_knows = {
-  //lang :
-  //"cmd.kira.start.mp.<for>.pay.<index>"
-  //"cmd.know.get.<index>"
-  who: {
-    price: 1,
-    for: enum_know_for.VICTIM,
-  },
-  where: {
-    price: 3,
-    for: enum_know_for.VICTIM,
-  },
-  fullwho: {
-    //old victim
-    price: 100,
-    for: enum_know_for.NONE,
-  },
-  fullwhere: {
-    //old victim
-    price: 50,
-    for: enum_know_for.NONE,
-  },
-  delmsg: {
-    price: 2,
-    for: enum_know_for.ATTACKER,
-  },
-};
-
-const sett_drops = [
-  {
-    price: 1,
-    span: 600,
-  },
-  {
-    price: 1,
-    span: 3600,
-  },
-  {
-    price: 2,
-    span: 86400,
-  },
-  {
-    price: 5,
-    span: 86400 * 3,
-  },
-];
-
-export const sett_emoji_apple_eat = {
-  name: "apple_croc",
-  id: "1266010583623532574",
-  animated: true,
-};
-const sett_emoji_apple_none = {
-  //from apples_emoji
-  name: "apple_zero",
-  id: "1255900070117773313",
-  animated: true,
-};
-const sett_emoji_burn_confirm = {
-  id: null,
-  name: "🔥",
-};
-const sett_daily_amount = 1;
-
-function sett_apples_byVictimKills(f_kills) {
-  return parseInt(f_kills ** 0.5); //squareroot
-}
-const sett_counter_combo_max = 13;
-
-const sett_disable_suscide = false;
-const sett_comeback = {
-  time: {
-    //comeback automaticly after the time
-    other: { if: true, message: true },
-    suicide: { if: true, message: true },
-  },
-  check: {
-    //comeback when victim do something
-    all: { if: true, message: true }, //just, dont disable that.
-  },
-};
-
-const sett_cancel_when_dead_attacker = true;
-const sett_cancel_when_dead_victim = true;
+import { Settings } from "./sett.js";
 
 //--- imports ---
 
@@ -103,8 +16,10 @@ import {
   MessageComponentTypes,
   ButtonStyleTypes,
 } from "discord-interactions";
-import { DiscordRequest } from "../utils.js";
-import { DiscordUserById, DiscordUserOpenDm } from "../utils.js";
+import { DiscordRequest } from "./utils.js";
+import { DiscordUserById, DiscordUserOpenDm } from "./utils.js";
+
+import { SETT_CMD, sett_catalog_drops, sett_catalog_knows, sett_emoji_apple_croc, sett_emoji_apple_none, sett_emoji_burn_confirm } from "./sett.js";
 
 //own
 //import { sleep } from './tools.js';
@@ -125,16 +40,15 @@ import {
   kira_user_add_apple,
   kira_user_set_drop,
   kira_user_get_drop,
-} from "./kira.js"; //kira user
-import { kira_users_rank } from "./kira.js"; //kira user
+} from "./use/kira.js"; //kira user
+import { kira_users_rank } from "./use/kira.js"; //kira user
 import {
   kira_book_create,
   kira_book_delete,
   kira_book_get,
   kira_book_color_choice,
   book_colors,
-  settings_max_lines,
-} from "./kira.js"; //kira book
+} from "./use/kira.js"; //kira book
 import {
   kira_run_create,
   kira_run_delete,
@@ -144,20 +58,20 @@ import {
   kira_run_unpack_execute,
   kira_run_unpack_know,
   kira_runs_by,
-} from "./kira.js"; //kira run
+} from "./use/kira.js"; //kira run
 import {
   kira_line_append,
   kira_line_get_page,
   kira_line_get_last_indexPage,
   kira_line_if_pageGood,
   kira_line_taste,
-} from "./kira.js"; //kira line
+} from "./use/kira.js"; //kira line
 import {
   kira_apple_claims_set,
   kira_apple_claims_add,
   kira_apple_claims_get,
   kira_format_applemoji,
-} from "./apple.js"; //kira apples
+} from "./use/apple.js"; //kira apples
 
 import {
   stats_simple_get,
@@ -169,7 +83,7 @@ import {
   stats_simple_rank,
   stats_order_broad,
   stats_order_ratio,
-} from "./stats.js"; // simple user statistics
+} from "./use/stats.js"; // simple user statistics
 import {
   stats_pair_get_id,
   stats_pair_get_value,
@@ -177,13 +91,11 @@ import {
   stats_pair_set,
   stats_pairs_get_all,
   stats_pair_get_multiples,
-} from "./stats.js"; // pair user statstics
-import { stats_checkup } from "./stats.js"; // update user statistics
+} from "./use/stats.js"; // pair user statstics
+import { stats_checkup } from "./use/stats.js"; // update user statistics
 import { Achievement, Schedule } from "./achiv.js"; // user achivements
 
 import {
-  rule_key_random,
-  rule_key_parse,
   time_format_string_from_int,
   time_userday_get,
   time_day_int,
@@ -192,11 +104,13 @@ import {
   roman_from_int,
 } from "./tools.js"; // tools
 
-import { kira_remember_task_add, tasksType } from "./remember.js";
-import { linkme } from "./remember.js";
+import { kira_remember_task_add, tasksType } from "./use/remember.js";
+import { linkme } from "./use/remember.js";
 linkme("linked from cmd"); //need to use a function from there
 
+//commands components
 import { tricks_all } from "./cmd/trick.js";
+import { cmd_rules } from "./cmd/rules.js";
 
 //the structure to describe the command
 const commands_structure = {
@@ -861,7 +775,7 @@ async function check_can_alive(dig) {
     const h_gap = parseInt(
       (new Date(dig.userdata.backDate).getTime() - new Date().getTime()) / 1000
     );
-    if (h_gap > 0 || !sett_comeback.check.all.if) {
+    if (h_gap > 0 || !SETT_CMD.kira.comebackBy.check.all.if) {
       //can not be bring back
       return {
         method: "PATCH",
@@ -877,7 +791,7 @@ async function check_can_alive(dig) {
     await kira_user_set_life(dig.userdata.id, true);
 
     //message
-    if (sett_comeback.check.all.message) {
+    if (SETT_CMD.kira.comebackBy.check.all.message) {
       //open DM
       const dm_id = await DiscordUserOpenDm(dig.userdata.userId);
       //send message
@@ -1328,7 +1242,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
                     label: translate(lang, `cmd.claim.confirm.button`, {
                       price: h_price,
                     }),
-                    emoji: sett_emoji_apple_eat,
+                    emoji: sett_emoji_apple_croc,
                     style:
                       userdata.apples < h_price
                         ? ButtonStyleTypes.SECONDARY
@@ -1492,7 +1406,7 @@ async function cmd_apple({ userdata, locale, lang }) {
       if (h_dayGapDiff != 0) {
         //claim you daily
         await kira_user_set_daily(userdata.id);
-        h_apples_claimed += sett_daily_amount;
+        h_apples_claimed += SETT_CMD.apple.dailyAmount;
         h_txt_claims +=
           translate(lang, `cmd.apples.claim.daily`, { added: 1 }) + "\n";
         {
@@ -1628,35 +1542,6 @@ async function cmd_top({ data, userdata, userbook, lang }) {
       },
     };
   }
-}
-
-//#rules command
-async function cmd_rules({ userdata, userbook, lang }) {
-  const ruleKey = rule_key_random();
-
-  {
-    //+achiv
-    if (ruleKey === "new.2") {
-      await Achievement.list["secretRule"].do_grant(userdata, lang);
-    }
-  }
-
-  return {
-    method: "PATCH",
-    body: {
-      content:
-        translate(lang, "cmd.rules.english") +
-        "\n" +
-        translate(lang, "cmd.rules.preamble"),
-      embeds: [
-        {
-          color: book_colors[userbook.color].int,
-          description: translate(lang, "rule." + ruleKey),
-          footer: { text: rule_key_parse(ruleKey) },
-        },
-      ],
-    },
-  };
 }
 
 //#stats command
@@ -1970,8 +1855,8 @@ async function cmd_drop({ data, message, userdata, lang }) {
   let h_span = 0;
   let h_price = 0;
   if (data.options) {
-    h_span = sett_drops[data.options[0].value].span;
-    h_price = sett_drops[data.options[0].value].price;
+    h_span = sett_catalog_drops[data.options[0].value].span;
+    h_price = sett_catalog_drops[data.options[0].value].price;
   }
 
   //is the command alone
@@ -1992,23 +1877,24 @@ async function cmd_drop({ data, message, userdata, lang }) {
                   placeholder: translate(lang, "cmd.drop.shop.sentence"),
                   options: (() => {
                     let buttons = [];
-                    for (let i in sett_drops) {
+                    for (let i in sett_catalog_drops) {
+                      const v = sett_catalog_drops[i]
                       buttons.push({
                         value: String(i),
-                        emoji: sett_emoji_apple_eat,
+                        emoji: sett_emoji_apple_croc,
                         label: translate(lang, `cmd.drop.shop.button.label`, {
-                          price: sett_drops[i].price,
+                          price: v.price,
                           time: time_format_string_from_int(
-                            sett_drops[i].span,
+                            v.span,
                             lang
                           ),
                           unit: translate(
                             lang,
-                            `word.apple${sett_drops[i].price > 1 ? "s" : ""}`
+                            `word.apple${v.price > 1 ? "s" : ""}`
                           ),
                         }),
                         description:
-                          userdata.apples < sett_drops[i].price
+                          userdata.apples < v.price
                             ? translate(lang, `cmd.drop.shop.button.poor`)
                             : null,
                       });
@@ -2127,7 +2013,7 @@ async function cmd_kira({
     //will fail because urself
     h_will_ping_attacker = false;
 
-    if (sett_disable_suscide) {
+    if (SETT_CMD.kira.noSuscide) {
       //instant fail because suicide disabled
       await Achievement.list["killU"].do_grant(userdata, lang);
       return {
@@ -2175,7 +2061,7 @@ async function cmd_kira({
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
 
-  {
+  if (!h_will_fail) {
     const h_gap = await kira_user_get_drop(h_victim_data.id);
     if (h_gap > 0) {
       return {
@@ -2213,7 +2099,7 @@ async function cmd_kira({
       console.log(` kira : V already killing A : `, h_run_reverse);
       run_combo = h_run_reverse.counterCombo + 1;
 
-      if (run_combo >= sett_counter_combo_max) {
+      if (run_combo >= SETT_CMD.kira.counterMax) {
         // too much combo
         console.log(` kira : counter is max combo=`, run_combo);
         {
@@ -2226,7 +2112,7 @@ async function cmd_kira({
           method: "PATCH",
           body: {
             content: translate(lang, "cmd.kira.fail.maxcombo", {
-              max: sett_counter_combo_max,
+              max: SETT_CMD.kira.counterMax,
             }),
           },
         };
@@ -2346,7 +2232,7 @@ async function cmd_kira({
         );
     }
 
-    if ((userbook.index + 1) % settings_max_lines === 0) {
+    if ((userbook.index + 1) % SETT_CMD.see.maxLines === 0) {
       const stat = await stats_simple_add(
         userdata.statPtr.id,
         "streak_pageFilled"
@@ -2392,19 +2278,19 @@ async function cmd_kira({
                 type: MessageComponentTypes.ACTION_ROW,
                 components: (() => {
                   let buttons = [];
-                  for (let i in sett_knows) {
-                    if (sett_knows[i].for === enum_know_for.VICTIM)
+                  for (let i in sett_catalog_knows) {
+                    if (sett_catalog_knows[i].for === KnowUsableBy.VICTIM)
                       buttons.push({
                         type: MessageComponentTypes.BUTTON,
                         custom_id: `makecmd know ${i}+${h_run.id}`,
                         label: translate(
                           lang,
                           `cmd.kira.start.mp.victim.pay.${i}`,
-                          { price: sett_knows[i].price }
+                          { price: sett_catalog_knows[i].price }
                         ),
-                        emoji: sett_emoji_apple_eat,
+                        emoji: sett_emoji_apple_croc,
                         style:
-                          userdata.apples < sett_knows[i].price
+                          userdata.apples < sett_catalog_knows[i].price
                             ? ButtonStyleTypes.SECONDARY
                             : ButtonStyleTypes.SUCCESS,
                         disabled: false,
@@ -2448,19 +2334,19 @@ async function cmd_kira({
                 type: MessageComponentTypes.ACTION_ROW,
                 components: (() => {
                   let buttons = [];
-                  for (let i in sett_knows) {
-                    if (sett_knows[i].for === enum_know_for.ATTACKER)
+                  for (let i in sett_catalog_knows) {
+                    if (sett_catalog_knows[i].for === KnowUsableBy.ATTACKER)
                       buttons.push({
                         type: MessageComponentTypes.BUTTON,
                         custom_id: `makecmd know ${i}+${h_run.id}`,
                         label: translate(
                           lang,
                           `cmd.kira.start.mp.attacker.pay.${i}`,
-                          { price: sett_knows[i].price }
+                          { price: sett_catalog_knows[i].price }
                         ),
-                        emoji: sett_emoji_apple_eat,
+                        emoji: sett_emoji_apple_croc,
                         style:
-                          userdata.apples < sett_knows[i].price
+                          userdata.apples < sett_catalog_knows[i].price
                             ? ButtonStyleTypes.SECONDARY
                             : ButtonStyleTypes.SUCCESS,
                         disabled: false,
@@ -2622,7 +2508,7 @@ export async function cmd_kira_execute(data) {
   } else if (!h_victim_data) {
     //will never happend
     h_return_msg_attacker.content = translate(lang, "cmd.kira.fail.notplayer");
-  } else if (sett_cancel_when_dead_victim && !h_victim_data.is_alive) {
+  } else if (SETT_CMD.kira.cancelWhenDeadVictim && !h_victim_data.is_alive) {
     h_return_msg_attacker.content = translate(
       lang,
       "cmd.kira.fail.victim.dead.attacker"
@@ -2631,7 +2517,7 @@ export async function cmd_kira_execute(data) {
       lang,
       "cmd.kira.fail.victim.dead.victim"
     );
-  } else if (sett_cancel_when_dead_attacker && !userdata.is_alive) {
+  } else if (SETT_CMD.kira.cancelWhenDeadAttacker && !userdata.is_alive) {
     h_return_msg_attacker.content = translate(
       lang,
       "cmd.kira.fail.attacker.dead.attacker"
@@ -2723,7 +2609,7 @@ export async function cmd_kira_execute(data) {
 
       let h_apples = 0; //default
       if (h_victim_kills) {
-        h_apples = sett_apples_byVictimKills(h_victim_kills);
+        h_apples = SETT_CMD.apple.avangerAppleReward(h_victim_kills);
         kira_apple_claims_add(userdata.id, {
           added: h_apples,
           type: "murderer",
@@ -2915,7 +2801,7 @@ export async function cmd_comeback(data) {
   const comeback_type = data.ifSuicide ? "suicide" : "other";
 
   //if comeback
-  if (!sett_comeback.time[comeback_type].if) return;
+  if (!SETT_CMD.kira.comebackBy.time[comeback_type].if) return;
 
   const userdata = await kira_user_get(data.userId, false);
   const lang = data.lang;
@@ -2936,7 +2822,7 @@ export async function cmd_comeback(data) {
   await kira_user_set_life(userdata.id, true);
 
   //if send message
-  if (!sett_comeback.time[comeback_type].message) return;
+  if (!SETT_CMD.kira.comebackBy.time[comeback_type].message) return;
 
   {
     //open DM
@@ -3002,7 +2888,7 @@ async function cmd_know({ data, message, userdata, lang }) {
     };
   }
 
-  const h_price = sett_knows[h_wh].price;
+  const h_price = sett_catalog_knows[h_wh].price;
 
   //apples
   if (userdata.apples < h_price) {
@@ -3090,7 +2976,7 @@ async function cmd_trick({ lang }) {
                     } ${String(h_trick.name)}`,
                     emoji:
                       h_trick.price > 0
-                        ? sett_emoji_apple_eat
+                        ? sett_emoji_apple_croc
                         : sett_emoji_apple_none,
                     label: translate(
                       lang,

@@ -8,14 +8,14 @@ import {
 } from 'discord-interactions';
 
 //dependancies
-import { DiscordRequest } from '../../utils';
+import { DiscordRequest } from '../../src/utils.js';
 
 //own
 import { kira_cmd, kira_error_msg } from '../../src/cmd';
 import { sleep } from "../../src/tools.js"
 
 //things
-
+const maxError = 1;
 
 /**
  * Route handler for POST interactions
@@ -49,16 +49,16 @@ export default async function route({ request, reply, api, logger, connections }
       const return_patch = await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild }, commandName);
       // return_patch.method must be 'PATCH'
       
-      for (let i=1; i<=3;i+=1)
+      for (let i=1; i<=maxError;i+=1)
       {
         try {
           return await DiscordRequest(`webhooks/${process.env.APP_ID}/${token}/messages/@original`, return_patch);
         }
         catch (e) {
           console.debug(`route : catch : interaction ERROR : `,e);
-          if (i===0)
+          if (i===1)
             var firstErorr=e;
-          if (i>=3)
+          if (i>=maxError)
             throw firstErorr;
           await sleep(1000);
           console.debug(`route : catch : RETRY ${i+1}`);

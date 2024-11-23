@@ -11,10 +11,11 @@ import { translate } from "../lang.js";
 import { time_format_string_from_int, sleep } from "../tools.js";
 
 //things needed from outside
-import { sett_knows, enum_know_for, sett_emoji_apple_eat } from "../cmd.js";
-import { kira_user_add_apple, kira_user_get } from "../kira.js";
+import { sett_emoji_apple_croc, sett_catalog_knows } from "../sett.js";
+import { KnowUsableBy } from "../enum.ts";
+import { kira_user_add_apple, kira_user_get } from "../use/kira.js";
 
-import { DiscordRequest, DiscordUserOpenDm } from "../../utils";
+import { DiscordRequest, DiscordUserOpenDm } from "../utils.js";
 
 export const tricks_all = [
   
@@ -109,19 +110,19 @@ export const tricks_all = [
                     type: MessageComponentTypes.ACTION_ROW,
                     components: (() => {
                       let buttons = [];
-                      for (let i in sett_knows) {
-                        if (sett_knows[i].for === enum_know_for.VICTIM)
+                      for (let i in sett_catalog_knows) {
+                        if (sett_catalog_knows[i].for === KnowUsableBy.VICTIM)
                           buttons.push({
                             type: MessageComponentTypes.BUTTON,
                             custom_id: `makecmd know -1+qafbilwiv${i}`,
                             label: translate(
                               lang,
                               `cmd.kira.start.mp.victim.pay.${i}`,
-                              { price: sett_knows[i].price }
+                              { price: sett_catalog_knows[i].price }
                             ),
-                            emoji: sett_emoji_apple_eat,
+                            emoji: sett_emoji_apple_croc,
                             style:
-                              userdata.apples < sett_knows[i].price
+                              userdata.apples < sett_catalog_knows[i].price
                                 ? ButtonStyleTypes.SECONDARY
                                 : ButtonStyleTypes.SUCCESS,
                             disabled: false,
@@ -213,7 +214,7 @@ export const tricks_all = [
                     label: translate(lang, "cmd.trick.item.coinflip.pick.user.button", {
                       "price": price
                     }),
-                    emoji: sett_emoji_apple_eat,
+                    emoji: sett_emoji_apple_croc,
                     style: ButtonStyleTypes.SUCCESS
                   }
                   ]

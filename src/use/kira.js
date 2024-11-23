@@ -1,8 +1,8 @@
 import { api } from "gadget-server";
-import { kira_remember_task_add, tasksType } from "./remember.js";
+//import { kira_remember_task_add, tasksType } from "../remember.js";
 
-const settings_max_pages = 60;
-const settings_max_lines = 10; //38
+import { SETT_CMD } from "../sett.js";
+
 
 //---kira_user---
 //DATA about the user
@@ -340,13 +340,13 @@ export async function kira_line_get_last_indexPage(f_book) {
   //if (!h_data_gtr) return 1;
   if (!f_book.lastNoteId) return 1;
   const h_data_gtr = await api.KiraNotes.findOne(f_book.lastNoteId);
-  return Math.ceil((h_data_gtr.indexLine + 1) / settings_max_lines);
+  return Math.ceil((h_data_gtr.indexLine + 1) / SETT_CMD.see.maxLines);
 }
 
 export async function kira_line_if_pageGood(f_book, f_page) {
   return (
     f_page >= 0 &&
-    (f_page < settings_max_pages ||
+    (f_page < SETT_CMD.see.maxPages ||
       f_page < (await kira_line_get_last_indexPage(f_book)))
   );
 }
@@ -359,18 +359,18 @@ export async function kira_line_get_page(f_book, f_page, f_ifBlank = true) {
       },
       {
         indexLine: {
-          greaterThanOrEqual: settings_max_lines * f_page,
-          lessThan: settings_max_lines * (f_page + 1),
+          greaterThanOrEqual: SETT_CMD.see.maxLines * f_page,
+          lessThan: SETT_CMD.see.maxLines * (f_page + 1),
         },
       },
     ],
   });
   if (!f_ifBlank) return h_data_lines_minimal;
 
-  let h_data_lines_blanked = new Array(settings_max_lines).fill(false);
+  let h_data_lines_blanked = new Array(SETT_CMD.see.maxLines).fill(false);
   for (let i = 0; i < h_data_lines_minimal.length; i++) {
     h_data_lines_blanked[
-      h_data_lines_minimal[i].indexLine - settings_max_lines * f_page
+      h_data_lines_minimal[i].indexLine - SETT_CMD.see.maxLines * f_page
     ] = h_data_lines_minimal[i];
   }
   return h_data_lines_blanked;

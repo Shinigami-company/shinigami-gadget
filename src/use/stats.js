@@ -1,5 +1,5 @@
 import { api } from "gadget-server";
-import { time_format_string_from_int } from "./tools.js";
+import { time_format_string_from_int } from "../tools.js";
 
 //--- SIMPLE ---
 

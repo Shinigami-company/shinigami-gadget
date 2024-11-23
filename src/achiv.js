@@ -1,10 +1,10 @@
 import { api } from "gadget-server";
 
-import { kira_apple_claims_add } from "./apple.js";
+import { kira_apple_claims_add } from "./use/apple.js";
 import { translate } from "./lang.js";
 import { roman_from_int } from "./tools.js";
 
-import { DiscordRequest } from "../utils.js";
+import { DiscordRequest } from "./utils.js";
 
 export class Achievement {
   //SELF/OBJECTS
@@ -305,7 +305,7 @@ new Achievement("outerTime", "level_outerTime", 5, false, [
   30 * 24 * 3600,
   365.25 * 24 * 3600,
 ]);
-new Achievement("writtenPage", "level_writtenPage", 3, false, [1, 10, 70]);
+new Achievement("writtenPage", "level_writtenPage", 3, false, [2, 10, 70]);
 new Achievement("avengeBest", "level_avengeBest", 3, false, [5, 30, 100]);
 new Achievement(
   "killDailyStreak",

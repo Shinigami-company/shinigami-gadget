@@ -1,6 +1,6 @@
 import { api } from "gadget-server";
 
-import { cmd_kira_execute, cmd_comeback } from "./cmd.js";
+import { cmd_kira_execute, cmd_comeback } from "../cmd.js";
 
 export const tasksType = {
   KIRA: 1,

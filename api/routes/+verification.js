@@ -1,5 +1,5 @@
 import { Server } from "gadget-server";
-import { VerifyDiscordRequest } from '../../utils';
+import { VerifyDiscordRequest } from '../../src/utils.js';
 
 /**
  * Route plugin for *
