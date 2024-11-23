@@ -3,6 +3,10 @@ import { api } from "gadget-server";
 
 import { SETT_CMD } from "../sett.js";
 
+export async function kira_do_refreshCommands() {
+  return await api.removeCommands();
+  return await api.registerCommands();
+}
 
 //---kira_user---
 //DATA about the user

@@ -66,6 +66,10 @@ export const sett_emoji_burn_confirm = {
   id: null,
   name: "🔥",
 };
+export const sett_emoji_feedback_confirm = {
+  id: null,
+  name: "📨",
+};
 
 //--commands--
 const dailyAmount = 1;

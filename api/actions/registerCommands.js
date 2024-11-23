@@ -1,5 +1,5 @@
 import { RegisterCommandsGlobalActionContext } from "gadget-server";
-import { capitalize, InstallGlobalCommands } from '../../utils';
+import { capitalize, InstallGlobalCommands } from '../../src/utils.js';
 
 
 import { cmd_register } from '../../src/cmd';

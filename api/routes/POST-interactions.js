@@ -48,6 +48,7 @@ export default async function route({ request, reply, api, logger, connections }
 	  `);
       const return_patch = await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild }, commandName);
       // return_patch.method must be 'PATCH'
+      if (!return_patch) return;
       
       for (let i=1; i<=maxError;i+=1)
       {
@@ -86,6 +87,8 @@ export default async function route({ request, reply, api, logger, connections }
   if (type === InteractionType.MESSAGE_COMPONENT) {
     // custom_id set in payload when sending message component
     
+    console.log(` route : components interaction. origin data=`, data);
+    
     let componentId = data.custom_id;
     componentId=componentId.replace(/<value>/,(data?.values) ? data?.values[0] : undefined);
     console.log("componentId=",componentId);
@@ -101,7 +104,13 @@ export default async function route({ request, reply, api, logger, connections }
       //handle different commands
       switch (h_cmd)
       {
-    
+
+
+        case ("feedback_form"):
+        {
+          data = { name: 'feedback_form', options: [{ name: 'want', value: h_arg[0]==="true" }] };
+        } break;
+
         case ("see"):
         {
           //eg:
@@ -142,6 +151,10 @@ export default async function route({ request, reply, api, logger, connections }
         case ("trick_resp"):
         {
           data = {name: 'trick', options: [{name:'trick_index', value: h_arg[0]}, {name: 'trick_step', value: h_arg[1]}, {name: 'trick_pile', value: h_arg[2]}]};
+        } break;
+
+        default: {
+          throw Error(`[${h_cmd}] does not exist in makecmd`);
         } break;
       }
 

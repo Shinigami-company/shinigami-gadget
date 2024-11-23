@@ -15,11 +15,13 @@ import {
   InteractionResponseFlags,
   MessageComponentTypes,
   ButtonStyleTypes,
+  ChannelTypes,
+  TextStyleTypes,
 } from "discord-interactions";
 import { DiscordRequest } from "./utils.js";
 import { DiscordUserById, DiscordUserOpenDm } from "./utils.js";
 
-import { SETT_CMD, sett_catalog_drops, sett_catalog_knows, sett_emoji_apple_croc, sett_emoji_apple_none, sett_emoji_burn_confirm } from "./sett.js";
+import { SETT_CMD, sett_catalog_drops, sett_catalog_knows, sett_emoji_apple_croc, sett_emoji_apple_none, sett_emoji_burn_confirm, sett_emoji_feedback_confirm } from "./sett.js";
 
 //own
 //import { sleep } from './tools.js';
@@ -32,6 +34,7 @@ import {
   lang_set,
 } from "./lang.js"; //all user langugage things
 
+import { kira_do_refreshCommands } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
   kira_user_set_life,
@@ -111,6 +114,7 @@ linkme("linked from cmd"); //need to use a function from there
 //commands components
 import { tricks_all } from "./cmd/trick.js";
 import { cmd_rules } from "./cmd/rules.js";
+import { register } from "module";
 
 //the structure to describe the command
 const commands_structure = {
@@ -212,6 +216,25 @@ const commands_structure = {
       */
       type: 1,
     },
+  },
+
+  feedback: {
+    functions: {
+      exe: cmd_feedback,
+      checks: []
+    },
+    register: {
+      name: "feedback",
+      description: "send a message to the kingdom of the dead"
+    }
+  },
+  feedback_form: {
+    functions: {
+      exe: cmd_feedback_form,
+      checks: [],
+      notDeferred: true,
+    },
+    systemOnly: true
   },
 
   //SET
@@ -460,7 +483,6 @@ const commands_structure = {
       type: 1,
     },
   },
-
   trick_resp: {
     functions: {
       exe: cmd_trick_resp,
@@ -471,6 +493,7 @@ const commands_structure = {
         [check_has_book, false],
       ],
     },
+    systemOnly: true
   },
 
   trick_resp_eph: {
@@ -483,6 +506,7 @@ const commands_structure = {
         [check_has_book, false],
       ],
     },
+    systemOnly: true
   },
 
   kira: {
@@ -531,7 +555,7 @@ const commands_structure = {
         [check_can_alive, true],
         [check_has_noDrop, true],
         [check_has_book, true],
-        //[check_react_is_self, true]// JUST DONT DO IT NOOOOOOOOOO
+        [check_react_is_self, true]// JUST DONT DO IT NOOOOOOOOOO
       ],
     },
     systemOnly: true,
@@ -621,7 +645,7 @@ export async function kira_cmd(f_deep, f_cmd) {
       const r_check = await v[0](f_deep);
       if (r_check) {
         //if the check is not checked
-        await DiscordRequest(
+        await DiscordRequest(// POST the deferred response
           `interactions/${f_deep.id}/${f_deep.token}/callback`,
           {
             method: "POST",
@@ -633,31 +657,33 @@ export async function kira_cmd(f_deep, f_cmd) {
             },
           }
         );
+        // PATCH the "no dont" message
         return r_check;
       }
     }
 
-    await DiscordRequest(`interactions/${f_deep.id}/${f_deep.token}/callback`, {
-      method: "POST",
-      body: {
-        type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          flags: commands_structure[f_cmd].functions.ephemeral
-            ? InteractionResponseFlags.EPHEMERAL
-            : undefined,
-        },
-      },
-    });
-    replyed = true;
+    if (!commands_structure[f_cmd].functions.notDeferred)
+    {
 
+      await DiscordRequest(// POST the deferred response
+        `interactions/${f_deep.id}/${f_deep.token}/callback`, {
+        method: "POST",
+        body: {
+          type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            flags: commands_structure[f_cmd].functions.ephemeral
+              ? InteractionResponseFlags.EPHEMERAL
+              : undefined,
+          },
+        },
+      });
+      replyed = true;
+    }
+    //PATCH by the returned mesage
     return await commands_structure[f_cmd].functions.exe(f_deep);
   } catch (e) {
     if (!replyed) {
-      //didnt work
-      console.log(
-        `hi : this interaction makred as unknow : interactions/${f_deep.id}/${f_deep.token}/callback`
-      );
-      await DiscordRequest(
+      await DiscordRequest(// POST the deferred response
         `interactions/${f_deep.id}/${f_deep.token}/callback`,
         {
           method: "POST",
@@ -1107,10 +1133,11 @@ async function cmd_god({ userdata, data, lang, locale }) {
     case "update":
       {
         if (!arg_user) {
+          await kira_do_refreshCommands();
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.update.fail.missing.user"),
+              content: translate(lang, "cmd.god.update.done.commands"),
             },
           };
         }
@@ -1139,7 +1166,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
             embeds: [
               {
                 color: 255 * 256,
-                description: translate(lang, "cmd.god.update.done", {
+                description: translate(lang, "cmd.god.update.done.user", {
                   targetId: arg_user,
                 }),
               },
@@ -1165,6 +1192,159 @@ async function cmd_god({ userdata, data, lang, locale }) {
       break;
   }
 }
+
+//#feedback command
+async function cmd_feedback({ data, lang, token, id }) {
+
+  //is the command alone
+  if (!data.options) {
+
+    //PATCH confirmation
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.feedback.confirm"),
+        components: [
+          {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+              {
+                type: MessageComponentTypes.BUTTON,
+                custom_id: `makecmd feedback_form true`,
+                label: translate(lang, "cmd.feedback.confirm.yes"),
+                emoji: sett_emoji_feedback_confirm,
+                style:ButtonStyleTypes.PRIMARY,
+                //style:ButtonStyleTypes.SECONDARY,
+                disabled: false,
+              },
+              {
+                type: MessageComponentTypes.BUTTON,
+                custom_id: `makecmd feedback_form false`,
+                label: translate(lang, "cmd.feedback.confirm.no"),
+                //emoji: {name: "" },
+                style:ButtonStyleTypes.SECONDARY,
+                disabled: false,
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+  
+  h_letter = data.options[0].value;
+
+  return {
+    method: "PATCH",
+    body: {
+      content: translate(
+        "cmd.feedback.done",
+        lang,
+        { letter: h_letter },
+      ),
+    },
+  };
+}
+
+async function cmd_feedback_form({ data, message, lang, token, id }) {
+
+  //its no
+  
+  if (!data.options[0].value) 
+  {
+    //remove the message
+    await DiscordRequest(
+      `channels/${message.channel_id}/messages/${message.id}`,
+      {
+        method: "DELETE",
+      }
+    );
+    return;//! return nothing
+  }
+
+  //call the form
+  
+  //POST input modal
+  {
+    await DiscordRequest(
+      `interactions/${id}/${token}/callback`, {
+      method: "POST",
+      body: {
+        type: InteractionResponseType.MODAL,
+        data: {
+          title: translate(lang, "cmd.feedback.modal.title"),
+          custom_id: `feedbackout`,
+          components: [
+            {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+                {
+                  type: MessageComponentTypes.INPUT_TEXT,
+                  style: TextStyleTypes.PARAGRAPH,
+                  custom_id: `feedbackin`,
+                  label: translate(lang, "cmd.feedback.modal.message.label"),
+                  placeholder: translate(lang, "cmd.feedback.modal.message.placeholder"),
+                  value: translate(lang, "cmd.feedback.modal.message.value"),
+                  required: true,
+                  min_length: 13,
+                  max_length: 666,
+                }
+              ]
+            },
+            {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+                {
+                  type: MessageComponentTypes.INPUT_TEXT,
+                  style: TextStyleTypes.SHORT,
+                  custom_id: `feedbacklast`,
+                  label: translate(lang, "cmd.feedback.modal.last.label"),
+                  placeholder: translate(lang, "cmd.feedback.modal.last.placeholder"),
+                  value: translate(lang, "cmd.feedback.modal.last.value"),
+                  required: false,
+                  min_length: 0,
+                  max_length: 30,
+                }
+              ]
+            }
+          ]
+        },
+      },
+    });
+  }
+
+  //remove buttons
+  await DiscordRequest(
+    `channels/${message.channel_id}/messages/${message.id}`,
+    {
+      method: "PATCH",
+      body: {
+        components: [],
+      },
+    }
+  );
+
+  return;//! return nothing
+  
+  //send message
+  if (false) {
+    await DiscordRequest(
+      `webhooks/${process.env.APP_ID}/${token}`,
+    {
+      method: "POST",
+      body: {
+        content: translate(lang, "cmd.feedback.writting"),
+        /* didnt work
+        data: {
+          flags: InteractionResponseFlags.EPHEMERAL,
+        },
+        */
+      }
+    });
+    return;
+  }
+};
+
 
 //#claim command
 async function cmd_claim({ userdata, data, userbook, lang }) {

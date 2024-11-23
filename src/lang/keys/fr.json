@@ -102,7 +102,7 @@
 "cmd.drop.fail.poor": "J'ai besoin de plus de pomme, pour ne pas être en manque.",
 "cmd.drop.done": "Tu as abandonné ton death note pendant **$[time]**.\nÀ la prochaine humain·e!\n*le shinigami disparait avec le death note...*",
 
-"cmd.trick.shop": "Je m'enuiiie. Tu veux pas faire un truc fun ?",
+"cmd.trick.shop": "Je m'enuiiie. Tu veux pas faire un truc ?",
 "cmd.trick.shop.sentence": "Je veux...",
 "cmd.trick.shop.step.sentence": "...",
 "cmd.trick.item.none.button.label": "$[price] $[unit] : jouer à Mario Golf",
