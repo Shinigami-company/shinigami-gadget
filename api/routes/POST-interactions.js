@@ -30,7 +30,6 @@ export default async function route({ request, reply, api, logger, connections }
   let { data } = source;
   const user = member ? member.user : source.user;
 
-
   /**
    * Handle verification requests
    */
@@ -79,12 +78,11 @@ export default async function route({ request, reply, api, logger, connections }
     return calling_command(data.name);
   }
 
-
   /**
    * Handle requests from interactive components
    * See https://discord.com/developers/docs/interactions/message-components#responding-to-a-component-interaction
    */
-  if (type === InteractionType.MESSAGE_COMPONENT) {
+  if (type === InteractionType.MESSAGE_COMPONENT || type === InteractionType.MODAL_SUBMIT) {
     // custom_id set in payload when sending message component
     
     console.log(` route : components interaction. origin data=`, data);
@@ -105,6 +103,7 @@ export default async function route({ request, reply, api, logger, connections }
       switch (h_cmd)
       {
 
+        //--InteractionType.MESSAGE_COMPONENT--
 
         case ("feedback_form"):
         {
@@ -153,6 +152,15 @@ export default async function route({ request, reply, api, logger, connections }
           data = {name: 'trick', options: [{name:'trick_index', value: h_arg[0]}, {name: 'trick_step', value: h_arg[1]}, {name: 'trick_pile', value: h_arg[2]}]};
         } break;
 
+        //--InteractionType.MESSAGE_COMPONENT--
+        case ("feedback"): 
+        {
+          const get_letter = data.components[0].components[0].value;
+          const get_ps = data.components[1].components[0].value;
+          console.log(`hi : `,get_letter, get_ps);
+          data = {name: 'feedback', options: [{name:'letter', value: get_letter}, {name:'last', value: get_ps}]}
+        } break;
+
         default: {
           throw Error(`[${h_cmd}] does not exist in makecmd`);
         } break;
@@ -162,123 +170,5 @@ export default async function route({ request, reply, api, logger, connections }
       return calling_command(h_cmd);
 
     }
-    
-  // "challenge" command
-  /*
-  if (name === 'challenge' && id) {
-    const userId = user.id;
-    // User's object choice
-    const objectName = data.options[0].value;
-
-    // Create active game using message ID as the game ID
-    await api.games.create({
-      messageId: id,
-      userId,
-      objectName,
-    });
-
-    return reply.send({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        // Fetches a random emoji to send from a helper function
-        content: `Rock papers scissors challenge from <@${userId}>`,
-        components: [
-          {
-            type: MessageComponentTypes.ACTION_ROW,
-            components: [
-              {
-                type: MessageComponentTypes.BUTTON,
-                // Append the game ID to use later on
-                custom_id: `accept_button_${id}`,
-                label: 'Accept',
-                style: ButtonStyleTypes.PRIMARY,
-              },
-            ],
-          },
-        ],
-      },
-    });
-  }
-  */
-
-    /*
-    if (componentId.startsWith('accept_button_')) {
-      // get the associated game ID
-      const gameId = componentId.replace('accept_button_', '');
-      // Delete message with token in request body
-      const endpoint = `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`;
-      try {
-        await reply.send({
-          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            content: 'What is your object of choice?',
-            // Indicates it'll be an ephemeral message
-            flags: InteractionResponseFlags.EPHEMERAL,
-            components: [
-              {
-                type: MessageComponentTypes.ACTION_ROW,
-                components: [
-                  {
-                    type: MessageComponentTypes.STRING_SELECT,
-                    // Append game ID
-                    custom_id: `select_choice_${gameId}`,
-                    options: getShuffledOptions(),
-                  },
-                ],
-              },
-            ],
-          },
-        });
-        // Delete previous message
-        await DiscordRequest(endpoint, { method: 'DELETE' });
-      } catch (err) {
-        logger.error({ err }, 'Error sending message');
-      }
-    } else if (componentId.startsWith('select_choice_')) {
-      // get the associated game ID
-      const gameId = componentId.replace('select_choice_', '');
-      const activeGame = await api.games.findFirst({
-        filter: {
-          messageId: {
-            equals: gameId,
-          },
-        },
-      });
-
-      if (activeGame) {
-        // Get user ID and object choice for responding user
-        const userId = user.id;
-        const objectName = data.values[0];
-        // Calculate result from helper function
-        const resultStr = getResult(activeGame, {
-          userId,
-          objectName,
-        });
-
-        // Remove game from storage
-        await api.games.delete(activeGame.id)
-        // Update message with token in request body
-        const endpoint = `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`;
-
-        try {
-          // Send results
-          await reply.send({
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: { content: resultStr },
-          });
-          // Update ephemeral message
-          await DiscordRequest(endpoint, {
-            method: 'PATCH',
-            body: {
-              content: 'Nice choice ' + getRandomEmoji(),
-              components: [],
-            },
-          });
-        } catch (err) {
-          logger.error({ err }, 'Error sending message');
-        }
-      }
-    }
-    */
   }
 }

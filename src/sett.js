@@ -97,6 +97,8 @@ const cancelWhenDeadVictim = true;
 const maxLines = 10;
 const maxPages = 70;
 
+const mailboxWebhook = process.env.POSTHOOK;
+
 export const SETT_CMD = {
   apple: {
     dailyAmount,
@@ -112,5 +114,8 @@ export const SETT_CMD = {
   see: {
     maxLines,
     maxPages
+  },
+  feedback: {
+    mailboxWebhook,
   }
 }

@@ -221,7 +221,9 @@ const commands_structure = {
   feedback: {
     functions: {
       exe: cmd_feedback,
-      checks: []
+      checks: [
+        [check_react_is_self, true],
+      ]
     },
     register: {
       name: "feedback",
@@ -232,9 +234,11 @@ const commands_structure = {
     functions: {
       exe: cmd_feedback_form,
       checks: [],
-      notDeferred: true,
     },
-    systemOnly: true
+    atr: {
+      notDeferred: true,
+      systemOnly: true
+    },
   },
 
   //SET
@@ -469,7 +473,6 @@ const commands_structure = {
   trick: {
     functions: {
       exe: cmd_trick,
-      //ephemeral: true,
       checks: [
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -482,31 +485,36 @@ const commands_structure = {
       contexts: [0],
       type: 1,
     },
+    //ephemeral: true,
   },
   trick_resp: {
     functions: {
       exe: cmd_trick_resp,
-      ephemeral: false,
       checks: [
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
       ],
     },
-    systemOnly: true
+    atr: {
+      ephemeral: false,
+      systemOnly: true
+    }
   },
 
   trick_resp_eph: {
     functions: {
       exe: cmd_trick_resp_eph,
-      ephemeral: true,
       checks: [
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
       ],
     },
-    systemOnly: true
+    atr: {
+      ephemeral: true,
+      systemOnly: true
+    }
   },
 
   kira: {
@@ -558,7 +566,9 @@ const commands_structure = {
         [check_react_is_self, true]// JUST DONT DO IT NOOOOOOOOOO
       ],
     },
-    systemOnly: true,
+    atr: {
+      systemOnly: true,
+    }
     /*
     register:
     {
@@ -662,7 +672,7 @@ export async function kira_cmd(f_deep, f_cmd) {
       }
     }
 
-    if (!commands_structure[f_cmd].functions.notDeferred)
+    if (!commands_structure[f_cmd].atr.notDeferred)
     {
 
       await DiscordRequest(// POST the deferred response
@@ -671,7 +681,7 @@ export async function kira_cmd(f_deep, f_cmd) {
         body: {
           type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
-            flags: commands_structure[f_cmd].functions.ephemeral
+            flags: commands_structure[f_cmd].atr.ephemeral
               ? InteractionResponseFlags.EPHEMERAL
               : undefined,
           },
@@ -755,7 +765,7 @@ export function cmd_register() {
   for (let i in commands_structure) {
     if (commands_structure[i].register) {
       r_commandsRegisterAll.push(commands_structure[i].register);
-    } else if (!commands_structure[i].systemOnly) {
+    } else if (!commands_structure[i].atr.systemOnly) {
       r_commandsRegisterAll.push({
         name: i,
         description: "<no register field>",
@@ -1194,7 +1204,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
 }
 
 //#feedback command
-async function cmd_feedback({ data, lang, token, id }) {
+async function cmd_feedback({ data, lang, user }) {
 
   //is the command alone
   if (!data.options) {
@@ -1232,15 +1242,28 @@ async function cmd_feedback({ data, lang, token, id }) {
     }
   }
   
-  h_letter = data.options[0].value;
+  const letter = data.options.find((opt) => opt.name==='letter').value;
+  const last = data.options.find((opt) => opt.name==='last').value;
+
+  //POST to admin webhook
+  //the hardcoded admin webhook
+  //https://discord.com/api/webhooks/1310027255803805707/OcrwX3OV7EmBfMpTD21Pg3dbprv0eUX8nFBtYxdVceiCqvgnu-ru9Z5GN6O2MLkkhMPY
+  await DiscordRequest(
+    SETT_CMD.feedback.mailboxWebhook,
+  {
+    method: "POST",
+    body: {
+      content: translate(lang, "cmd.feedback.post", {userId: user.id, userName: user.username, letter, last}),
+    }
+  });
 
   return {
     method: "PATCH",
     body: {
       content: translate(
-        "cmd.feedback.done",
         lang,
-        { letter: h_letter },
+        "cmd.feedback.done",
+        { letter, last },
       ),
     },
   };
@@ -1248,8 +1271,7 @@ async function cmd_feedback({ data, lang, token, id }) {
 
 async function cmd_feedback_form({ data, message, lang, token, id }) {
 
-  //its no
-  
+  //its no button
   if (!data.options[0].value) 
   {
     //remove the message
@@ -1273,7 +1295,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
         type: InteractionResponseType.MODAL,
         data: {
           title: translate(lang, "cmd.feedback.modal.title"),
-          custom_id: `feedbackout`,
+          custom_id: `makecmd feedback`,
           components: [
             {
             type: MessageComponentTypes.ACTION_ROW,
@@ -1282,9 +1304,9 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
                   type: MessageComponentTypes.INPUT_TEXT,
                   style: TextStyleTypes.PARAGRAPH,
                   custom_id: `feedbackin`,
-                  label: translate(lang, "cmd.feedback.modal.message.label"),
-                  placeholder: translate(lang, "cmd.feedback.modal.message.placeholder"),
-                  value: translate(lang, "cmd.feedback.modal.message.value"),
+                  label: translate(lang, "cmd.feedback.modal.letter.label"),
+                  placeholder: translate(lang, "cmd.feedback.modal.letter.placeholder"),
+                  value: translate(lang, "cmd.feedback.modal.letter.value"),
                   required: true,
                   min_length: 13,
                   max_length: 666,
