@@ -3,9 +3,16 @@ import { api } from "gadget-server";
 
 import { SETT_CMD } from "../sett.js";
 
+import {sleep } from "../tools.js";
+
 export async function kira_do_refreshCommands() {
-  return await api.removeCommands();
-  return await api.registerCommands();
+  console.debug("kira : refreshcmd : removeCommands()...");
+  await api.removeCommands();
+  console.debug("kira : refreshcmd : removeCommands() done!");
+  sleep(1000);
+  console.debug("kira : refreshcmd : registerCommands()...");
+  await api.registerCommands();
+  console.debug("kira : refreshcmd : registerCommands() done!");
 }
 
 //---kira_user---

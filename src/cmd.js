@@ -227,13 +227,18 @@ const commands_structure = {
     },
     register: {
       name: "feedback",
-      description: "send a message to the kingdom of the dead"
+      description: "send a message to the realm of the dead"
+    },
+    atr: {
+      ephemeral: true
     }
   },
   feedback_form: {
     functions: {
       exe: cmd_feedback_form,
-      checks: [],
+      checks: [
+        [check_react_is_self, true],
+      ],
     },
     atr: {
       notDeferred: true,
@@ -672,7 +677,7 @@ export async function kira_cmd(f_deep, f_cmd) {
       }
     }
 
-    if (!commands_structure[f_cmd].atr.notDeferred)
+    if (!commands_structure[f_cmd].atr?.notDeferred)
     {
 
       await DiscordRequest(// POST the deferred response
@@ -681,7 +686,7 @@ export async function kira_cmd(f_deep, f_cmd) {
         body: {
           type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
-            flags: commands_structure[f_cmd].atr.ephemeral
+            flags: commands_structure[f_cmd].atr?.ephemeral
               ? InteractionResponseFlags.EPHEMERAL
               : undefined,
           },
@@ -765,7 +770,7 @@ export function cmd_register() {
   for (let i in commands_structure) {
     if (commands_structure[i].register) {
       r_commandsRegisterAll.push(commands_structure[i].register);
-    } else if (!commands_structure[i].atr.systemOnly) {
+    } else if (!commands_structure[i].atr?.systemOnly) {
       r_commandsRegisterAll.push({
         name: i,
         description: "<no register field>",
@@ -1204,7 +1209,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
 }
 
 //#feedback command
-async function cmd_feedback({ data, lang, user }) {
+async function cmd_feedback({ data, userdata, lang, user }) {
 
   //is the command alone
   if (!data.options) {
@@ -1253,8 +1258,21 @@ async function cmd_feedback({ data, lang, user }) {
   {
     method: "POST",
     body: {
-      content: translate(lang, "cmd.feedback.post", {userId: user.id, userName: user.username, letter, last}),
-    }
+      //content: " ",
+      embeds: [{
+        title: translate(lang, "cmd.feedback.post.title", { userId: user.id }),
+        description: translate(lang, "cmd.feedback.post.in", { letter, userId: user.id }),
+        fields: [],
+        author: {
+          name: translate(lang, "cmd.feedback.post.author", {userId: user.id, userName: user.username, userDataId: userdata.id }),
+          icon_url: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=1024&format=webp&width=640&height=640`
+        },
+        color: user.accent_color,
+        footer: (last) ? {
+          text: translate(lang, "cmd.feedback.post.last", {last})
+        } : null
+      }]
+    },
   });
 
   return {
@@ -1276,7 +1294,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
   {
     //remove the message
     await DiscordRequest(
-      `channels/${message.channel_id}/messages/${message.id}`,
+      `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
       {
         method: "DELETE",
       }
@@ -1325,7 +1343,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
                   value: translate(lang, "cmd.feedback.modal.last.value"),
                   required: false,
                   min_length: 0,
-                  max_length: 30,
+                  max_length: 46,
                 }
               ]
             }
@@ -1337,7 +1355,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
 
   //remove buttons
   await DiscordRequest(
-    `channels/${message.channel_id}/messages/${message.id}`,
+    `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
     {
       method: "PATCH",
       body: {
@@ -1476,7 +1494,7 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
 }
 
 //#burn command
-async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
+async function cmd_burn({ message, type, data, userbook, userdata, lang, token }) {
   if (!userbook) {
     return {
       method: "PATCH",
@@ -1536,7 +1554,7 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang }) {
 
   //remove buttons
   await DiscordRequest(
-    `channels/${message.channel_id}/messages/${message.id}`,
+    `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
     {
       method: "PATCH",
       body: {
@@ -2052,7 +2070,7 @@ async function cmd_see({ data, userbook, lang }) {
 }
 
 //#drop command
-async function cmd_drop({ data, message, userdata, lang }) {
+async function cmd_drop({ data, token, userdata, lang }) {
   //take confirmation
   let h_span = 0;
   let h_price = 0;
@@ -2142,7 +2160,7 @@ async function cmd_drop({ data, message, userdata, lang }) {
   //remove components from the message
   //this does not works if drop is used as a command
   await DiscordRequest(
-    `channels/${message.channel_id}/messages/${message.id}`,
+    `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
     {
       method: "PATCH",
       body: {
