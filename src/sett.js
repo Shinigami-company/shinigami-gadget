@@ -70,6 +70,10 @@ export const sett_emoji_feedback_confirm = {
   id: null,
   name: "📨",
 };
+export const sett_emoji_coin_throw = {
+  id: null,
+  name: "🪙"//coin
+}
 
 //--commands--
 const dailyAmount = 1;

@@ -151,9 +151,10 @@ export default async function route({ request, reply, api, logger, connections }
         } break;
         
         case ("trick_resp_eph"): {}
+        case ("trick_resp_edit"): {}
         case ("trick_resp"):
         {
-          data = {name: 'trick', options: [{name:'trick_index', value: h_arg[0]}, {name: 'trick_step', value: h_arg[1]}, {name: 'trick_pile', value: h_arg[2]}]};
+          data = {name: h_cmd, options: [{name:'trick_index', value: h_arg[0]}, {name: 'trick_step', value: h_arg[1]}, {name: 'trick_pile', value: h_arg[2]}]};
         } break;
 
         //--InteractionType.MESSAGE_COMPONENT--

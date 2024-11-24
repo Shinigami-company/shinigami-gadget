@@ -514,10 +514,9 @@ const commands_structure = {
       systemOnly: true
     }
   },
-
   trick_resp_eph: {
     functions: {
-      exe: cmd_trick_resp_eph,
+      exe: cmd_trick_resp,
       checks: [
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -526,6 +525,20 @@ const commands_structure = {
     },
     atr: {
       ephemeral: true,
+      systemOnly: true
+    }
+  },
+  trick_resp_edit: {
+    functions: {
+      exe: cmd_trick_resp,
+      checks: [
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+        [check_has_book, false],
+      ],
+    },
+    atr: {
+      notDeferred: true,
       systemOnly: true
     }
   },
@@ -576,7 +589,7 @@ const commands_structure = {
         [check_can_alive, true],
         [check_has_noDrop, true],
         [check_has_book, true],
-        [check_react_is_self, true]// JUST DONT DO IT NOOOOOOOOOO
+        //[check_react_is_self, true]// JUST DONT DO IT NOOOOOOOOOO
       ],
     },
     atr: {
@@ -706,16 +719,25 @@ export async function kira_cmd(f_deep, f_cmd) {
       });
       replyed = true;
     }
-    
+
+
     //-command-
 
-    const return_patch=await commands_structure[f_cmd].functions.exe(f_deep);
+    const return_request=await commands_structure[f_cmd].functions.exe(f_deep);
     
-    //-patch-
+    //-doing-
     
-    if (!return_patch) return;
+    if (!return_request) return;
+    
     //PATCH by the returned mesage
-    return await DiscordRequest(`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`, return_patch);
+    if (return_request.method==="PATCH")
+      return await DiscordRequest(`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`, return_request);
+    
+    //POST by the returned request
+    if (return_request.method==="POST")
+      return await DiscordRequest(`interactions/${f_deep.id}/${f_deep.token}/callback`, return_request);
+
+    throw Error("returned request not valid");//!
 
   } catch (e) {
     if (!replyed) {
@@ -3261,11 +3283,7 @@ async function cmd_trick({ lang }) {
   };
 }
 
-async function cmd_trick_resp_eph({ data, message, userdata, token, lang }) {
-  return await cmd_trick_resp({ data, message, userdata, token, lang });
-}
-
-async function cmd_trick_resp({ data, message, userdata, token, lang }) {
+async function cmd_trick_resp({ data, message, userdata, token, id, lang }) {
   //take confirmation
   if (!data.options) throw Error();
 
@@ -3297,7 +3315,9 @@ async function cmd_trick_resp({ data, message, userdata, token, lang }) {
   }
 
   //remove origin components
-  if (message) {
+  if (data.name==="trick_resp_edit")
+  {}
+  else if (message) {
     await DiscordRequest(
       `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
       {

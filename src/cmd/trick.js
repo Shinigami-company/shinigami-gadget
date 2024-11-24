@@ -11,11 +11,18 @@ import { translate } from "../lang.js";
 import { time_format_string_from_int, sleep } from "../tools.js";
 
 //things needed from outside
-import { sett_emoji_apple_croc, sett_catalog_knows } from "../sett.js";
+import { sett_emoji_apple_croc, sett_catalog_knows, sett_emoji_coin_throw } from "../sett.js";
 import { KnowUsableBy } from "../enum.ts";
 import { kira_user_add_apple, kira_user_get } from "../use/kira.js";
 
 import { DiscordRequest, DiscordUserOpenDm } from "../utils.js";
+
+
+const int_to_coinSide = {
+  0: 'none',
+  1: 'heads',
+  2: 'tails'
+}
 
 export const tricks_all = [
   
@@ -229,6 +236,8 @@ export const tricks_all = [
         //step 2
         async ({ data, message, userdata, lang, pile }) =>
         {
+          //pile = "<userOne>"
+
           const user_1_id = pile;
           const user_2_id = userdata.userId;
           const price = tricks_all[2].price;//self price
@@ -258,37 +267,165 @@ export const tricks_all = [
             }
           }
 
+          //return the pick.side message
+          const buttons_line = Array.from(
+            { length: 2 }, (_, i) => 
+            ({
+              type: MessageComponentTypes.BUTTON,
+              custom_id: `makecmd trick_resp_edit coinflip+-2+${user_1_id}_0_${user_2_id}_0_${i+1}`,
+              label: translate(lang, `word.side.${int_to_coinSide[i+1]}`),
+              style: ButtonStyleTypes.PRIMARY
+            })
+          );
+
           return {
             method: "PATCH",
             body: 
             {
-              content: translate(lang, "cmd.trick.item.coinflip.pick.side.content",
-              {
-                "firstUserId": user_1_id,
-                "secondUserId": user_2_id,
-                "price": price
-              }),
+              content: translate(lang, "cmd.trick.item.coinflip.pick.face.intro"),
               components: [
               {
                 type: MessageComponentTypes.ACTION_ROW,
-                components: [
-                  {
-                    type: MessageComponentTypes.BUTTON,
-                    custom_id: `makecmd trick_resp coinflip+1+${user_1_id}_${user_2_id}`,
-                    label: translate(lang, "cmd.trick.item.coinflip.pick.side.button", {
-                      "price": price
-                    }),
-                    emoji: {
-                      "name": "🪙",//coin
-                      "animated": false
-                    },
-                    style: ButtonStyleTypes.DANGER
-                  }
-                  ]
-                },
-              ],
+                components: buttons_line
+              }]
             }
           };
+        },
+
+
+
+
+        //step 3
+        async ({ data, message, userdata, lang, pile }) =>
+        {
+          pile = pile.split("_");
+          //pile = "<userOne>_<faceOne>_<userTwo>_<faceTwo>_<faceChoose>"
+          //face : 0=None, 1=heads, 2=tails
+
+          const price = tricks_all[2].price;//self price
+
+          
+          const user_1_id = pile[0];
+          let user_1_face = parseInt(pile[1]);
+          const user_2_id = pile[2];
+          let user_2_face = parseInt(pile[3]);
+          const self_face = parseInt(pile[4]);
+          //let self_i = -1;
+
+          if (userdata.userId === user_1_id && !(user_1_id===user_2_id && user_1_face))
+          {
+            user_1_face = self_face;
+          }
+          else if (userdata.userId === user_2_id)
+          {
+            user_2_face = self_face;
+          } else {
+            //error : ur not playing
+            return {
+              method: "POST",
+              body: {
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                  flags: InteractionResponseFlags.EPHEMERAL,
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.alien", {'user1Id': user_1_id, 'user2Id': user_2_id})
+                },
+              },
+            }
+          }
+
+          console.log(`HI step 3 : ${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}`);
+
+          if ((user_1_face>0) && (user_2_face>0))
+          {
+            //both face choosen
+            
+            await DiscordRequest(
+              `channels/${message.channel_id}/messages/${message.id}`,
+              {
+              method: "PATCH",
+              body: 
+              {
+                
+                content: translate(lang, "cmd.trick.item.coinflip.pick.throw.intro")
+                +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
+                  "userId": user_1_id,
+                  "face": translate(lang, `word.side.${int_to_coinSide[user_1_face]}`),
+                  "price": price
+                })
+                +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
+                  "userId": user_2_id,
+                  "face": translate(lang, `word.side.${int_to_coinSide[user_2_face]}`),
+                  "price": price
+                })
+                +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.outro"),
+
+                components: [
+                {
+                  type: MessageComponentTypes.ACTION_ROW,
+                  components: [
+                    {
+                      type: MessageComponentTypes.BUTTON,
+                      custom_id: `makecmd trick_resp coinflip+1+${user_1_id}_${user_2_id}`,
+                      label: translate(lang, "cmd.trick.item.coinflip.pick.side.button", {
+                        "price": price
+                      }),
+                      emoji: sett_emoji_coin_throw,
+                      style: ButtonStyleTypes.DANGER
+                    }
+                    ]
+                  },
+                ],
+              }
+            });
+
+            return;//! return nothing
+          }
+
+          //return the pick.side message
+          const buttons_line = Array.from(
+            { length: 2 }, (_, i) => 
+            ({
+              type: MessageComponentTypes.BUTTON,
+              custom_id: `makecmd trick_resp_edit coinflip+-2+${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}_${i+1}`,
+              label: translate(lang, `word.side.${int_to_coinSide[i+1]}`),
+              style: ButtonStyleTypes.SECONDARY,
+              disabled: ((user_1_face===(i+1)) || (user_2_face===(i+1)))
+            })
+          );
+
+          var content = translate(lang, "cmd.trick.item.coinflip.pick.face.intro")
+          if (user_1_face)
+            content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.face.user", {
+                "userId": user_1_id,
+                "face": translate(lang, `word.side.${int_to_coinSide[user_1_face]}`)
+              })
+          if (user_2_face)
+            content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.face.user", {
+                "userId": user_2_id,
+                "face": translate(lang, `word.side.${int_to_coinSide[user_2_face]}`)
+              })
+
+          //reture a POST request!!
+          const request = 
+          {
+            method: "POST",
+            body: 
+            {
+              type: InteractionResponseType.UPDATE_MESSAGE,
+              data: {
+                components: [
+                {
+                  type: MessageComponentTypes.ACTION_ROW,
+                  components: buttons_line
+                }
+                ],
+                content
+              }
+            }
+          }
+
+          return request;
+
         },
 
 
