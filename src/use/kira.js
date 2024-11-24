@@ -3,7 +3,8 @@ import { api } from "gadget-server";
 
 import { SETT_CMD } from "../sett.js";
 
-import {sleep } from "../tools.js";
+import { sleep } from "../tools.js";
+import { FeedbackState } from "../enum.ts";
 
 export async function kira_do_refreshCommands() {
   console.debug("kira : refreshcmd : removeCommands()...");
@@ -161,13 +162,52 @@ export async function kira_user_get_drop(f_dataId) {
     select: { giveUp: true },
   }).then((data) => data.giveUp);
   if (!iso) return 0;
-  let date = new Date(iso);
   const span = Math.ceil(
     (new Date(iso).getTime() - new Date().getTime()) / 1000
   );
   if (span < 0) return 0;
   return span;
 }
+
+export async function kira_user_set_feedback(f_dataId, f_state, f_span = 0) {
+  let h_date = new Date();
+  h_date.setSeconds(h_date.getSeconds() + f_span);
+  await api.KiraUsers.update(f_dataId, {
+    feedbackState: f_state,
+    feedbackCooldown: h_date.toISOString(),
+  });
+}
+
+export async function kira_user_can_feedback(f_dataId) {
+  const iso = await api.KiraUsers.findOne(f_dataId, {
+    select: { feedbackCooldown: true },
+  }).then((data) => data.feedbackCooldown);
+  if (!iso) return true;
+  const span = Math.ceil(
+    (new Date(iso).getTime() - new Date().getTime()) / 1000
+  );
+  return (span < 0);
+}
+
+export async function kira_user_has_feedbackResponse(f_dataId) {
+  const state = await api.KiraUsers.findOne(f_dataId, {
+    select: { feedbackState: true },
+  }).then((data) => data.feedbackState);
+  if (state===FeedbackState.NOTHING || state===FeedbackState.SENDED) return false;
+  
+  //has a feedback response
+  return true;
+}
+
+export async function kira_user_get_feedbackResponse(f_dataId) {
+  await api.KiraUsers.update(f_dataId, {
+    feedbackState: 0
+  });
+  
+  //TODO : return the feedback response
+  return false;
+}
+
 
 //---kira_book---
 //DATA about the book

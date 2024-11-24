@@ -1,7 +1,7 @@
 console.log(` cmd : refresh`);
 //--- sett ---
 
-import { KnowUsableBy } from "./enum.ts";
+import { FeedbackState, KnowUsableBy } from "./enum.ts";
 
 import { Settings } from "./sett.js";
 
@@ -43,6 +43,10 @@ import {
   kira_user_add_apple,
   kira_user_set_drop,
   kira_user_get_drop,
+  kira_user_set_feedback,
+  kira_user_can_feedback,
+  kira_user_has_feedbackResponse,
+  kira_user_get_feedbackResponse,
 } from "./use/kira.js"; //kira user
 import { kira_users_rank } from "./use/kira.js"; //kira user
 import {
@@ -223,6 +227,7 @@ const commands_structure = {
       exe: cmd_feedback,
       checks: [
         [check_react_is_self, true],
+        [check_can_feedback, true],
       ]
     },
     register: {
@@ -238,6 +243,7 @@ const commands_structure = {
       exe: cmd_feedback_form,
       checks: [
         [check_react_is_self, true],
+        [check_can_feedback, true],
       ],
     },
     atr: {
@@ -902,6 +908,29 @@ function check_react_is_self(dig) {
   return undefined;
 }
 
+async function check_can_feedback(dig) {
+  const h_can = await kira_user_can_feedback(dig.userdata.id);
+  if (!h_can) {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(dig.lang, "check.feedback.not", {
+          //time: time_format_string_from_int(h_gap, dig.lang),
+          time: time_format_string_from_int(SETT_CMD.feedback.couldown, dig.lang),
+        }),
+      },
+    };
+  }
+  return undefined;
+}
+
+async function check_mailbox(dig) {
+  const h_can = await kira_user_has_feedbackResponse(dig.userdata.id);
+  if (!h_can) return undefined;
+  //respond
+  return undefined;
+}
+
 //--- the commands ---
 
 //#god command
@@ -1250,9 +1279,10 @@ async function cmd_feedback({ data, userdata, lang, user }) {
   const letter = data.options.find((opt) => opt.name==='letter').value;
   const last = data.options.find((opt) => opt.name==='last').value;
 
+  //set state
+  kira_user_set_feedback(userdata.id, FeedbackState.SENDED, SETT_CMD.feedback.couldown);
+
   //POST to admin webhook
-  //the hardcoded admin webhook
-  //https://discord.com/api/webhooks/1310027255803805707/OcrwX3OV7EmBfMpTD21Pg3dbprv0eUX8nFBtYxdVceiCqvgnu-ru9Z5GN6O2MLkkhMPY
   await DiscordRequest(
     SETT_CMD.feedback.mailboxWebhook,
   {

@@ -43,6 +43,12 @@ export const schema: GadgetModel = {
       includeTime: true,
       storageKey: "bRmM-ugIUS1a::_hVDoSZAH3eF",
     },
+    feedbackCooldown: {
+      type: "dateTime",
+      includeTime: true,
+      storageKey: "hXop9CipHCSE",
+    },
+    feedbackState: { type: "number", storageKey: "-_20nZrG8UzT" },
     giveUp: {
       type: "dateTime",
       includeTime: true,

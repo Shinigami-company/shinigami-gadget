@@ -98,6 +98,7 @@ const maxLines = 10;
 const maxPages = 70;
 
 const mailboxWebhook = process.env.POSTHOOK;
+const couldown = 60 * 10;//10 minutes
 
 export const SETT_CMD = {
   apple: {
@@ -117,5 +118,6 @@ export const SETT_CMD = {
   },
   feedback: {
     mailboxWebhook,
+    couldown
   }
 }

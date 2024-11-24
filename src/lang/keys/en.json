@@ -10,6 +10,7 @@
 "check.alive.not": "*You are dead for another **$[time]***",
 "check.nodrop.not": "*You relinquished your death note ownership for another **$[time]***.",
 "check.hasbook.not": "*You don't own a death note*\n`/claim` *to get one*",
+"check.feedback.not": "Wait like **$[time]**, while I get a new envelope.",
 "check.react.self.not": "*that not your button*",
 
 

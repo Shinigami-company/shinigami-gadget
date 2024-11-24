@@ -3,3 +3,9 @@ export enum KnowUsableBy {
   VICTIM = 1,
   ATTACKER = 2,
 };
+
+export enum FeedbackState {
+  NOTHING = 0,
+  SENDED = 1,
+  RECEIVED = 2
+}
