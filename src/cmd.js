@@ -119,6 +119,8 @@ linkme("linked from cmd"); //need to use a function from there
 import { tricks_all } from "./cmd/trick.js";
 import { cmd_rules } from "./cmd/rules.js";
 import { webhook_reporter } from "./use/post.js";
+import { channel } from "diagnostics_channel";
+import { error } from "console";
 
 //the structure to describe the command
 const commands_structure = {
@@ -661,7 +663,9 @@ export async function kira_cmd(f_deep, f_cmd) {
 
   let replyed = false; // used only if catch
   try {
-    //checks
+    
+    //-checks-
+
     for (let v of commands_structure[f_cmd].functions.checks) {
       const r_check = await v[0](f_deep);
       if (r_check) {
@@ -683,6 +687,8 @@ export async function kira_cmd(f_deep, f_cmd) {
       }
     }
 
+    //-defered-
+
     if (!commands_structure[f_cmd].atr?.notDeferred)
     {
 
@@ -700,8 +706,17 @@ export async function kira_cmd(f_deep, f_cmd) {
       });
       replyed = true;
     }
+    
+    //-command-
+
+    const return_patch=await commands_structure[f_cmd].functions.exe(f_deep);
+    
+    //-patch-
+    
+    if (!return_patch) return;
     //PATCH by the returned mesage
-    return await commands_structure[f_cmd].functions.exe(f_deep);
+    return await DiscordRequest(`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`, return_patch);
+
   } catch (e) {
     if (!replyed) {
       await DiscordRequest(// POST the deferred response
@@ -722,11 +737,10 @@ export async function kira_cmd(f_deep, f_cmd) {
       "[GraphQL] GGT_INTERNAL_ERROR: Unexpected HTTP error from sandbox: Response code 500 (Internal Server Error)"
     ) {
       kira_error_throw(
-        //"error.system.protocol",
         "error.critical",
         e,
-        f_deep.lang,
-        f_deep.token,
+        f_deep,
+        f_cmd,
         true
       );
     }
@@ -736,8 +750,8 @@ export async function kira_cmd(f_deep, f_cmd) {
     kira_error_throw(
       "error.system.wrongjs",
       e,
-      f_deep.lang,
-      f_deep.token,
+      f_deep,
+      f_cmd,
       true
     );
     return; // will not bcs throw before
@@ -755,18 +769,24 @@ export function kira_error_msg(f_errorKey, f_errorObject, f_lang) {
 export async function kira_error_throw(
   f_errorKey,
   f_errorObject,
-  f_lang,
-  f_token,
+  f_deep,
+  f_cmd,
   f_ifThrow = true
 ) {
+  
+  //POST to admin webhook
+  {
+    const all = { error: f_errorObject, errorKey: f_errorKey, user: f_deep.user, userdata: f_deep.userdata, channel: f_deep.channel, command: f_cmd, type: f_deep.type };
+    await webhook_reporter.error.post(f_deep.lang, all, {}, 16711680);
+  }
 
   //PATCH user message
   await DiscordRequest(
-    `webhooks/${process.env.APP_ID}/${f_token}/messages/@original`,
+    `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`,
     {
       method: "PATCH",
       body: {
-        content: kira_error_msg(f_errorKey, f_errorObject, f_lang),
+        content: kira_error_msg(f_errorKey, f_errorObject, f_deep.lang),
       },
     }
   );

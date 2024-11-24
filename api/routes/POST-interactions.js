@@ -45,10 +45,14 @@ export default async function route({ request, reply, api, logger, connections }
 	  user=${user.id} (${user.username}) command=${commandName} options=${data.options}
 	  RESP_URL=webhooks/${process.env.APP_ID}/${token}/messages/@original
 	  `);
+      
+      return await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild }, commandName);
+      
+      /*
       const return_patch = await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild }, commandName);
       // return_patch.method must be 'PATCH'
       if (!return_patch) return;
-      
+
       for (let i=1; i<=maxError;i+=1)
       {
         try {
@@ -64,6 +68,7 @@ export default async function route({ request, reply, api, logger, connections }
           console.debug(`route : catch : RETRY ${i+1}`);
         }
       }
+      */
     }
   
   //reply.send(back);// create the callback with reply obj

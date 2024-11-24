@@ -2,7 +2,7 @@ import { api } from "gadget-server";
 
 import { cmd_kira_execute, cmd_comeback } from "../cmd.js";
 
-import { rememberTasksType } from "../enum.js";
+import { rememberTasksType } from "../enum.ts";
 
 export async function kira_remember_task_add(f_date, f_type, f_data) {
   return await api.KiraRemember.create({

@@ -333,11 +333,10 @@
 "post.feedback.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 "post.feedback.footer": "PS: $[last]",
 
-"post.error.title": "OOPS! something went wrong",
-"post.error.description": "```$[message]```\nwhen calling command [$[command]]\nby $[<@$[userId]>] in $[<#$[channelId]>]",
-"post.error.author": "by @$[userName] ($[userDataId])",
+"post.error.title": "$[error.name] <$[error.code]>",
+"post.error.description": "```json\n$[error.message]\n```\nwhen calling command `/$[command]` with interaction type **$[type]**\nby <@$[user.id]> in <#$[channel.id]>",
+"post.error.author": "@$[user.username] ($[userdata.id])",
 "post.error.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
-"post.error.last": "",
 
 
 "format.line": "$[victim] die of $[reason] in $[time]",
