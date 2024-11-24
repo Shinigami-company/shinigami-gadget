@@ -157,7 +157,6 @@ export default async function route({ request, reply, api, logger, connections }
         {
           const get_letter = data.components[0].components[0].value;
           const get_ps = data.components[1].components[0].value;
-          console.log(`hi : `,get_letter, get_ps);
           data = {name: 'feedback', options: [{name:'letter', value: get_letter}, {name:'last', value: get_ps}]}
         } break;
 

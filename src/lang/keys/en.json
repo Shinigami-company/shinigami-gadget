@@ -10,7 +10,7 @@
 "check.alive.not": "*You are dead for another **$[time]***",
 "check.nodrop.not": "*You relinquished your death note ownership for another **$[time]***.",
 "check.hasbook.not": "*You don't own a death note*\n`/claim` *to get one*",
-"check.feedback.not": "Wait like **$[time]**, while I get a new envelope.",
+"check.feedback.not": "Wait like **$[time]**, until I get a new envelope.",
 "check.react.self.not": "*that not your button*",
 
 
@@ -49,11 +49,6 @@
 "cmd.feedback.modal.last.placeholder": "a short note, can be out of context",
 "cmd.feedback.modal.last.value": " ",
 "cmd.feedback.done": "I hope for you it's relevant.\n*The Shinigami puts your message in an envelope and takes it to the realm of the dead.*",
-"cmd.feedback.post": "here a letter of <@$[userId]> (`@$[userName]`) :```$[letter]```PS : `$[last] `",
-"cmd.feedback.post.title": "a letter",
-"cmd.feedback.post.in": "```$[letter]```\n-<@$[userId]>",
-"cmd.feedback.post.author": "by @$[userName] ($[userDataId])",
-"cmd.feedback.post.last": "PS: $[last]",
 
 "cmd.claim.fail.already.free": "**Nope!** You already have a death note.",
 "cmd.claim.fail.already.paid": "**Nope!** You already have a death note.\nThe $[color] one cost $[price] :apple:",
@@ -330,6 +325,19 @@
 "rule.how.LXVI-1":"Some limited number of Death Notes have white or red front covers, but they would make no difference in their effects, as compared with the black cover Death Notes.",
 "rule.how.M-1":"**All humans will, without exception, eventually die.**",
 "rule.how.M-2":"After they die, the place they go is MU. (Nothingness)",
+
+
+"post.feedback.title": "a letter",
+"post.feedback.description": "```$[letter]```\n-<@$[user.id]>",
+"post.feedback.author": "by @$[user.username] ($[userdata.id])",
+"post.feedback.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
+"post.feedback.footer": "PS: $[last]",
+
+"post.error.title": "OOPS! something went wrong",
+"post.error.description": "```$[message]```\nwhen calling command [$[command]]\nby $[<@$[userId]>] in $[<#$[channelId]>]",
+"post.error.author": "by @$[userName] ($[userDataId])",
+"post.error.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
+"post.error.last": "",
 
 
 "format.line": "$[victim] die of $[reason] in $[time]",

@@ -60,7 +60,6 @@ export async function DiscordUserOpenDm(f_UserId)
       });
 
   const this_channel = await this_resp.json();
-  console.debug(`hi : open dm (userId:channelId)=(${f_UserId}:${this_channel.id})`);
   return this_channel.id;
 }
 

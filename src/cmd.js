@@ -118,7 +118,7 @@ linkme("linked from cmd"); //need to use a function from there
 //commands components
 import { tricks_all } from "./cmd/trick.js";
 import { cmd_rules } from "./cmd/rules.js";
-import { register } from "module";
+import { webhook_reporter } from "./use/post.js";
 
 //the structure to describe the command
 const commands_structure = {
@@ -910,7 +910,7 @@ function check_react_is_self(dig) {
 
 async function check_can_feedback(dig) {
   const h_can = await kira_user_can_feedback(dig.userdata.id);
-  if (!h_can) {
+  if (!h_can && !dig.userdata.is_god) {
     return {
       method: "PATCH",
       body: {
@@ -1279,31 +1279,15 @@ async function cmd_feedback({ data, userdata, lang, user }) {
   const letter = data.options.find((opt) => opt.name==='letter').value;
   const last = data.options.find((opt) => opt.name==='last').value;
 
-  //set state
-  kira_user_set_feedback(userdata.id, FeedbackState.SENDED, SETT_CMD.feedback.couldown);
-
   //POST to admin webhook
-  await DiscordRequest(
-    SETT_CMD.feedback.mailboxWebhook,
   {
-    method: "POST",
-    body: {
-      //content: " ",
-      embeds: [{
-        title: translate(lang, "cmd.feedback.post.title", { userId: user.id }),
-        description: translate(lang, "cmd.feedback.post.in", { letter, userId: user.id }),
-        fields: [],
-        author: {
-          name: translate(lang, "cmd.feedback.post.author", {userId: user.id, userName: user.username, userDataId: userdata.id }),
-          icon_url: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=1024&format=webp&width=640&height=640`
-        },
-        color: user.accent_color,
-        footer: (last) ? {
-          text: translate(lang, "cmd.feedback.post.last", {last})
-        } : null
-      }]
-    },
-  });
+    const all = { letter, last, userdata, user };
+    await webhook_reporter.feedback.post(lang, all, { 'footer': (last.length>0) }, user.accent_color);
+  }
+
+  //set state
+  //! before
+  kira_user_set_feedback(userdata.id, FeedbackState.SENDED, SETT_CMD.feedback.couldown);
 
   return {
     method: "PATCH",
