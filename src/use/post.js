@@ -12,7 +12,6 @@ class Report {
 
   async post(lang, translate_replace, override_shown_filed={}, embed_color=null) {
     
-    console.log("hi : fields : ",this.general_shown_filed, override_shown_filed);
     const if_fill_field = filed_key => (
       override_shown_filed[filed_key]//if overried say to do
       || (override_shown_filed[filed_key]!==false//overried not say
@@ -43,8 +42,6 @@ class Report {
         }]
       },
     }
-    console.log("hi : message : ",msg);
-    console.log("hi : icon : ",do_fill_field('author.icon'));
     
     await DiscordRequest(
     this.webhook_url,msg);

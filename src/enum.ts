@@ -9,3 +9,8 @@ export enum FeedbackState {
   SENDED = 1,
   RECEIVED = 2
 }
+
+export enum rememberTasksType {
+  KIRA = 1,
+  REVIVE = 2,
+};

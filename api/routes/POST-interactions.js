@@ -55,7 +55,7 @@ export default async function route({ request, reply, api, logger, connections }
           return await DiscordRequest(`webhooks/${process.env.APP_ID}/${token}/messages/@original`, return_patch);
         }
         catch (e) {
-          console.debug(`route : catch : interaction ERROR : `,e);
+          console.debug(`route : catch : interaction ERROR :\n`,e);
           if (i===1)
             var firstErorr=e;
           if (i>=maxError)
@@ -85,11 +85,10 @@ export default async function route({ request, reply, api, logger, connections }
   if (type === InteractionType.MESSAGE_COMPONENT || type === InteractionType.MODAL_SUBMIT) {
     // custom_id set in payload when sending message component
     
-    console.log(` route : components interaction. origin data=`, data);
+    console.debug(`route : components interaction. origin data=`, data);
     
     let componentId = data.custom_id;
     componentId=componentId.replace(/<value>/,(data?.values) ? data?.values[0] : undefined);
-    console.log("componentId=",componentId);
     let h_infos = componentId.split(" ");
 
 
@@ -165,7 +164,7 @@ export default async function route({ request, reply, api, logger, connections }
         } break;
       }
 
-      console.log(` route : components interaction. created data=`, data);
+      console.debug(`route : components interaction. created data=`, data);
       return calling_command(h_cmd);
 
     }

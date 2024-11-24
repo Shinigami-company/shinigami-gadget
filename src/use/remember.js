@@ -2,10 +2,7 @@ import { api } from "gadget-server";
 
 import { cmd_kira_execute, cmd_comeback } from "../cmd.js";
 
-export const tasksType = {
-  KIRA: 1,
-  REVIVE: 2,
-};
+import { rememberTasksType } from "../enum.js";
 
 export async function kira_remember_task_add(f_date, f_type, f_data) {
   return await api.KiraRemember.create({
@@ -81,13 +78,13 @@ async function kira_remember_checkup() {
       //case
       switch (f_tasks[i].RememberingType) {
         //remembering type
-        case tasksType.KIRA:
+        case rememberTasksType.KIRA:
           {
             await cmd_kira_execute(data);
           }
           break;
 
-        case tasksType.REVIVE:
+        case rememberTasksType.REVIVE:
           {
             await cmd_comeback(data);
           }

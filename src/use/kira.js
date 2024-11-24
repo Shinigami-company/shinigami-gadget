@@ -1,16 +1,13 @@
 import { api } from "gadget-server";
-//import { kira_remember_task_add, tasksType } from "../remember.js";
 
 import { SETT_CMD } from "../sett.js";
 
-import { sleep } from "../tools.js";
 import { FeedbackState } from "../enum.ts";
 
 export async function kira_do_refreshCommands() {
   console.debug("kira : refreshcmd : removeCommands()...");
   await api.removeCommands();
   console.debug("kira : refreshcmd : removeCommands() done!");
-  sleep(1000);
   console.debug("kira : refreshcmd : registerCommands()...");
   await api.registerCommands();
   console.debug("kira : refreshcmd : registerCommands() done!");

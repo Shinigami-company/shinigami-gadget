@@ -1,7 +1,7 @@
 console.log(` cmd : refresh`);
 //--- sett ---
 
-import { FeedbackState, KnowUsableBy } from "./enum.ts";
+import { FeedbackState, KnowUsableBy, rememberTasksType } from "./enum.ts";
 
 import { Settings } from "./sett.js";
 
@@ -111,7 +111,7 @@ import {
   roman_from_int,
 } from "./tools.js"; // tools
 
-import { kira_remember_task_add, tasksType } from "./use/remember.js";
+import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
 linkme("linked from cmd"); //need to use a function from there
 
@@ -714,7 +714,8 @@ export async function kira_cmd(f_deep, f_cmd) {
         }
       );
     }
-    console.error(`cmd : in js error=`, e);
+
+    console.error(`cmd : catch : javascript ERROR [${e.code}] : `, e);
     //specific error
     if (
       e.message ===
@@ -729,10 +730,9 @@ export async function kira_cmd(f_deep, f_cmd) {
         true
       );
     }
+
     //general error
-    console.error(
-      `cmd : wrong js code=${e.code} name=${e.name} message=${e.message}`
-    );
+    console.error(`cmd : catch : throw ERROR : code=${e.code} name=${e.name} message=${e.message}`);
     kira_error_throw(
       "error.system.wrongjs",
       e,
@@ -745,7 +745,7 @@ export async function kira_cmd(f_deep, f_cmd) {
 }
 
 export function kira_error_msg(f_errorKey, f_errorObject, f_lang) {
-  console.error(`cmd : code=${f_errorObject.code}`);
+  console.error(`cmd : error msg code=${f_errorObject.code}`);
   return translate(f_lang, f_errorKey, {
     name: f_errorObject.name,
     message: f_errorObject.message,
@@ -759,6 +759,8 @@ export async function kira_error_throw(
   f_token,
   f_ifThrow = true
 ) {
+
+  //PATCH user message
   await DiscordRequest(
     `webhooks/${process.env.APP_ID}/${f_token}/messages/@original`,
     {
@@ -891,7 +893,7 @@ async function check_has_noDrop(dig) {
 //react check
 function check_react_is_self(dig) {
   console.log(
-    `check : check_react_is_self IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`
+    `check : check_react_is_self type=${dig.type} IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`
   );
   if (
     dig.type === InteractionType.MESSAGE_COMPONENT &&
@@ -2485,7 +2487,7 @@ async function cmd_kira({
     h_victim_data?.id,
     run_combo
   );
-  kira_remember_task_add(h_finalDate, tasksType.KIRA, { runId: h_run.id });
+  kira_remember_task_add(h_finalDate, rememberTasksType.KIRA, { runId: h_run.id });
 
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
@@ -2778,7 +2780,7 @@ export async function cmd_kira_execute(data) {
     {
       await kira_user_set_life(h_victim_data.id, false, h_finalDate);
       //revive
-      kira_remember_task_add(h_finalDate, tasksType.REVIVE, {
+      kira_remember_task_add(h_finalDate, rememberTasksType.REVIVE, {
         userId: pack.victim_id,
         lang: lang,
         ifSuicide: pack.victim_id == pack.attacker_id,
