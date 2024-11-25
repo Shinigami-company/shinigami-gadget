@@ -343,8 +343,8 @@
 "post.error.author": "@$[user.username] ($[userdata.id])",
 "post.error.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 
-"post.newbi.title": "joined the game",
-"post.newbi.description": "Human <@$[user.id]>",
+"post.newbi.title": "claim a death note",
+"post.newbi.description": "Human <@$[user.id]>,\nYour life will be changed forever.\nAfter they die, the place they go is MU.",
 "post.newbi.author": "@$[user.username] ($[userdata.id])",
 "post.newbi.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 

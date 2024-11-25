@@ -1447,7 +1447,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
 
 
 //#claim command
-async function cmd_claim({ userdata, data, userbook, lang }) {
+async function cmd_claim({ userdata, user, data, userbook, lang }) {
   //variables
   let h_color = 0;
   let h_price = 0;
@@ -1538,6 +1538,10 @@ async function cmd_claim({ userdata, data, userbook, lang }) {
     }
   }
 
+  {
+    const all = { user, userdata };
+    await webhook_reporter.newbi.post(lang, all, {}, user.accent_color);
+  }
   await kira_book_create(userdata, h_color);
   await stats_simple_add(userdata.statPtr.id, "ever_book"); //+stats
 
