@@ -696,7 +696,7 @@ export async function kira_cmd(f_deep, f_cmd) {
           }
         );
         // PATCH the "no dont" message
-        return r_check;
+        return await DiscordRequest(`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`, r_check);
       }
     }
 
@@ -729,27 +729,33 @@ export async function kira_cmd(f_deep, f_cmd) {
     
     if (!return_request) return;
     
-    //PATCH by the returned mesage
-    if (return_request.method==="PATCH")
+    if (replyed)
+    {//PATCH by the returned mesage
+      //if (return_request.method.toUpperCase()==="PATCH")
       return await DiscordRequest(`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`, return_request);
-    
-    //POST by the returned request
-    if (return_request.method==="POST")
+    } 
+    else 
+    {//POST by the returned request
+      //if (return_request.method.toUpperCase()==="POST")
       return await DiscordRequest(`interactions/${f_deep.id}/${f_deep.token}/callback`, return_request);
+    }
+    
 
     throw Error("returned request not valid");//!
-
   } catch (e) {
     if (!replyed) {
-      await DiscordRequest(// POST the deferred response
-        `interactions/${f_deep.id}/${f_deep.token}/callback`,
-        {
-          method: "POST",
-          body: {
-            type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-          },
-        }
-      );
+      try {
+        await DiscordRequest(// POST the deferred response
+          `interactions/${f_deep.id}/${f_deep.token}/callback`,
+          {
+            method: "POST",
+            body: {
+              type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+            },
+          }
+        );
+      } 
+      catch (e) {};//!
     }
 
     console.error(`cmd : catch : javascript ERROR [${e.code}] : `, e);
@@ -1350,6 +1356,14 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
   //its no button
   if (!data.options[0].value) 
   {
+    await DiscordRequest(
+      `interactions/${id}/${token}/callback`, {
+      method: "POST",
+      body: {
+        type: InteractionResponseType.PONG,
+      }
+    });
+
     //remove the message
     await DiscordRequest(
       `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
@@ -1364,8 +1378,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
   
   //POST input modal
   {
-    await DiscordRequest(
-      `interactions/${id}/${token}/callback`, {
+    return {
       method: "POST",
       body: {
         type: InteractionResponseType.MODAL,
@@ -1408,19 +1421,8 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
           ]
         },
       },
-    });
+    };
   }
-
-  //remove buttons
-  await DiscordRequest(
-    `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
-    {
-      method: "PATCH",
-      body: {
-        components: [],
-      },
-    }
-  );
 
   return;//! return nothing
   

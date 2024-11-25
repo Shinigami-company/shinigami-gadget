@@ -92,7 +92,7 @@ const comebackBy = {
   },
   check: {
     //comeback when victim do something
-    all: { if: true, message: true }, //just, dont disable that.
+    self: { if: true, message: true }, //just, dont disable that.
   },
 };
 const cancelWhenDeadAttacker = true;
