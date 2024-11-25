@@ -76,6 +76,7 @@ async function kira_remember_checkup() {
         kira_remember_task_clean(f_tasks[i].id);
         //data
         const data = f_tasks[i].RememberingData;
+
         //case
         switch (f_tasks[i].RememberingType) {
           //remembering type
@@ -91,10 +92,11 @@ async function kira_remember_checkup() {
             }
             break;
         }
+
       }
     }
   } catch (e) {
-    await kira_error_report('error.remember', e, 'en', 'remember', {});
+    await kira_error_report(e, 'AnyJS', 'remember', {}, {}, 'en');
   }
 
   //mrewing : log and keep awake

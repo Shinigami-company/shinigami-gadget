@@ -662,11 +662,12 @@ export async function kira_cmd(f_deep, f_cmd) {
   //errors
   if (!commands_structure[f_cmd]) {
     //error 404
+    //!no report
     return {
       method: "PATCH",
       body: {
         content: kira_error_msg(
-          "error.point.404",
+          "error.message.define.404",
           { message: `unknow command [${f_cmd}]` },
           f_deep.lang
         ),
@@ -675,9 +676,15 @@ export async function kira_cmd(f_deep, f_cmd) {
   }
 
   let replyed = false; // used only if catch
+  
+  let errorWhen = 'CmdIdk'; // when is actually used as [errorKey] but define context. in the future :
+  // - errorwhen has to be [errorContext] so different context debug message
+  // - handle know issues giving each one a new [errorKey]
+  
   try {
     
     //-checks-
+    errorWhen = 'CmdCheck';
 
     for (let v of commands_structure[f_cmd].functions.checks) {
       const r_check = await v[0](f_deep);
@@ -701,6 +708,7 @@ export async function kira_cmd(f_deep, f_cmd) {
     }
 
     //-defered-
+    errorWhen = 'CmdRequest1';
 
     if (!commands_structure[f_cmd].atr?.notDeferred)
     {
@@ -722,10 +730,12 @@ export async function kira_cmd(f_deep, f_cmd) {
 
 
     //-command-
+    errorWhen = 'CmdExecute';
 
     const return_request=await commands_structure[f_cmd].functions.exe(f_deep);
     
     //-doing-
+    errorWhen = 'CmdRequest2';
     
     if (!return_request) return;
     
@@ -741,9 +751,14 @@ export async function kira_cmd(f_deep, f_cmd) {
     }
     
 
-    throw Error("returned request not valid");//!
+    errorWhen = 'CmdEnd';
+    throw Error("the end");
   } catch (e) {
     if (!replyed) {
+
+      //-defered-
+      //if has not been defered before
+
       try {
         await DiscordRequest(// POST the deferred response
           `interactions/${f_deep.id}/${f_deep.token}/callback`,
@@ -755,33 +770,45 @@ export async function kira_cmd(f_deep, f_cmd) {
           }
         );
       } 
-      catch (e) {};//!
+      catch (e2) {
+        await kira_error_report(e2, 'DiscordRequest', 'error', {}, 'en');
+      };
     }
 
     console.error(`cmd : catch : javascript ERROR [${e.code}] : `, e);
-    //specific error
+
+    //-handle-
+    //detect know issues
+
     if (
       e.message ===
       "[GraphQL] GGT_INTERNAL_ERROR: Unexpected HTTP error from sandbox: Response code 500 (Internal Server Error)"
     ) {
       kira_error_throw(
-        "error.critical",
         e,
+        "GadgetInternal",
+        "command",
+        "error.message.level.critical",//this issue is critical
         f_deep,
         f_cmd,
         true
-      );
+      );//throw
     }
 
-    //general error
+    //-handle-
+    //any other error
+
     console.error(`cmd : catch : throw ERROR : code=${e.code} name=${e.name} message=${e.message}`);
     kira_error_throw(
-      "error.system.wrongjs",
       e,
+      errorWhen,
+      "command",
+      "error.message.any",
       f_deep,
       f_cmd,
       true
-    );
+    );//throw
+
     return; // will not bcs throw before
   }
 }
@@ -794,23 +821,28 @@ export function kira_error_msg(f_errorKey, f_errorObject, f_lang) {
   });
 }
 
-export async function kira_error_report(f_errorKey, f_errorObject, f_lang, f_detailsKey, f_detailsValues) {
-  const details = translate(f_lang, `post.error.tree.details.${f_detailsKey}`, f_detailsValues);
-  const stack = f_errorObject.stack.replace(f_errorObject.message, '').replace(f_errorObject.name, '').substring(2).replace(/    at /gm, '')
-  const all = { error: f_errorObject, stack, errorKey: f_errorKey, details };
-  await webhook_reporter.error.post(f_lang, all, {}, 16711680);
+export async function kira_error_report(f_errorObject, f_errorKey, f_contextKey, f_contextValues, f_athorValues, f_lang) {
+  const context = translate(f_lang, `post.error.tree.context.${f_contextKey}`, f_contextValues);
+  const stack = f_errorObject.stack.replace(f_errorObject.message, '').replace(f_errorObject.name, '').substring(2).replace(/    at /gm, '');
+  const code = (f_errorObject.code) ? f_errorObject.code : 'no';
+  const all = { error: f_errorObject, errorStack: stack, errorCode: code, errorKey: f_errorKey, context, ...f_athorValues };//! should we remove f_athorValues from here?
+  await webhook_reporter.error.post(f_lang, all, { 'author': (f_athorValues?.user) ? true : false }, 16711680);
 }
 
+
 export async function kira_error_throw(
-  f_errorKey,
-  f_errorObject,
-  f_deep,
-  f_cmd,
+  f_errorObject,//the error object itself
+  f_errorKey,//personnal error key to be displayed (only to dev for now)
+  f_errorContext,//the error context key for report
+  //actuals aviable : ['command', 'remember']
+  f_errorMessageKey,//the error message to be translated
+  f_deep,//you know
+  f_cmd,//the command used to come here (to change : too specific parameter)
   f_ifThrow = true
 ) {
   
   //POST to admin webhook
-  await kira_error_report(f_errorKey, f_errorObject, f_deep.lang, 'command', {user: f_deep.user, userdata: f_deep.userdata, channel: f_deep.channel, command: f_cmd, type: f_deep.type});
+  await kira_error_report(f_errorObject, f_errorKey, f_errorContext, {user: f_deep.user, userdata: f_deep.userdata, channel: f_deep.channel, command: f_cmd, type: f_deep.type}, {user: f_deep.user, userdata: f_deep.userdata}, f_deep.lang);
 
   //PATCH user message
   await DiscordRequest(
@@ -818,7 +850,7 @@ export async function kira_error_throw(
     {
       method: "PATCH",
       body: {
-        content: kira_error_msg(f_errorKey, f_errorObject, f_deep.lang),
+        content: kira_error_msg(f_errorMessageKey, f_errorObject, f_deep.lang),
       },
     }
   );
@@ -1213,6 +1245,8 @@ async function cmd_god({ userdata, data, lang, locale }) {
           console.timeEnd("test:cost");
         }
 
+        throw EvalError("found a cat in the code");
+
         {
           r = Achievement.list["counter"].level_graduate(arg_amount);
         }
@@ -1280,7 +1314,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           method: "PATCH",
           body: {
             content: kira_error_msg(
-              "error.point.404",
+              "error.message.define.404",
               { message: `unknow god action [${data.options[0].value}]` },
               lang
             ),
@@ -1293,7 +1327,6 @@ async function cmd_god({ userdata, data, lang, locale }) {
 
 //#feedback command
 async function cmd_feedback({ data, userdata, lang, user }) {
-
   //is the command alone
   if (!data.options) {
 
@@ -1972,7 +2005,7 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
           method: "PATCH",
           body: {
             content: kira_error_msg(
-              "error.point.404",
+              "error.message.define.404",
               { message: `unknow stats page [${data.options[0].value}]` },
               lang
             ),
@@ -2154,6 +2187,7 @@ async function cmd_see({ data, userbook, lang }) {
 
 //#drop command
 async function cmd_drop({ data, token, userdata, lang }) {
+
   //take confirmation
   let h_span = 0;
   let h_price = 0;
@@ -2725,6 +2759,7 @@ async function cmd_kira({
 
 //is executed by [./remember.js]
 export async function cmd_kira_execute(data) {
+
   //if (!data.run)
   console.log(` kira : EXECUTE. runId=${data.runId}`);
 

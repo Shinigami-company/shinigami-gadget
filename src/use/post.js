@@ -30,9 +30,9 @@ class Report {
         [{
           title: do_fill_field('title'),
           description: do_fill_field('description'),
-          fields: [],//no fields for now
-          author: {
-            name: do_fill_field('author'),
+          fields: [],//no filed 'fields' for now
+          author: (!if_fill_field('author')) ? null : {
+            name: do_fill_field('author.name'),
             icon_url: do_fill_field('author.icon'),
           },
           color: (embed_color===null) ? this.default_color : embed_color,
@@ -57,7 +57,7 @@ export const webhook_reporter = (() => {
   {
     dic[v] = new Report(
       v, process.env[`webhook_${v}`],
-      { 'content': false, 'embed': true, 'title': true, 'description': true, 'author': true, 'author.icon': true, 'footer': false } 
+      { 'content': false, 'embed': true, 'title': true, 'description': true, 'author': true, 'author.name': true, 'author.icon': true, 'footer': false } 
     )
 
   }

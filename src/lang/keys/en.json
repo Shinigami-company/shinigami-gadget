@@ -1,9 +1,10 @@
 {
-"error.any": "something went wrong : `$[name]=$[message]`\nif this happens again please report to the developer",
-"error.critical": "something went **REALLY** wrong : `$[name]=$[message]`\nplease report to the developer",
-"error.system.wrongjs": "something went wrong : `$[name]=$[message]`\nif this happens again please report to the developer",
-"error.system.protocol": "request refused : `$[name]`\nTrying again should fix the problem.",
-"error.point.404": "how did you get there? `ERROR [404]=$[message]`",
+"error.message.any": "something went wrong : `$[name]=$[message]`\nincident has been reported to the developer",
+"error.message.level.critical": "something went **REALLY** wrong : `$[name]=$[message]`\nincident has been reported to the developer",
+"error.message.level.rare": "something went ***strangely*** wrong : `$[name]=$[message]`\nplease give more context to the developer using `/feedback`",
+"error.message.level.retry": "request refused : `$[name]`\nTrying again should fix the problem.",
+"error.message.define.404": "how did you get there? `ERROR [404]=$[message]`",
+"error.message.define.discord": "discord refused Shinigami's request! `ERROR [401]=$[message]`",
 
 
 "check.god.not": "**Nope!** You dont have the power of a god.",
@@ -334,20 +335,22 @@
 
 "post.feedback.title": "a letter",
 "post.feedback.description": "```$[letter]```\n-<@$[user.id]>",
-"post.feedback.author": "by @$[user.username] ($[userdata.id])",
+"post.feedback.author.name": "by @$[user.username] ($[userdata.id])",
 "post.feedback.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 "post.feedback.footer": "PS: $[last]",
 
 "post.error.title": "<$[error.name]>",
-"post.error.description": "**code:$[error.code] key:$[errorKey]**\n$[details]\n```json\n$[error.message]\n```\n```json\n$[stack]\n```",
-"post.error.author": "@$[user.username] ($[userdata.id])",
+"post.error.description": "code=**$[errorCode]** key=**$[errorKey]**\n\n$[context]\n\n```json\n$[error.message]\n```\n```json\n$[errorStack]\n```",
+"post.error.author.name": "@$[user.username] ($[userdata.id])",
 "post.error.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
-"post.error.tree.details.command": "when calling command `/$[command]` with interaction type **$[type]**\nby <@$[user.id]> in <#$[channel.id]>",
-"post.error.tree.details.remember": "when remembering",
+"post.error.tree.context.any": "not specified context",
+"post.error.tree.context.error": "error in an error handle event (errorception)",
+"post.error.tree.context.command": "when **calling command**\n`/$[command]` with interaction type **$[type]**\nby <@$[user.id]> in <#$[channel.id]>",
+"post.error.tree.context.remember": "when ***remembering**",
 
 "post.newbi.title": "claim a death note",
 "post.newbi.description": "Human <@$[user.id]>,\nYour life will be changed forever.\n**After they die, the place they go is MU.**\n\nat <#$[channel.id]>",
-"post.newbi.author": "@$[user.username] ($[userdata.id])",
+"post.newbi.author.name": "@$[user.username] ($[userdata.id])",
 "post.newbi.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 
 
