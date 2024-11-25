@@ -1356,6 +1356,15 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
   //its no button
   if (!data.options[0].value) 
   {
+    await DiscordRequest(
+      `interactions/${id}/${token}/callback`, {
+      method: "POST",
+      body: {
+        type: InteractionResponseType.UPDATE_MESSAGE,
+      }
+    });
+    //else didnt valid token
+
     //remove the message
     await DiscordRequest(
       `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
@@ -1370,7 +1379,8 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
   
   //POST input modal
   {
-    return {
+    await DiscordRequest(
+      `interactions/${id}/${token}/callback`, {
       method: "POST",
       body: {
         type: InteractionResponseType.MODAL,
@@ -1413,8 +1423,21 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
           ]
         },
       },
-    };
+    });
   }
+
+
+  //remove buttons
+  //cant be done before
+  await DiscordRequest(
+    `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
+    {
+      method: "PATCH",
+      body: {
+        components: [],
+      },
+    }
+  );
 
   return;//! return nothing
   
