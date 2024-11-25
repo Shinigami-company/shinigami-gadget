@@ -1539,7 +1539,7 @@ async function cmd_claim({ userdata, user, data, userbook, lang }) {
   }
 
   {
-    const all = { user, userdata };
+    const all = { user, userdata, channel };
     await webhook_reporter.newbi.post(lang, all, {}, user.accent_color);
   }
   await kira_book_create(userdata, h_color);
