@@ -338,8 +338,8 @@
 "post.feedback.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 "post.feedback.footer": "PS: $[last]",
 
-"post.error.title": "<$[error.name]> code:$[error.code] key:$[errorKey]",
-"post.error.description": "$[details]\n```json\n$[error.message]\n```\n```json\n$[stack]\n```",
+"post.error.title": "<$[error.name]>",
+"post.error.description": "**code:$[error.code] key:$[errorKey]**\n$[details]\n```json\n$[error.message]\n```\n```json\n$[stack]\n```",
 "post.error.author": "@$[user.username] ($[userdata.id])",
 "post.error.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 "post.error.tree.details.command": "when calling command `/$[command]` with interaction type **$[type]**\nby <@$[user.id]> in <#$[channel.id]>",

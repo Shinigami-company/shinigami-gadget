@@ -77,7 +77,6 @@ async function kira_remember_checkup() {
         //data
         const data = f_tasks[i].RememberingData;
         //case
-        throw Error("that a fricking test");
         switch (f_tasks[i].RememberingType) {
           //remembering type
           case rememberTasksType.KIRA:
