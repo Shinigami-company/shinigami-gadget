@@ -1,6 +1,6 @@
 import { api } from "gadget-server";
 
-import { cmd_kira_execute, cmd_comeback } from "../cmd.js";
+import { cmd_kira_execute, kira_error_report, cmd_comeback } from "../cmd.js";
 
 import { rememberTasksType } from "../enum.ts";
 
@@ -64,33 +64,38 @@ async function kira_remember_checkup() {
   let f_tasks = await kira_remember_task_after(new Date());
 
   //execute
-  if (f_tasks.length > 0) {
-    //console.log(` rem3mber : execute ${f_tasks.length} runs...`);
-    for (let i = 0; i < f_tasks.length; i += 1) {
-      console.log(
-        ` rem3mber : execute ${i} (taskType=${f_tasks[i].RememberingType}) : `,
-        f_tasks[i]
-      );
-      //remove the task from database
-      kira_remember_task_clean(f_tasks[i].id);
-      //data
-      const data = f_tasks[i].RememberingData;
-      //case
-      switch (f_tasks[i].RememberingType) {
-        //remembering type
-        case rememberTasksType.KIRA:
-          {
-            await cmd_kira_execute(data);
-          }
-          break;
+  try {
+    if (f_tasks.length > 0) {
+      //console.log(` rem3mber : execute ${f_tasks.length} runs...`);
+      for (let i = 0; i < f_tasks.length; i += 1) {
+        console.log(
+          ` rem3mber : execute ${i} (taskType=${f_tasks[i].RememberingType}) : `,
+          f_tasks[i]
+        );
+        //remove the task from database
+        kira_remember_task_clean(f_tasks[i].id);
+        //data
+        const data = f_tasks[i].RememberingData;
+        //case
+        throw Error("that a fricking test");
+        switch (f_tasks[i].RememberingType) {
+          //remembering type
+          case rememberTasksType.KIRA:
+            {
+              await cmd_kira_execute(data);
+            }
+            break;
 
-        case rememberTasksType.REVIVE:
-          {
-            await cmd_comeback(data);
-          }
-          break;
+          case rememberTasksType.REVIVE:
+            {
+              await cmd_comeback(data);
+            }
+            break;
+        }
       }
     }
+  } catch (e) {
+    await kira_error_report('error.remember', e, 'en', 'remember', {});
   }
 
   //mrewing : log and keep awake
@@ -102,6 +107,7 @@ async function kira_remember_checkup() {
     if (response.code !== 200)
       console.error(`rem3mber : mrew failed`, response);
   }
+
   ocurence += 1;
   remembering = 0;
 }

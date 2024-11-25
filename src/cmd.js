@@ -794,6 +794,13 @@ export function kira_error_msg(f_errorKey, f_errorObject, f_lang) {
   });
 }
 
+export async function kira_error_report(f_errorKey, f_errorObject, f_lang, f_detailsKey, f_detailsValues) {
+  const details = translate(f_lang, `post.error.tree.details.${f_detailsKey}`, f_detailsValues);
+  const stack = f_errorObject.stack.replace(f_errorObject.message, '').replace(f_errorObject.name, '').substring(2).replace(/    at /gm, '')
+  const all = { error: f_errorObject, stack, errorKey: f_errorKey, details };
+  await webhook_reporter.error.post(f_lang, all, {}, 16711680);
+}
+
 export async function kira_error_throw(
   f_errorKey,
   f_errorObject,
@@ -803,10 +810,7 @@ export async function kira_error_throw(
 ) {
   
   //POST to admin webhook
-  {
-    const all = { error: f_errorObject, stack: f_errorObject.stack.replace(f_errorObject.message, '').replace(f_errorObject.name, '').substring(2).replace(/    at /gm, ''), errorKey: f_errorKey, user: f_deep.user, userdata: f_deep.userdata, channel: f_deep.channel, command: f_cmd, type: f_deep.type };
-    await webhook_reporter.error.post(f_deep.lang, all, {}, 16711680);
-  }
+  await kira_error_report(f_errorKey, f_errorObject, f_deep.lang, 'command', {user: f_deep.user, userdata: f_deep.userdata, channel: f_deep.channel, command: f_cmd, type: f_deep.type});
 
   //PATCH user message
   await DiscordRequest(
@@ -3155,8 +3159,8 @@ async function cmd_know({ data, message, userdata, lang }) {
 
   //if is a fake one
   if (h_wh < 0) {
-    //remove components from the message
     //this does not works if know is used as a command
+    //remove components from the message
     await DiscordRequest(
       `channels/${message.channel_id}/messages/${message.id}`,
       {
@@ -3179,6 +3183,17 @@ async function cmd_know({ data, message, userdata, lang }) {
 
   //fail bcs too late
   if (!pack) {
+    //remove components from the message
+    await DiscordRequest(
+      `channels/${message.channel_id}/messages/${message.id}`,
+      {
+        method: "PATCH",
+        body: {
+          components: [],
+        },
+      }
+    );
+    
     return {
       method: "PATCH",
       body: {

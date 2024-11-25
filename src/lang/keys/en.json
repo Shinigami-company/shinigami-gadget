@@ -338,10 +338,12 @@
 "post.feedback.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 "post.feedback.footer": "PS: $[last]",
 
-"post.error.title": "$[error.name] <$[error.code]>",
-"post.error.description": "when calling command `/$[command]` with interaction type **$[type]**\n```json\n$[error.message]\n```\n```json\n$[stack]\n```\nby <@$[user.id]> in <#$[channel.id]>",
+"post.error.title": "<$[error.name]> code:$[error.code] key:$[errorKey]",
+"post.error.description": "$[details]\n```json\n$[error.message]\n```\n```json\n$[stack]\n```",
 "post.error.author": "@$[user.username] ($[userdata.id])",
 "post.error.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
+"post.error.tree.details.command": "when calling command `/$[command]` with interaction type **$[type]**\nby <@$[user.id]> in <#$[channel.id]>",
+"post.error.tree.details.remember": "when remembering",
 
 "post.newbi.title": "claim a death note",
 "post.newbi.description": "Human <@$[user.id]>,\nYour life will be changed forever.\n**After they die, the place they go is MU.**\n\nat <#$[channel.id]>",
