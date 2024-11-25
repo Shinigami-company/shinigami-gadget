@@ -57,7 +57,7 @@ export const webhook_reporter = (() => {
   {
     dic[v] = new Report(
       v, process.env[`webhook_${v}`],
-      { 'content': false, 'embed': true, 'title': true, 'description': true, 'author': true, 'author.icon': true, 'footer': true } 
+      { 'content': false, 'embed': true, 'title': true, 'description': true, 'author': true, 'author.icon': true, 'footer': false } 
     )
 
   }

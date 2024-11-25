@@ -804,7 +804,7 @@ export async function kira_error_throw(
   
   //POST to admin webhook
   {
-    const all = { error: f_errorObject, errorKey: f_errorKey, user: f_deep.user, userdata: f_deep.userdata, channel: f_deep.channel, command: f_cmd, type: f_deep.type };
+    const all = { error: f_errorObject, stack: f_errorObject.stack.replace(f_errorObject.message, '').replace(f_errorObject.name, '').substring(2).replace(/    at /gm, ''), errorKey: f_errorKey, user: f_deep.user, userdata: f_deep.userdata, channel: f_deep.channel, command: f_cmd, type: f_deep.type };
     await webhook_reporter.error.post(f_deep.lang, all, {}, 16711680);
   }
 
@@ -1356,14 +1356,6 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
   //its no button
   if (!data.options[0].value) 
   {
-    await DiscordRequest(
-      `interactions/${id}/${token}/callback`, {
-      method: "POST",
-      body: {
-        type: InteractionResponseType.PONG,
-      }
-    });
-
     //remove the message
     await DiscordRequest(
       `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
@@ -1371,7 +1363,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
         method: "DELETE",
       }
     );
-    return;//! return nothing
+    return;//! return nothing withtout feedback
   }
 
   //call the form
@@ -1447,7 +1439,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
 
 
 //#claim command
-async function cmd_claim({ userdata, user, data, userbook, lang }) {
+async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
   //variables
   let h_color = 0;
   let h_price = 0;
