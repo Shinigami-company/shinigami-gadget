@@ -872,7 +872,7 @@ async function check_can_alive(dig) {
     const h_gap = parseInt(
       (new Date(dig.userdata.backDate).getTime() - new Date().getTime()) / 1000
     );
-    if (h_gap > 0 || !SETT_CMD.kira.comebackBy.check.all.if) {
+    if (h_gap > 0 || !SETT_CMD.kira.comebackBy.check.self.if) {
       //can not be bring back
       return {
         method: "PATCH",
@@ -888,7 +888,7 @@ async function check_can_alive(dig) {
     await kira_user_set_life(dig.userdata.id, true);
 
     //message
-    if (SETT_CMD.kira.comebackBy.check.all.message) {
+    if (SETT_CMD.kira.comebackBy.check.self.message) {
       //open DM
       const dm_id = await DiscordUserOpenDm(dig.userdata.userId);
       //send message

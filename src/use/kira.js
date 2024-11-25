@@ -4,6 +4,8 @@ import { SETT_CMD } from "../sett.js";
 
 import { FeedbackState } from "../enum.ts";
 
+import { posting_newbi, webhook_reporter } from "../use/post.js";
+
 export async function kira_do_refreshCommands() {
   console.debug("kira : refreshcmd : removeCommands()...");
   await api.removeCommands();
@@ -86,8 +88,11 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
 */
 } //return the userdata from user
 
+
 export async function kira_user_create(f_userId) {
-  await api.KiraUsers.create({
+  
+  
+  const userdata=await api.KiraUsers.create({
     userId: f_userId,
     statPtr: {
       create: { userId: f_userId },
@@ -96,6 +101,8 @@ export async function kira_user_create(f_userId) {
       create: { userId: f_userId },
     },
   });
+  await posting_newbi(f_userId, userdata);
+
 } //return the created element
 
 //capsule

@@ -63,3 +63,15 @@ export const webhook_reporter = (() => {
   }
   return dic;
 })();
+
+export async function posting_newbi(userId, userdata)
+{
+  const response = await DiscordRequest(`users/${userId}`,{method: 'GET'});
+  const user = await response.json();
+  console.log(`HI : users/${userId} to get ${user}`);
+
+  const all = { user, userId, userdata };
+
+  //!dont care about lang
+  await webhook_reporter.newbi.post('en', all, {}, user.accent_color);
+};
