@@ -675,35 +675,47 @@ export async function kira_cmd(f_deep, f_cmd) {
     };
   }
 
-  let replyed = false; // used only if catch
   
   let errorWhen = 'CmdIdk'; // when is actually used as [errorKey] but define context. in the future :
   // - errorwhen has to be [errorContext] so different context debug message
   // - handle know issues giving each one a new [errorKey]
-  
+
+  let replyed = false; // used only if catch
+
+/* Interaction Callback Type
+~~PONG~~ : dirrectly at POST-interactions.js
+(CHANNEL_MESSAGE_WITH_SOURCE) : never used
+  DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE : at request 1
+  DEFERRED_UPDATE_MESSAGE : at request 1 //!TODO
+  UPDATE_MESSAGE : at cmd //!to move
+(APPLICATION_COMMAND_AUTOCOMPLETE_RESULT) : never used
+  MODAL : at cmd //!to move
+~~PREMIUM_REQUIRED~~ : deprecated
+~~LAUNCH_ACTIVIT~~ : not an activity
+*/
+
   try {
     
     //-checks-
     errorWhen = 'CmdCheck';
 
     for (let v of commands_structure[f_cmd].functions.checks) {
-      const r_check = await v[0](f_deep);
-      if (r_check) {
-        //if the check is not checked
-        await DiscordRequest(// POST the deferred response
+      const r_check_message = await v[0](f_deep);
+      if (r_check_message) {
+        //if a message, then whe should stop there
+        return await DiscordRequest(// POST the check message
           `interactions/${f_deep.id}/${f_deep.token}/callback`,
           {
             method: "POST",
             body: {
-              type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
               data: {
                 flags: v[1] ? InteractionResponseFlags.EPHEMERAL : undefined,
+                ...r_check_message
               },
             },
           }
         );
-        // PATCH the "no dont" message
-        return await DiscordRequest(`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`, r_check);
       }
     }
 
@@ -880,10 +892,7 @@ export function cmd_register() {
 function check_is_god(dig) {
   if (!dig.userdata.is_god) {
     return {
-      method: "PATCH",
-      body: {
-        content: translate(dig.lang, "check.god.not"),
-      },
+      content: translate(dig.lang, "check.god.not")
     };
   }
   return undefined;
@@ -893,10 +902,7 @@ function check_is_god(dig) {
 function check_is_alive(dig) {
   if (!dig.userdata.is_alive) {
     return {
-      method: "PATCH",
-      body: {
-        content: translate(dig.lang, "check.alive.not"),
-      },
+      content: translate(dig.lang, "check.alive.not")
     };
   }
   return undefined;
@@ -911,12 +917,9 @@ async function check_can_alive(dig) {
     if (h_gap > 0 || !SETT_CMD.kira.comebackBy.check.self.if) {
       //can not be bring back
       return {
-        method: "PATCH",
-        body: {
-          content: translate(dig.lang, "check.alive.not", {
-            time: time_format_string_from_int(h_gap, dig.lang),
-          }),
-        },
+        content: translate(dig.lang, "check.alive.not", {
+          time: time_format_string_from_int(h_gap, dig.lang),
+        }),
       };
     }
 
@@ -950,10 +953,7 @@ async function check_can_alive(dig) {
 function check_has_book(dig) {
   if (!dig.userbook) {
     return {
-      method: "PATCH",
-      body: {
-        content: translate(dig.lang, "check.hasbook.not"),
-      },
+      content: translate(dig.lang, "check.hasbook.not")
     };
   }
   return undefined;
@@ -963,12 +963,9 @@ async function check_has_noDrop(dig) {
   const h_gap = await kira_user_get_drop(dig.userdata.id);
   if (h_gap > 0) {
     return {
-      method: "PATCH",
-      body: {
-        content: translate(dig.lang, "check.nodrop.not", {
-          time: time_format_string_from_int(h_gap, dig.lang),
-        }),
-      },
+      content: translate(dig.lang, "check.nodrop.not", {
+        time: time_format_string_from_int(h_gap, dig.lang),
+      })
     };
   }
   return undefined;
@@ -985,10 +982,7 @@ function check_react_is_self(dig) {
     dig.message.interaction.user.id !== dig.user.id
   ) {
     return {
-      method: "PATCH",
-      body: {
-        content: translate(dig.lang, "check.react.self.not"),
-      },
+      content: translate(dig.lang, "check.react.self.not")
     };
   }
   return undefined;
@@ -998,13 +992,10 @@ async function check_can_feedback(dig) {
   const h_can = await kira_user_can_feedback(dig.userdata.id);
   if (!h_can && !dig.userdata.is_god) {
     return {
-      method: "PATCH",
-      body: {
-        content: translate(dig.lang, "check.feedback.not", {
-          //time: time_format_string_from_int(h_gap, dig.lang),
-          time: time_format_string_from_int(SETT_CMD.feedback.couldown, dig.lang),
-        }),
-      },
+      content: translate(dig.lang, "check.feedback.not", {
+        //time: time_format_string_from_int(h_gap, dig.lang),
+        time: time_format_string_from_int(SETT_CMD.feedback.couldown, dig.lang),
+      })
     };
   }
   return undefined;
@@ -2186,7 +2177,7 @@ async function cmd_see({ data, userbook, lang }) {
 }
 
 //#drop command
-async function cmd_drop({ data, token, userdata, lang }) {
+async function cmd_drop({ data, token, userdata, message, lang }) {
 
   //take confirmation
   let h_span = 0;
@@ -2277,7 +2268,7 @@ async function cmd_drop({ data, token, userdata, lang }) {
   //remove components from the message
   //this does not works if drop is used as a command
   await DiscordRequest(
-    `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
+    `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
     {
       method: "PATCH",
       body: {
