@@ -151,8 +151,8 @@ const commands_structure = {
             { name: "revive", value: "revive", description: "revive someone" },
             { name: "kill", value: "kill", description: "kill someone" },
             {
-              name: "drop",
-              value: "drop",
+              name: "force drop",
+              value: "forcedrop",
               description: "drop someone's death note",
             },
             {
@@ -628,17 +628,21 @@ export async function kira_cmd(f_deep, f_cmd) {
   /**f_deep :
    * - (api)
    * - ~~reply~~
-   * - |lang|
    * - (source)
+   * request
    *  - data
    *  - type
    *  - (id)
    *  - ([token])
+   * context
    *  - locale
    *  - user
    *  - message
    *  - channel
    *  - guild
+   * self
+   * - |lang|
+   * - ([|replyed|])
    * datamodels
    * - |userdata|
    * - |userbook|
@@ -658,21 +662,32 @@ export async function kira_cmd(f_deep, f_cmd) {
   //get user lang
   //lang selected, else discord lang
   f_deep.lang = lang_get(f_deep);
+  //if replyed by
+  //will change a lot here, used by catch
+  f_deep.replyed = false;
 
   //errors
   if (!commands_structure[f_cmd]) {
     //error 404
+
     //!no report
-    return {
-      method: "PATCH",
-      body: {
-        content: kira_error_msg(
-          "error.message.define.404",
-          { message: `unknow command [${f_cmd}]` },
-          f_deep.lang
-        ),
-      },
-    };
+
+    return await DiscordRequest(// POST the error message
+      `interactions/${f_deep.id}/${f_deep.token}/callback`,
+      {
+        method: "POST",
+        body: {
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: kira_error_msg(
+              "error.message.define.404",
+              { message: `unknow command [${f_cmd}]` },
+              f_deep.lang
+            ),
+          },
+        },
+      }
+    );
   }
 
   
@@ -680,7 +695,6 @@ export async function kira_cmd(f_deep, f_cmd) {
   // - errorwhen has to be [errorContext] so different context debug message
   // - handle know issues giving each one a new [errorKey]
 
-  let replyed = false; // used only if catch
 
 /* Interaction Callback Type
 ~~PONG~~ : dirrectly at POST-interactions.js
@@ -703,7 +717,7 @@ export async function kira_cmd(f_deep, f_cmd) {
       const r_check_message = await v[0](f_deep);
       if (r_check_message) {
         //if a message, then whe should stop there
-        return await DiscordRequest(// POST the check message
+        return await DiscordRequest(// POST the return message
           `interactions/${f_deep.id}/${f_deep.token}/callback`,
           {
             method: "POST",
@@ -720,25 +734,44 @@ export async function kira_cmd(f_deep, f_cmd) {
     }
 
     //-defered-
-    errorWhen = 'CmdRequest1';
+    errorWhen = 'CmdPrepare1';
 
     if (!commands_structure[f_cmd].atr?.notDeferred)
     {
-
-      await DiscordRequest(// POST the deferred response
-        `interactions/${f_deep.id}/${f_deep.token}/callback`, {
-        method: "POST",
-        body: {
-          type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            flags: commands_structure[f_cmd].atr?.ephemeral
-              ? InteractionResponseFlags.EPHEMERAL
-              : undefined,
-          },
+      const response_type = InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;//!TODO : will change
+      
+      //f_deep.replyed = InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
+      //f_deep.replyed = InteractionResponseType.UPDATE_MESSAGE;
+      //f_deep.replyed = InteractionResponseType.DEFERRED_UPDATE_MESSAGE;
+      
+      //request fundation
+      let response_request = 
+      {
+      method: "POST",
+      body: {
+        type: response_type
         },
-      });
-      replyed = true;
-    }
+      };
+
+      //request ephemeral
+      if (commands_structure[f_cmd].atr?.ephemeral)
+      {
+        if (response_type !== InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE)
+        {
+          throw Error(`cant make ephemeral InteractionResponseType != 5 (here ${response_type})`);
+        }
+        response_request.data.flags = InteractionResponseFlags.EPHEMERAL;
+      }
+      
+      //request replyed
+      f_deep.replyed = response_type;
+
+      //send request
+      errorWhen = 'CmdRequest1';
+      await DiscordRequest(// POST the deferred response
+        `interactions/${f_deep.id}/${f_deep.token}/callback`, response_request
+      );
+    };
 
 
     //-command-
@@ -747,26 +780,45 @@ export async function kira_cmd(f_deep, f_cmd) {
     const return_request=await commands_structure[f_cmd].functions.exe(f_deep);
     
     //-doing-
-    errorWhen = 'CmdRequest2';
+    errorWhen = 'CmdPrepare2';
     
     if (!return_request) return;
+    let url=`nourl/atall`;
+    const return_method=return_request.method.toUpperCase();//error if not method
     
-    if (replyed)
-    {//PATCH by the returned mesage
-      //if (return_request.method.toUpperCase()==="PATCH")
-      return await DiscordRequest(`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`, return_request);
-    } 
-    else 
-    {//POST by the returned request
-      //if (return_request.method.toUpperCase()==="POST")
-      return await DiscordRequest(`interactions/${f_deep.id}/${f_deep.token}/callback`, return_request);
+    switch (f_deep.replyed)
+    {
+      
+      case InteractionResponseType.DEFERRED_UPDATE_MESSAGE:
+      {//PATCH last message
+        //if (return_method==="PATCH") else ERROR
+        url=`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/${f_deep.message}`;
+      } break;
+      
+      case InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE:
+      {//PATCH sended message
+        //if (return_method==="PATCH") else ERROR
+        url=`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`;
+      } break;
+
+      case InteractionResponseType.UPDATE_MESSAGE: {}
+      case false:
+      {//POST by the returned request
+        //if (return_method==="POST") else ERROR
+        url=`interactions/${f_deep.id}/${f_deep.token}/callback`;
+      } break;
+
     }
+    
+    errorWhen = 'CmdRequest2';
+    return await DiscordRequest(url, return_request);
     
 
     errorWhen = 'CmdEnd';
     throw Error("the end");
+
   } catch (e) {
-    if (!replyed) {
+    if (!f_deep.replyed) {
 
       //-defered-
       //if has not been defered before
@@ -1073,8 +1125,8 @@ async function cmd_god({ userdata, data, lang, locale }) {
       }
       break;
 
-    //#drop subcommand
-    case "drop":
+    //#forcedrop subcommand
+    case "forcedrop":
       {
         if (!arg_user) {
           return {
@@ -1089,7 +1141,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.drop.fail.missing.amount"),
+              content: translate(lang, "cmd.god.forcedrop.fail.missing.amount"),
             },
           };
         }
@@ -1103,7 +1155,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           body: {
             content: translate(
               lang,
-              "cmd.god.drop.done." + (arg_amount == 0 ? "zero" : "more"),
+              "cmd.god.forcedrop.done." + (arg_amount == 0 ? "zero" : "more"),
               {
                 targetId: arg_user,
                 time: time_format_string_from_int(arg_amount, lang),
