@@ -1,7 +1,7 @@
 console.log(` cmd : refresh`);
 //--- sett ---
 
-import { FeedbackState, KnowUsableBy, rememberTasksType } from "./enum.ts";
+import { deferedActionType, FeedbackState, KnowUsableBy, rememberTasksType } from "./enum.ts";
 
 import { Settings } from "./sett.js";
 
@@ -222,6 +222,9 @@ const commands_structure = {
       */
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   feedback: {
@@ -237,6 +240,7 @@ const commands_structure = {
       description: "send a message to the realm of the dead"
     },
     atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
       ephemeral: true
     }
   },
@@ -249,6 +253,7 @@ const commands_structure = {
       ],
     },
     atr: {
+      defered: deferedActionType.NO,
       notDeferred: true,
       systemOnly: true
     },
@@ -278,6 +283,9 @@ const commands_structure = {
       ],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   burn: {
@@ -295,6 +303,9 @@ const commands_structure = {
       contexts: [0],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   //GET
@@ -310,6 +321,9 @@ const commands_structure = {
       contexts: [0],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   lang: {
@@ -332,6 +346,9 @@ const commands_structure = {
       ],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   stats: {
@@ -361,6 +378,9 @@ const commands_structure = {
         },
       ],
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   running: {
@@ -377,6 +397,9 @@ const commands_structure = {
       contexts: [0],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   quest: {
@@ -393,6 +416,9 @@ const commands_structure = {
       contexts: [0],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   top: {
@@ -420,6 +446,9 @@ const commands_structure = {
       ],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   rules: {
@@ -437,6 +466,9 @@ const commands_structure = {
       contexts: [0],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   see: {
@@ -463,6 +495,9 @@ const commands_structure = {
       ],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   //SET
@@ -481,6 +516,9 @@ const commands_structure = {
       contexts: [0],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   trick: {
@@ -498,6 +536,9 @@ const commands_structure = {
       contexts: [0],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
     //ephemeral: true,
   },
   trick_resp: {
@@ -510,6 +551,7 @@ const commands_structure = {
       ],
     },
     atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
       ephemeral: false,
       systemOnly: true
     }
@@ -524,6 +566,7 @@ const commands_structure = {
       ],
     },
     atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
       ephemeral: true,
       systemOnly: true
     }
@@ -538,6 +581,7 @@ const commands_structure = {
       ],
     },
     atr: {
+      defered: deferedActionType.NO,
       notDeferred: true,
       systemOnly: true
     }
@@ -580,6 +624,9 @@ const commands_structure = {
       ],
       type: 1,
     },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
   },
 
   know: {
@@ -594,6 +641,9 @@ const commands_structure = {
     },
     atr: {
       systemOnly: true,
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
     }
     /*
     register:
@@ -734,37 +784,51 @@ export async function kira_cmd(f_deep, f_cmd) {
     }
 
     //-defered-
+    const defered_action = commands_structure[f_cmd].atr.defered;//have to be set
+    const defered_ephemeral = commands_structure[f_cmd].atr?.ephemeral;
     errorWhen = 'CmdPrepare1';
 
-    if (!commands_structure[f_cmd].atr?.notDeferred)
+
+    if (defered_action || defered_action!==deferedActionType.NO)
     {
-      const response_type = InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;//!TODO : will change
-      
-      //f_deep.replyed = InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
-      //f_deep.replyed = InteractionResponseType.UPDATE_MESSAGE;
-      //f_deep.replyed = InteractionResponseType.DEFERRED_UPDATE_MESSAGE;
       
       //request fundation
       let response_request = 
       {
       method: "POST",
       body: {
-        type: response_type
+        type: 0//will be edited as response type.
         },
       };
 
-      //request ephemeral
-      if (commands_structure[f_cmd].atr?.ephemeral)
+      //specific defered action
+      switch (defered_action)
       {
-        if (response_type !== InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE)
-        {
-          throw Error(`cant make ephemeral InteractionResponseType != 5 (here ${response_type})`);
-        }
-        response_request.data.flags = InteractionResponseFlags.EPHEMERAL;
+        case deferedActionType.DUMMY: {
+          response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
+          response_request.method = "PATCH";
+          //But only works when f_deep.type is componentsInteraction
+        } break;
+
+        case deferedActionType.WAIT_MESSAGE: {
+          response_request.body.type = InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
+          if (defered_ephemeral)
+            response_request.body.data = {flags: InteractionResponseFlags.EPHEMERAL};
+        } break;
+        
+        case deferedActionType.WAIT_UPDATE: {
+          response_request.body.type = InteractionResponseType.DEFERRED_UPDATE_MESSAGE;
+        } break;
+        
+        case deferedActionType.EDIT_CLEAN_BUTTONS: {
+          response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
+          response_request.method = "PATCH";
+          response_request.body.components = [];
+        } break;
       }
       
       //request replyed
-      f_deep.replyed = response_type;
+      f_deep.replyed = response_request.body.type;
 
       //send request
       errorWhen = 'CmdRequest1';
@@ -788,7 +852,6 @@ export async function kira_cmd(f_deep, f_cmd) {
     
     switch (f_deep.replyed)
     {
-      
       case InteractionResponseType.DEFERRED_UPDATE_MESSAGE:
       {//PATCH last message
         //if (return_method==="PATCH") else ERROR
@@ -898,7 +961,7 @@ export async function kira_error_throw(
   f_errorObject,//the error object itself
   f_errorKey,//personnal error key to be displayed (only to dev for now)
   f_errorContext,//the error context key for report
-  //actuals aviable : ['command', 'remember']
+  //actuals aviable : ['command', 'remember', 'error', 'any']
   f_errorMessageKey,//the error message to be translated
   f_deep,//you know
   f_cmd,//the command used to come here (to change : too specific parameter)

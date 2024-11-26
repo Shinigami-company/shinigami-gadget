@@ -339,46 +339,44 @@ export const tricks_all = [
           {
             //both face choosen
             
-            await DiscordRequest(
-              `channels/${message.channel_id}/messages/${message.id}`,
-              {
-              method: "PATCH",
+            return {
+              method: "POST",
               body: 
               {
-                
-                content: translate(lang, "cmd.trick.item.coinflip.pick.throw.intro")
-                +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
-                  "userId": user_1_id,
-                  "face": translate(lang, `word.side.${int_to_coinSide[user_1_face]}`),
-                  "price": price
-                })
-                +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
-                  "userId": user_2_id,
-                  "face": translate(lang, `word.side.${int_to_coinSide[user_2_face]}`),
-                  "price": price
-                })
-                +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.outro"),
+                type: InteractionResponseType.UPDATE_MESSAGE,
+                data: {
+                  content: translate(lang, "cmd.trick.item.coinflip.pick.throw.intro")
+                  +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
+                    "userId": user_1_id,
+                    "face": translate(lang, `word.side.${int_to_coinSide[user_1_face]}`),
+                    "price": price
+                  })
+                  +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
+                    "userId": user_2_id,
+                    "face": translate(lang, `word.side.${int_to_coinSide[user_2_face]}`),
+                    "price": price
+                  })
+                  +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.outro"),
 
-                components: [
-                {
-                  type: MessageComponentTypes.ACTION_ROW,
                   components: [
-                    {
-                      type: MessageComponentTypes.BUTTON,
-                      custom_id: `makecmd trick_resp coinflip+1+${user_1_id}_${user_2_id}`,
-                      label: translate(lang, "cmd.trick.item.coinflip.pick.side.button", {
-                        "price": price
-                      }),
-                      emoji: sett_emoji_coin_throw,
-                      style: ButtonStyleTypes.DANGER
-                    }
-                    ]
-                  },
-                ],
+                  {
+                    type: MessageComponentTypes.ACTION_ROW,
+                    components: [
+                      {
+                        type: MessageComponentTypes.BUTTON,
+                        custom_id: `makecmd trick_resp coinflip+1+${user_1_id}_${user_2_id}`,
+                        label: translate(lang, "cmd.trick.item.coinflip.pick.side.button", {
+                          "price": price
+                        }),
+                        emoji: sett_emoji_coin_throw,
+                        style: ButtonStyleTypes.DANGER
+                      }
+                      ]
+                    },
+                  ],
+                }
               }
-            });
-
-            return;//! return nothing
+            };
           }
 
           //return the pick.side message
@@ -406,8 +404,7 @@ export const tricks_all = [
               })
 
           //reture a POST request!!
-          const request = 
-          {
+          return {
             method: "POST",
             body: 
             {
@@ -422,9 +419,7 @@ export const tricks_all = [
                 content
               }
             }
-          }
-
-          return request;
+          };
 
         },
 

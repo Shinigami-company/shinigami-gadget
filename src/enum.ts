@@ -14,3 +14,11 @@ export enum rememberTasksType {
   KIRA = 1,
   REVIVE = 2,
 };
+
+export enum deferedActionType {
+  NO = 0,//do nothing
+  DUMMY = 1,//do an dummy action //! only when type is components interaction
+  WAIT_MESSAGE = 5,
+  WAIT_UPDATE = 6,
+  EDIT_CLEAN_BUTTONS = 7//!not used
+};
