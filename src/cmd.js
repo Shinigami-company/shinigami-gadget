@@ -40,7 +40,6 @@ import {
   kira_user_set_life,
   kira_user_get_daily,
   kira_user_set_daily,
-  kira_user_add_apple,
   kira_user_set_drop,
   kira_user_get_drop,
   kira_user_set_feedback,
@@ -78,6 +77,8 @@ import {
   kira_apple_claims_add,
   kira_apple_claims_get,
   kira_format_applemoji,
+  kira_apple_send,
+  kira_apple_pay,
 } from "./use/apple.js"; //kira apples
 
 import {
@@ -1659,7 +1660,7 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
           };
         } else {
           //pay to continue
-          await kira_user_add_apple(userdata, h_price * -1);
+          await kira_apple_pay(userdata.id, h_price);
         }
       } else {
         //send the button
@@ -1826,7 +1827,7 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang, token }
 
 //#apples command
 async function cmd_apple({ userdata, locale, lang }) {
-  let h_apples_claimed = 0;
+  let h_apples_claimed = 0;//only for display
   let h_txt_claims = "";
   let h_txt_more = "";
 
@@ -1848,6 +1849,7 @@ async function cmd_apple({ userdata, locale, lang }) {
       if (h_dayGapDiff != 0) {
         //claim you daily
         await kira_user_set_daily(userdata.id);
+        await kira_apple_send(userdata, SETT_CMD.apple.dailyAmount, userdata.statPtr.id);//!no claim message because rigth here
         h_apples_claimed += SETT_CMD.apple.dailyAmount;
         h_txt_claims +=
           translate(lang, `cmd.apples.claim.daily`, { added: 1 }) + "\n";
@@ -1875,12 +1877,9 @@ async function cmd_apple({ userdata, locale, lang }) {
         h_txt_claims +=
           translate(lang, `cmd.apples.claim.${h_claims[i].type}`, h_claims[i]) +
           "\n";
-        h_apples_claimed += h_claims[i].added;
+        h_apples_claimed += h_claims[i].added;//no more here
       }
     }
-
-    await kira_user_add_apple(userdata, h_apples_claimed);
-    await stats_simple_add(userdata.statPtr.id, "ever_apple", h_apples_claimed); //+stats
   }
 
   return {
@@ -1893,12 +1892,12 @@ async function cmd_apple({ userdata, locale, lang }) {
           `cmd.apples.get.${h_apples_claimed > 0 ? "changed" : "same"}`,
           {
             added: 1,
-            amount: userdata.apples + h_apples_claimed,
+            amount: userdata.apples,
             word: translate(
               lang,
-              `word.apple${userdata.apples + h_apples_claimed > 1 ? "s" : ""}`
+              `word.apple${userdata.apples > 1 ? "s" : ""}`
             ),
-            emoji: kira_format_applemoji(userdata.apples + h_apples_claimed),
+            emoji: kira_format_applemoji(userdata.apples),
           }
         ) +
         h_txt_more,
@@ -2370,7 +2369,7 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
           };
         } else {
           //pay before continue
-          await kira_user_add_apple(userdata, -1 * h_price);
+          await kira_apple_send(userdata, -1 * h_price);
         }
       }
     }
@@ -3355,7 +3354,7 @@ async function cmd_know({ data, message, userdata, lang }) {
       },
     };
   }
-  await kira_user_add_apple(userdata, -1 * h_price);
+  await kira_apple_pay(userdata.id, h_price);
 
   //wich info/action
   let h_info;
@@ -3520,14 +3519,15 @@ async function cmd_trick_resp({ data, message, userdata, token, id, lang }) {
       lang,
       pile,
       token,
+      id,
     });
     if (r_back) return r_back;
   }
 
   //pay
-  await kira_user_add_apple(userdata, -1 * h_trick.price);
+  await kira_apple_pay(userdata.id, h_trick.price);
 
   //set
   //call TRICK's PAYOFF
-  return h_trick.do.payoff({ data, message, userdata, lang, pile, token });
+  return h_trick.do.payoff({ data, message, userdata, lang, pile, token, id });
 }

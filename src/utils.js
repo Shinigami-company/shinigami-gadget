@@ -63,6 +63,20 @@ export async function DiscordUserOpenDm(f_UserId)
   return this_channel.id;
 }
 
+export async function DiscordMessageChanged(f_message, f_webhook_token=undefined)
+{
+  //https://discord.com/developers/docs/resources/user#get-user
+  //Get User   (GET)   /users/{user.id}
+  //Returns a user object for a given user ID.
+  const this_resp = (f_webhook_token) ?
+  await DiscordRequest(`/webhooks/${process.env.APP_ID}/${f_webhook_token}/messages/${f_message.id}`,{ method: 'GET' })//using https://discord.com/developers/docs/interactions/receiving-and-responding#edit-followup-message
+  : await DiscordRequest(`/channels/${f_message.channel_id}/messages/${f_message.id}`,{ method: 'GET' })//using https://discord.com/developers/docs/resources/message#get-channel-message
+
+  const this_message = await this_resp.json();
+  console.log(`hi : DiscordMessageChanged between last=${f_message.edited_timestamp} and now=${this_message.edited_timestamp}`);
+  return (f_message.edited_timestamp!==this_message.edited_timestamp);
+}
+
 
 // other usefull things
 

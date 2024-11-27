@@ -15,7 +15,8 @@ import { sett_emoji_apple_croc, sett_catalog_knows, sett_emoji_coin_throw } from
 import { KnowUsableBy } from "../enum.ts";
 import { kira_user_add_apple, kira_user_get } from "../use/kira.js";
 
-import { DiscordRequest, DiscordUserOpenDm } from "../utils.js";
+import { DiscordMessageChanged, DiscordRequest, DiscordUserOpenDm } from "../utils.js";
+import { kira_apple_pay, kira_apple_send } from "../use/apple.js";
 
 
 const int_to_coinSide = {
@@ -333,7 +334,7 @@ export const tricks_all = [
             }
           }
 
-          console.log(`HI step 3 : ${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}`);
+          console.log(`trick : coin sides : ${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}=${self_face}`);
 
           if ((user_1_face>0) && (user_2_face>0))
           {
@@ -364,7 +365,7 @@ export const tricks_all = [
                     components: [
                       {
                         type: MessageComponentTypes.BUTTON,
-                        custom_id: `makecmd trick_resp coinflip+1+${user_1_id}_${user_2_id}`,
+                        custom_id: `makecmd trick_resp coinflip+1+${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}`,
                         label: translate(lang, "cmd.trick.item.coinflip.pick.side.button", {
                           "price": price
                         }),
@@ -431,52 +432,56 @@ export const tricks_all = [
       async ({ data, message, userdata, token, lang, pile }) =>
       {
         pile = pile.split("_");
-        const user_1_winer = (randomInt(2)===0);
-        const user_winer_id = (user_1_winer) ? pile[0]:pile[1];
-        const user_loser_id = (user_1_winer) ? pile[1]:pile[0];
+
+        const user_tree = {//[face] : id
+          [parseInt(pile[1])]: {userId: pile[0]},
+          [parseInt(pile[3])]: {userId: pile[2]},
+        };
+
+        if (!(user_tree[1] && user_tree[2]))
+        {
+          throw Error(`invalid faces [${Object.keys(user_tree)}] for [${Object.values(user_tree).map(obj=>obj.userId)}] with pile [${pile}]`);
+        }
+        
+        const winer_index = (randomInt(2)===0) ? 1 : 2;//random
+        const loser_index = (winer_index===1) ? 2 : 1;
         const bet = 6;
         const price = tricks_all[2].price;//self price
 
-        //userdata must be retrive back because kira_user_add_apple cant be used twice on the same
-        {
-          const user_1_data=await kira_user_get(user_winer_id, true);
-          if (user_1_data.apples < price) {
-            //fail because too poor
-            return {
-              method: "PATCH",
-              body: {
-                content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_winer_id}),
-              },
-            };
-          }
-          //remove price apple
-          await kira_user_add_apple(user_1_data, -1*price);
-        }
-        {
-          const user_2_data=await kira_user_get(user_loser_id, true);
-          if (user_2_data.apples < price) {
-            //fail because too poor
-            return {
-              method: "PATCH",
-              body: {
-                content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_loser_id}),
-              },
-            };
-          }
-          //remove price apple
-          await kira_user_add_apple(user_2_data, -1*price);
-        }
-        {
-          //give bet apple
-          const here_data=await kira_user_get(user_winer_id, true);
-          await kira_user_add_apple(here_data, bet);
-        }
+        
         {
           //give back apple to the one who clicked on the flip button
-          const here_data=await kira_user_get(userdata.userId, true);
-          await kira_user_add_apple(here_data, price);
+          await kira_user_add_apple(userdata.id, price);
+        }
+
+        if (await DiscordMessageChanged(message, token))
+        {
+          throw Error(`double click detected.`);
+        }
+
+        //remove price
+        for (let i=1;i<3;i++) {
+          console.log(`HI ${i} = ${user_tree[i].userId} bcs ${user_tree[i]} bcs ${user_tree}`);
+          user_tree[i].userdata=await kira_user_get(user_tree[i].userId);
+          //check if rich
+          if (user_tree[i].userdata.apples<price) {
+            //fail because too poor
+            return {
+              method: "PATCH",
+              body: {
+                content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_tree[i].userId}),
+              }
+            };
+          }
+        }
+        for (let i=1;i<3;i++) {
+          await kira_apple_send(user_tree[i].userdata.id, price*-1, user_tree[i].userdata.statPtr.id, "coinflip.bet", {"opponentId": user_tree[(i===1) ? 2 : 1].userId});
         }
         
+        //give bet
+        await kira_apple_send(user_tree[winer_index].userdata.id, bet, user_tree[winer_index].userdata.statPtr.id, "coinflip.win", {"side": translate(lang, `word.side.${int_to_coinSide[winer_index]}`)});
+        
+        //will be executed after. async without await
         (async () => {
           await sleep(3000);
           await DiscordRequest(
@@ -489,8 +494,8 @@ export const tricks_all = [
                   lang,
                   `cmd.trick.item.coinflip.done`,
                   {
-                    "winerUserId": user_winer_id,
-                    "loserUserId": user_loser_id,
+                    "winerUserId": user_tree[winer_index].userId,
+                    "loserUserId": user_tree[loser_index].userId,
                     "bet": bet,
                     "price": price
                   }
@@ -504,7 +509,7 @@ export const tricks_all = [
         return {
           method: "PATCH",
           body: {
-            content: translate(lang,`cmd.trick.item.coinflip.done.${(user_1_winer) ? "heads" : "tails"}`)
+            content: translate(lang,`cmd.trick.item.coinflip.done.${int_to_coinSide[winer_index]}`)
           },
         };
       }
