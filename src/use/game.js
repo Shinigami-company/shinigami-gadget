@@ -12,6 +12,25 @@ export async function kira_game_coin_get(gameId)
   return api.KiraGameCoin.maybeFindOne(gameId);
 }
 
+export async function kira_game_coin_clean()
+{
+  const date=new Date();
+  date.setSeconds(date.getSeconds() + 600);
+  let all_datas=await api.KiraGameCoin.findMany({
+    filter: [
+      {
+        createdAt: {
+          before: date.toISOString()
+        },
+      },
+    ],
+    select: {id: true}
+    }).then(list => list.map(obj => obj.id));
+  if (!all_datas) return;
+  console.log("game : clean coin games data = ",all_datas);
+  await api.KiraGameCoin.bulkDelete(all_datas);
+}
+
 //step 1
 export async function kira_game_coin_create(bet, user1Id)
 {
@@ -39,6 +58,7 @@ export async function kira_game_coin_pop(gameId)
   return obj;
 }
 
+//force del
 export async function kira_game_coin_fail(gameId)
 {//throw error if cant delete
   await api.KiraGameCoin.delete(gameId);

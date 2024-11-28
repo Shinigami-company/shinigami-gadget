@@ -17,7 +17,7 @@ import { kira_user_add_apple, kira_user_get } from "../use/kira.js";
 
 import { DiscordMessageChanged, DiscordRequest, DiscordUserOpenDm } from "../utils.js";
 import { kira_apple_pay, kira_apple_send } from "../use/apple.js";
-import { kira_game_coin_create, kira_game_coin_fail, kira_game_coin_get, kira_game_coin_pick_side, kira_game_coin_pick_user, kira_game_coin_pop } from "../use/game.js";
+import { kira_game_coin_clean, kira_game_coin_create, kira_game_coin_fail, kira_game_coin_get, kira_game_coin_pick_side, kira_game_coin_pick_user, kira_game_coin_pop } from "../use/game.js";
 
 
 const int_to_coinSide = {
@@ -634,6 +634,8 @@ export const tricks_all = [
               }
             );
           })();
+
+          await kira_game_coin_clean();
 
           //message back
           return {
