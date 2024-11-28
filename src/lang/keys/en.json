@@ -227,6 +227,7 @@
 "stat.ratio.show.hit": "your murder ratio : **$[value]** ($[dividend]/$[divider])",
 "stat.ratio.show.counter": "your counter ratio : **$[value]** ($[dividend]/$[divider])",
 "stat.ratio.show.time": "your death time ratio : **$[value]** ($[dividend]/$[divider])",
+"stat.ratio.show.luck": "your coinflip win ratio : **$[value]** ($[dividend]/$[divider])",
 
 "stats.running.fail.nothing": "you are killing nobody",
 "stats.running.show": "here what will happened :",

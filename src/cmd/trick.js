@@ -18,6 +18,7 @@ import { kira_user_add_apple, kira_user_get } from "../use/kira.js";
 import { DiscordMessageChanged, DiscordRequest, DiscordUserOpenDm } from "../utils.js";
 import { kira_apple_pay, kira_apple_send } from "../use/apple.js";
 import { kira_game_coin_clean, kira_game_coin_create, kira_game_coin_fail, kira_game_coin_get, kira_game_coin_pick_side, kira_game_coin_pick_user, kira_game_coin_pop } from "../use/game.js";
+import { stats_simple_add } from "../use/stats.js";
 
 
 const int_to_coinSide = {
@@ -606,10 +607,14 @@ export const tricks_all = [
           }
           for (let i=1;i<3;i++) {
             await kira_apple_send(user_tree[i].userdata.id, bet*-1, user_tree[i].userdata.statPtr.id, "coinflip.bet", {"opponentId": user_tree[(i===1) ? 2 : 1].userId});
+            if (!(userdata.userId === game_data.user1Id))
+              await stats_simple_add(user_tree[i].userdata.statPtr.id, "game_coinPlay");
           }
           
           //give reward
           await kira_apple_send(user_tree[winer_index].userdata.id, reward, user_tree[winer_index].userdata.statPtr.id, "coinflip.win", {"side": translate(lang, `word.side.${int_to_coinSide[winer_index]}`)});
+          if (!(userdata.userId === game_data.user1Id))
+            await stats_simple_add(user_tree[winer_index].userdata.statPtr.id, "game_coinWin");
           
           //will be executed after. async without await
           (async () => {

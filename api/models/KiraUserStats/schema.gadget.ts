@@ -16,6 +16,8 @@ export const schema: GadgetModel = {
     ever_apple: { type: "number", storageKey: "mueABtRLk2rY" },
     ever_book: { type: "number", storageKey: "u0u9Zfy3zBZK" },
     ever_test: { type: "number", storageKey: "1qzux-ugEPd0" },
+    game_coinPlay: { type: "number", storageKey: "sVljNWfruivH" },
+    game_coinWin: { type: "number", storageKey: "MnFcyFmgn6Q5" },
     is_avenged: { type: "number", storageKey: "oeWqhkzbWJC_" },
     is_countered: { type: "number", storageKey: "UDrQ1whz-zen" },
     is_hited: { type: "number", storageKey: "r4FMf016tCAO" },

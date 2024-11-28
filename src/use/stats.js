@@ -28,6 +28,9 @@ const stats_simple_all = {
 
   misc_match: { type: 1 },
 
+  game_coinPlay: { type: 1 },
+  game_coinWin: { type: 1 },
+
   streak_appleDay: { type: 1 },
   streak_killDay: { type: 1 },
   streak_pageFilled: { type: 1 },
@@ -52,6 +55,7 @@ export const stats_order_ratio = {
   kill: ["do_kill", "is_killed"],
   counter: ["do_counter", "is_countered"],
   time: ["do_outerTime", "is_outedTime"],
+  luck: ["game_coinWin", "game_coinPlay"],
 };
 
 //GET
