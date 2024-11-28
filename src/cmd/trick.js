@@ -366,7 +366,7 @@ export const tricks_all = [
                       {
                         type: MessageComponentTypes.BUTTON,
                         custom_id: `makecmd trick_resp coinflip+1+${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}`,
-                        label: translate(lang, "cmd.trick.item.coinflip.pick.side.button", {
+                        label: translate(lang, "cmd.trick.item.coinflip.pick.throw.button", {
                           "price": price
                         }),
                         emoji: sett_emoji_coin_throw,
@@ -453,11 +453,20 @@ export const tricks_all = [
           //give back apple to the one who clicked on the flip button
           await kira_user_add_apple(userdata.id, price);
         }
-
         if (await DiscordMessageChanged(message, token))
         {
           throw Error(`double click detected.`);
         }
+
+        await DiscordRequest(
+          `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
+          {
+            method: "PATCH",
+            body: {
+              components: [],
+            },
+          }
+        );
 
         //remove price
         for (let i=1;i<3;i++) {

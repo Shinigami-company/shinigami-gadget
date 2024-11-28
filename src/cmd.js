@@ -74,7 +74,6 @@ import {
 } from "./use/kira.js"; //kira line
 import {
   kira_apple_claims_set,
-  kira_apple_claims_add,
   kira_apple_claims_get,
   kira_format_applemoji,
   kira_apple_send,
@@ -1272,10 +1271,8 @@ async function cmd_god({ userdata, data, lang, locale }) {
           h_given < 0 ? "remove" : "add"
         }`;
 
-        kira_apple_claims_add(targetdata.id, {
-          added: h_given,
+        kira_apple_send(targetdata.id, h_given, undefined, "admin." + h_identity, {
           displayed: Math.abs(arg_amount),
-          type: "admin." + h_identity,
         });
 
         return {
@@ -3053,16 +3050,14 @@ export async function cmd_kira_execute(data) {
       let h_apples = 0; //default
       if (h_victim_kills) {
         h_apples = SETT_CMD.apple.avangerAppleReward(h_victim_kills);
-        kira_apple_claims_add(userdata.id, {
-          added: h_apples,
+        kira_apple_send(userdata.id, h_apples, userdata.statPtr.id, {
           type: "murderer",
           victim: pack.victim_username,
           attacker: user.username,
           kill: h_victim_kills,
         });
       } else {
-        kira_apple_claims_add(userdata.id, {
-          added: h_apples,
+        kira_apple_send(userdata.id, h_apples, userdata.statPtr.id, {
           type: "harmless",
           victim: pack.victim_username,
           attacker: user.username,

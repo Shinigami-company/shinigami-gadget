@@ -74,6 +74,8 @@ export async function DiscordMessageChanged(f_message, f_webhook_token=undefined
 
   const this_message = await this_resp.json();
   console.log(`hi : DiscordMessageChanged between last=${f_message.edited_timestamp} and now=${this_message.edited_timestamp}`);
+  console.log(f_message);
+  console.log(this_message);
   return (f_message.edited_timestamp!==this_message.edited_timestamp);
 }
 
