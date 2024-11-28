@@ -1846,7 +1846,7 @@ async function cmd_apple({ userdata, locale, lang }) {
       if (h_dayGapDiff != 0) {
         //claim you daily
         await kira_user_set_daily(userdata.id);
-        await kira_apple_send(userdata, SETT_CMD.apple.dailyAmount, userdata.statPtr.id);//!no claim message because rigth here
+        await kira_apple_send(userdata.id, SETT_CMD.apple.dailyAmount, userdata.statPtr.id);//!no claim message because rigth here
         h_apples_claimed += SETT_CMD.apple.dailyAmount;
         h_txt_claims +=
           translate(lang, `cmd.apples.claim.daily`, { added: 1 }) + "\n";

@@ -17,6 +17,7 @@ import { kira_user_add_apple, kira_user_get } from "../use/kira.js";
 
 import { DiscordMessageChanged, DiscordRequest, DiscordUserOpenDm } from "../utils.js";
 import { kira_apple_pay, kira_apple_send } from "../use/apple.js";
+import { kira_game_coin_create, kira_game_coin_fail, kira_game_coin_get, kira_game_coin_pick_side, kira_game_coin_pick_user, kira_game_coin_pop } from "../use/game.js";
 
 
 const int_to_coinSide = {
@@ -199,8 +200,14 @@ export const tricks_all = [
         //step 1
         async ({ data, message, userdata, token, lang }) =>
         {
-          const bet = 6;
-          const price = tricks_all[2].price;//self price
+          
+          //values
+          const bet = tricks_all[2].price;//self price
+          const reward = bet*2;
+          
+          //game
+          const game_data_id = await kira_game_coin_create(bet, userdata.userId).then(obj => obj.id);
+          console.log("hi : create game_data_id=",game_data_id);
           
           return {
             method: "PATCH",
@@ -210,7 +217,7 @@ export const tricks_all = [
               {
                 "userId": userdata.userId,
                 "bet": bet,
-                "price": price
+                "reward": reward
               }),
               components: [
               {
@@ -218,9 +225,9 @@ export const tricks_all = [
                 components: [
                   {
                     type: MessageComponentTypes.BUTTON,
-                    custom_id: `makecmd trick_resp coinflip+-1+${userdata.userId}`,
+                    custom_id: `makecmd trick_resp coinflip+-1+${game_data_id}`,
                     label: translate(lang, "cmd.trick.item.coinflip.pick.user.button", {
-                      "price": price
+                      "bet": bet
                     }),
                     emoji: sett_emoji_apple_croc,
                     style: ButtonStyleTypes.SUCCESS
@@ -238,31 +245,66 @@ export const tricks_all = [
         async ({ data, message, userdata, lang, pile }) =>
         {
           //pile = "<userOne>"
-
-          const user_1_id = pile;
-          const user_2_id = userdata.userId;
-          const price = tricks_all[2].price;//self price
           
-          //check apples
-          {
-            const user_1_data=await kira_user_get(user_1_id, true);
-            if (user_1_data.apples < price) {
-              //fail because too poor
+          //game
+          const game_data=await kira_game_coin_get(pile);
+          {//check
+            if (!game_data)
+            {
               return {
                 method: "PATCH",
                 body: {
-                  content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_1_id}),
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.data"),
+                },
+              };
+            }
+            if (!(game_data.step===2))
+            {
+              return {
+                method: "PATCH",
+                body: {
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.step"),
+                },
+              };
+            }
+          }
+          
+          //values
+          /*
+          const user_tree = {//[face] : id
+            [game_data.user1Side]: {userId: game_data.user1Id},
+            [game_data.user2Side]: {userId: game_data.user2Id},
+          };
+          */
+          const user_list_id = [game_data.user1Id, userdata.userId];
+          const bet = game_data.bet;
+          //const reward = bet*2;
+
+          //forward
+          await kira_game_coin_pick_user(game_data.id, userdata.userId);
+          
+          //check apples
+          {
+            const user_1_data=await kira_user_get(user_list_id[0], true);
+            if (user_1_data.apples < bet) {
+              //fail because too poor
+              await kira_game_coin_fail(game_data.id);
+              return {
+                method: "PATCH",
+                body: {
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_list_id[0]}),
                 },
               };
             }
 
             const user_2_data=userdata;
-            if (user_2_data.apples < price) {
+            if (user_2_data.apples < bet) {
               //fail because too poor
+              await kira_game_coin_fail(game_data.id);
               return {
                 method: "PATCH",
                 body: {
-                  content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_2_id}),
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_list_id[1]}),
                 },
               };
             }
@@ -273,7 +315,7 @@ export const tricks_all = [
             { length: 2 }, (_, i) => 
             ({
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd trick_resp_edit coinflip+-2+${user_1_id}_0_${user_2_id}_0_${i+1}`,
+              custom_id: `makecmd trick_resp_edit coinflip+-2+${game_data.id}_${i+1}`,
               label: translate(lang, `word.side.${int_to_coinSide[i+1]}`),
               style: ButtonStyleTypes.PRIMARY
             })
@@ -298,28 +340,52 @@ export const tricks_all = [
 
         //step 3
         async ({ data, message, userdata, lang, pile }) =>
-        {
-          pile = pile.split("_");
-          //pile = "<userOne>_<faceOne>_<userTwo>_<faceTwo>_<faceChoose>"
+        {//comes from edit
+          //pile = <gameId>
           //face : 0=None, 1=heads, 2=tails
-
-          const price = tricks_all[2].price;//self price
-
-          
-          const user_1_id = pile[0];
-          let user_1_face = parseInt(pile[1]);
-          const user_2_id = pile[2];
-          let user_2_face = parseInt(pile[3]);
-          const self_face = parseInt(pile[4]);
-          //let self_i = -1;
-
-          if (userdata.userId === user_1_id && !(user_1_id===user_2_id && user_1_face))
-          {
-            user_1_face = self_face;
+          pile=pile.split("_");
+          //game
+          const game_data=await kira_game_coin_get(pile[0]);
+          {//check
+            if (!game_data)
+            {
+              return {
+                method: "POST",
+                body: {
+                  type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                  data:
+                  {
+                    flags: InteractionResponseFlags.EPHEMERAL,
+                    content: translate(lang, "cmd.trick.item.coinflip.fail.data"),
+                  }
+                },
+              };
+            }
+            if (!(game_data.step===3))
+            {
+              return {
+                method: "POST",
+                body: {
+                  type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                  data:
+                  {
+                    flags: InteractionResponseFlags.EPHEMERAL,
+                    content: translate(lang, "cmd.trick.item.coinflip.fail.step"),
+                  }
+                },
+              };
+            }
           }
-          else if (userdata.userId === user_2_id)
+          const bet = game_data.bet;
+          const self_face = parseInt(pile[1]);
+
+          if ((userdata.userId === game_data.user1Id) && !(game_data.user1Id===game_data.user2Id && game_data.user1Side))
           {
-            user_2_face = self_face;
+            game_data.user1Side = self_face;
+          }
+          else if (userdata.userId === game_data.user2Id)
+          {
+            game_data.user2Side = self_face;
           } else {
             //error : ur not playing
             return {
@@ -328,18 +394,38 @@ export const tricks_all = [
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                 data: {
                   flags: InteractionResponseFlags.EPHEMERAL,
-                  content: translate(lang, "cmd.trick.item.coinflip.fail.alien", {'user1Id': user_1_id, 'user2Id': user_2_id})
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.alien", {'user1Id': game_data.user1Id, 'user2Id': game_data.user2Id})
                 },
               },
             }
           }
 
-          console.log(`trick : coin sides : ${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}=${self_face}`);
+          if (game_data.user1Side===game_data.user2Side)
+          {
+            //error : ur not playing
+            return {
+              method: "POST",
+              body: {
+                type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                  flags: InteractionResponseFlags.EPHEMERAL,
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.side")
+                },
+              },
+            }
+          }
 
-          if ((user_1_face>0) && (user_2_face>0))
+          //forward
+          await kira_game_coin_pick_side(game_data.id, game_data.user1Side, game_data.user2Side);
+          //console.log(`trick : coin sides : ${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}=${self_face}`);
+
+          if ((game_data.user1Side>0) && (game_data.user2Side>0))
           {
             //both face choosen
             
+            //create the game
+            
+            //post the launch button
             return {
               method: "POST",
               body: 
@@ -348,14 +434,14 @@ export const tricks_all = [
                 data: {
                   content: translate(lang, "cmd.trick.item.coinflip.pick.throw.intro")
                   +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
-                    "userId": user_1_id,
-                    "face": translate(lang, `word.side.${int_to_coinSide[user_1_face]}`),
-                    "price": price
+                    "userId": game_data.user1Id,
+                    "face": translate(lang, `word.side.${int_to_coinSide[game_data.user1Side]}`),
+                    "bet": bet
                   })
                   +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
-                    "userId": user_2_id,
-                    "face": translate(lang, `word.side.${int_to_coinSide[user_2_face]}`),
-                    "price": price
+                    "userId": game_data.user2Id,
+                    "face": translate(lang, `word.side.${int_to_coinSide[game_data.user2Side]}`),
+                    "bet": bet
                   })
                   +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.outro"),
 
@@ -365,9 +451,9 @@ export const tricks_all = [
                     components: [
                       {
                         type: MessageComponentTypes.BUTTON,
-                        custom_id: `makecmd trick_resp coinflip+1+${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}`,
+                        custom_id: `makecmd trick_resp coinflip+1+${game_data.id}`,
                         label: translate(lang, "cmd.trick.item.coinflip.pick.throw.button", {
-                          "price": price
+                          "bet": bet
                         }),
                         emoji: sett_emoji_coin_throw,
                         style: ButtonStyleTypes.DANGER
@@ -385,23 +471,23 @@ export const tricks_all = [
             { length: 2 }, (_, i) => 
             ({
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd trick_resp_edit coinflip+-2+${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}_${i+1}`,
+              custom_id: `makecmd trick_resp_edit coinflip+-2+${game_data.id}_${i+1}`,
               label: translate(lang, `word.side.${int_to_coinSide[i+1]}`),
               style: ButtonStyleTypes.SECONDARY,
-              disabled: ((user_1_face===(i+1)) || (user_2_face===(i+1)))
+              disabled: ((game_data.user1Side===(i+1)) || (game_data.user2Side===(i+1)))
             })
           );
 
           var content = translate(lang, "cmd.trick.item.coinflip.pick.face.intro")
-          if (user_1_face)
+          if (game_data.user1Side)
             content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.face.user", {
-                "userId": user_1_id,
-                "face": translate(lang, `word.side.${int_to_coinSide[user_1_face]}`)
+                "userId": game_data.user1Id,
+                "face": translate(lang, `word.side.${int_to_coinSide[game_data.user1Side]}`)
               })
-          if (user_2_face)
+          if (game_data.user2Side)
             content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.face.user", {
-                "userId": user_2_id,
-                "face": translate(lang, `word.side.${int_to_coinSide[user_2_face]}`)
+                "userId": game_data.user2Id,
+                "face": translate(lang, `word.side.${int_to_coinSide[game_data.user2Side]}`)
               })
 
           //reture a POST request!!
@@ -429,98 +515,133 @@ export const tricks_all = [
       ],
       
       payoff:
-      async ({ data, message, userdata, token, lang, pile }) =>
-      {
-        pile = pile.split("_");
-
-        const user_tree = {//[face] : id
-          [parseInt(pile[1])]: {userId: pile[0]},
-          [parseInt(pile[3])]: {userId: pile[2]},
-        };
-
-        if (!(user_tree[1] && user_tree[2]))
+        async ({ data, message, userdata, token, lang, pile }) =>
         {
-          throw Error(`invalid faces [${Object.keys(user_tree)}] for [${Object.values(user_tree).map(obj=>obj.userId)}] with pile [${pile}]`);
-        }
-        
-        const winer_index = (randomInt(2)===0) ? 1 : 2;//random
-        const loser_index = (winer_index===1) ? 2 : 1;
-        const bet = 6;
-        const price = tricks_all[2].price;//self price
 
-        
-        {
-          //give back apple to the one who clicked on the flip button
-          await kira_user_add_apple(userdata.id, price);
-        }
-        if (await DiscordMessageChanged(message, token))
-        {
-          throw Error(`double click detected.`);
-        }
-
-        await DiscordRequest(
-          `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
           {
-            method: "PATCH",
-            body: {
-              components: [],
-            },
+            //give back apple to the one who clicked on the flip button
+            await kira_user_add_apple(userdata.id, tricks_all[2].price);
           }
-        );
 
-        //remove price
-        for (let i=1;i<3;i++) {
-          console.log(`HI ${i} = ${user_tree[i].userId} bcs ${user_tree[i]} bcs ${user_tree}`);
-          user_tree[i].userdata=await kira_user_get(user_tree[i].userId);
-          //check if rich
-          if (user_tree[i].userdata.apples<price) {
-            //fail because too poor
-            return {
+          const game_data= await kira_game_coin_pop(pile);
+          console.log("hi : pop game_data=",game_data);
+          {//check
+            if (!game_data)
+            {
+              return {
+                method: "PATCH",
+                body: {
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.data"),
+                },
+              };
+            }
+            if (!(game_data.step===4))
+            {
+              return {
+                method: "PATCH",
+                body: {
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.step"),
+                },
+              };
+            }
+          }
+          
+          //values
+          const user_tree = {//[face] : id
+            [game_data.user1Side]: {userId: game_data.user1Id},
+            [game_data.user2Side]: {userId: game_data.user2Id},
+          };
+          const bet = game_data.bet;
+          const reward = bet*2;
+
+          /*
+          pile = pile.split("_");
+          const user_tree = {//[face] : id
+            [parseInt(pile[1])]: {userId: pile[0]},
+            [parseInt(pile[3])]: {userId: pile[2]},
+          };
+          */
+
+          if (!(user_tree[1] && user_tree[2]))
+          {
+            throw Error(`invalid faces [${Object.keys(user_tree)}] for [${Object.values(user_tree).map(obj=>obj.userId)}] with pile [${pile}]`);
+          }
+          
+          //roll
+          const winer_index = (randomInt(2)===0) ? 1 : 2;//random
+          const loser_index = (winer_index===1) ? 2 : 1;
+
+          /*
+          if (await DiscordMessageChanged(message, token))
+          {
+            throw Error(`double click detected.`);
+          }
+
+          await DiscordRequest(
+            `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
+            {
               method: "PATCH",
               body: {
-                content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_tree[i].userId}),
-              }
-            };
-          }
-        }
-        for (let i=1;i<3;i++) {
-          await kira_apple_send(user_tree[i].userdata.id, price*-1, user_tree[i].userdata.statPtr.id, "coinflip.bet", {"opponentId": user_tree[(i===1) ? 2 : 1].userId});
-        }
-        
-        //give bet
-        await kira_apple_send(user_tree[winer_index].userdata.id, bet, user_tree[winer_index].userdata.statPtr.id, "coinflip.win", {"side": translate(lang, `word.side.${int_to_coinSide[winer_index]}`)});
-        
-        //will be executed after. async without await
-        (async () => {
-          await sleep(3000);
-          await DiscordRequest(
-            `webhooks/${process.env.APP_ID}/${token}`,
-            {
-              method: "POST",
-              body: 
-              {
-                content: translate(
-                  lang,
-                  `cmd.trick.item.coinflip.done`,
-                  {
-                    "winerUserId": user_tree[winer_index].userId,
-                    "loserUserId": user_tree[loser_index].userId,
-                    "bet": bet,
-                    "price": price
-                  }
-                )
-              }
+                content: 'edit',
+                components: [],
+              },
             }
           );
-        })();
+          */
 
-        //message back
-        return {
-          method: "PATCH",
-          body: {
-            content: translate(lang,`cmd.trick.item.coinflip.done.${int_to_coinSide[winer_index]}`)
-          },
-        };
+          //remove bet
+          for (let i=1;i<3;i++) {
+            console.log(`HI ${i} = ${user_tree[i].userId} bcs ${user_tree[i]} bcs ${user_tree}`);
+            user_tree[i].userdata=await kira_user_get(user_tree[i].userId);
+            //check if rich
+            if (user_tree[i].userdata.apples<bet) {
+              //fail because too poor
+              return {
+                method: "PATCH",
+                body: {
+                  content: translate(lang, "cmd.trick.item.coinflip.fail.poor", {"userId": user_tree[i].userId}),
+                }
+              };
+            }
+          }
+          for (let i=1;i<3;i++) {
+            await kira_apple_send(user_tree[i].userdata.id, bet*-1, user_tree[i].userdata.statPtr.id, "coinflip.bet", {"opponentId": user_tree[(i===1) ? 2 : 1].userId});
+          }
+          
+          //give reward
+          await kira_apple_send(user_tree[winer_index].userdata.id, reward, user_tree[winer_index].userdata.statPtr.id, "coinflip.win", {"side": translate(lang, `word.side.${int_to_coinSide[winer_index]}`)});
+          
+          //will be executed after. async without await
+          (async () => {
+            await sleep(3000);
+            await DiscordRequest(
+              `webhooks/${process.env.APP_ID}/${token}`,
+              {
+                method: "POST",
+                body: 
+                {
+                  content: translate(
+                    lang,
+                    `cmd.trick.item.coinflip.done`,
+                    {
+                      "winerUserId": user_tree[winer_index].userId,
+                      "loserUserId": user_tree[loser_index].userId,
+                      "reward": reward,
+                      "bet": bet
+                    }
+                  )
+                }
+              }
+            );
+          })();
+
+          //message back
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang,`cmd.trick.item.coinflip.done.${int_to_coinSide[winer_index]}`)
+            },
+          };
       }
     }
   }
