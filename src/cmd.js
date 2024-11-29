@@ -539,6 +539,7 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
+      //ephemeral: true,
     }
     //ephemeral: true,
   },
@@ -1052,7 +1053,7 @@ async function check_can_alive(dig) {
         await DiscordRequest(`channels/${dm_id}/messages`, {
           method: "POST",
           body: {
-            content: translate(dig.lang, "cmd.comeback.check.all"),
+            content: translate(dig.lang, "cmd.comeback.check.self"),
           },
         });
       } catch (e) {
@@ -1775,7 +1776,7 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang, token }
 
   //remove buttons
   await DiscordRequest(
-    `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
+    `channels/${message.channel_id}/messages/${message.id}`,
     {
       method: "PATCH",
       body: {
