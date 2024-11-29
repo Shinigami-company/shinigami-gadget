@@ -506,6 +506,7 @@ const commands_structure = {
       exe: cmd_drop,
       checks: [
         [check_can_alive, false],
+        [check_react_is_self, false],
         [check_has_noDrop, true],
         [check_has_book, false],
       ],
@@ -2366,7 +2367,7 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
           };
         } else {
           //pay before continue
-          await kira_apple_send(userdata, -1 * h_price);
+          await kira_apple_send(userdata.id, -1 * h_price);
         }
       }
     }

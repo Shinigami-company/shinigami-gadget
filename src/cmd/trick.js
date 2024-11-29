@@ -607,13 +607,13 @@ export const tricks_all = [
           }
           for (let i=1;i<3;i++) {
             await kira_apple_send(user_tree[i].userdata.id, bet*-1, user_tree[i].userdata.statPtr.id, "coinflip.bet", {"opponentId": user_tree[(i===1) ? 2 : 1].userId});
-            if (!(userdata.userId === game_data.user1Id))
+            if (!(game_data.user1Id === game_data.user2Id))
               await stats_simple_add(user_tree[i].userdata.statPtr.id, "game_coinPlay");
           }
           
           //give reward
           await kira_apple_send(user_tree[winer_index].userdata.id, reward, user_tree[winer_index].userdata.statPtr.id, "coinflip.win", {"side": translate(lang, `word.side.${int_to_coinSide[winer_index]}`)});
-          if (!(userdata.userId === game_data.user1Id))
+          if (!(game_data.user1Id === game_data.user2Id))
             await stats_simple_add(user_tree[winer_index].userdata.statPtr.id, "game_coinWin");
           
           //will be executed after. async without await

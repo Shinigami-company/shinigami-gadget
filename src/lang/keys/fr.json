@@ -150,7 +150,7 @@
 "cmd.trick.item.coinflip.fail.step": "*le shinigami dit que tu as été dépassé*",
 "cmd.trick.item.coinflip.done.heads": "## ||:coin: pile||",
 "cmd.trick.item.coinflip.done.tails": "## ||:coin: face||",
-"cmd.trick.item.coinflip.done": "**||<@$[winerUserId]>|| a gagné.**   `+$[reward]🍎`",
+"cmd.trick.item.coinflip.done": "**<@$[winerUserId]> a gagné.**   `+$[reward]🍎`",
 "cmd.trick.fail.poor": "J'ai besoin de plus de pommes.",
 
 "cmd.kira.fail.channel": "tu ne peux pas utiliser ton death note ici",
