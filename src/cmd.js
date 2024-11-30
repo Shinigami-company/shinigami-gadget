@@ -1,7 +1,13 @@
 console.log(` cmd : refresh`);
 //--- sett ---
 
-import { deferedActionType, FeedbackState, KnowUsableBy, rememberTasksType, userBanType } from "./enum.ts";
+import {
+  deferedActionType,
+  FeedbackState,
+  KnowUsableBy,
+  rememberTasksType,
+  userBanType,
+} from "./enum.ts";
 
 import { Settings } from "./sett.js";
 
@@ -21,7 +27,15 @@ import {
 import { DiscordRequest } from "./utils.js";
 import { DiscordUserById, DiscordUserOpenDm } from "./utils.js";
 
-import { SETT_CMD, sett_catalog_drops, sett_catalog_knows, sett_emoji_apple_croc, sett_emoji_apple_none, sett_emoji_burn_confirm, sett_emoji_feedback_confirm } from "./sett.js";
+import {
+  SETT_CMD,
+  sett_catalog_drops,
+  sett_catalog_knows,
+  sett_emoji_apple_croc,
+  sett_emoji_apple_none,
+  sett_emoji_burn_confirm,
+  sett_emoji_feedback_confirm,
+} from "./sett.js";
 
 //own
 //import { sleep } from './tools.js';
@@ -34,7 +48,12 @@ import {
   lang_set,
 } from "./lang.js"; //all user langugage things
 
-import { kira_do_refreshCommands, kira_user_check_banTime, kira_user_remove_ban, kira_user_set_ban } from "./use/kira.js"; // god register commands
+import {
+  kira_do_refreshCommands,
+  kira_user_check_banTime,
+  kira_user_remove_ban,
+  kira_user_set_ban,
+} from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
   kira_user_set_life,
@@ -163,7 +182,7 @@ const commands_structure = {
             {
               name: "ban",
               value: "ban",
-              description: "confiscate someone's death note",
+              description: "confiscate someone's death note (for a span)",
             },
             {
               name: "pardon",
@@ -239,7 +258,7 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   feedback: {
@@ -248,16 +267,16 @@ const commands_structure = {
       checks: [
         [check_react_is_self, true],
         [check_can_feedback, true],
-      ]
+      ],
     },
     register: {
       name: "feedback",
-      description: "send a message to the realm of the dead"
+      description: "send a message to the realm of the dead",
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-      ephemeral: true
-    }
+      ephemeral: true,
+    },
   },
   feedback_form: {
     functions: {
@@ -270,7 +289,7 @@ const commands_structure = {
     atr: {
       defered: deferedActionType.NO,
       notDeferred: true,
-      systemOnly: true
+      systemOnly: true,
     },
   },
 
@@ -278,7 +297,8 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, true],
         [check_has_noDrop, true],
@@ -300,13 +320,14 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, true],
         [check_has_noDrop, true],
@@ -320,14 +341,17 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   //GET
   apple: {
     functions: {
       exe: cmd_apple,
-      checks: [[check_is_clean, true],[check_can_alive, false]],
+      checks: [
+        [check_is_clean, true],
+        [check_can_alive, false],
+      ],
     },
     register: {
       name: "apple",
@@ -338,7 +362,7 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   lang: {
@@ -363,13 +387,14 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   stats: {
     functions: {
       exe: cmd_stats,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
       ],
@@ -395,13 +420,14 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   running: {
     functions: {
       exe: cmd_running,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
       ],
@@ -414,13 +440,14 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   quest: {
     functions: {
       exe: cmd_quest,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
       ],
@@ -433,13 +460,16 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   top: {
     functions: {
       exe: cmd_top,
-      checks: [[check_is_clean, true],[check_can_alive, false]],
+      checks: [
+        [check_is_clean, true],
+        [check_can_alive, false],
+      ],
     },
     register: {
       name: "top",
@@ -463,13 +493,14 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   rules: {
     functions: {
       exe: cmd_rules,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -483,13 +514,14 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   see: {
     functions: {
       exe: cmd_see,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -512,14 +544,15 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   //SET
   drop: {
     functions: {
       exe: cmd_drop,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, false],
         [check_has_noDrop, true],
@@ -534,13 +567,14 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   trick: {
     functions: {
       exe: cmd_trick,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -555,13 +589,14 @@ const commands_structure = {
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
       //ephemeral: true,
-    }
+    },
     //ephemeral: true,
   },
   trick_resp: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -570,13 +605,14 @@ const commands_structure = {
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
       ephemeral: false,
-      systemOnly: true
-    }
+      systemOnly: true,
+    },
   },
   trick_resp_eph: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -585,13 +621,14 @@ const commands_structure = {
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
       ephemeral: true,
-      systemOnly: true
-    }
+      systemOnly: true,
+    },
   },
   trick_resp_edit: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -600,14 +637,15 @@ const commands_structure = {
     atr: {
       defered: deferedActionType.NO,
       notDeferred: true,
-      systemOnly: true
-    }
+      systemOnly: true,
+    },
   },
 
   kira: {
     functions: {
       exe: cmd_kira,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -643,13 +681,14 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
   },
 
   know: {
     functions: {
       exe: cmd_know,
-      checks: [[check_is_clean, true],
+      checks: [
+        [check_is_clean, true],
         [check_can_alive, true],
         [check_has_noDrop, true],
         [check_has_book, true],
@@ -661,7 +700,7 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-    }
+    },
     /*
     register:
     {
@@ -739,7 +778,8 @@ export async function kira_cmd(f_deep, f_cmd) {
 
     //!no report
 
-    return await DiscordRequest(// POST the error message
+    return await DiscordRequest(
+      // POST the error message
       `interactions/${f_deep.id}/${f_deep.token}/callback`,
       {
         method: "POST",
@@ -757,13 +797,11 @@ export async function kira_cmd(f_deep, f_cmd) {
     );
   }
 
-  
-  let errorWhen = 'CmdIdk'; // when is actually used as [errorKey] but define context. in the future :
+  let errorWhen = "CmdIdk"; // when is actually used as [errorKey] but define context. in the future :
   // - errorwhen has to be [errorContext] so different context debug message
   // - handle know issues giving each one a new [errorKey]
 
-
-/* Interaction Callback Type
+  /* Interaction Callback Type
 ~~PONG~~ : dirrectly at POST-interactions.js
 (CHANNEL_MESSAGE_WITH_SOURCE) : never used
   DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE : at request 1
@@ -776,15 +814,15 @@ export async function kira_cmd(f_deep, f_cmd) {
 */
 
   try {
-    
     //-checks-
-    errorWhen = 'CmdCheck';
+    errorWhen = "CmdCheck";
 
     for (let v of commands_structure[f_cmd].functions.checks) {
       const r_check_message = await v[0](f_deep);
       if (r_check_message) {
         //if a message, then whe should stop there
-        return await DiscordRequest(// POST the return message
+        return await DiscordRequest(
+          // POST the return message
           `interactions/${f_deep.id}/${f_deep.token}/callback`,
           {
             method: "POST",
@@ -792,7 +830,7 @@ export async function kira_cmd(f_deep, f_cmd) {
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
               data: {
                 flags: v[1] ? InteractionResponseFlags.EPHEMERAL : undefined,
-                ...r_check_message
+                ...r_check_message,
               },
             },
           }
@@ -801,110 +839,123 @@ export async function kira_cmd(f_deep, f_cmd) {
     }
 
     //-defered-
-    const defered_action = commands_structure[f_cmd].atr.defered;//have to be set
+    const defered_action = commands_structure[f_cmd].atr.defered; //have to be set
     const defered_ephemeral = commands_structure[f_cmd].atr?.ephemeral;
-    errorWhen = 'CmdPrepare1';
+    errorWhen = "CmdPrepare1";
 
-
-    if (defered_action || defered_action!==deferedActionType.NO)
-    {
-      
+    if (defered_action || defered_action !== deferedActionType.NO) {
       //request fundation
-      let response_request = 
-      {
-      method: "POST",
-      body: {
-        type: 0//will be edited as response type.
+      let response_request = {
+        method: "POST",
+        body: {
+          type: 0, //will be edited as response type.
         },
       };
 
       //specific defered action
-      switch (defered_action)
-      {
-        case deferedActionType.DUMMY: {
-          response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
-          response_request.method = "PATCH";
-          //But only works when f_deep.type is componentsInteraction
-        } break;
+      switch (defered_action) {
+        case deferedActionType.DUMMY:
+          {
+            response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
+            response_request.method = "PATCH";
+            //But only works when f_deep.type is componentsInteraction
+          }
+          break;
 
-        case deferedActionType.WAIT_MESSAGE: {
-          response_request.body.type = InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
-          if (defered_ephemeral)
-            response_request.body.data = {flags: InteractionResponseFlags.EPHEMERAL};
-        } break;
-        
-        case deferedActionType.WAIT_UPDATE: {
-          response_request.body.type = InteractionResponseType.DEFERRED_UPDATE_MESSAGE;
-        } break;
-        
-        case deferedActionType.EDIT_CLEAN_BUTTONS: {
-          response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
-          response_request.method = "PATCH";
-          response_request.body.components = [];
-        } break;
+        case deferedActionType.WAIT_MESSAGE:
+          {
+            response_request.body.type =
+              InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
+            if (defered_ephemeral)
+              response_request.body.data = {
+                flags: InteractionResponseFlags.EPHEMERAL,
+              };
+          }
+          break;
+
+        case deferedActionType.WAIT_UPDATE:
+          {
+            response_request.body.type =
+              InteractionResponseType.DEFERRED_UPDATE_MESSAGE;
+          }
+          break;
+
+        case deferedActionType.EDIT_CLEAN_BUTTONS:
+          {
+            response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
+            response_request.method = "PATCH";
+            response_request.body.components = [];
+          }
+          break;
       }
-      
+
       //request replyed
       f_deep.replyed = response_request.body.type;
 
       //send request
-      errorWhen = 'CmdRequest1';
-      await DiscordRequest(// POST the deferred response
-        `interactions/${f_deep.id}/${f_deep.token}/callback`, response_request
+      errorWhen = "CmdRequest1";
+      await DiscordRequest(
+        // POST the deferred response
+        `interactions/${f_deep.id}/${f_deep.token}/callback`,
+        response_request
       );
-    };
-
+    }
 
     //-command-
-    errorWhen = 'CmdExecute';
+    errorWhen = "CmdExecute";
 
-    const return_request=await commands_structure[f_cmd].functions.exe(f_deep);
-    
+    const return_request = await commands_structure[f_cmd].functions.exe(
+      f_deep
+    );
+
     //-doing-
-    errorWhen = 'CmdPrepare2';
-    
+    errorWhen = "CmdPrepare2";
+
     if (!return_request) return;
-    let url=`nourl/atall`;
-    const return_method=return_request.method.toUpperCase();//error if not method
-    
-    switch (f_deep.replyed)
-    {
+    let url = `nourl/atall`;
+    const return_method = return_request.method.toUpperCase(); //error if not method
+
+    switch (f_deep.replyed) {
       case InteractionResponseType.DEFERRED_UPDATE_MESSAGE:
-      {//PATCH last message
-        //if (return_method==="PATCH") else ERROR
-        url=`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/${f_deep.message}`;
-      } break;
-      
+        {
+          //PATCH last message
+          //if (return_method==="PATCH") else ERROR
+          url = `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/${f_deep.message}`;
+        }
+        break;
+
       case InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE:
-      {//PATCH sended message
-        //if (return_method==="PATCH") else ERROR
-        url=`webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`;
-      } break;
+        {
+          //PATCH sended message
+          //if (return_method==="PATCH") else ERROR
+          url = `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`;
+        }
+        break;
 
-      case InteractionResponseType.UPDATE_MESSAGE: {}
+      case InteractionResponseType.UPDATE_MESSAGE: {
+      }
       case false:
-      {//POST by the returned request
-        //if (return_method==="POST") else ERROR
-        url=`interactions/${f_deep.id}/${f_deep.token}/callback`;
-      } break;
-
+        {
+          //POST by the returned request
+          //if (return_method==="POST") else ERROR
+          url = `interactions/${f_deep.id}/${f_deep.token}/callback`;
+        }
+        break;
     }
-    
-    errorWhen = 'CmdRequest2';
+
+    errorWhen = "CmdRequest2";
     return await DiscordRequest(url, return_request);
-    
 
-    errorWhen = 'CmdEnd';
+    errorWhen = "CmdEnd";
     throw Error("the end");
-
   } catch (e) {
     if (!f_deep.replyed) {
-
       //-defered-
       //if has not been defered before
 
       try {
-        await DiscordRequest(// POST the deferred response
+        await DiscordRequest(
+          // POST the deferred response
           `interactions/${f_deep.id}/${f_deep.token}/callback`,
           {
             method: "POST",
@@ -913,10 +964,9 @@ export async function kira_cmd(f_deep, f_cmd) {
             },
           }
         );
-      } 
-      catch (e2) {
-        await kira_error_report(e2, 'DiscordRequest', 'error', {}, 'en');
-      };
+      } catch (e2) {
+        await kira_error_report(e2, "DiscordRequest", "error", {}, "en");
+      }
     }
 
     console.error(`cmd : catch : javascript ERROR [${e.code}] : `, e);
@@ -932,17 +982,19 @@ export async function kira_cmd(f_deep, f_cmd) {
         e,
         "GadgetInternal",
         "command",
-        "error.message.level.critical",//this issue is critical
+        "error.message.level.critical", //this issue is critical
         f_deep,
         f_cmd,
         true
-      );//throw
+      ); //throw
     }
 
     //-handle-
     //any other error
 
-    console.error(`cmd : catch : throw ERROR : code=${e.code} name=${e.name} message=${e.message}`);
+    console.error(
+      `cmd : catch : throw ERROR : code=${e.code} name=${e.name} message=${e.message}`
+    );
     kira_error_throw(
       e,
       errorWhen,
@@ -951,7 +1003,7 @@ export async function kira_cmd(f_deep, f_cmd) {
       f_deep,
       f_cmd,
       true
-    );//throw
+    ); //throw
 
     return; // will not bcs throw before
   }
@@ -965,28 +1017,66 @@ export function kira_error_msg(f_errorKey, f_errorObject, f_lang) {
   });
 }
 
-export async function kira_error_report(f_errorObject, f_errorKey, f_contextKey, f_contextValues, f_athorValues, f_lang) {
-  const context = translate(f_lang, `post.error.tree.context.${f_contextKey}`, f_contextValues);
-  const stack = f_errorObject.stack.replace(f_errorObject.message, '').replace(f_errorObject.name, '').substring(2).replace(/    at /gm, '');
-  const code = (f_errorObject.code) ? f_errorObject.code : 'no';
-  const all = { error: f_errorObject, errorStack: stack, errorCode: code, errorKey: f_errorKey, context, ...f_athorValues };//! should we remove f_athorValues from here?
-  await webhook_reporter.error.post(f_lang, all, { 'author': (f_athorValues?.user) ? true : false }, 16711680);
+export async function kira_error_report(
+  f_errorObject,
+  f_errorKey,
+  f_contextKey,
+  f_contextValues,
+  f_athorValues,
+  f_lang
+) {
+  const context = translate(
+    f_lang,
+    `post.error.tree.context.${f_contextKey}`,
+    f_contextValues
+  );
+  const stack = f_errorObject.stack
+    .replace(f_errorObject.message, "")
+    .replace(f_errorObject.name, "")
+    .substring(2)
+    .replace(/    at /gm, "");
+  const code = f_errorObject.code ? f_errorObject.code : "no";
+  const all = {
+    error: f_errorObject,
+    errorStack: stack,
+    errorCode: code,
+    errorKey: f_errorKey,
+    context,
+    ...f_athorValues,
+  }; //! should we remove f_athorValues from here?
+  await webhook_reporter.error.post(
+    f_lang,
+    all,
+    { author: f_athorValues?.user ? true : false },
+    16711680
+  );
 }
 
-
 export async function kira_error_throw(
-  f_errorObject,//the error object itself
-  f_errorKey,//personnal error key to be displayed (only to dev for now)
-  f_errorContext,//the error context key for report
+  f_errorObject, //the error object itself
+  f_errorKey, //personnal error key to be displayed (only to dev for now)
+  f_errorContext, //the error context key for report
   //actuals aviable : ['command', 'remember', 'error', 'any']
-  f_errorMessageKey,//the error message to be translated
-  f_deep,//you know
-  f_cmd,//the command used to come here (to change : too specific parameter)
+  f_errorMessageKey, //the error message to be translated
+  f_deep, //you know
+  f_cmd, //the command used to come here (to change : too specific parameter)
   f_ifThrow = true
 ) {
-  
   //POST to admin webhook
-  await kira_error_report(f_errorObject, f_errorKey, f_errorContext, {user: f_deep.user, userdata: f_deep.userdata, channel: f_deep.channel, command: f_cmd, type: f_deep.type}, {user: f_deep.user, userdata: f_deep.userdata}, f_deep.lang);
+  await kira_error_report(
+    f_errorObject,
+    f_errorKey,
+    f_errorContext,
+    {
+      user: f_deep.user,
+      userdata: f_deep.userdata,
+      channel: f_deep.channel,
+      command: f_cmd,
+      type: f_deep.type,
+    },
+    { user: f_deep.user, userdata: f_deep.userdata },
+    f_deep.lang
+  );
 
   //PATCH user message
   await DiscordRequest(
@@ -1024,7 +1114,7 @@ export function cmd_register() {
 function check_is_god({ lang, userdata }) {
   if (!userdata.is_god) {
     return {
-      content: translate(lang, "check.god.not")
+      content: translate(lang, "check.god.not"),
     };
   }
   return undefined;
@@ -1034,7 +1124,7 @@ function check_is_god({ lang, userdata }) {
 function check_is_alive({ lang, userdata }) {
   if (!userdata.is_alive) {
     return {
-      content: translate(lang, "check.alive.not")
+      content: translate(lang, "check.alive.not"),
     };
   }
   return undefined;
@@ -1084,30 +1174,29 @@ async function check_can_alive({ lang, userdata }) {
 function check_has_book({ lang, userbook }) {
   if (!userbook) {
     return {
-      content: translate(lang, "check.hasbook.not")
+      content: translate(lang, "check.hasbook.not"),
     };
   }
   return undefined;
 }
 
 function check_has_noDrop({ lang, userdata }) {
-  
-  let gap=0;
-  {//calculate drop
+  let gap = 0;
+  {
+    //calculate drop
     const iso = userdata.giveUp;
-    if (iso)
-    {
+    if (iso) {
       const span = Math.ceil(
         (new Date(iso).getTime() - new Date().getTime()) / 1000
       );
-      if (span > 0) gap=span;
+      if (span > 0) gap = span;
     }
   }
   if (gap > 0) {
     return {
       content: translate(lang, "check.nodrop.not", {
         time: time_format_string_from_int(gap, lang),
-      })
+      }),
     };
   }
   return undefined;
@@ -1115,33 +1204,39 @@ function check_has_noDrop({ lang, userdata }) {
 
 //"ban" check
 async function check_is_clean({ lang, userdata }) {
-
   switch (userdata.banValue) {
-    
-    case userBanType.NO: {}
-    case userBanType.PARDON: {}
-    case userBanType.EXPIRE: {}
-    case null: {
-      return undefined;
-    } break;
-    
-    case userBanType.PERMA: {
-      return {
-        content: translate(lang, "check.ban.is.perma")
-      };
-    } break;
-    
-    case userBanType.TEMP: {
-      const gap=await kira_user_check_banTime(userdata.id);//something to check
-      if (gap>0)
+    case userBanType.NO: {
+    }
+    case userBanType.PARDON: {
+    }
+    case userBanType.EXPIRE: {
+    }
+    case null:
+      {
+        return undefined;
+      }
+      break;
+
+    case userBanType.PERMA:
       {
         return {
-          content: translate(lang, "check.ban.is.temp", {
-            time: time_format_string_from_int(gap, lang),
-          })
+          content: translate(lang, "check.ban.is.perma"),
         };
       }
-    } break;
+      break;
+
+    case userBanType.TEMP:
+      {
+        const gap = await kira_user_check_banTime(userdata.id); //something to check
+        if (gap > 0) {
+          return {
+            content: translate(lang, "check.ban.is.temp", {
+              time: time_format_string_from_int(gap, lang),
+            }),
+          };
+        }
+      }
+      break;
   }
   return undefined;
 }
@@ -1157,7 +1252,7 @@ function check_react_is_self({ lang, user, type, message }) {
     message.interaction.user.id !== user.id
   ) {
     return {
-      content: translate(lang, "check.react.self.not")
+      content: translate(lang, "check.react.self.not"),
     };
   }
   return undefined;
@@ -1171,7 +1266,7 @@ async function check_can_feedback({ lang, userdata }) {
       content: translate(lang, "check.feedback.not", {
         //time: time_format_string_from_int(h_gap, lang),
         time: time_format_string_from_int(SETT_CMD.feedback.couldown, lang),
-      })
+      }),
     };
   }
   return undefined;
@@ -1279,7 +1374,8 @@ async function cmd_god({ userdata, data, lang, locale }) {
           body: {
             content: translate(
               lang,
-              "cmd.god.sub.forcedrop.done." + (arg_amount == 0 ? "zero" : "more"),
+              "cmd.god.sub.forcedrop.done." +
+                (arg_amount == 0 ? "zero" : "more"),
               {
                 targetId: arg_user,
                 time: time_format_string_from_int(arg_amount, lang),
@@ -1289,10 +1385,10 @@ async function cmd_god({ userdata, data, lang, locale }) {
         };
       }
       break;
-    
-    
+
     //#nofeedback subcommand
-    case "nofeedback": {
+    case "nofeedback":
+      {
         if (!arg_user) {
           return {
             method: "PATCH",
@@ -1301,7 +1397,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
             },
           };
         }
-        
+
         if (arg_amount === null) {
           return {
             method: "PATCH",
@@ -1311,13 +1407,18 @@ async function cmd_god({ userdata, data, lang, locale }) {
           };
         }
 
-        await kira_user_set_feedback(userdata.id, FeedbackState.SENDED, arg_amount);
+        await kira_user_set_feedback(
+          userdata.id,
+          FeedbackState.SENDED,
+          arg_amount
+        );
         return {
           method: "PATCH",
           body: {
             content: translate(
               lang,
-              "cmd.god.sub.nofeedback.done." + (arg_amount == 0 ? "zero" : "more"),
+              "cmd.god.sub.nofeedback.done." +
+                (arg_amount == 0 ? "zero" : "more"),
               {
                 targetId: arg_user,
                 time: time_format_string_from_int(arg_amount, lang),
@@ -1325,10 +1426,12 @@ async function cmd_god({ userdata, data, lang, locale }) {
             ),
           },
         };
-    } break;
+      }
+      break;
 
     //#ban subcommand
-    case "ban": {
+    case "ban":
+      {
         if (!arg_user) {
           return {
             method: "PATCH",
@@ -1344,7 +1447,10 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.sub.ban.done.temp", {"targetId": arg_user, "time": time_format_string_from_int(arg_amount, lang)}),
+              content: translate(lang, "cmd.god.sub.ban.done.temp", {
+                targetId: arg_user,
+                time: time_format_string_from_int(arg_amount, lang),
+              }),
             },
           };
         } else {
@@ -1352,15 +1458,18 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.sub.ban.done.perma", {"targetId": arg_user}),
+              content: translate(lang, "cmd.god.sub.ban.done.perma", {
+                targetId: arg_user,
+              }),
             },
-          }; 
+          };
         }
+      }
+      break;
 
-    } break;
-    
     //#unban subcommand
-    case "unban": {
+    case "unban":
+      {
         if (!arg_user) {
           return {
             method: "PATCH",
@@ -1377,8 +1486,8 @@ async function cmd_god({ userdata, data, lang, locale }) {
             content: translate(lang, "cmd.god.sub.unban.done"),
           },
         };
-    } break;
-
+      }
+      break;
 
     //#apple subcommand (#apple_fake & #apple_give)
     case "apple_fake": {
@@ -1422,9 +1531,15 @@ async function cmd_god({ userdata, data, lang, locale }) {
           h_given < 0 ? "remove" : "add"
         }`;
 
-        kira_apple_send(targetdata.id, h_given, undefined, "admin." + h_identity, {
-          displayed: Math.abs(arg_amount),
-        });
+        kira_apple_send(
+          targetdata.id,
+          h_given,
+          undefined,
+          "admin." + h_identity,
+          {
+            displayed: Math.abs(arg_amount),
+          }
+        );
 
         return {
           method: "PATCH",
@@ -1510,7 +1625,8 @@ async function cmd_god({ userdata, data, lang, locale }) {
           method: "PATCH",
           body: {
             content:
-              translate(lang, "cmd.god.sub.test.done") + (r ? " `" + r + "`" : ""),
+              translate(lang, "cmd.god.sub.test.done") +
+              (r ? " `" + r + "`" : ""),
           },
         };
       }
@@ -1584,7 +1700,6 @@ async function cmd_god({ userdata, data, lang, locale }) {
 async function cmd_feedback({ data, userdata, lang, user }) {
   //is the command alone
   if (!data.options) {
-
     //PATCH confirmation
     return {
       method: "PATCH",
@@ -1599,7 +1714,7 @@ async function cmd_feedback({ data, userdata, lang, user }) {
                 custom_id: `makecmd feedback_form true`,
                 label: translate(lang, "cmd.feedback.confirm.yes"),
                 emoji: sett_emoji_feedback_confirm,
-                style:ButtonStyleTypes.PRIMARY,
+                style: ButtonStyleTypes.PRIMARY,
                 //style:ButtonStyleTypes.SECONDARY,
                 disabled: false,
               },
@@ -1608,52 +1723,54 @@ async function cmd_feedback({ data, userdata, lang, user }) {
                 custom_id: `makecmd feedback_form false`,
                 label: translate(lang, "cmd.feedback.confirm.no"),
                 //emoji: {name: "" },
-                style:ButtonStyleTypes.SECONDARY,
+                style: ButtonStyleTypes.SECONDARY,
                 disabled: false,
-              }
-            ]
-          }
-        ]
-      }
-    }
+              },
+            ],
+          },
+        ],
+      },
+    };
   }
-  
-  const letter = data.options.find((opt) => opt.name==='letter').value;
-  const last = data.options.find((opt) => opt.name==='last').value;
+
+  const letter = data.options.find((opt) => opt.name === "letter").value;
+  const last = data.options.find((opt) => opt.name === "last").value;
 
   //POST to admin webhook
   {
     const all = { letter, last, userdata, user };
-    await webhook_reporter.feedback.post(lang, all, { 'footer': (last.length>0) }, user.accent_color);
+    await webhook_reporter.feedback.post(
+      lang,
+      all,
+      { footer: last.length > 0 },
+      user.accent_color
+    );
   }
 
   //set state
   //! before
-  await kira_user_set_feedback(userdata.id, FeedbackState.SENDED, SETT_CMD.feedback.couldown);
+  await kira_user_set_feedback(
+    userdata.id,
+    FeedbackState.SENDED,
+    SETT_CMD.feedback.couldown
+  );
 
   return {
     method: "PATCH",
     body: {
-      content: translate(
-        lang,
-        "cmd.feedback.done",
-        { letter, last },
-      ),
+      content: translate(lang, "cmd.feedback.done", { letter, last }),
     },
   };
 }
 
 async function cmd_feedback_form({ data, message, lang, token, id }) {
-
   //its no button
-  if (!data.options[0].value) 
-  {
-    await DiscordRequest(
-      `interactions/${id}/${token}/callback`, {
+  if (!data.options[0].value) {
+    await DiscordRequest(`interactions/${id}/${token}/callback`, {
       method: "POST",
       body: {
         type: InteractionResponseType.UPDATE_MESSAGE,
-      }
+      },
     });
     //else didnt valid token
 
@@ -1664,15 +1781,14 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
         method: "DELETE",
       }
     );
-    return;//! return nothing withtout feedback
+    return; //! return nothing withtout feedback
   }
 
   //call the form
-  
+
   //POST input modal
   {
-    await DiscordRequest(
-      `interactions/${id}/${token}/callback`, {
+    await DiscordRequest(`interactions/${id}/${token}/callback`, {
       method: "POST",
       body: {
         type: InteractionResponseType.MODAL,
@@ -1681,43 +1797,48 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
           custom_id: `makecmd feedback`,
           components: [
             {
-            type: MessageComponentTypes.ACTION_ROW,
-            components: [
+              type: MessageComponentTypes.ACTION_ROW,
+              components: [
                 {
                   type: MessageComponentTypes.INPUT_TEXT,
                   style: TextStyleTypes.PARAGRAPH,
                   custom_id: `feedbackin`,
                   label: translate(lang, "cmd.feedback.modal.letter.label"),
-                  placeholder: translate(lang, "cmd.feedback.modal.letter.placeholder"),
+                  placeholder: translate(
+                    lang,
+                    "cmd.feedback.modal.letter.placeholder"
+                  ),
                   value: translate(lang, "cmd.feedback.modal.letter.value"),
                   required: true,
                   min_length: 13,
                   max_length: 666,
-                }
-              ]
+                },
+              ],
             },
             {
-            type: MessageComponentTypes.ACTION_ROW,
-            components: [
+              type: MessageComponentTypes.ACTION_ROW,
+              components: [
                 {
                   type: MessageComponentTypes.INPUT_TEXT,
                   style: TextStyleTypes.SHORT,
                   custom_id: `feedbacklast`,
                   label: translate(lang, "cmd.feedback.modal.last.label"),
-                  placeholder: translate(lang, "cmd.feedback.modal.last.placeholder"),
+                  placeholder: translate(
+                    lang,
+                    "cmd.feedback.modal.last.placeholder"
+                  ),
                   value: translate(lang, "cmd.feedback.modal.last.value"),
                   required: false,
                   min_length: 0,
                   max_length: 46,
-                }
-              ]
-            }
-          ]
+                },
+              ],
+            },
+          ],
         },
       },
     });
   }
-
 
   //remove buttons
   //cant be done before
@@ -1731,13 +1852,11 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
     }
   );
 
-  return;//! return nothing
-  
+  return; //! return nothing
+
   //send message
   if (false) {
-    await DiscordRequest(
-      `webhooks/${process.env.APP_ID}/${token}`,
-    {
+    await DiscordRequest(`webhooks/${process.env.APP_ID}/${token}`, {
       method: "POST",
       body: {
         content: translate(lang, "cmd.feedback.writting"),
@@ -1746,12 +1865,11 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
           flags: InteractionResponseFlags.EPHEMERAL,
         },
         */
-      }
+      },
     });
     return;
   }
-};
-
+}
 
 //#claim command
 async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
@@ -1865,7 +1983,15 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
 }
 
 //#burn command
-async function cmd_burn({ message, type, data, userbook, userdata, lang, token }) {
+async function cmd_burn({
+  message,
+  type,
+  data,
+  userbook,
+  userdata,
+  lang,
+  token,
+}) {
   if (!userbook) {
     return {
       method: "PATCH",
@@ -1975,11 +2101,11 @@ async function cmd_burn({ message, type, data, userbook, userdata, lang, token }
 
 //#apples command
 async function cmd_apple({ userdata, locale, lang }) {
-  let h_apples_claimed = 0;//only for display
+  let h_apples_claimed = 0; //only for display
   let h_txt_claims = "";
   let h_txt_more = "";
 
-  if ((check_has_noDrop({ userdata })) && userdata.apples >= 10)
+  if (check_has_noDrop({ userdata }) && userdata.apples >= 10)
     h_txt_more = "\n" + translate(lang, `cmd.apples.get.why`);
 
   //claims
@@ -1996,7 +2122,11 @@ async function cmd_apple({ userdata, locale, lang }) {
       if (h_dayGapDiff != 0) {
         //claim you daily
         await kira_user_set_daily(userdata.id);
-        await kira_apple_send(userdata.id, SETT_CMD.apple.dailyAmount, userdata.statPtr.id);//!no claim message because rigth here
+        await kira_apple_send(
+          userdata.id,
+          SETT_CMD.apple.dailyAmount,
+          userdata.statPtr.id
+        ); //!no claim message because rigth here
         h_apples_claimed += SETT_CMD.apple.dailyAmount;
         h_txt_claims +=
           translate(lang, `cmd.apples.claim.daily`, { added: 1 }) + "\n";
@@ -2024,7 +2154,7 @@ async function cmd_apple({ userdata, locale, lang }) {
         h_txt_claims +=
           translate(lang, `cmd.apples.claim.${h_claims[i].type}`, h_claims[i]) +
           "\n";
-        h_apples_claimed += h_claims[i].added;//no more here
+        h_apples_claimed += h_claims[i].added; //no more here
       }
     }
   }
@@ -2439,7 +2569,6 @@ async function cmd_see({ data, userbook, lang }) {
 
 //#drop command
 async function cmd_drop({ data, token, userdata, message, lang }) {
-
   //take confirmation
   let h_span = 0;
   let h_price = 0;
@@ -2467,16 +2596,13 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
                   options: (() => {
                     let buttons = [];
                     for (let i in sett_catalog_drops) {
-                      const v = sett_catalog_drops[i]
+                      const v = sett_catalog_drops[i];
                       buttons.push({
                         value: String(i),
                         emoji: sett_emoji_apple_croc,
                         label: translate(lang, `cmd.drop.shop.button.label`, {
                           price: v.price,
-                          time: time_format_string_from_int(
-                            v.span,
-                            lang
-                          ),
+                          time: time_format_string_from_int(v.span, lang),
                           unit: translate(
                             lang,
                             `word.apple${v.price > 1 ? "s" : ""}`
@@ -2651,7 +2777,7 @@ async function cmd_kira({
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
 
   if (!h_will_fail) {
-    if ((check_has_noDrop({ userdata: h_victim_data })) > 0) {
+    if (check_has_noDrop({ userdata: h_victim_data }) > 0) {
       return {
         method: "PATCH",
         body: {
@@ -2837,7 +2963,9 @@ async function cmd_kira({
     h_victim_data?.id,
     run_combo
   );
-  kira_remember_task_add(h_finalDate, rememberTasksType.KIRA, { runId: h_run.id });
+  kira_remember_task_add(h_finalDate, rememberTasksType.KIRA, {
+    runId: h_run.id,
+  });
 
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
@@ -3008,7 +3136,6 @@ async function cmd_kira({
 
 //is executed by [./remember.js]
 export async function cmd_kira_execute(data) {
-
   //if (!data.run)
   console.log(` kira : EXECUTE. runId=${data.runId}`);
 
@@ -3475,7 +3602,7 @@ async function cmd_know({ data, message, userdata, lang }) {
         },
       }
     );
-    
+
     return {
       method: "PATCH",
       body: {
@@ -3633,9 +3760,8 @@ async function cmd_trick_resp({ data, message, userdata, token, id, lang }) {
   }
 
   //remove origin components
-  if (data.name==="trick_resp_edit")
-  {}
-  else if (message) {
+  if (data.name === "trick_resp_edit") {
+  } else if (message) {
     await DiscordRequest(
       `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
       {

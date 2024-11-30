@@ -72,8 +72,8 @@ export const sett_emoji_feedback_confirm = {
 };
 export const sett_emoji_coin_throw = {
   id: null,
-  name: "🪙"//coin
-}
+  name: "🪙", //coin
+};
 
 //--commands--
 const dailyAmount = 1;
@@ -101,25 +101,25 @@ const cancelWhenDeadVictim = true;
 const maxLines = 10;
 const maxPages = 70;
 
-const couldown = 60 * 10;//10 minutes
+const couldown = 60 * 10; //10 minutes
 
 export const SETT_CMD = {
   apple: {
     dailyAmount,
-    avangerAppleReward
+    avangerAppleReward,
   },
   kira: {
     counterMax,
     noSuscide,
     comebackBy,
     cancelWhenDeadAttacker,
-    cancelWhenDeadVictim
+    cancelWhenDeadVictim,
   },
   see: {
     maxLines,
-    maxPages
+    maxPages,
   },
   feedback: {
-    couldown
-  }
-}
+    couldown,
+  },
+};

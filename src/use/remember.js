@@ -92,11 +92,10 @@ async function kira_remember_checkup() {
             }
             break;
         }
-
       }
     }
   } catch (e) {
-    await kira_error_report(e, 'AnyJS', 'remember', {}, {}, 'en');
+    await kira_error_report(e, "AnyJS", "remember", {}, {}, "en");
   }
 
   //mrewing : log and keep awake
