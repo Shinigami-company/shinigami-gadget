@@ -56,6 +56,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       //banTime: true,
       statPtr: { id: true },
       achivPtr: { id: true },
+      bookPtr: { id: true },
     },
   });
 
@@ -281,6 +282,7 @@ export const book_colors = [
 ];
 
 //manage
+/*old
 export async function kira_book_get(f_userdataId) {
   const h_userToBook = await api.KiraUsers.findOne(f_userdataId, {
     select: {
@@ -291,6 +293,10 @@ export async function kira_book_get(f_userdataId) {
   });
   if (!h_userToBook.bookPtr) return undefined;
   return await api.KiraBooks.findOne(h_userToBook.bookPtr.id);
+}
+*/
+export async function kira_book_get(bookId) {
+  return await api.KiraBooks.findOne(bookId);
 }
 
 export function kira_book_color_choice() {

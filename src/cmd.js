@@ -546,6 +546,20 @@ const commands_structure = {
       defered: deferedActionType.WAIT_MESSAGE,
     },
   },
+  see_edit: {
+    functions: {
+      exe: cmd_see,
+      checks: [
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+        [check_has_book, false],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_UPDATE,
+    },
+  },
 
   //SET
   drop: {
@@ -764,7 +778,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   f_deep.userdata = await kira_user_get(f_deep.user.id, true);
   //get the user's book
   //if dont exist, is undefined
-  f_deep.userbook = await kira_book_get(f_deep.userdata.id);
+  f_deep.userbook = await kira_book_get(f_deep.userdata.bookPtr.id);
   //get user lang
   //lang selected, else discord lang
   f_deep.lang = lang_get(f_deep);
@@ -920,7 +934,7 @@ export async function kira_cmd(f_deep, f_cmd) {
         {
           //PATCH last message
           //if (return_method==="PATCH") else ERROR
-          url = `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/${f_deep.message}`;
+          url = `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/${f_deep.message.id}`;
         }
         break;
 
@@ -2495,23 +2509,30 @@ async function cmd_lang({ data, userdata, locale, lang }) {
 
 //#see command
 async function cmd_see({ data, userbook, lang }) {
+  //arg/book
+  const bookId = data.options?.find((opt) => opt.name === "bookId")?.value;
+  const lookedbook = (bookId) ? await kira_book_get(bookId) : userbook;
+
   //arg/page
+  let show_page = data.options?.find((opt) => opt.name === "page")?.value;
+  const last_page = await kira_line_get_last_indexPage(lookedbook);
+  if (!show_page)
+  {
+    show_page=last_page;
+  }
 
-  const h_lastPage = await kira_line_get_last_indexPage(userbook);
-  let h_page = h_lastPage;
-  if (data.options) h_page = data.options[0].value;
-
-  if (!(await kira_line_if_pageGood(userbook, h_page - 1))) {
+  if (!(await kira_line_if_pageGood(lookedbook, show_page - 1))) {
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, "cmd.page.fail.none", { number: h_page }),
+        content: translate(lang, "cmd.page.fail.none", { number: show_page }),
       },
     };
   }
+  console.log("hi : lookedbook=",lookedbook);
 
   //page/make
-  const h_lines = await kira_line_get_page(userbook, h_page - 1);
+  const h_lines = await kira_line_get_page(lookedbook, show_page - 1);
   let h_content = "";
   let t_delim = "";
   for (let i = 0; i < h_lines.length; i++) {
@@ -2523,13 +2544,13 @@ async function cmd_see({ data, userbook, lang }) {
   return {
     method: "PATCH",
     body: {
-      content: translate(lang, "cmd.page.get.up", { number: h_page }),
+      content: translate(lang, "cmd.page.get.up", { number: show_page }),
       embeds: [
         {
-          color: book_colors[userbook.color].int,
+          color: book_colors[lookedbook.color].int,
           description: `${h_content}`,
           footer: {
-            text: `${h_page} / ${h_lastPage}`,
+            text: `${show_page} / ${last_page}`,
           },
         },
       ],
@@ -2539,26 +2560,26 @@ async function cmd_see({ data, userbook, lang }) {
           components: [
             {
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd see`,
+              custom_id: `makecmd see_edit ${lookedbook.id}`,
               style: ButtonStyleTypes.SECONDARY,
-              emoji: book_colors[userbook.color].emojiObj,
+              emoji: book_colors[lookedbook.color].emojiObj,
               disabled: false,
             },
             {
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd see ${h_page - 1}`,
-              label: translate(lang, "cmd.page.get.left", { page: h_page - 1 }),
+              custom_id: `makecmd see_edit ${lookedbook.id}+${show_page - 1}`,
+              label: translate(lang, "cmd.page.get.left", { page: show_page - 1 }),
               style: ButtonStyleTypes.SECONDARY,
-              disabled: !(await kira_line_if_pageGood(userbook, h_page - 2)),
+              disabled: !(await kira_line_if_pageGood(lookedbook, show_page - 2)),
             },
             {
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd see ${h_page + 1}`,
+              custom_id: `makecmd see_edit ${lookedbook.id}+${show_page + 1}`,
               label: translate(lang, "cmd.page.get.right", {
-                page: h_page + 1,
+                page: show_page + 1,
               }),
               style: ButtonStyleTypes.SECONDARY,
-              disabled: !(await kira_line_if_pageGood(userbook, h_page)),
+              disabled: !(await kira_line_if_pageGood(lookedbook, show_page)),
             },
           ],
         },
@@ -3156,7 +3177,7 @@ export async function cmd_kira_execute(data) {
   const lang = pack.lang; //!
   const h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
   const userdata = await kira_user_get(user.id, true);
-  const h_attacker_book = await kira_book_get(userdata.id);
+  const h_attacker_book = await kira_book_get(userdata.bookPtr.id);
   //handle special case : burned book
   const h_will_book =
     h_attacker_book && h_attacker_book.id === pack.attacker_book_id;

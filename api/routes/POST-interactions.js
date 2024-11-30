@@ -114,8 +114,16 @@ export default async function route({ request, reply, api, logger, connections }
           data = { name: 'feedback_form', options: [{ name: 'want', value: h_arg[0]==="true" }] };
         } break;
 
-        case ("see"):
+        case ("see_edit"):
         {
+          if (h_arg.length>1)
+            data = { name: 'see_edit', options: [{ name: 'bookId', type: 4, value: parseInt(h_arg[0]) }, { name: 'page', type: 4, value: parseInt(h_arg[1]) }] };
+          else
+            data = { name: 'see_edit', options: [{ name: 'bookId', type: 4, value: parseInt(h_arg[0]) }]};
+        } break;
+
+        case ("see"):
+        {//old
           //eg:
           //{ id: '1253302180077768806', name: 'see', options: [ { name: 'page', type: 4, value: 10 } ], type: 1 }
           if (h_arg)
