@@ -51,6 +51,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       lang: true,
       backDate: true,
       deathDate: true,
+      giveUp: true,
       statPtr: { id: true },
       achivPtr: { id: true },
     },
@@ -159,18 +160,6 @@ export async function kira_user_set_drop(f_dataId, f_span) {
   await api.KiraUsers.update(f_dataId, {
     giveUp: h_date.toISOString(),
   });
-}
-
-export async function kira_user_get_drop(f_dataId) {
-  const iso = await api.KiraUsers.findOne(f_dataId, {
-    select: { giveUp: true },
-  }).then((data) => data.giveUp);
-  if (!iso) return 0;
-  const span = Math.ceil(
-    (new Date(iso).getTime() - new Date().getTime()) / 1000
-  );
-  if (span < 0) return 0;
-  return span;
 }
 
 export async function kira_user_set_feedback(f_dataId, f_state, f_span = 0) {

@@ -156,6 +156,16 @@ const commands_structure = {
               description: "drop someone's death note",
             },
             {
+              name: "steal",
+              value: "ban",
+              description: "confiscate someone's death note",
+            },
+            {
+              name: "back",
+              value: "unban",
+              description: "give back someone's death note",
+            },
+            {
               name: "mercy",
               value: "mercy",
               description: "cancel someone's death",
@@ -1006,60 +1016,59 @@ export function cmd_register() {
 //
 
 //"god" check
-function check_is_god(dig) {
-  if (!dig.userdata.is_god) {
+function check_is_god({ lang, userdata }) {
+  if (!userdata.is_god) {
     return {
-      content: translate(dig.lang, "check.god.not")
+      content: translate(lang, "check.god.not")
     };
   }
   return undefined;
 }
 
 //"alive" check
-function check_is_alive(dig) {
-  if (!dig.userdata.is_alive) {
+function check_is_alive({ lang, userdata }) {
+  if (!userdata.is_alive) {
     return {
-      content: translate(dig.lang, "check.alive.not")
+      content: translate(lang, "check.alive.not")
     };
   }
   return undefined;
 }
 
-async function check_can_alive(dig) {
-  if (!dig.userdata.is_alive) {
-    //is not alive
-    const h_gap = parseInt(
-      (new Date(dig.userdata.backDate).getTime() - new Date().getTime()) / 1000
-    );
-    if (h_gap > 0 || !SETT_CMD.kira.comebackBy.check.self.if) {
-      //can not be bring back
-      return {
-        content: translate(dig.lang, "check.alive.not", {
-          time: time_format_string_from_int(h_gap, dig.lang),
-        }),
-      };
-    }
+async function check_can_alive({ lang, userdata }) {
+  if (userdata.is_alive) return undefined;
+  //is not alive
+  const h_gap = parseInt(
+    (new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000
+  );
+  if (h_gap > 0 || !SETT_CMD.kira.comebackBy.check.self.if) {
+    //can not be bring back
+    return {
+      content: translate(lang, "check.alive.not", {
+        time: time_format_string_from_int(h_gap, lang),
+      }),
+    };
+  }
 
-    //bring back
-    await kira_user_set_life(dig.userdata.id, true);
+  //bring back
+  await kira_user_set_life(userdata.id, true);
 
-    //message
-    if (SETT_CMD.kira.comebackBy.check.self.message) {
-      //open DM
-      const dm_id = await DiscordUserOpenDm(dig.userdata.userId);
-      //send message
-      try {
-        //var h_victim_message =
-        await DiscordRequest(`channels/${dm_id}/messages`, {
-          method: "POST",
-          body: {
-            content: translate(dig.lang, "cmd.comeback.check.self"),
-          },
-        });
-      } catch (e) {
-        let errorMsg = JSON.parse(e.message);
-        if (!(errorMsg?.code === 50007)) throw e;
-      }
+  //message
+  if (SETT_CMD.kira.comebackBy.check.self.message) {
+    //open DM
+    const dm_id = await DiscordUserOpenDm(userdata.userId);
+    //send message
+    try {
+      //var h_victim_message =
+      await DiscordRequest(`channels/${dm_id}/messages`, {
+        method: "POST",
+        body: {
+          content: translate(lang, "cmd.comeback.check.self"),
+        },
+      });
+    } catch (e) {
+      let errorMsg = JSON.parse(e.message);
+      if (!(errorMsg?.code === 50007)) throw e;
     }
   }
   //gud
@@ -1067,59 +1076,75 @@ async function check_can_alive(dig) {
 }
 
 //"book" check
-function check_has_book(dig) {
-  if (!dig.userbook) {
+function check_has_book({ lang, userbook }) {
+  if (!userbook) {
     return {
-      content: translate(dig.lang, "check.hasbook.not")
+      content: translate(lang, "check.hasbook.not")
     };
   }
   return undefined;
 }
 
-async function check_has_noDrop(dig) {
-  const h_gap = await kira_user_get_drop(dig.userdata.id);
-  if (h_gap > 0) {
+function check_has_noDrop({ lang, userdata }) {
+  
+  let gap=0;
+  {//calculate drop
+    const iso = userdata.giveUp;
+    if (iso)
+    {
+      const span = Math.ceil(
+        (new Date(iso).getTime() - new Date().getTime()) / 1000
+      );
+      if (span > 0) gap=span;
+    }
+  }
+  if (gap > 0) {
     return {
-      content: translate(dig.lang, "check.nodrop.not", {
-        time: time_format_string_from_int(h_gap, dig.lang),
+      content: translate(lang, "check.nodrop.not", {
+        time: time_format_string_from_int(gap, lang),
       })
     };
   }
   return undefined;
+}
+
+//"ban" check
+function check_is_clean(dig) {
 }
 
 //react check
-function check_react_is_self(dig) {
+function check_react_is_self({ lang, user, type, message }) {
   console.log(
-    `check : check_react_is_self type=${dig.type} IM=${dig.message?.interaction?.user.id} I=${dig.message?.interaction_metadata?.user.id}`
+    `check : check_react_is_self type=${type} IM=${message?.interaction?.user.id} I=${message?.interaction_metadata?.user.id}`
   );
   if (
-    dig.type === InteractionType.MESSAGE_COMPONENT &&
-    //dig.message.interaction_metadata.user.id !== dig.user.id
-    dig.message.interaction.user.id !== dig.user.id
+    type === InteractionType.MESSAGE_COMPONENT &&
+    //message.interaction_metadata.user.id !== user.id
+    message.interaction.user.id !== user.id
   ) {
     return {
-      content: translate(dig.lang, "check.react.self.not")
+      content: translate(lang, "check.react.self.not")
     };
   }
   return undefined;
 }
 
-async function check_can_feedback(dig) {
-  const h_can = await kira_user_can_feedback(dig.userdata.id);
-  if (!h_can && !dig.userdata.is_god) {
+//specific check
+async function check_can_feedback({ lang, userdata }) {
+  const h_can = await kira_user_can_feedback(userdata.id);
+  if (!h_can && !userdata.is_god) {
     return {
-      content: translate(dig.lang, "check.feedback.not", {
-        //time: time_format_string_from_int(h_gap, dig.lang),
-        time: time_format_string_from_int(SETT_CMD.feedback.couldown, dig.lang),
+      content: translate(lang, "check.feedback.not", {
+        //time: time_format_string_from_int(h_gap, lang),
+        time: time_format_string_from_int(SETT_CMD.feedback.couldown, lang),
       })
     };
   }
   return undefined;
 }
 
-async function check_mailbox(dig) {
-  const h_can = await kira_user_has_feedbackResponse(dig.userdata.id);
+async function check_mailbox({ lang, userdata }) {
+  const h_can = await kira_user_has_feedbackResponse(userdata.id);
   if (!h_can) return undefined;
   //respond
   return undefined;
@@ -1143,7 +1168,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.life.fail.missing.user"),
+              content: translate(lang, "cmd.god.missing.user"),
             },
           };
         }
@@ -1155,7 +1180,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.life.fail.notplayer"),
+              content: translate(lang, "cmd.god.sub.life.fail.notplayer"),
             },
           };
         }
@@ -1168,7 +1193,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
             body: {
               content: translate(
                 lang,
-                `cmd.god.life.fail.already.${h_life ? "alive" : "dead"}`,
+                `cmd.god.sub.life.fail.already.${h_life ? "alive" : "dead"}`,
                 { targetId: h_targetId }
               ),
             },
@@ -1182,7 +1207,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           body: {
             content: translate(
               lang,
-              `cmd.god.life.done.${h_life ? "revive" : "kill"}`,
+              `cmd.god.sub.life.done.${h_life ? "revive" : "kill"}`,
               { targetId: h_targetId }
             ),
           },
@@ -1197,7 +1222,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.life.fail.missing.user"),
+              content: translate(lang, "cmd.god.missing.user"),
             },
           };
         }
@@ -1206,7 +1231,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.forcedrop.fail.missing.amount"),
+              content: translate(lang, "cmd.god.missing.amount"),
             },
           };
         }
@@ -1220,7 +1245,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           body: {
             content: translate(
               lang,
-              "cmd.god.forcedrop.done." + (arg_amount == 0 ? "zero" : "more"),
+              "cmd.god.sub.forcedrop.done." + (arg_amount == 0 ? "zero" : "more"),
               {
                 targetId: arg_user,
                 time: time_format_string_from_int(arg_amount, lang),
@@ -1230,6 +1255,28 @@ async function cmd_god({ userdata, data, lang, locale }) {
         };
       }
       break;
+    
+    //#ban subcommand
+    case "ban": {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
+
+        if (arg_amount === null) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.amount"),
+            },
+          };
+        }
+
+    } break;
 
     //#apple subcommand (#apple_fake & #apple_give)
     case "apple_fake": {
@@ -1240,7 +1287,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.apple.fail.missing.user"),
+              content: translate(lang, "cmd.god.missing.user"),
             },
           };
         }
@@ -1251,7 +1298,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.apple.fail.missing.amount"),
+              content: translate(lang, "cmd.god.missing.amount"),
             },
           };
         }
@@ -1263,7 +1310,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.apple.fail.notplayer"),
+              content: translate(lang, "cmd.god.sub.apple.fail.notplayer"),
             },
           };
         }
@@ -1280,7 +1327,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
         return {
           method: "PATCH",
           body: {
-            content: translate(lang, "cmd.god.apple.done." + h_identity, {
+            content: translate(lang, "cmd.god.sub.apple.done." + h_identity, {
               targetId: h_targetId,
               displayed: Math.abs(arg_amount),
               word: translate(
@@ -1361,7 +1408,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           method: "PATCH",
           body: {
             content:
-              translate(lang, "cmd.god.test.done") + (r ? " `" + r + "`" : ""),
+              translate(lang, "cmd.god.sub.test.done") + (r ? " `" + r + "`" : ""),
           },
         };
       }
@@ -1375,7 +1422,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.update.done.commands"),
+              content: translate(lang, "cmd.god.sub.update.done.commands"),
             },
           };
         }
@@ -1386,7 +1433,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.update.fail.notplayer"),
+              content: translate(lang, "cmd.god.sub.update.fail.notplayer"),
             },
           };
         }
@@ -1404,7 +1451,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
             embeds: [
               {
                 color: 255 * 256,
-                description: translate(lang, "cmd.god.update.done.user", {
+                description: translate(lang, "cmd.god.sub.update.done.user", {
                   targetId: arg_user,
                 }),
               },
@@ -1830,8 +1877,7 @@ async function cmd_apple({ userdata, locale, lang }) {
   let h_txt_claims = "";
   let h_txt_more = "";
 
-  const droped = (await kira_user_get_drop(userdata.id)) > 0;
-  if (droped && userdata.apples >= 10)
+  if ((check_has_noDrop({ userdata })) && userdata.apples >= 10)
     h_txt_more = "\n" + translate(lang, `cmd.apples.get.why`);
 
   //claims
@@ -2503,14 +2549,11 @@ async function cmd_kira({
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
 
   if (!h_will_fail) {
-    const h_gap = await kira_user_get_drop(h_victim_data.id);
-    if (h_gap > 0) {
+    if ((check_has_noDrop({ userdata: h_victim_data })) > 0) {
       return {
         method: "PATCH",
         body: {
-          content: translate(lang, "cmd.kira.fail.droped", {
-            time: time_format_string_from_int(h_gap, lang),
-          }),
+          content: translate(lang, "cmd.kira.fail.droped"),
         },
       };
     }
