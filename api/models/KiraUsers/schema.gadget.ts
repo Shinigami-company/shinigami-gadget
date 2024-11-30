@@ -33,6 +33,12 @@ export const schema: GadgetModel = {
       includeTime: true,
       storageKey: "SVqHycqERVsV::rt4ai8i955t_",
     },
+    banTime: {
+      type: "dateTime",
+      includeTime: true,
+      storageKey: "mEHu8wCFxIeg",
+    },
+    banValue: { type: "number", storageKey: "olZPOzgP4MKN" },
     bookPtr: {
       type: "hasOne",
       child: { model: "KiraBooks", belongsToField: "ownerPtr" },

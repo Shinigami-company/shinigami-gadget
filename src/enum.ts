@@ -22,3 +22,11 @@ export enum deferedActionType {
   WAIT_UPDATE = 6,
   EDIT_CLEAN_BUTTONS = 7//!not used
 };
+
+export enum userBanType {
+  EXPIRE = -2,
+  PARDON = -1,
+  NO = 0,
+  PERMA = 1,
+  TEMP = 2,
+}

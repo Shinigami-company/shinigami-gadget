@@ -1,7 +1,7 @@
 console.log(` cmd : refresh`);
 //--- sett ---
 
-import { deferedActionType, FeedbackState, KnowUsableBy, rememberTasksType } from "./enum.ts";
+import { deferedActionType, FeedbackState, KnowUsableBy, rememberTasksType, userBanType } from "./enum.ts";
 
 import { Settings } from "./sett.js";
 
@@ -34,7 +34,7 @@ import {
   lang_set,
 } from "./lang.js"; //all user langugage things
 
-import { kira_do_refreshCommands } from "./use/kira.js"; // god register commands
+import { kira_do_refreshCommands, kira_user_check_banTime, kira_user_remove_ban, kira_user_set_ban } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
   kira_user_set_life,
@@ -156,12 +156,12 @@ const commands_structure = {
               description: "drop someone's death note",
             },
             {
-              name: "steal",
+              name: "ban",
               value: "ban",
               description: "confiscate someone's death note",
             },
             {
-              name: "back",
+              name: "pardon",
               value: "unban",
               description: "give back someone's death note",
             },
@@ -273,7 +273,7 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, true],
         [check_has_noDrop, true],
@@ -301,7 +301,7 @@ const commands_structure = {
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, true],
         [check_has_noDrop, true],
@@ -322,7 +322,7 @@ const commands_structure = {
   apple: {
     functions: {
       exe: cmd_apple,
-      checks: [[check_can_alive, false]],
+      checks: [[check_is_clean, true],[check_can_alive, false]],
     },
     register: {
       name: "apple",
@@ -364,7 +364,7 @@ const commands_structure = {
   stats: {
     functions: {
       exe: cmd_stats,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
       ],
@@ -396,7 +396,7 @@ const commands_structure = {
   running: {
     functions: {
       exe: cmd_running,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
       ],
@@ -415,7 +415,7 @@ const commands_structure = {
   quest: {
     functions: {
       exe: cmd_quest,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
       ],
@@ -434,7 +434,7 @@ const commands_structure = {
   top: {
     functions: {
       exe: cmd_top,
-      checks: [[check_can_alive, false]],
+      checks: [[check_is_clean, true],[check_can_alive, false]],
     },
     register: {
       name: "top",
@@ -464,7 +464,7 @@ const commands_structure = {
   rules: {
     functions: {
       exe: cmd_rules,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -484,7 +484,7 @@ const commands_structure = {
   see: {
     functions: {
       exe: cmd_see,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -514,7 +514,7 @@ const commands_structure = {
   drop: {
     functions: {
       exe: cmd_drop,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, false],
         [check_has_noDrop, true],
@@ -535,7 +535,7 @@ const commands_structure = {
   trick: {
     functions: {
       exe: cmd_trick,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -556,7 +556,7 @@ const commands_structure = {
   trick_resp: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -571,7 +571,7 @@ const commands_structure = {
   trick_resp_eph: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -586,7 +586,7 @@ const commands_structure = {
   trick_resp_edit: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -602,7 +602,7 @@ const commands_structure = {
   kira: {
     functions: {
       exe: cmd_kira,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
         [check_has_book, false],
@@ -644,7 +644,7 @@ const commands_structure = {
   know: {
     functions: {
       exe: cmd_know,
-      checks: [
+      checks: [[check_is_clean, true],
         [check_can_alive, true],
         [check_has_noDrop, true],
         [check_has_book, true],
@@ -1109,7 +1109,36 @@ function check_has_noDrop({ lang, userdata }) {
 }
 
 //"ban" check
-function check_is_clean(dig) {
+async function check_is_clean({ lang, userdata }) {
+
+  switch (userdata.banValue) {
+    
+    case userBanType.NO: {}
+    case userBanType.PARDON: {}
+    case userBanType.EXPIRE: {}
+    case null: {
+      return undefined;
+    } break;
+    
+    case userBanType.PERMA: {
+      return {
+        content: translate(lang, "check.ban.is.perma")
+      };
+    } break;
+    
+    case userBanType.TEMP: {
+      const gap=await kira_user_check_banTime(userdata.id);//something to check
+      if (gap>0)
+      {
+        return {
+          content: translate(lang, "check.ban.is.temp", {
+            time: time_format_string_from_int(gap, lang),
+          })
+        };
+      }
+    } break;
+  }
+  return undefined;
 }
 
 //react check
@@ -1266,17 +1295,49 @@ async function cmd_god({ userdata, data, lang, locale }) {
             },
           };
         }
+        const targetdata = await kira_user_get(arg_user, false);
 
-        if (arg_amount === null) {
+        if (arg_amount) {
+          await kira_user_set_ban(targetdata.id, arg_amount);
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.missing.amount"),
+              content: translate(lang, "cmd.god.sub.ban.done.temp", {"targetId": arg_user, "time": time_format_string_from_int(arg_amount, lang)}),
+            },
+          };
+        } else {
+          await kira_user_set_ban(targetdata.id);
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.sub.ban.done.perma", {"targetId": arg_user}),
+            },
+          }; 
+        }
+
+    } break;
+    
+    //#unban subcommand
+    case "unban": {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
             },
           };
         }
 
+        await kira_user_remove_ban(userdata.id);
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.god.sub.unban.done"),
+          },
+        };
+
     } break;
+
 
     //#apple subcommand (#apple_fake & #apple_give)
     case "apple_fake": {

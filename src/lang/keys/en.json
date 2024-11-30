@@ -13,6 +13,8 @@
 "check.nodrop.not": "*You relinquished your death note ownership for another **$[time]***.",
 "check.hasbook.not": "*You don't own a death note*\n`/claim` *to get one*",
 "check.feedback.not": "Wait like **$[time]**, until I get a new envelope.",
+"check.ban.is.perma": "*your death note is confiscated*",
+"check.ban.is.temp": "*your death note is confiscated during $[time]*",
 "check.react.self.not": "*that not your button*",
 
 
@@ -39,7 +41,7 @@
 "cmd.god.sub.apple.done.fake.add": "<@$[targetId]> **recived** $[displayed] $[word]",
 "cmd.god.sub.apple.done.fake.remove": "<@$[targetId]> **lost** $[displayed] $[word]",
 
-"cmd.feedback.confirm": "I can transmit a letter from you to the king of the gods of death",
+"cmd.feedback.confirm": "I can transmit a letter from you to the king of gods of death",
 "cmd.feedback.confirm.yes": "I want",
 "cmd.feedback.confirm.no": "No",
 "cmd.feedback.writting": "I let you write your letter.",

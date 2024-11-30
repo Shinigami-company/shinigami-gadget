@@ -2,7 +2,7 @@ import { api } from "gadget-server";
 
 import { SETT_CMD } from "../sett.js";
 
-import { FeedbackState } from "../enum.ts";
+import { FeedbackState, userBanType } from "../enum.ts";
 
 export async function kira_do_refreshCommands() {
   console.debug("kira : refreshcmd : removeCommands()...");
@@ -52,6 +52,8 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       backDate: true,
       deathDate: true,
       giveUp: true,
+      banValue: true,
+      //banTime: true,
       statPtr: { id: true },
       achivPtr: { id: true },
     },
@@ -153,6 +155,47 @@ export async function kira_user_get_daily(f_dataId) {
     .then((data) => data.apples_daily)
     .then((iso) => new Date(iso));
 }
+
+export async function kira_user_check_banTime(f_dataId) {
+  //get
+  const banTime=await api.KiraUsers.findOne(f_dataId, {
+    select: { banTime: true },
+  })
+    .then((data) => data.banTime)
+    .then((iso) => new Date(iso));
+    
+  //check
+  const h_gap = parseInt(
+    (banTime.getTime() - new Date().getTime()) / 1000
+  );
+  if (h_gap > 0) {
+    //remain time
+    return h_gap;
+  }
+
+  //update
+  await api.KiraUsers.update(f_dataId, {banTime: null, banValue: userBanType.EXPIRE});//expire
+  return 0;
+}
+
+export async function kira_user_set_ban(f_dataId, f_span=0) {
+  let banValue = userBanType.PERMA;
+  let banTime = null;
+  if (f_span)
+  {
+    banValue = userBanType.TEMP;
+    banTime = new Date();
+    banTime.setSeconds(banTime.getSeconds() + f_span);
+    banTime=banTime.toISOString();
+  }
+  await api.KiraUsers.update(f_dataId, {banTime, banValue});//ban
+}
+
+export async function kira_user_remove_ban(f_dataId) {
+  await api.KiraUsers.update(f_dataId, {banTime: null, banValue: userBanType.PARDON});//unban
+}
+
+
 
 export async function kira_user_set_drop(f_dataId, f_span) {
   let h_date = new Date();
