@@ -156,6 +156,11 @@ const commands_structure = {
               description: "drop someone's death note",
             },
             {
+              name: "no feedback",
+              value: "nofeedback",
+              description: "remove someone's ability to feedback for a span",
+            },
+            {
               name: "ban",
               value: "ban",
               description: "confiscate someone's death note",
@@ -1285,6 +1290,43 @@ async function cmd_god({ userdata, data, lang, locale }) {
       }
       break;
     
+    
+    //#nofeedback subcommand
+    case "nofeedback": {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
+        
+        if (arg_amount === null) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.amount"),
+            },
+          };
+        }
+
+        await kira_user_set_feedback(userdata.id, FeedbackState.SENDED, arg_amount);
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(
+              lang,
+              "cmd.god.sub.nofeedback.done." + (arg_amount == 0 ? "zero" : "more"),
+              {
+                targetId: arg_user,
+                time: time_format_string_from_int(arg_amount, lang),
+              }
+            ),
+          },
+        };
+    } break;
+
     //#ban subcommand
     case "ban": {
         if (!arg_user) {
@@ -1335,7 +1377,6 @@ async function cmd_god({ userdata, data, lang, locale }) {
             content: translate(lang, "cmd.god.sub.unban.done"),
           },
         };
-
     } break;
 
 
@@ -1588,7 +1629,7 @@ async function cmd_feedback({ data, userdata, lang, user }) {
 
   //set state
   //! before
-  kira_user_set_feedback(userdata.id, FeedbackState.SENDED, SETT_CMD.feedback.couldown);
+  await kira_user_set_feedback(userdata.id, FeedbackState.SENDED, SETT_CMD.feedback.couldown);
 
   return {
     method: "PATCH",
