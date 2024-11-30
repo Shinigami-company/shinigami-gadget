@@ -710,10 +710,8 @@ const commands_structure = {
       ],
     },
     atr: {
-      systemOnly: true,
-    },
-    atr: {
       defered: deferedActionType.WAIT_MESSAGE,
+      systemOnly: true,
     },
     /*
     register:
@@ -2529,7 +2527,6 @@ async function cmd_see({ data, userbook, lang }) {
       },
     };
   }
-  console.log("hi : lookedbook=",lookedbook);
 
   //page/make
   const h_lines = await kira_line_get_page(lookedbook, show_page - 1);

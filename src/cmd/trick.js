@@ -208,7 +208,6 @@ export const tricks_all = [
           
           //game
           const game_data_id = await kira_game_coin_create(bet, userdata.userId).then(obj => obj.id);
-          console.log("hi : create game_data_id=",game_data_id);
           
           return {
             method: "PATCH",
@@ -525,7 +524,6 @@ export const tricks_all = [
           }
 
           const game_data= await kira_game_coin_pop(pile);
-          console.log("hi : pop game_data=",game_data);
           {//check
             if (!game_data)
             {
