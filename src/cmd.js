@@ -558,6 +558,7 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_UPDATE,
+      systemOnly: true,
     },
   },
 
@@ -981,14 +982,22 @@ export async function kira_cmd(f_deep, f_cmd) {
       }
     }
 
-    console.error(`cmd : catch : javascript ERROR [${e.code}] : `, e);
+    console.error(`cmd : catch : found ERROR <${e.name}> [${e.code}] : `, e);
+    console.error(`cmd : catch : temp : cause=`, e.cause);
 
     //-handle-
     //detect know issues
 
+    //discord : Unknown interaction
+    if (e.code===10062)
+    {
+      console.error(`cmd : catch : handle ERROR : `, "this is Discord Unknown interaction");
+      return;
+    }
+
     if (
-      e.message ===
-      "[GraphQL] GGT_INTERNAL_ERROR: Unexpected HTTP error from sandbox: Response code 500 (Internal Server Error)"
+      e.code ===
+      "GGT_INTERNAL_ERROR"
     ) {
       kira_error_throw(
         e,
@@ -1047,7 +1056,7 @@ export async function kira_error_report(
     .replace(f_errorObject.name, "")
     .substring(2)
     .replace(/    at /gm, "");
-  const code = f_errorObject.code ? f_errorObject.code : "no";
+  const code = (f_errorObject.code===undefined) ? "no" : f_errorObject.code;
   const all = {
     error: f_errorObject,
     errorStack: stack,

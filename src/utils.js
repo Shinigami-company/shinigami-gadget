@@ -38,12 +38,23 @@ export async function DiscordRequest(endpoint, options) {
     console.log(
       `DiscordRequest failure : url=`,
       url,
-      `\nmethod=`,
+      `method=`,
       options.method,
       `statu=`,
-      res.status
+      res.status,
+      `code=`,
+      data.code,
+      `OPTIONS=`,
+      options
     ); //code
-    throw new Error(JSON.stringify(data));
+    
+    
+    let error=Error(JSON.stringify(data));
+    error.name="DiscordError";
+    error.code=data.code;
+    console.log("HI : error.code=",error.code);
+    //error.code=res.status;
+    throw error;
   }
   // return original response
   return res;
