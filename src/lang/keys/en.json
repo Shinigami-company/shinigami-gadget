@@ -146,6 +146,7 @@
 "cmd.trick.item.coinflip.pick.throw.intro": "Well! I have the coin.",
 "cmd.trick.item.coinflip.pick.throw.user": "<@$[userId]> take **$[face]**   `-$[bet]🍎`",
 "cmd.trick.item.coinflip.pick.throw.outro": "Who want to throw the coin?",
+"cmd.trick.item.coinflip.pick.throw.by": "<@$[userId]> throw the coin",
 "cmd.trick.item.coinflip.pick.throw.button": "throw",
 "cmd.trick.item.coinflip.replay.content": "Replay?",
 "cmd.trick.item.coinflip.replay.button": "YEA $[want]/2",
@@ -154,6 +155,7 @@
 "cmd.trick.item.coinflip.fail.step": "*the shinigami say your too late*",
 "cmd.trick.item.coinflip.done.heads": "## ||:coin:heads||",
 "cmd.trick.item.coinflip.done.tails": "## ||:coin:tails||",
+"cmd.trick.item.coinflip.done.side": "## ||:coin:side||\n-# huuuuu... what?\nlet's say that the one who threw won",
 "cmd.trick.item.coinflip.done": "**So <@$[winerUserId]> won.**   `+$[reward]🍎`",
 "cmd.trick.fail.poor": "I want more apples.",
 

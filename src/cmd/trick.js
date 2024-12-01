@@ -24,7 +24,8 @@ import { stats_simple_add } from "../use/stats.js";
 const int_to_coinSide = {
   0: 'none',
   1: 'heads',
-  2: 'tails'
+  2: 'tails',
+  3: 'side',
 }
 
 export const tricks_all = [
@@ -478,17 +479,17 @@ export const tricks_all = [
             })
           );
 
-          var content = translate(lang, "cmd.trick.item.coinflip.pick.face.intro")
+          var content = translate(lang, "cmd.trick.item.coinflip.pick.face.intro");
           if (game_data.user1Side)
             content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.face.user", {
                 "userId": game_data.user1Id,
                 "face": translate(lang, `word.side.${int_to_coinSide[game_data.user1Side]}`)
-              })
+              });
           if (game_data.user2Side)
             content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.face.user", {
                 "userId": game_data.user2Id,
                 "face": translate(lang, `word.side.${int_to_coinSide[game_data.user2Side]}`)
-              })
+              });
 
           //reture a POST request!!
           return {
@@ -565,10 +566,35 @@ export const tricks_all = [
           {
             throw Error(`invalid faces [${Object.keys(user_tree)}] for [${Object.values(user_tree).map(obj=>obj.userId)}] with pile [${pile}]`);
           }
-          
-          //roll
-          const winer_index = (randomInt(2)===0) ? 1 : 2;//random
-          const loser_index = (winer_index===1) ? 2 : 1;
+
+         //original message
+         {
+          var content = translate(lang, "cmd.trick.item.coinflip.pick.throw.intro");
+          content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
+              "userId": game_data.user1Id,
+              "face": translate(lang, `word.side.${int_to_coinSide[game_data.user1Side]}`),
+              "bet": bet
+            });
+          content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
+              "userId": game_data.user2Id,
+              "face": translate(lang, `word.side.${int_to_coinSide[game_data.user2Side]}`),
+              "bet": bet
+            });
+          content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.by", {
+              "userId": userdata.userId,
+            });
+
+          await DiscordRequest(
+            `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
+            {
+              method: "PATCH",
+              body: {
+                //components: [],
+                content
+              },
+            }
+          );
+         }
 
           /*
           if (await DiscordMessageChanged(message, token))
@@ -576,16 +602,6 @@ export const tricks_all = [
             throw Error(`double click detected.`);
           }
 
-          await DiscordRequest(
-            `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
-            {
-              method: "PATCH",
-              body: {
-                content: 'edit',
-                components: [],
-              },
-            }
-          );
           */
 
           //remove bet
@@ -609,10 +625,15 @@ export const tricks_all = [
               await stats_simple_add(user_tree[i].userdata.statPtr.id, "game_coinPlay");
           }
           
+          //roll
+          const r=randomInt(99);//random [0;98] : [0]+[1;49]+[50;98]
+          const winer_side = (r===0) ? 3 : (r<50) ? 2 : 1;
+          const winer_data = (winer_side===3) ? userdata : user_tree[winer_side].userdata;
+
           //give reward
-          await kira_apple_send(user_tree[winer_index].userdata.id, reward, user_tree[winer_index].userdata.statPtr.id, "coinflip.win", {"side": translate(lang, `word.side.${int_to_coinSide[winer_index]}`)});
+          await kira_apple_send(winer_data.id, reward, winer_data.statPtr.id, "coinflip.win", {"side": translate(lang, `word.side.${int_to_coinSide[winer_side]}`)});
           if (!(game_data.user1Id === game_data.user2Id))
-            await stats_simple_add(user_tree[winer_index].userdata.statPtr.id, "game_coinWin");
+            await stats_simple_add(winer_data.statPtr.id, "game_coinWin");
           
           //will be executed after. async without await
           (async () => {
@@ -627,8 +648,7 @@ export const tricks_all = [
                     lang,
                     `cmd.trick.item.coinflip.done`,
                     {
-                      "winerUserId": user_tree[winer_index].userId,
-                      "loserUserId": user_tree[loser_index].userId,
+                      "winerUserId": winer_data.userId,
                       "reward": reward,
                       "bet": bet
                     }
@@ -644,7 +664,7 @@ export const tricks_all = [
           return {
             method: "PATCH",
             body: {
-              content: translate(lang,`cmd.trick.item.coinflip.done.${int_to_coinSide[winer_index]}`)
+              content: translate(lang,`cmd.trick.item.coinflip.done.${int_to_coinSide[winer_side]}`)
             },
           };
       }
