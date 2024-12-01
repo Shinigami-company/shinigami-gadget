@@ -28,6 +28,9 @@ export function time_format_string_from_int(f_s, lang) {
   if (f_s === 0) {
     return translate(lang, `format.time.unic.zero`);
   }
+  if (!f_s) {
+    return translate(lang, `format.time.unic.none`);
+  }
 
   //find values
   {

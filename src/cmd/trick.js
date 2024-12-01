@@ -317,7 +317,7 @@ export const tricks_all = [
             ({
               type: MessageComponentTypes.BUTTON,
               custom_id: `makecmd trick_resp_edit coinflip+-2+${game_data.id}_${i+1}`,
-              label: translate(lang, `word.side.${int_to_coinSide[i+1]}`),
+              label: translate(lang, `word.face.${int_to_coinSide[i+1]}`),
               style: ButtonStyleTypes.PRIMARY
             })
           );
@@ -436,12 +436,12 @@ export const tricks_all = [
                   content: translate(lang, "cmd.trick.item.coinflip.pick.throw.intro")
                   +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
                     "userId": game_data.user1Id,
-                    "face": translate(lang, `word.side.${int_to_coinSide[game_data.user1Side]}`),
+                    "face": translate(lang, `word.face.${int_to_coinSide[game_data.user1Side]}`),
                     "bet": bet
                   })
                   +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
                     "userId": game_data.user2Id,
-                    "face": translate(lang, `word.side.${int_to_coinSide[game_data.user2Side]}`),
+                    "face": translate(lang, `word.face.${int_to_coinSide[game_data.user2Side]}`),
                     "bet": bet
                   })
                   +"\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.outro"),
@@ -473,7 +473,7 @@ export const tricks_all = [
             ({
               type: MessageComponentTypes.BUTTON,
               custom_id: `makecmd trick_resp_edit coinflip+-2+${game_data.id}_${i+1}`,
-              label: translate(lang, `word.side.${int_to_coinSide[i+1]}`),
+              label: translate(lang, `word.face.${int_to_coinSide[i+1]}`),
               style: ButtonStyleTypes.SECONDARY,
               disabled: ((game_data.user1Side===(i+1)) || (game_data.user2Side===(i+1)))
             })
@@ -483,12 +483,12 @@ export const tricks_all = [
           if (game_data.user1Side)
             content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.face.user", {
                 "userId": game_data.user1Id,
-                "face": translate(lang, `word.side.${int_to_coinSide[game_data.user1Side]}`)
+                "face": translate(lang, `word.face.${int_to_coinSide[game_data.user1Side]}`)
               });
           if (game_data.user2Side)
             content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.face.user", {
                 "userId": game_data.user2Id,
-                "face": translate(lang, `word.side.${int_to_coinSide[game_data.user2Side]}`)
+                "face": translate(lang, `word.face.${int_to_coinSide[game_data.user2Side]}`)
               });
 
           //reture a POST request!!
@@ -572,12 +572,12 @@ export const tricks_all = [
           var content = translate(lang, "cmd.trick.item.coinflip.pick.throw.intro");
           content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
               "userId": game_data.user1Id,
-              "face": translate(lang, `word.side.${int_to_coinSide[game_data.user1Side]}`),
+              "face": translate(lang, `word.face.${int_to_coinSide[game_data.user1Side]}`),
               "bet": bet
             });
           content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.user", {
               "userId": game_data.user2Id,
-              "face": translate(lang, `word.side.${int_to_coinSide[game_data.user2Side]}`),
+              "face": translate(lang, `word.face.${int_to_coinSide[game_data.user2Side]}`),
               "bet": bet
             });
           content+="\n"+ translate(lang, "cmd.trick.item.coinflip.pick.throw.by", {
@@ -631,7 +631,7 @@ export const tricks_all = [
           const winer_data = (winer_side===3) ? userdata : user_tree[winer_side].userdata;
 
           //give reward
-          await kira_apple_send(winer_data.id, reward, winer_data.statPtr.id, "coinflip.win", {"side": translate(lang, `word.side.${int_to_coinSide[winer_side]}`)});
+          await kira_apple_send(winer_data.id, reward, winer_data.statPtr.id, "coinflip.win", {"side": translate(lang, `word.face.${int_to_coinSide[winer_side]}`)});
           if (!(game_data.user1Id === game_data.user2Id))
             await stats_simple_add(winer_data.statPtr.id, "game_coinWin");
           
