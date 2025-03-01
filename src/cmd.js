@@ -1305,12 +1305,13 @@ function check_react_is_self({ lang, user, type, message }) {
 
 //specific check
 async function check_can_feedback({ lang, userdata }) {
-  const h_can = await kira_user_can_feedback(userdata.id);
-  if (!h_can && !userdata.is_god) {
+  var h_gap = await kira_user_can_feedback(userdata.id);
+  if (h_gap>0 && !userdata.is_god) {
+    h_gap=Math.ceil(h_gap/60)*60;
     return {
       content: translate(lang, "check.feedback.not", {
-        //time: time_format_string_from_int(h_gap, lang),
-        time: time_format_string_from_int(SETT_CMD.feedback.couldown, lang),
+        time: time_format_string_from_int(h_gap, lang),
+        //time: time_format_string_from_int(SETT_CMD.feedback.couldown, lang),
       }),
     };
   }
@@ -1401,7 +1402,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           };
         }
 
-        if (arg_amount === null) {
+        if (arg_amount === undefined) {
           return {
             method: "PATCH",
             body: {
@@ -1443,7 +1444,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
           };
         }
 
-        if (arg_amount === null) {
+        if (arg_amount === undefined) {
           return {
             method: "PATCH",
             body: {
@@ -1466,7 +1467,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
                 (arg_amount === 0 ? "zero" : "more"),
               {
                 targetId: arg_user,
-                time: time_format_string_from_int(arg_amount, lang),
+                time:time_format_string_from_int(arg_amount, lang),
               }
             ),
           },
@@ -1528,7 +1529,9 @@ async function cmd_god({ userdata, data, lang, locale }) {
         return {
           method: "PATCH",
           body: {
-            content: translate(lang, "cmd.god.sub.unban.done"),
+            content: translate(lang, "cmd.god.sub.unban.done", {
+                targetId: arg_user,
+              }),
           },
         };
       }

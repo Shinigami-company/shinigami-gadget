@@ -223,7 +223,7 @@ export async function kira_user_can_feedback(f_dataId) {
   const span = Math.ceil(
     (new Date(iso).getTime() - new Date().getTime()) / 1000
   );
-  return (span < 0);
+  return (span);
 }
 
 export async function kira_user_has_feedbackResponse(f_dataId) {
