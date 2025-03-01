@@ -777,7 +777,12 @@ export async function kira_cmd(f_deep, f_cmd) {
   f_deep.userdata = await kira_user_get(f_deep.user.id, true);
   //get the user's book
   //if dont exist, is undefined
-  f_deep.userbook = await kira_book_get(f_deep.userdata.bookPtr.id);
+  if (f_deep.userdata.bookPtr)
+  {
+    f_deep.userbook = await kira_book_get(f_deep.userdata.bookPtr.id);
+  } else {
+    f_deep.userbook = undefined;
+  }
   //get user lang
   //lang selected, else discord lang
   f_deep.lang = lang_get(f_deep);
