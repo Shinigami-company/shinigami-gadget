@@ -28,7 +28,7 @@
 "cmd.god.sub.test.done": "`tests done. see console.`",
 "cmd.god.sub.forcedrop.done.zero": "<@$[targetId]> get their book **back**",
 "cmd.god.sub.forcedrop.done.more": "book of <@$[targetId]> **droped** during $[time]",
-"cmd.god.sub.nofeedback.done.zero": "<@$[targetId]> ***can** feedback",
+"cmd.god.sub.nofeedback.done.zero": "<@$[targetId]> **can** feedback",
 "cmd.god.sub.nofeedback.done.more": "book of <@$[targetId]> **cant** feedback during $[time]",
 "cmd.god.sub.ban.done.perma": "<@$[targetId]> **is forbbiden** to use the death note",
 "cmd.god.sub.ban.done.temp": "<@$[targetId]> **is forbbiden** to use the death note during $[time]",

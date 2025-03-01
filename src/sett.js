@@ -87,7 +87,7 @@ const noSuscide = false;
 const comebackBy = {
   time: {
     //comeback automaticly after the time
-    other: { if: true, message: true },
+    other: { if: false, message: false },
     suicide: { if: true, message: true },
   },
   check: {

@@ -52,7 +52,6 @@ export async function DiscordRequest(endpoint, options) {
     let error=Error(JSON.stringify(data));
     error.name="DiscordError";
     error.code=data.code;
-    console.log("HI : error.code=",error.code);
     //error.code=res.status;
     throw error;
   }
@@ -105,9 +104,9 @@ export async function DiscordMessageChanged(
       ); //using https://discord.com/developers/docs/resources/message#get-channel-message
 
   const this_message = await this_resp.json();
-  console.log(
-    `hi : DiscordMessageChanged between last=${f_message.edited_timestamp} and now=${this_message.edited_timestamp}`
-  );
+  //console.log(
+  //  `hi : DiscordMessageChanged between last=${f_message.edited_timestamp} and now=${this_message.edited_timestamp}`
+  //);
   console.log(f_message);
   console.log(this_message);
   return f_message.edited_timestamp !== this_message.edited_timestamp;

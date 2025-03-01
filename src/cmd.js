@@ -1458,7 +1458,7 @@ async function cmd_god({ userdata, data, lang, locale }) {
             content: translate(
               lang,
               "cmd.god.sub.nofeedback.done." +
-                (arg_amount == 0 ? "zero" : "more"),
+                (arg_amount === 0 ? "zero" : "more"),
               {
                 targetId: arg_user,
                 time: time_format_string_from_int(arg_amount, lang),
@@ -1621,64 +1621,64 @@ async function cmd_god({ userdata, data, lang, locale }) {
       {
         let r;
 
-        if (false) {
-          let glob;
-          {
-            let local = " me";
-            glob = () => {
-              return "im" + local;
-            };
-          }
-          r = glob();
-        }
+        //if (false) {
+        //  let glob;
+        //  {
+        //    let local = " me";
+        //    glob = () => {
+        //      return "im" + local;
+        //    };
+        //  }
+        //  r = glob();
+        //}
 
-        if (false) {
-          const userDay = time_userday_get(locale);
-          r = `${userDay} - ${time_day_int(userDay)} - ${time_day_format(
-            userDay
-          )}`;
-        }
+        //if (false) {
+        //  const userDay = time_userday_get(locale);
+        //  r = `${userDay} - ${time_day_int(userDay)} - ${time_day_format(
+        //    userDay
+        //  )}`;
+        //}
 
-        if (false) {
-          //const arg_user_data = await kira_user_get(arg_user, false);
-          console.time("test:cost");
-          const repeat = arg_amount ? arg_amount : 11;
-          let r_som = 0;
-          let r_all = [];
-          for (let i = 0; i < repeat; i++) {
-            const start = Date.now();
-            //the operation to test
+        //if (false) {
+        //  //const arg_user_data = await kira_user_get(arg_user, false);
+        //  console.time("test:cost");
+        //  const repeat = arg_amount ? arg_amount : 11;
+        //  let r_som = 0;
+        //  let r_all = [];
+        //  for (let i = 0; i < repeat; i++) {
+        //    const start = Date.now();
+        //    //the operation to test
 
-            await Achievement.list["outerTime"].do_check(
-              userdata,
-              10000000,
-              lang,
-              {},
-              (it) => time_format_string_from_int(it, lang)
-            );
+        //    await Achievement.list["outerTime"].do_check(
+        //      userdata,
+        //      10000000,
+        //      lang,
+        //      {},
+        //      (it) => time_format_string_from_int(it, lang)
+        //    );
 
-            const end = Date.now();
-            const gap_ms = end - start;
-            r_som += gap_ms;
-            r_all.push(gap_ms);
-          }
-          r_all.sort((a, b) => a - b);
-          r = `operation repeated ${repeat} times.\ntotal=${Math.round(
-            r_som
-          )}ms  average=${Math.round(r_som / repeat)}ms  median=${Math.round(
-            r_all[Math.floor(repeat / 2)]
-          )}ms  min=${Math.round(r_all[0])}ms  max=${Math.round(
-            r_all[repeat - 1]
-          )}ms`;
-          console.log(` cmd : perf tester`, r);
-          console.timeEnd("test:cost");
-        }
+        //    const end = Date.now();
+        //    const gap_ms = end - start;
+        //    r_som += gap_ms;
+        //    r_all.push(gap_ms);
+        //  }
+        //  r_all.sort((a, b) => a - b);
+        //  r = `operation repeated ${repeat} times.\ntotal=${Math.round(
+        //    r_som
+        //  )}ms  average=${Math.round(r_som / repeat)}ms  median=${Math.round(
+        //    r_all[Math.floor(repeat / 2)]
+        //  )}ms  min=${Math.round(r_all[0])}ms  max=${Math.round(
+        //    r_all[repeat - 1]
+        //  )}ms`;
+        //  console.log(` cmd : perf tester`, r);
+        //  console.timeEnd("test:cost");
+        //}
 
         throw EvalError("found a cat in the code");
 
-        {
-          r = Achievement.list["counter"].level_graduate(arg_amount);
-        }
+        //{
+        //  r = Achievement.list["counter"].level_graduate(arg_amount);
+        //}
 
         return {
           method: "PATCH",

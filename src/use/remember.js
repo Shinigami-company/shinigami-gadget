@@ -4,13 +4,52 @@ import { cmd_kira_execute, kira_error_report, cmd_comeback } from "../cmd.js";
 
 import { rememberTasksType } from "../enum.ts";
 
+const wakeup_minutes = 3;
+const checkup_seconds = 1;
+
+var remember_interval_id = -1;
+var wakeup_interval_id = -1;
+
+async function kira_remember_set_interval() {
+  //check if checkup needed and set interval
+  var is_remaining = await kira_remember_task_soon();
+
+  if (is_remaining != (remember_interval_id != -1)) {
+    if (is_remaining) {
+      remember_interval_id = setInterval(
+        kira_remember_checkup,
+        1000 * checkup_seconds
+      );
+      console.log(
+        `rem3mber : one pending task. start checkup. interval=${remember_interval_id}`
+      );
+    } else {
+      console.log(
+        `rem3mber : no pending task. clear checkup. interval=${remember_interval_id}`
+      );
+      clearInterval(remember_interval_id);
+      remember_interval_id = -1;
+    }
+  }
+
+  if (wakeup_interval_id === -1) {
+    //this works FOREVER (and that cool)
+    wakeup_interval_id = setInterval(
+      kira_remember_wakeup,
+      60 * 1000 * wakeup_minutes
+    );
+    console.log(`rem3mber : start wakeup. interval=${wakeup_interval_id}`);
+  }
+}
+
 export async function kira_remember_task_add(f_date, f_type, f_data) {
-  return await api.KiraRemember.create({
+  await api.KiraRemember.create({
     executeDate: f_date,
     RememberingType: f_type,
     //RememberingId: f_id
     RememberingData: f_data,
   });
+  if (remember_interval_id === -1) await kira_remember_set_interval();
 }
 
 export async function kira_remember_task_after(f_date) {
@@ -28,25 +67,27 @@ export async function kira_remember_task_after(f_date) {
   });
 }
 
+export async function kira_remember_task_soon() {
+  //remember tasks before last wakeup
+  var rememberTime = new Date();
+  rememberTime.setSeconds(rememberTime.getSeconds() + 60 * wakeup_minutes);
+  rememberTime = rememberTime.toISOString();
+  var element = await api.KiraRemember.maybeFindFirst({
+    select: { id: true },
+    filter: {
+      executeDate: { before: rememberTime },
+    },
+  });
+  //console.log("element:", element, Boolean(element));
+  return Boolean(element);
+}
+
 export async function kira_remember_task_clean(f_taskId) {
   return await api.KiraRemember.delete(f_taskId);
 }
 
-//this one not working
-//function cmd_kira_wait({ api, more, user, lang }, f_time_ms, f_itr=0)
-//{
-//  console.debug(`kira : WAIT. wait for id=${more.runId}, minute=${f_itr}`);
-//  if (f_time_ms < 60000)
-//    setTimeout(() => { cmd_kira_execute({ api, more, user, lang }); }, f_time_ms);
-//  else
-//    setTimeout(() => { cmd_kira_wait({ api, more, user, lang }, f_time_ms-60000, f_itr+1); }, 60000);
-//}
-
-//this works FOREVER (and that cool)
-setInterval(kira_remember_checkup, 1000);
-
 var remembering = 0;
-var ocurence = 0;
+var ocurence_checkup = 0;
 async function kira_remember_checkup() {
   //remembering
 
@@ -54,7 +95,7 @@ async function kira_remember_checkup() {
   if (remembering > 0) {
     remembering += 1;
     console.log(
-      `ERROR : rem3mber : already remembering. remembering=${remembering} ocurence=${ocurence}`
+      `ERROR : rem3mber : already remembering. remembering=${remembering} ocurence=${ocurence_checkup}`
     );
     if (remembering < 10) return; //!only if AFK < 10s
   }
@@ -93,26 +134,29 @@ async function kira_remember_checkup() {
             break;
         }
       }
+      await kira_remember_set_interval();
     }
   } catch (e) {
     await kira_error_report(e, "AnyJS", "remember", {}, {}, "en");
   }
 
-  //mrewing : log and keep awake
-  if (ocurence % 60 === 0) {
-    console.debug(` rem3mber : mrew (min=${ocurence / 60})`);
-    let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
-      raw.json()
-    );
-    if (response.code !== 200)
-      console.error(`rem3mber : mrew failed`, response);
-  }
-
-  ocurence += 1;
+  ocurence_checkup += 1;
   remembering = 0;
 }
 
-export function linkme(f_txt) {
+var ocurence_wakeup = 0;
+async function kira_remember_wakeup() {
+  console.debug(` rem3mber : mrew (min=${ocurence_wakeup * wakeup_minutes})`);
+  let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
+    raw.json()
+  );
+  if (response.code !== 200) console.error(`rem3mber : mrew failed`, response);
+  await kira_remember_set_interval();
+}
+
+export async function linkme(f_txt) {
+  console.log(` rem3mber : LINKING...`);
+  await kira_remember_set_interval();
   console.log(` rem3mber : LINKED : `, f_txt);
-  remembering = 0;
+  //remembering = 0;
 }
