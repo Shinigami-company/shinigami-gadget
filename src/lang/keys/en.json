@@ -33,6 +33,8 @@
 "cmd.god.sub.ban.done.perma": "<@$[targetId]> **is forbbiden** to use the death note",
 "cmd.god.sub.ban.done.temp": "<@$[targetId]> **is forbbiden** to use the death note during $[time]",
 "cmd.god.sub.unban.done": "<@$[targetId]> **is no longer forbbiden** to use the death note",
+"cmd.god.sub.mercy.done": "<@$[targetId]> is **saved** from the shorter run",
+"cmd.god.sub.mercy.none": "<@$[targetId]> is not attacked",
 "cmd.god.sub.update.fail.notplayer": "this person isn't playing",
 "cmd.god.sub.update.fail.already": "<@$[targetId]> is up to date",
 "cmd.god.sub.update.done.commands": "commands registered successfully",

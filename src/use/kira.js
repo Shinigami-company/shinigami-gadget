@@ -558,6 +558,28 @@ export async function kira_run_of(f_victimId, f_attackerId) {
   );
 }
 
+export async function kira_run_mercy(f_victimId) {
+  const runFull=await api.KiraRun.maybeFindFirst(
+    {
+      filter: {
+        victimId: { equals: f_victimId },
+        //attackerId: { equals: f_attackerId },
+      },
+      sort: {
+        finalDate: "Ascending"
+      }
+    },
+    {
+      select: {
+        id: true
+      },
+    }
+  );
+  if (!runFull) return 0;
+  await api.KiraRun.delete(runFull.id);
+  return 1;
+}
+
 export async function kira_run_delete(f_runId, f_victimDataId) {
   /* get the victim data.
   //but victim data is not given when he does not exist.

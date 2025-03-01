@@ -155,7 +155,7 @@
 "cmd.trick.item.coinflip.fail.step": "*❌⌚*",
 "cmd.trick.item.coinflip.done.heads": "## ||:coin:🔝||",
 "cmd.trick.item.coinflip.done.tails": "## ||:coin:🔙||",
-"cmd.trick.item.coinflip.done.side": "## ||:coin:🔛||\n-# ❔❔❔\n👤🫴🔄🪙🍀",
+"cmd.trick.item.coinflip.done.side": "## ||:coin:🔛||\n-# ⁉\n👤🫴🔄🪙🍀",
 "cmd.trick.item.coinflip.done": "**<@$[winerUserId]>🍀🎊**   `+$[reward]🍎`",
 "cmd.trick.fail.poor": "❌🍎",
 

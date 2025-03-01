@@ -50,6 +50,7 @@ import {
 
 import {
   kira_do_refreshCommands,
+  kira_run_mercy,
   kira_user_check_banTime,
   kira_user_remove_ban,
   kira_user_set_ban,
@@ -603,9 +604,8 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
-      //ephemeral: true,
+      ephemeral: true,
     },
-    //ephemeral: true,
   },
   trick_resp: {
     functions: {
@@ -991,7 +991,17 @@ export async function kira_cmd(f_deep, f_cmd) {
     //discord : Unknown interaction
     if (e.code===10062)
     {
-      console.error(`cmd : catch : handle ERROR : `, "this is Discord Unknown interaction");
+      kira_error_throw(
+        e,
+        errorWhen,
+        "command",
+        "error.message.none",
+        f_deep,
+        f_cmd,
+        false,
+        true,
+        false,
+      );
       return;
     }
 
@@ -1006,8 +1016,11 @@ export async function kira_cmd(f_deep, f_cmd) {
         "error.message.level.critical", //this issue is critical
         f_deep,
         f_cmd,
-        true
+        true,
+        true,
+        true,
       ); //throw
+      return;
     }
 
     //-handle-
@@ -1023,7 +1036,9 @@ export async function kira_cmd(f_deep, f_cmd) {
       "error.message.any",
       f_deep,
       f_cmd,
-      true
+      true,
+      true,
+      true,
     ); //throw
 
     return; // will not bcs throw before
@@ -1081,9 +1096,12 @@ export async function kira_error_throw(
   f_errorMessageKey, //the error message to be translated
   f_deep, //you know
   f_cmd, //the command used to come here (to change : too specific parameter)
-  f_ifThrow = true
+  ifReport = true,
+  ifPatch = true,
+  ifThrow = true
 ) {
   //POST to admin webhook
+  if (ifReport)
   await kira_error_report(
     f_errorObject,
     f_errorKey,
@@ -1100,6 +1118,7 @@ export async function kira_error_throw(
   );
 
   //PATCH user message
+  if (ifPatch)
   await DiscordRequest(
     `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`,
     {
@@ -1109,7 +1128,7 @@ export async function kira_error_throw(
       },
     }
   );
-  if (f_ifThrow) throw f_errorObject;
+  if (ifThrow) throw f_errorObject;
 }
 
 export function cmd_register() {
@@ -1577,6 +1596,25 @@ async function cmd_god({ userdata, data, lang, locale }) {
         };
       }
       break;
+
+    case "mercy":
+      {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
+        const done=await kira_run_mercy(arg_user);
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, `cmd.god.sub.mercy.${(done) ? "done" : "none"}`, {"targetId": arg_user}),
+          },
+        };
+      };
 
     //#test subcommand
     case "test":
