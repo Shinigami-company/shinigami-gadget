@@ -199,6 +199,16 @@
 "cmd.know.get.fullwhere": "Mrrr! at **$[wh]**.   `-$[price]🍎`",
 
 
+"cmd.invite.ad.content": "### Kan a kitn have a death note? <:book_black:1281258833271849050>\n𝕶   U kan bee a gud **Bird** :feather:\n𝕷    U kan bee **lawr** :scales: \n𝕸  U kan bee **a cnif trowr** :knife:\n𝕹   U kan bee **a pear** :pear:\n𝕽   U kan bee **sily** :smiling_imp: \n-# Kitns wil DOMINATE ze wurld",
+"cmd.invite.ad.view": "\n\nClick UwU\n$[inviteLink]",
+"cmd.invite.button.invite": "th feathr buk join mi",
+"cmd.invite.button.join": "i join th feather buk",
+"cmd.invite.no": "Nut now.\n`$[details]`",
+
+"cmd.help.new.content": "Hi. :wing:\n\n**Pik ur feathr buk `/claim`**\nWrit nams `/kira`\nAvod deth bi kil\nGet pear `/apple`\nDo magik yay `/trick`\nGROW UPPPPPPPP `/invite`\nNd othr. $[view]\n-# cmds nut in mp dumb",
+"cmd.help.new.view": "U kan si ther :3\n$[inviteLink]",
+
+
 "stats.broad.fail.nothing": "uwr du nothing yt",
 "stats.broad.show": "uwr stats :",
 "stat.broad.show.do_kill": "**person kild** = $[value]",

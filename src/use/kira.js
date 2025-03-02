@@ -5,9 +5,12 @@ import { SETT_CMD } from "../sett.js";
 import { FeedbackState, userBanType } from "../enum.ts";
 
 export async function kira_do_refreshCommands() {
-  console.debug("kira : refreshcmd : removeCommands()...");
-  await api.removeCommands();
-  console.debug("kira : refreshcmd : removeCommands() done!");
+  if (false)
+  {
+    console.debug("kira : refreshcmd : removeCommands()...");
+    await api.removeCommands();
+    console.debug("kira : refreshcmd : removeCommands() done!");
+  }
   console.debug("kira : refreshcmd : registerCommands()...");
   await api.registerCommands();
   console.debug("kira : refreshcmd : registerCommands() done!");

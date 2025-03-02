@@ -208,6 +208,16 @@
 "cmd.know.get.fullwhere": "<a:apple_croc:1266010583623532574> 🏘️🟰**$[wh]**.   `-$[price]🍎`",
 
 
+"cmd.invite.ad.content": "### <:book_black:1281258833271849050>🎁🫵\n:feather:𝕶\n:scales:𝕷\n:knife:𝕸\n:apple:𝕹\n:smiling_imp:𝕽\n-# 🫵🔐⛏️$[view]",
+"cmd.invite.ad.view": "\n\n<:ryuk:1345790011190018088>👉🏘️\n$[inviteLink]",
+"cmd.invite.button.invite": "📓➡️🏘️",
+"cmd.invite.button.join": "➡️📓👑",
+"cmd.invite.no": "➡️⛔\n`$[details]`",
+
+"cmd.help.new.content": "👈:wing:👋🫵\n\n**`/claim`➡️<:book_black:1281258833271849050>🎁**\n`/kira`➡️✒️\n🛡️➡️✒️👤\n`/apple`➡️🍎🍏📦\n`/trick`➡️👹😀\n`/invite`➡️👥👥<:book_black:1281258833271849050>\n...$[view]\n-# ✳️➡️🏘️",
+"cmd.help.new.view": "🗃️↘️\n$[inviteLink]",
+
+
 "stats.broad.fail.nothing": "🤷",
 "stats.broad.show": "🫵👇",
 "stat.broad.show.do_kill": "🏴‍☠️🔄 = $[value]",

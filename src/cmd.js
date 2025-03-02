@@ -262,6 +262,36 @@ const commands_structure = {
     },
   },
 
+  invite: {
+    functions: {
+      exe: cmd_invite,
+      checks: [],
+    },
+    register: {
+      name: "invite",
+      description: "Shinigami is aviable on guilds",
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+      //ephemeral: true,
+    },
+  },
+  
+  help: {
+    functions: {
+      exe: cmd_help,
+      checks: [],
+    },
+    register: {
+      name: "help",
+      description: "how to use it",
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+      //ephemeral: true,
+    },
+  },
+
   feedback: {
     functions: {
       exe: cmd_feedback,
@@ -1938,6 +1968,118 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
   }
 }
 
+//#invite command
+async function cmd_invite({ lang })
+{
+  if (!parseInt(process.env.invite_enable))
+  {
+    var body_content=translate(lang, "cmd.invite.no", {"details": process.env.invite_disable_reason});
+    return {
+      method: "PATCH",
+      body: {
+        content: body_content,
+      }
+    }
+  }
+
+
+  //var view_text=translate(lang, "cmd.invite.ad.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm});
+  var view_text="";
+  var body_content=translate(lang, "cmd.invite.ad.content", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "view": view_text});
+  var button_label_invite=translate(lang, "cmd.invite.button.invite");
+  var button_label_join=translate(lang, "cmd.invite.button.join");
+
+  return {
+    method: "PATCH",
+    body: {
+      content: body_content,
+      components: [
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: [
+            {
+              type: MessageComponentTypes.BUTTON,
+              url: process.env.invite_bot,
+              style: ButtonStyleTypes.LINK,
+              emoji: book_colors[1].emojiObj,
+              label: button_label_invite,
+              disabled: false,
+            },
+            {
+              type: MessageComponentTypes.BUTTON,
+              url: process.env.invite_realm,
+              style: ButtonStyleTypes.LINK,
+              emoji: book_colors[2].emojiObj,
+              label: button_label_join,
+              disabled: false,
+            },
+          ]
+        }
+      ]
+    },
+  };
+}
+
+
+//#help command
+async function cmd_help({ lang })
+{
+  var view_text = (parseInt(process.env.invite_enable))
+    ? translate(lang, "cmd.help.new.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm})
+    : "";
+  //var view_text = "";
+
+  var body_content=translate(lang, "cmd.help.new.content", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "view": view_text});
+  //var button_label=translate(lang, "cmd.help.button.invite");
+
+  return {
+    method: "PATCH",
+    body: {
+      content: body_content
+    },
+  };
+}
+
+      //embeds: [
+      //  {
+      //    color: book_colors[lookedbook.color].int,
+      //    description: embed_content,
+      //    footer: {
+      //      text: `${show_page} / ${last_page}`,
+      //    },
+      //  },
+      //],
+      //components: [
+      //  {
+      //    type: MessageComponentTypes.ACTION_ROW,
+      //    components: [
+      //      {
+      //        type: MessageComponentTypes.BUTTON,
+      //        custom_id: `makecmd see_edit ${lookedbook.id}`,
+      //        style: ButtonStyleTypes.SECONDARY,
+      //        emoji: book_colors[lookedbook.color].emojiObj,
+      //        disabled: false,
+      //      },
+      //      {
+      //        type: MessageComponentTypes.BUTTON,
+      //        custom_id: `makecmd see_edit ${lookedbook.id}+${show_page - 1}`,
+      //        label: translate(lang, "cmd.page.get.left", { page: show_page - 1 }),
+      //        style: ButtonStyleTypes.SECONDARY,
+      //        disabled: !(await kira_line_if_pageGood(lookedbook, show_page - 2)),
+      //      },
+      //      {
+      //        type: MessageComponentTypes.BUTTON,
+      //        custom_id: `makecmd see_edit ${lookedbook.id}+${show_page + 1}`,
+      //        label: translate(lang, "cmd.page.get.right", {
+      //          page: show_page + 1,
+      //        }),
+      //        style: ButtonStyleTypes.SECONDARY,
+      //        disabled: !(await kira_line_if_pageGood(lookedbook, show_page)),
+      //      },
+      //    ],
+      //  },
+      //],
+
 //#claim command
 async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
   //variables
@@ -3397,15 +3539,13 @@ export async function cmd_kira_execute(data) {
       let h_apples = 0; //default
       if (h_victim_kills) {
         h_apples = SETT_CMD.apple.avangerAppleReward(h_victim_kills);
-        kira_apple_send(userdata.id, h_apples, userdata.statPtr.id, {
-          type: "murderer",
+        kira_apple_send(userdata.id, h_apples, userdata.statPtr.id, "murderer", {
           victim: pack.victim_username,
           attacker: user.username,
           kill: h_victim_kills,
         });
       } else {
-        kira_apple_send(userdata.id, h_apples, userdata.statPtr.id, {
-          type: "harmless",
+        kira_apple_send(userdata.id, h_apples, userdata.statPtr.id, "harmless", {
           victim: pack.victim_username,
           attacker: user.username,
         });
