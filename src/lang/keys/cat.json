@@ -199,8 +199,8 @@
 "cmd.know.get.fullwhere": "Mrrr! at **$[wh]**.   `-$[price]🍎`",
 
 
-"cmd.invite.ad.content": "### Kan a kitn have a death note? <:book_black:1281258833271849050>\n𝕶   U kan bee a gud **Bird** :feather:\n𝕷    U kan bee **lawr** :scales: \n𝕸  U kan bee **a cnif trowr** :knife:\n𝕹   U kan bee **a pear** :pear:\n𝕽   U kan bee **sily** :smiling_imp: \n-# Kitns wil DOMINATE ze wurld",
-"cmd.invite.ad.view": "\n\nClick UwU\n$[inviteLink]",
+"cmd.invite.ad.content": "### Kan a kitn have a death note? <:book_black:1281258833271849050>\n𝕶   U kan bee a gud **Bird** :feather:\n𝕷    U kan bee **lawr** :scales: \n𝕸  U kan bee **a cnif trowr** :knife:\n𝖂  U kan bee **a pear** :pear:\n𝕹   U kan bee **sily** :smiling_imp: \n-# Kitns wil DOMINATE ze wurld\n\nClick UwU$[view]",
+"cmd.invite.ad.view": "\n-# $[inviteLink]",
 "cmd.invite.button.invite": "th feathr buk join mi",
 "cmd.invite.button.join": "i join th feather buk",
 "cmd.invite.no": "Nut now.\n`$[details]`",

@@ -210,8 +210,8 @@
 "cmd.know.get.fullwhere": "Yum! It happened in **$[wh]**.   `-$[price]🍎`",
 
 
-"cmd.invite.ad.content": "### Would you be worthy to own the death note? <:book_black:1281258833271849050>\n𝕶   You can be the greatest **Kira** :feather:\n𝕷    You can create a **fair justice** :scales: \n𝕸  You can be a **serial killer** :knife:\n𝕹   You can pile a **lot of apples** :apple:\n𝕽   You can **trick** your friends :smiling_imp: \n-# The **death note** has the power. It's up to *you*.$[view]",
-"cmd.invite.ad.view": "\n\nInvite the Shinigami by using the following link :\n$[inviteLink]",
+"cmd.invite.ad.content": "### Would you be worthy to own the death note? <:book_black:1281258833271849050>\n𝕶   You can be the greatest **Kira** :feather:\n𝕷    You can create a **fair justice** :scales: \n𝕸  You can be a **serial killer** :knife:\n𝖂  You can pile a **lot of apples** :apple:\n𝕹   You can **trick** your friends :smiling_imp: \n-# The **death note** has the power. It's up to *you*.$[view]",
+"cmd.invite.ad.view": "\n\nInvite the Shinigami by using the following link :\n-# $[inviteLink]",
 "cmd.invite.button.invite": "Use the death note on my guild",
 "cmd.invite.button.join": "Join Kira's kingdom",
 "cmd.invite.no": "I dont want to join new guilds for now.\n`$[details]`",

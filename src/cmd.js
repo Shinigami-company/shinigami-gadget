@@ -1983,8 +1983,9 @@ async function cmd_invite({ lang })
   }
 
 
-  //var view_text=translate(lang, "cmd.invite.ad.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm});
-  var view_text="";
+  var view_text=translate(lang, "cmd.invite.ad.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm});
+  //var view_text="\n-# "+process.env.invite_bot;
+  //var view_text="";
   var body_content=translate(lang, "cmd.invite.ad.content", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "view": view_text});
   var button_label_invite=translate(lang, "cmd.invite.button.invite");
   var button_label_join=translate(lang, "cmd.invite.button.join");
@@ -2005,6 +2006,11 @@ async function cmd_invite({ lang })
               label: button_label_invite,
               disabled: false,
             },
+          ]
+        },
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: [
             {
               type: MessageComponentTypes.BUTTON,
               url: process.env.invite_realm,

@@ -208,10 +208,10 @@
 "cmd.know.get.fullwhere": "Miam ! C'est arrivé dans **$[wh]**.   `-$[price]🍎`",
 
 
-"cmd.invite.ad.content": "### Serais-tu digne de posséder le Death Note ? <:book_black:1281258833271849050>\n𝕶   Tu peux être le plus grand **Kira** 🪶\n𝕷    Tu peux créer une **justice équitable** ⚖️ \n𝕸  Tu peux être un **tueur en série** 🔪\n𝕹   Tu peux amasser **beaucoup de pommes** 🍎\n𝕽   Tu peux t'amuser à **piéger** tes amis 😈 \n-# Le **death note** en a le pouvoir. Tout dépends de *toi*.$[view]",
-"cmd.invite.ad.view": "\n\nInvite le shinigami avec le lien suivant :\n$[inviteLink]",
+"cmd.invite.ad.content": "### Serais-tu digne de posséder le Death Note ? <:book_black:1281258833271849050>\n𝕶   Tu peux être le plus grand **Kira** 🪶\n𝕷    Tu peux créer une **justice équitable** ⚖️ \n𝕸  Tu peux être un **tueur en série** 🔪\n𝖂  Tu peux amasser **beaucoup de pommes** 🍎\n𝕹   Tu peux t'amuser à **piéger** tes amis 😈 \n-# Le **death note** en a le pouvoir. Tout dépends de *toi*.$[view]",
+"cmd.invite.ad.view": "\n\nInvite le shinigami avec le lien suivant :\n-# $[inviteLink]",
 "cmd.invite.button.invite": "Utiliser le death note sur mon serveur",
-"cmd.invite.button.join": "Rejoindre le royaume de kira",
+"cmd.invite.button.join": "Rejoindre le royaume de Kira",
 "cmd.invite.no": "Je ne veux pas rejoindre de nouveaux serveur pour l'instant.\n`$[details]`",
 
 "cmd.help.new.content": "Je suis un Shinigami, venant du royaume des morts. :wing:\n\n**Récupère ton death note avec `/claim`**\nTu peux écrire des noms avec `/kira`\nDéfends toi en tuant ton agresseur\nAccumule des pommes avec `/apple`\nPiège tes amis avec `/trick`\nFait grandir le monde de Kira avec `/invite`\nEt d'autres, mais j'ai la flemme de t'expliquer. $[view]\n-# Les commandes sont disponibles sur les serveurs dicord",
