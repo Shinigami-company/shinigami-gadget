@@ -147,6 +147,7 @@ async function kira_remember_checkup() {
 var ocurence_wakeup = 0;
 async function kira_remember_wakeup() {
   console.debug(` rem3mber : mrew (min=${ocurence_wakeup * wakeup_minutes})`);
+  ocurence_wakeup+=1;
   let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
     raw.json()
   );
