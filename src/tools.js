@@ -107,7 +107,7 @@ export function time_userday_get(f_discordLang, f_dateArg = undefined) {
 }
 
 export function time_day_int(f_date) {
-  return Math.floor(f_date.getTime() / 86400000);
+  return Math.floor(f_Date.now().getUnixTime() / 86400000);
 }
 
 export function time_day_format(f_date) {

@@ -24,6 +24,7 @@ const maxError = 1;
  *
  */
 export default async function route({ request, reply, api, logger, connections }) {
+  console.debug("clock : RECIEVE ", Date.now());
   // Interaction type and data
   const source = request.body;
   const { type, id, token, locale, member, message, channel, guild } = source;//default

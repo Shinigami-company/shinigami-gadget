@@ -799,6 +799,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   // usable ~~unusable~~ (unused) [used here] |created here|
 
   //console.debug(`cmd : f_deep=`, f_deep);
+  console.debug("clock : compute ", Date.now());
 
   //new datas
 
@@ -942,6 +943,7 @@ export async function kira_cmd(f_deep, f_cmd) {
 
       //send request
       errorWhen = "CmdRequest1";
+      console.debug("clock : defered", Date.now());
       await DiscordRequest(
         // POST the deferred response
         `interactions/${f_deep.id}/${f_deep.token}/callback`,
@@ -992,6 +994,7 @@ export async function kira_cmd(f_deep, f_cmd) {
     }
 
     errorWhen = "CmdRequest2";
+    console.debug("clock : request", Date.now());
     return await DiscordRequest(url, return_request);
 
     errorWhen = "CmdEnd";
@@ -2095,6 +2098,10 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
     h_color = data.options[0].value;
     h_price = book_colors[h_color].price;
   }
+  const h_book_amount = await stats_simple_get(
+    userdata.statPtr.id,
+    "ever_book"
+  );
 
   if (userbook) {
     return {
@@ -2115,10 +2122,6 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
 
   if (data.options) {
     if (h_price > 0) {
-      let h_book_amount = await stats_simple_get(
-        userdata.statPtr.id,
-        "ever_book"
-      );
       if (!h_book_amount > 0) {
         //cant pay your first death note
         return {
@@ -2178,7 +2181,7 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
     }
   }
 
-  {
+  if (!h_book_amount > 0) {
     const all = { user, userdata, channel };
     await webhook_reporter.newbi.post(lang, all, {}, user.accent_color);
   }
