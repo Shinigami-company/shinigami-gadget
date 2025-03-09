@@ -1,3 +1,8 @@
+import { translate } from "../lang.js";
+
+import {
+  book_colors,
+} from "../use/kira.js";
 
 //rules
 const all_rules = [
