@@ -2471,6 +2471,8 @@ async function cmd_apple({ userdata, locale, lang }) {
     }
   }
 
+  const displayed_apples = userdata.apples+h_apples_claimed;
+
   return {
     method: "PATCH",
     body: {
@@ -2481,12 +2483,12 @@ async function cmd_apple({ userdata, locale, lang }) {
           `cmd.apples.get.${h_apples_claimed > 0 ? "changed" : "same"}`,
           {
             added: 1,
-            amount: userdata.apples+h_apples_claimed,
+            amount: displayed_apples,
             word: translate(
               lang,
-              `word.apple${userdata.apples > 1 ? "s" : ""}`
+              `word.apple${displayed_apples > 1 ? "s" : ""}`
             ),
-            emoji: kira_format_applemoji(userdata.apples),
+            emoji: kira_format_applemoji(displayed_apples),
           }
         ) +
         h_txt_more,
