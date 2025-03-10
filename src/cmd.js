@@ -205,6 +205,7 @@ const commands_structure = {
               value: "apple_fake",
               description: "fake giving apple",
             },
+            { name: "tell", value: "tell", description: "tell to someone" },
           ],
         },
         {
@@ -217,6 +218,12 @@ const commands_structure = {
           type: 4,
           name: "amount",
           description: "the potential amount",
+          required: false,
+        },
+        {
+          type: 3,
+          name: "message",
+          description: "the potential message",
           required: false,
         },
       ],
@@ -816,7 +823,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   }
   //get user lang
   //lang selected, else discord lang
-  f_deep.lang = lang_get(f_deep);
+  f_deep.lang = lang_get(f_deep.userdata, f_deep.locale);
   //if replyed by
   //will change a lot here, used by catch
   f_deep.replyed = false;
@@ -1361,10 +1368,11 @@ async function check_mailbox({ lang, userdata }) {
 //--- the commands ---
 
 //#god command
-async function cmd_god({ userdata, data, lang, locale }) {
+async function cmd_god({ userdata, userbook, data, lang, locale }) {
   const arg_sub = data.options.find((opt) => opt.name === "action")?.value; // also data.options[0].value
   const arg_user = data.options.find((opt) => opt.name === "user")?.value;
   const arg_amount = data.options.find((opt) => opt.name === "amount")?.value;
+  const arg_texto = data.options.find((opt) => opt.name === "message")?.value;
 
   switch (arg_sub) {
     //#life subcommand (#revive & #kill)
@@ -1656,6 +1664,92 @@ async function cmd_god({ userdata, data, lang, locale }) {
           },
         };
       };
+
+
+
+    //#tell subcommand
+    case "tell":
+      {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
+
+        if (!arg_texto) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.message"),
+            },
+          };
+        }
+
+        const h_targetId = arg_user;
+        const targetdata = await kira_user_get(h_targetId, false);
+
+        if (!targetdata) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.sub.tell.fail.notplayer"),
+            },
+          };
+        }
+
+        var recipient_content = translate(lang, "cmd.god.sub.tell.send.recipient.context");
+        var recipient_description = arg_texto;
+        var sucess = true;
+
+        const message_embed = [
+            {
+              color: book_colors[userbook.color].int,
+              description: recipient_description,
+            },
+          ]
+
+
+
+        try {
+          //open DM
+          var h_recipient_dm_id = await DiscordUserOpenDm(h_targetId);
+
+          //send message
+          var h_recipient_message_response = await DiscordRequest(
+            `channels/${h_recipient_dm_id}/messages`,
+            {
+              method: "POST",
+              body: {
+                content: recipient_content,
+                embeds: message_embed
+              },
+            }
+          ).then((res) => res.json());
+        } catch (e) {
+          let errorMsg = JSON.parse(e.message);
+          if (errorMsg?.code === 50007) {
+            sucess=false;
+          } else throw e;
+        }
+
+
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.god.sub.tell.send.remitter." + ((sucess) ? "sended" : "failed"), {
+              targetId: h_targetId,
+              //targetName: targetdata.username,
+            }),
+            embeds: (sucess) ? message_embed : undefined
+          },
+        };
+      }
+      break;
+
+
 
     //#test subcommand
     case "test":
@@ -2387,7 +2481,7 @@ async function cmd_apple({ userdata, locale, lang }) {
           `cmd.apples.get.${h_apples_claimed > 0 ? "changed" : "same"}`,
           {
             added: 1,
-            amount: userdata.apples,
+            amount: userdata.apples+h_apples_claimed,
             word: translate(
               lang,
               `word.apple${userdata.apples > 1 ? "s" : ""}`
@@ -3197,10 +3291,13 @@ async function cmd_kira({
   });
 
   //message/victim
+  const lang_victim = h_victim_data ? lang_get(h_victim_data, lang, false) : lang;
   if (h_will_ping_victim) {
     try {
       //open DM
       var h_victim_dm_id = await DiscordUserOpenDm(h_victim_id);
+
+      //get lang
 
       //send message
       var h_victim_message = await DiscordRequest(
@@ -3208,7 +3305,7 @@ async function cmd_kira({
         {
           method: "POST",
           body: {
-            content: translate(lang, "cmd.kira.start.mp.victim", {
+            content: translate(lang_victim, "cmd.kira.start.mp.victim", {
               time: h_txt_span,
             }),
             components: [
@@ -3222,7 +3319,7 @@ async function cmd_kira({
                         type: MessageComponentTypes.BUTTON,
                         custom_id: `makecmd know ${i}+${h_run.id}`,
                         label: translate(
-                          lang,
+                          lang_victim,
                           `cmd.kira.start.mp.victim.pay.${i}`,
                           { price: sett_catalog_knows[i].price }
                         ),
@@ -3316,7 +3413,8 @@ async function cmd_kira({
       span: h_span,
       note_id: h_note.id,
 
-      lang: lang,
+      lang_attacker: lang,
+      lang_victim: lang_victim,
 
       will_ping_victim: h_will_ping_victim,
       will_ping_attacker: h_will_ping_attacker,
@@ -3377,7 +3475,8 @@ export async function cmd_kira_execute(data) {
 
   //datas reading again
   const user = await DiscordUserById(pack.attacker_id); //!
-  const lang = pack.lang; //!
+  const lang = pack.lang_attacker; //!
+  const lang_victim = pack.lang_victim; //!
   const h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
   const userdata = await kira_user_get(user.id, true);
   const h_attacker_book = await kira_book_get(userdata.bookPtr.id);
@@ -3452,7 +3551,7 @@ export async function cmd_kira_execute(data) {
       "cmd.kira.fail.victim.dead.attacker"
     );
     h_return_msg_victim.content = translate(
-      lang,
+      lang_victim,
       "cmd.kira.fail.victim.dead.victim"
     );
   } else if (SETT_CMD.kira.cancelWhenDeadAttacker && !userdata.is_alive) {
@@ -3461,7 +3560,7 @@ export async function cmd_kira_execute(data) {
       "cmd.kira.fail.attacker.dead.attacker"
     );
     h_return_msg_victim.content = translate(
-      lang,
+      lang_victim,
       "cmd.kira.fail.attacker.dead.victim"
     );
   }
@@ -3474,7 +3573,7 @@ export async function cmd_kira_execute(data) {
       "cmd.kira.finish.attacker",
       { victimId: pack.victim_id, reason: pack.txt_reason }
     );
-    h_return_msg_victim.content = translate(lang, "cmd.kira.finish.victim", {
+    h_return_msg_victim.content = translate(lang_victim, "cmd.kira.finish.victim", {
       reason: pack.txt_reason,
     });
 

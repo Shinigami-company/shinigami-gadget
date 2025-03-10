@@ -176,11 +176,13 @@ export function lang_lore(f_lang) {
   return r_txt;
 }
 
-export function lang_get(f_deep) {
+export function lang_get(userdata, locale, setToLocaleIfNone=false) {
   //need userdata && request
-  if (f_deep.userdata.lang) {
-    return f_deep.userdata.lang;
+  if (userdata.lang) {
+    return userdata.lang;
   } else {
-    return f_deep.source.locale;
+    if (setToLocaleIfNone)
+      lang_set(userdata.id, locale);
+    return locale;
   }
 }
