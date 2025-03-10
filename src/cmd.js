@@ -3475,8 +3475,8 @@ export async function cmd_kira_execute(data) {
 
   //datas reading again
   const user = await DiscordUserById(pack.attacker_id); //!
-  const lang = pack.lang_attacker; //!
-  const lang_victim = pack.lang_victim; //!
+  const lang = pack.lang_attacker ? pack.lang_attacker : pack.lang; //!
+  const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang; //!
   const h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
   const userdata = await kira_user_get(user.id, true);
   const h_attacker_book = await kira_book_get(userdata.bookPtr.id);
