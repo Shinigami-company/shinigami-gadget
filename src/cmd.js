@@ -1129,7 +1129,7 @@ export async function kira_error_report(
     f_lang,
     all,
     { author: f_athorValues?.user ? true : false },
-    16711680
+    16711680// red
   );
 }
 
@@ -1938,6 +1938,7 @@ async function cmd_feedback({ data, userdata, lang, user }) {
       all,
       { footer: last.length > 0 },
       user.accent_color
+      //15261768//yellow
     );
   }
 
@@ -2277,7 +2278,10 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
 
   if (!h_book_amount > 0) {
     const all = { user, userdata, channel };
-    await webhook_reporter.newbi.post(lang, all, {}, user.accent_color);
+    await webhook_reporter.newbi.post(lang, all, {}, 
+    user.accent_color
+    //9533180// purple 
+    );
   }
   await kira_book_create(userdata, h_color);
   await stats_simple_add(userdata.statPtr.id, "ever_book"); //+stats

@@ -385,10 +385,10 @@
 "post.newbi.author.name": "@$[user.username] ($[userdata.id])",
 "post.newbi.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 
-"post.authorized.title": "add the Shinigami",
-"post.authorized.description": "Server <@$[user.id]> is now parth of the god of death world.\nThe server will be changed forever.\n**After they die, the place they go is MU.**\n\nat <#$[channel.id]>",
-"post.authorized.author.name": "@$[user.username] ($[userdata.id])",
-"post.authorized.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
+"post.hall.title": "add the Shinigami",
+"post.hall.description": "**$[guild.name]** is now parth of the god of death world.\nWhat a great region for Shinigami to walkthought.\n**Death Notes will be dropped. Chaos will be propagated.**\n\n```\n$[guild.description]```\nmax=$[guild.max_members] lang=$[guild.preferred_locale] boost=$[guild.premium_subscription_count] vanity=$[guild.vanity_url_code]\nmembers : $[guild.approximate_member_count]/$[guild.approximate_presence_count]\n\n<#$[guild.system_channel_id]> in ($[guild.name]) owned by <@$[guild.owner_id]> ($[guild.owner])\nadded by <@$[user.id]> (@$[user.username])",
+"post.hall.author.name": "$[guild.name] ($[guild.id])",
+"post.hall.author.icon": "https://cdn.discordapp.com/icons/$[guild.id]/$[guild.icon].webp?size=1024&format=webp&width=640&height=640",
 
 
 "format.line": "$[victim] die of $[reason] in $[time]",

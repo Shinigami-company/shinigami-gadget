@@ -12,7 +12,7 @@ import { DiscordRequest } from '../../src/utils.js';
 
 //own
 import { kira_cmd, kira_error_msg } from '../../src/cmd';
-import { sleep } from "../../src/tools.js"
+import { sleep } from "../../src/tools.js";
 
 //things
 const maxError = 1;

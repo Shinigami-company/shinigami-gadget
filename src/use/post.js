@@ -65,7 +65,7 @@ class Report {
   }
 }
 
-const reporter_list = ["feedback", "error", "newbi"];
+const reporter_list = ["feedback", "error", "newbi", "hall"];
 
 export const webhook_reporter = (() => {
   let dic = {};
