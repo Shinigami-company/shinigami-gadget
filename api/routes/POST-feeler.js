@@ -44,7 +44,8 @@ const route = async ({ request, reply, api, logger, connections }) => {
     user?.locale ? user?.locale : "en",
     all,
     { author: true },
-    16711680
+    user.accent_color
+    //15261768 //yellow
   );
   
 }
