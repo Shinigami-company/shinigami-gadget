@@ -897,66 +897,15 @@ export async function kira_cmd(f_deep, f_cmd) {
     }
 
     //-defered-
-    const defered_action = commands_structure[f_cmd].atr.defered; //have to be set
-    const defered_ephemeral = commands_structure[f_cmd].atr?.ephemeral;
-    errorWhen = "CmdPrepare1";
-
-    if (defered_action || defered_action !== deferedActionType.NO) {
-      //request fundation
-      let response_request = {
-        method: "POST",
-        body: {
-          type: 0, //will be edited as response type.
-        },
-      };
-
-      //specific defered action
-      switch (defered_action) {
-        case deferedActionType.DUMMY:
-          {
-            response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
-            response_request.method = "PATCH";
-            //But only works when f_deep.type is componentsInteraction
-          }
-          break;
-
-        case deferedActionType.WAIT_MESSAGE:
-          {
-            response_request.body.type =
-              InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
-            if (defered_ephemeral)
-              response_request.body.data = {
-                flags: InteractionResponseFlags.EPHEMERAL,
-              };
-          }
-          break;
-
-        case deferedActionType.WAIT_UPDATE:
-          {
-            response_request.body.type =
-              InteractionResponseType.DEFERRED_UPDATE_MESSAGE;
-          }
-          break;
-
-        case deferedActionType.EDIT_CLEAN_BUTTONS:
-          {
-            response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
-            response_request.method = "PATCH";
-            response_request.body.components = [];
-          }
-          break;
-      }
-
-      //request replyed
-      f_deep.replyed = response_request.body.type;
-
+    {
+      errorWhen = "CmdPrepare1";
+      const request_arg=kira_cmd_defered_get(f_deep, f_cmd);
       //send request
       errorWhen = "CmdRequest1";
       console.debug("clock : defered", Date.now());
       await DiscordRequest(
         // POST the deferred response
-        `interactions/${f_deep.id}/${f_deep.token}/callback`,
-        response_request
+        ...request_arg
       );
     }
 
@@ -966,131 +915,223 @@ export async function kira_cmd(f_deep, f_cmd) {
     const return_request = await commands_structure[f_cmd].functions.exe(
       f_deep
     );
+    if (!return_request) return;
 
     //-doing-
-    errorWhen = "CmdPrepare2";
-
-    if (!return_request) return;
-    let url = `nourl/atall`;
-    const return_method = return_request.method.toUpperCase(); //error if not method
-
-    switch (f_deep.replyed) {
-      case InteractionResponseType.DEFERRED_UPDATE_MESSAGE:
-        {
-          //PATCH last message
-          //if (return_method==="PATCH") else ERROR
-          url = `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/${f_deep.message.id}`;
-        }
-        break;
-
-      case InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE:
-        {
-          //PATCH sended message
-          //if (return_method==="PATCH") else ERROR
-          url = `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`;
-        }
-        break;
-
-      case InteractionResponseType.UPDATE_MESSAGE: {
-      }
-      case false:
-        {
-          //POST by the returned request
-          //if (return_method==="POST") else ERROR
-          url = `interactions/${f_deep.id}/${f_deep.token}/callback`;
-        }
-        break;
-    }
-
-    errorWhen = "CmdRequest2";
-    console.debug("clock : request", Date.now());
-    return await DiscordRequest(url, return_request);
-
-    errorWhen = "CmdEnd";
-    throw Error("the end");
-  } catch (e) {
-    if (!f_deep.replyed) {
-      //-defered-
-      //if has not been defered before
-
-      try {
-        await DiscordRequest(
-          // POST the deferred response
-          `interactions/${f_deep.id}/${f_deep.token}/callback`,
-          {
-            method: "POST",
-            body: {
-              type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-            },
-          }
-        );
-      } catch (e2) {
-        await kira_error_report(e2, "DiscordRequest", "error", {}, "en");
-      }
-    }
-
-    console.error(`cmd : catch : found ERROR <${e.name}> [${e.code}] : `, e);
-    console.error(`cmd : catch : temp : cause=`, e.cause);
-
-    //-handle-
-    //detect know issues
-
-    //discord : Unknown interaction
-    if (e.code===10062)
     {
-      kira_error_throw(
-        e,
-        errorWhen,
-        "command",
-        "error.message.none",
-        f_deep,
-        f_cmd,
-        false,
-        true,
-        false,
+      errorWhen = "CmdPrepare2";
+      const request_url=kira_cmd_respond_get(f_deep, f_cmd);
+
+      errorWhen = "CmdRequest2";
+      console.debug("clock : respond", Date.now());
+      await DiscordRequest(
+        // POST the answer response
+        request_url, return_request
       );
       return;
     }
+    
+    errorWhen = "CmdEnd";
+    throw Error("the end");
+  
+  } catch (e) {
 
-    if (
-      e.code ===
-      "GGT_INTERNAL_ERROR"
-    ) {
-      kira_error_throw(
-        e,
-        "GadgetInternal",
-        "command",
-        "error.message.level.critical", //this issue is critical
-        f_deep,
-        f_cmd,
-        true,
-        true,
-        true,
-      ); //throw
-      return;
+    await kira_cmd_error(f_deep, f_cmd, e, errorWhen);
+
+  }
+}
+
+
+
+function kira_cmd_defered_get(f_deep, f_cmd) {
+
+  const defered_action = commands_structure[f_cmd].atr.defered; //have to be set
+  const defered_ephemeral = commands_structure[f_cmd].atr?.ephemeral;
+
+  if (defered_action || defered_action !== deferedActionType.NO) {
+    //request fundation
+    let response_request = {
+      method: "POST",
+      body: {
+        type: 0, //will be edited as response type.
+      },
+    };
+
+    //specific defered action
+    switch (defered_action) {
+      case deferedActionType.DUMMY:
+        {
+          response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
+          response_request.method = "PATCH";
+          //But only works when f_deep.type is componentsInteraction
+        }
+        break;
+
+      case deferedActionType.WAIT_MESSAGE:
+        {
+          response_request.body.type =
+            InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
+          if (defered_ephemeral)
+            response_request.body.data = {
+              flags: InteractionResponseFlags.EPHEMERAL,
+            };
+        }
+        break;
+
+      case deferedActionType.WAIT_UPDATE:
+        {
+          response_request.body.type =
+            InteractionResponseType.DEFERRED_UPDATE_MESSAGE;
+        }
+        break;
+
+      case deferedActionType.EDIT_CLEAN_BUTTONS:
+        {
+          response_request.body.type = InteractionResponseType.UPDATE_MESSAGE;
+          response_request.method = "PATCH";
+          response_request.body.components = [];
+        }
+        break;
     }
+    //request replyed
+    f_deep.replyed = response_request.body.type;
 
-    //-handle-
-    //any other error
+    return [
+      `interactions/${f_deep.id}/${f_deep.token}/callback`,
+      response_request
+    ];
+  }
+}
 
-    console.error(
-      `cmd : catch : throw ERROR : code=${e.code} name=${e.name} message=${e.message}`
-    );
+function kira_cmd_respond_get(f_deep, f_cmd)
+{
+  let url = `nourl/atall`;
+  //const return_method = return_request.method.toUpperCase(); //error if not method
+
+  switch (f_deep.replyed) {
+    case InteractionResponseType.DEFERRED_UPDATE_MESSAGE:
+      {
+        //PATCH last message
+        //if (return_method==="PATCH") else ERROR
+        url = `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/${f_deep.message.id}`;
+      }
+      break;
+
+    case InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE:
+      {
+        //PATCH sended message
+        //if (return_method==="PATCH") else ERROR
+        url = `webhooks/${process.env.APP_ID}/${f_deep.token}/messages/@original`;
+      }
+      break;
+
+    case InteractionResponseType.UPDATE_MESSAGE: {
+    }
+    case false:
+      {
+        //POST by the returned request
+        //if (return_method==="POST") else ERROR
+        url = `interactions/${f_deep.id}/${f_deep.token}/callback`;
+      }
+      break;
+  }
+
+  console.debug("clock : request", Date.now());
+  //errorWhen = "CmdRequest2";
+  return url;
+}
+
+async function kira_cmd_error(f_deep, f_cmd, e, errorWhen)
+{
+
+  if (!f_deep.replyed) {
+    //-defered-
+    //if has not been defered before
+
+    try {
+      await DiscordRequest(
+        // POST the deferred response
+        `interactions/${f_deep.id}/${f_deep.token}/callback`,
+        {
+          method: "POST",
+          body: {
+            type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+          },
+        }
+      );
+    } catch (e2) {
+      await kira_error_report(e2, "DiscordRequest", "error", {}, "en");
+    }
+  }
+
+  console.error(`cmd : catch : found ERROR <${e.name}> [${e.code}] : `, e);
+  console.error(`cmd : catch : temp : cause=`, e.cause);
+
+  //-handle-
+  //detect know issues
+
+  //discord : Unknown interaction
+  if (e.code===10062)
+  {
     kira_error_throw(
       e,
       errorWhen,
       "command",
-      "error.message.any",
+      "error.message.none",
+      f_deep,
+      f_cmd,
+      false,
+      true,
+      false,
+    );
+    return;
+  }
+
+  if (
+    e.code ===
+    "GGT_INTERNAL_ERROR"
+  ) {
+    kira_error_throw(
+      e,
+      "GadgetInternal",
+      "command",
+      "error.message.level.critical", //this issue is critical
       f_deep,
       f_cmd,
       true,
       true,
       true,
     ); //throw
-
-    return; // will not bcs throw before
+    return;
   }
+
+  //-handle-
+  //any other error
+
+  console.error(
+    `cmd : catch : throw ERROR : code=${e.code} name=${e.name} message=${e.message}`
+  );
+  kira_error_throw(
+    e,
+    errorWhen,
+    "command",
+    "error.message.any",
+    f_deep,
+    f_cmd,
+    true,
+    true,
+    true,
+  ); //throw
+
+  return; // will not bcs throw before
 }
+
+
+
+
+
+
+
 
 export function kira_error_msg(f_errorKey, f_errorObject, f_lang) {
   console.error(`cmd : error msg code=${f_errorObject.code}`);
