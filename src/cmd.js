@@ -799,6 +799,7 @@ export async function kira_cmd(f_deep, f_cmd) {
    *  - channel
    *  - guild
    * self
+   * - |[cmd]|
    * - |lang|
    * - ([|replyed|])
    * datamodels
@@ -811,6 +812,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   console.debug("clock : compute ", Date.now());
 
   //new datas
+  f_deep.cmd=f_cmd;
 
   //get the user data element
   //if dont exist, it's automaticly created
@@ -831,7 +833,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   f_deep.replyed = false;
 
   //errors
-  if (!commands_structure[f_cmd]) {
+  if (!commands_structure[f_deep.cmd]) {
     //error 404
 
     //!no report
@@ -846,7 +848,7 @@ export async function kira_cmd(f_deep, f_cmd) {
           data: {
             content: kira_error_msg(
               "error.message.define.404",
-              { message: `unknow command [${f_cmd}]` },
+              { message: `unknow command [${f_deep.cmd}]` },
               f_deep.lang
             ),
           },
@@ -875,7 +877,7 @@ export async function kira_cmd(f_deep, f_cmd) {
     //-checks-
     errorWhen = "CmdCheck";
 
-    for (let v of commands_structure[f_cmd].functions.checks) {
+    for (let v of commands_structure[f_deep.cmd].functions.checks) {
       const r_check_message = await v[0](f_deep);
       if (r_check_message) {
         //if a message, then whe should stop there
@@ -899,7 +901,7 @@ export async function kira_cmd(f_deep, f_cmd) {
     //-defered-
     {
       errorWhen = "CmdPrepare1";
-      const request_arg=kira_cmd_defered_get(f_deep, f_cmd);
+      const request_arg=kira_cmd_defered_get(f_deep);
       //send request
       errorWhen = "CmdRequest1";
       console.debug("clock : defered", Date.now());
@@ -910,9 +912,39 @@ export async function kira_cmd(f_deep, f_cmd) {
     }
 
     //-command-
+    errorWhen = "CmdQueue";
+    kira_cmd_queue(f_deep);
+  
+  } catch (e) {
+
+    await kira_cmd_error(f_deep, e, errorWhen);
+
+  }
+}
+
+
+
+async function executeCommand(user, command) {
+    return new Promise(async (resolve) => {
+        queue.push(resolve);
+        if (queue.length > 1) return;
+
+        while (queue.length > 0) {
+            const currentResolve = queue[0];
+            await command();
+            queue.shift();
+            currentResolve();
+        }
+    });
+}
+
+async function kira_cmd_queue(f_deep)
+{
+  let errorWhen = "CmdIdk2";
+  try {
     errorWhen = "CmdExecute";
 
-    const return_request = await commands_structure[f_cmd].functions.exe(
+    const return_request = await commands_structure[f_deep.cmd].functions.exe(
       f_deep
     );
     if (!return_request) return;
@@ -920,7 +952,7 @@ export async function kira_cmd(f_deep, f_cmd) {
     //-doing-
     {
       errorWhen = "CmdPrepare2";
-      const request_url=kira_cmd_respond_get(f_deep, f_cmd);
+      const request_url=kira_cmd_respond_get(f_deep);
 
       errorWhen = "CmdRequest2";
       console.debug("clock : respond", Date.now());
@@ -936,17 +968,17 @@ export async function kira_cmd(f_deep, f_cmd) {
   
   } catch (e) {
 
-    await kira_cmd_error(f_deep, f_cmd, e, errorWhen);
+    await kira_cmd_error(f_deep, e, errorWhen);
 
   }
 }
 
 
 
-function kira_cmd_defered_get(f_deep, f_cmd) {
+function kira_cmd_defered_get(f_deep) {
 
-  const defered_action = commands_structure[f_cmd].atr.defered; //have to be set
-  const defered_ephemeral = commands_structure[f_cmd].atr?.ephemeral;
+  const defered_action = commands_structure[f_deep.cmd].atr.defered; //have to be set
+  const defered_ephemeral = commands_structure[f_deep.cmd].atr?.ephemeral;
 
   if (defered_action || defered_action !== deferedActionType.NO) {
     //request fundation
@@ -1003,7 +1035,7 @@ function kira_cmd_defered_get(f_deep, f_cmd) {
   }
 }
 
-function kira_cmd_respond_get(f_deep, f_cmd)
+function kira_cmd_respond_get(f_deep)
 {
   let url = `nourl/atall`;
   //const return_method = return_request.method.toUpperCase(); //error if not method
@@ -1041,7 +1073,7 @@ function kira_cmd_respond_get(f_deep, f_cmd)
   return url;
 }
 
-async function kira_cmd_error(f_deep, f_cmd, e, errorWhen)
+async function kira_cmd_error(f_deep, e, errorWhen)
 {
 
   if (!f_deep.replyed) {
@@ -1079,7 +1111,6 @@ async function kira_cmd_error(f_deep, f_cmd, e, errorWhen)
       "command",
       "error.message.none",
       f_deep,
-      f_cmd,
       false,
       true,
       false,
@@ -1097,7 +1128,6 @@ async function kira_cmd_error(f_deep, f_cmd, e, errorWhen)
       "command",
       "error.message.level.critical", //this issue is critical
       f_deep,
-      f_cmd,
       true,
       true,
       true,
@@ -1117,7 +1147,6 @@ async function kira_cmd_error(f_deep, f_cmd, e, errorWhen)
     "command",
     "error.message.any",
     f_deep,
-    f_cmd,
     true,
     true,
     true,
@@ -1183,7 +1212,7 @@ export async function kira_error_throw(
   //actuals aviable : ['command', 'remember', 'error', 'any']
   f_errorMessageKey, //the error message to be translated
   f_deep, //you know
-  f_cmd, //the command used to come here (to change : too specific parameter)
+  //f_cmd, //the command used to come here (to change : too specific parameter) (NOW IN F_DEEP)
   ifReport = true,
   ifPatch = true,
   ifThrow = true
@@ -1198,7 +1227,7 @@ export async function kira_error_throw(
       user: f_deep.user,
       userdata: f_deep.userdata,
       channel: f_deep.channel,
-      command: f_cmd,
+      command: f_deep.cmd,
       type: f_deep.type,
     },
     { user: f_deep.user, userdata: f_deep.userdata },
