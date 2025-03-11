@@ -9,13 +9,15 @@
 
 
 "check.god.not": "**Nope !** Tu n'as pas le pouvoir d'un dieu.",
-"check.alive.not": "*Tu es mort·e pendant encore **$[time]**.*",
-"check.nodrop.not": "*Tu as abandonné ton Death Note pendant encore **$[time]**.*",
+"check.alive.not": "*Tu es mort·e pendant encore **$[time]***.",
+"check.nodrop.not": "*Tu as abandonné ton Death Note pendant encore **$[time]***.",
 "check.hasbook.not": "*Tu ne détiens pas de Death Note.*\n`*Fait* /claim` *pour en avoir un.*",
 "check.feedback.not": "Attends environ **$[time]**, le temps que j'ai une nouvelle enveloppe.",
 "check.ban.is.perma": "*Ton Death Note est confisqué.*",
 "check.ban.is.temp": "*Ton Death Note est confisqué pendant $[time].*",
 "check.react.self.not": "*Ce n'est pas ton bouton.*",
+"check.mailbox.get.nomp": "Je te l'ai donné ici car tes MP sont fermés.",
+"check.mailbox.get.title": "Au fait, tu as recu un message venant du Royaume des Dieux de la mort :",
 
 
 "cmd.god.missing.amount": "spécifie une quantitée",
@@ -42,6 +44,10 @@
 "cmd.god.sub.apple.done.real.remove": "**<@$[targetId]> a perdu $[displayed] $[word]**",
 "cmd.god.sub.apple.done.fake.add": "**<@$[targetId]> a reçu $[displayed] $[word]**",
 "cmd.god.sub.apple.done.fake.remove": "**<@$[targetId]> a perdu $[displayed] $[word]**",
+"cmd.god.sub.tell.fail.notplayer": "cette personne ne joue pas",
+"cmd.god.sub.tell.send.recipient.context": "Tu as recu un message du Royaume des Dieux de la mort :",
+"cmd.god.sub.tell.send.remitter.sended": "Tu as envoyé un message à <@$[targetId]>.",
+"cmd.god.sub.tell.send.remitter.failed": "Il est impossible d'envoyer dirrectement un message à <@$[targetId]>.",
 
 "cmd.feedback.confirm": "Je peux transmettre une lettre de ta part au roi de dieux de la mort.",
 "cmd.feedback.confirm.yes": "Je le shouaite",
@@ -107,8 +113,8 @@
 "cmd.rules.english": "J'ai copié les règles en anglais, le langage humain le plus courant.",
 "cmd.rules.preamble": "Voici une règle du Death Note :",
 
-"cmd.lang.define.get": "Je te parle en **français*.*",
-"cmd.lang.define.set": "Ok, je te parle maintenant en **français*.*",
+"cmd.lang.define.get": "Je te parle en **français**.",
+"cmd.lang.define.set": "Ok, je te parle maintenant en **français**.",
 "cmd.lang.your.get": "Je parle ta langue.",
 "cmd.lang.your.set": "Ok, je parlerai ta langue.",
 

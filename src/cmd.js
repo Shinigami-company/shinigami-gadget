@@ -64,8 +64,9 @@ import {
   kira_user_get_drop,
   kira_user_set_feedback,
   kira_user_can_feedback,
-  kira_user_has_feedbackResponse,
-  kira_user_get_feedbackResponse,
+  kira_user_has_mail,
+  kira_user_pickup_mails,
+  kira_user_send_mail,
 } from "./use/kira.js"; //kira user
 import { kira_users_rank } from "./use/kira.js"; //kira user
 import {
@@ -148,7 +149,7 @@ const commands_structure = {
   god: {
     functions: {
       exe: cmd_god,
-      checks: [[check_is_god, false]],
+      checks: [[check_mailbox, true], [check_is_god, false]],
     },
     register: {
       name: "god",
@@ -206,6 +207,7 @@ const commands_structure = {
               description: "fake giving apple",
             },
             { name: "tell", value: "tell", description: "tell to someone" },
+            { name: "mail", value: "mail", description: "mail to someone" },
           ],
         },
         {
@@ -272,7 +274,7 @@ const commands_structure = {
   invite: {
     functions: {
       exe: cmd_invite,
-      checks: [],
+      checks: [[check_mailbox, true]],
     },
     register: {
       name: "invite",
@@ -287,7 +289,7 @@ const commands_structure = {
   help: {
     functions: {
       exe: cmd_help,
-      checks: [],
+      checks: [[check_mailbox, true]],
     },
     register: {
       name: "help",
@@ -302,7 +304,7 @@ const commands_structure = {
   feedback: {
     functions: {
       exe: cmd_feedback,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_react_is_self, true],
         [check_can_feedback, true],
       ],
@@ -319,7 +321,7 @@ const commands_structure = {
   feedback_form: {
     functions: {
       exe: cmd_feedback_form,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_react_is_self, true],
         [check_can_feedback, true],
       ],
@@ -335,7 +337,7 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, true],
@@ -364,7 +366,7 @@ const commands_structure = {
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, true],
@@ -386,7 +388,7 @@ const commands_structure = {
   apple: {
     functions: {
       exe: cmd_apple,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
       ],
@@ -406,7 +408,7 @@ const commands_structure = {
   lang: {
     functions: {
       exe: cmd_lang,
-      checks: [[check_can_alive, false]],
+      checks: [[check_mailbox, true], [check_can_alive, false]],
     },
     register: {
       name: "lang",
@@ -431,7 +433,7 @@ const commands_structure = {
   stats: {
     functions: {
       exe: cmd_stats,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -464,7 +466,7 @@ const commands_structure = {
   running: {
     functions: {
       exe: cmd_running,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -484,7 +486,7 @@ const commands_structure = {
   quest: {
     functions: {
       exe: cmd_quest,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -504,7 +506,7 @@ const commands_structure = {
   top: {
     functions: {
       exe: cmd_top,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
       ],
@@ -537,7 +539,7 @@ const commands_structure = {
   rules: {
     functions: {
       exe: cmd_rules,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -558,7 +560,7 @@ const commands_structure = {
   see: {
     functions: {
       exe: cmd_see,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -587,7 +589,7 @@ const commands_structure = {
   see_edit: {
     functions: {
       exe: cmd_see,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -604,7 +606,7 @@ const commands_structure = {
   drop: {
     functions: {
       exe: cmd_drop,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, false],
@@ -626,7 +628,7 @@ const commands_structure = {
   trick: {
     functions: {
       exe: cmd_trick,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -647,7 +649,7 @@ const commands_structure = {
   trick_resp: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -663,7 +665,7 @@ const commands_structure = {
   trick_resp_eph: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -679,7 +681,7 @@ const commands_structure = {
   trick_resp_edit: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -696,7 +698,7 @@ const commands_structure = {
   kira: {
     functions: {
       exe: cmd_kira,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -739,7 +741,7 @@ const commands_structure = {
   know: {
     functions: {
       exe: cmd_know,
-      checks: [
+      checks: [[check_mailbox, true], 
         [check_is_clean, true],
         [check_can_alive, true],
         [check_has_noDrop, true],
@@ -1359,10 +1361,52 @@ async function check_can_feedback({ lang, userdata }) {
 }
 
 async function check_mailbox({ lang, userdata }) {
-  const h_can = await kira_user_has_feedbackResponse(userdata.id);
-  if (!h_can) return undefined;
+  const is_something = await kira_user_has_mail(userdata.id, userdata.FeedbackState);
+  if (!is_something) return undefined;
   //respond
+  
+  const letters_objects = await kira_user_pickup_mails(userdata.id);
+
+  var message_body = {
+    content: translate(lang,"check.mailbox.get.title"),
+    embeds: (() => {
+      let embeds = [];
+      for (let i in letters_objects) {
+        const v = letters_objects[i];
+
+        embeds.push({
+          color: 0,
+          description: v.content.markdown,
+          timestamp: v.creationDate,
+        });
+      }
+      return embeds;
+    })()
+  };
+
+  try {
+    //open DM
+    var h_recipient_dm_id = await DiscordUserOpenDm(userdata.userId);
+
+    //send message
+    await DiscordRequest(
+      `channels/${h_recipient_dm_id}/messages`,
+      {
+        method: "POST",
+        body: message_body
+      }
+    ).then((res) => res.json());
+  } catch (e) {
+    let errorMsg = JSON.parse(e.message);
+    if (errorMsg?.code === 50007) {
+      
+      return message_body;
+
+    } else throw e;
+  }
+
   return undefined;
+
 }
 
 //--- the commands ---
@@ -1666,6 +1710,54 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
       };
 
 
+    //#mail subcommand
+    case "mail":
+      {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
+
+        if (!arg_texto) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.message"),
+            },
+          };
+        }
+
+        const h_targetId = arg_user;
+        const targetdata = await kira_user_get(h_targetId, false);
+
+        if (!targetdata) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.sub.tell.fail.notplayer"),
+            },
+          };
+        }
+
+        var sucess=true;
+        await kira_user_send_mail(targetdata.id, arg_texto);
+
+
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.god.sub.tell.send.remitter." + ((sucess) ? "sended" : "failed"), {
+              targetId: h_targetId,
+              //targetName: targetdata.username,
+            }),
+            //embeds: (sucess) ? message_embed : undefined
+          },
+        };
+      }
 
     //#tell subcommand
     case "tell":
@@ -1699,7 +1791,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
             },
           };
         }
-
+        
         var recipient_content = translate(lang, "cmd.god.sub.tell.send.recipient.context");
         var recipient_description = arg_texto;
         var sucess = true;
@@ -1710,7 +1802,6 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
               description: recipient_description,
             },
           ]
-
 
 
         try {
@@ -3589,7 +3680,7 @@ export async function cmd_kira_execute(data) {
       //revive
       kira_remember_task_add(h_finalDate, rememberTasksType.REVIVE, {
         userId: pack.victim_id,
-        lang: lang,
+        lang: lang_victim,
         ifSuicide: pack.victim_id == pack.attacker_id,
         msgReference: pack.victim_message_id,
       });
@@ -3765,7 +3856,8 @@ export async function cmd_kira_cancel(data) {
 
   //datas reading again
   const user = DiscordUserById(pack.attacker_id); //!
-  const lang = pack.lang; //!
+  const lang = pack.lang_attacker ? pack.lang_attacker : pack.lang; //!
+  const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang; //!
   // let h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail);//needed to know if alive
 
   //run delete
@@ -3806,7 +3898,7 @@ export async function cmd_kira_cancel(data) {
           message_reference: {
             message_id: pack.victim_message_id,
           },
-          content: translate(lang, "cmd.kira.counter.victim", {
+          content: translate(lang_victim, "cmd.kira.counter.victim", {
             victimId: pack.victim_id,
             attackerId: pack.attacker_id,
           }),
@@ -3843,7 +3935,7 @@ export async function cmd_comeback(data) {
   if (!SETT_CMD.kira.comebackBy.time[comeback_type].if) return;
 
   const userdata = await kira_user_get(data.userId, false);
-  const lang = data.lang;
+  const lang = pack.lang; //!
 
   const h_gap = parseInt(
     (new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000

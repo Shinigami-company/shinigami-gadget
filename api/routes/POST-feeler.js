@@ -23,8 +23,7 @@ const route = async ({ request, reply, api, logger, connections }) => {
 
   // Interaction type and data
   const source = request.body;
-  const { data, timestamp, type } = source.event;
-  const { guild, user, integration_type, scopes } = data;
+  const {type, event} = source;
 
 
   /**
@@ -32,9 +31,12 @@ const route = async ({ request, reply, api, logger, connections }) => {
    */
   console.log(`feeler : something. source=`,source);
 
-  if (type === InteractionType.PING) {
+  if (type === 0) {//that not InteractionType.PING ! (0!=1)
     return reply.send({ type: InteractionResponseType.PONG });
   }
+
+  const { data, timestamp } = event;
+  const { guild, user, integration_type, scopes } = data;
 
   
   console.log("feeler : OK. user=",user, " guild=", guild);

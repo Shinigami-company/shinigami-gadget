@@ -7,7 +7,8 @@ export enum KnowUsableBy {
 export enum FeedbackState {
   NOTHING = 0,
   SENDED = 1,
-  RECEIVED = 2,
+  MAILED = 2,
+  READED = 3,
 }
 
 export enum rememberTasksType {

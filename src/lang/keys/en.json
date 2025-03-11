@@ -9,13 +9,15 @@
 
 
 "check.god.not": "**Nope!** You dont have the power of a god.",
-"check.alive.not": "*You are dead for another **$[time]**.*",
-"check.nodrop.not": "*You relinquished your Death Note ownership for another **$[time]**.*",
+"check.alive.not": "*You are dead for another **$[time]***.",
+"check.nodrop.not": "*You relinquished your Death Note ownership for another **$[time]***.",
 "check.hasbook.not": "*You don't own a Death Note.*\n*Do* `/claim` *to get one.*",
 "check.feedback.not": "Wait like **$[time]**, until I get a new envelope.",
 "check.ban.is.perma": "*Your Death Note is confiscated.*",
 "check.ban.is.temp": "*Your Death Note is confiscated during $[time].*",
 "check.react.self.not": "*That not your button.*",
+"check.mailbox.get.nomp": "I give you here because your MP are closed.",
+"check.mailbox.get.title": "By the way you received a letter from the Realm of Death :",
 
 
 "cmd.god.missing.amount": "specify an amount",
@@ -386,7 +388,7 @@
 "post.newbi.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 
 "post.hall.title": "add the Shinigami",
-"post.hall.description": "**$[guild.name]** is now parth of the god of death world.\nWhat a great region for Shinigami to walkthought.\n**Death Notes will be dropped. Chaos will be propagated.**\n\n```\n$[guild.description]```\nmax=$[guild.max_members] lang=$[guild.preferred_locale] boost=$[guild.premium_subscription_count] vanity=$[guild.vanity_url_code]\nmembers : $[guild.approximate_member_count]/$[guild.approximate_presence_count]\n\n<#$[guild.system_channel_id]> in ($[guild.name]) owned by <@$[guild.owner_id]> ($[guild.owner])\nadded by <@$[user.id]> (@$[user.username])",
+"post.hall.description": "**$[guild.name]** is now parth of the god of death world.\nWhat a great region for Shinigami to walkthought.\n**Death Notes will be dropped. Chaos will be propagated.**\n\n```\n$[guild.description]```\nmax=$[guild.max_members] lang=$[guild.preferred_locale] boost=$[guild.premium_subscription_count] vanity=$[guild.vanity_url_code]\nmembers : $[guild.approximate_member_count]/$[guild.approximate_presence_count]\n\n<#$[guild.system_channel_id]>\nowned by <@$[guild.owner_id]> ($[guild.owner])\nadded by <@$[user.id]> (@$[user.username])",
 "post.hall.author.name": "$[guild.name] ($[guild.id])",
 "post.hall.author.icon": "https://cdn.discordapp.com/icons/$[guild.id]/$[guild.icon].webp?size=1024&format=webp&width=640&height=640",
 

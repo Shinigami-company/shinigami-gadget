@@ -57,6 +57,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       giveUp: true,
       banValue: true,
       //banTime: true,
+      feedbackState: true,
       statPtr: { id: true },
       achivPtr: { id: true },
       bookPtr: { id: true },
@@ -229,23 +230,71 @@ export async function kira_user_can_feedback(f_dataId) {
   return (span);
 }
 
-export async function kira_user_has_feedbackResponse(f_dataId) {
-  const state = await api.KiraUsers.findOne(f_dataId, {
-    select: { feedbackState: true },
-  }).then((data) => data.feedbackState);
-  if (state===FeedbackState.NOTHING || state===FeedbackState.SENDED) return false;
+export async function kira_user_has_mail(f_dataId, feedbackState=undefined) {
+  const state = (feedbackState) 
+    ? feedbackState 
+    : await api.KiraUsers.findOne(f_dataId, {
+        select: { feedbackState: true },
+      }).then((data) => data.feedbackState);
   
   //has a feedback response
-  return true;
+  return (state===FeedbackState.MAILED);
 }
 
-export async function kira_user_get_feedbackResponse(f_dataId) {
-  await api.KiraUsers.update(f_dataId, {
-    feedbackState: 0
-  });
+export async function kira_user_pickup_mails(f_dataId) {
   
-  //TODO : return the feedback response
-  return false;
+  await kira_user_set_feedback(f_dataId, FeedbackState.READED);
+
+  //const h_data_messages = await api.KiraNotes.findMany({
+  //  filter: [
+  //    {
+  //      recipientPtr: { equals: f_dataId },
+  //    }
+  //  ],
+  //});
+
+  const h_user = await api.KiraUsers.findOne(f_dataId, {
+    select: {
+      mailboxLettersPtr: {
+        edges: {
+          node: {
+            id: true,
+          },
+        },
+      },
+    },
+  });
+
+  const letter_ids_array=h_user.mailboxLettersPtr.edges.map((the) => the.node.id);
+  var letter_objects_array=[];
+  for (var letter_id of letter_ids_array)
+  {
+    letter_objects_array.push(await api.KiraLetters.findById(letter_id));
+  }
+  console.log("user : mailbox pickup :",letter_objects_array);
+  
+  //delete
+  await api.KiraLetters.bulkDelete(
+    letter_ids_array
+  );
+
+  return letter_objects_array;
+}
+
+
+
+export async function kira_user_send_mail(f_dataId, message)
+{
+  await kira_user_set_feedback(f_dataId, FeedbackState.MAILED);
+
+  await api.KiraLetters.create({
+    content: {
+      markdown: message,
+    },
+    recipientPtr: {
+      _link: f_dataId,
+    },
+  });
 }
 
 
@@ -286,8 +335,8 @@ export const book_colors = [
 
 //manage
 /*old
-export async function kira_book_get(f_userdataId) {
-  const h_userToBook = await api.KiraUsers.findOne(f_userdataId, {
+export async function kira_book_get(f_dataId) {
+  const h_userToBook = await api.KiraUsers.findOne(f_dataId, {
     select: {
       bookPtr: {
         id: true,

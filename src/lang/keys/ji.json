@@ -16,6 +16,8 @@
 "check.ban.is.perma": "<:book_black:1281258833271849050>🛑",
 "check.ban.is.temp": "<:book_black:1281258833271849050>🛑⏲️$[time]*",
 "check.react.self.not": "❌▶🫵",
+"check.mailbox.get.nomp": "❗👤🙅🗳️🔕",
+"check.mailbox.get.title": "✉👇",
 
 
 "cmd.god.fail.missing.amount": "⁉️🛒",

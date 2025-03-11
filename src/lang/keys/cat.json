@@ -1,12 +1,14 @@
 {
 "check.god.not": "**Mrew!** u 2 bizy 4 tht",
 "check.alive.not": "*u ded **$[time]*** :(",
-"check.nodrop.not": "*u fogot ur buk 4 **$[time]**.*",
+"check.nodrop.not": "*u fogot ur buk 4 **$[time]***.",
 "check.hasbook.not": "*u donut hv feather buk* :(",
 "check.feedback.not": "Way **$[time]**, bcs i wananot.",
 "check.ban.is.perma": "*ur NHA*",
 "check.ban.is.temp": "*ur NHA 4 $[time]*",
 "check.react.self.not": "*nut ur butn* :(",
+"check.mailbox.get.nomp": "Hr bcs u dnut wnt mi tl ear.",
+"check.mailbox.get.title": "u hv a msg frm supr kitn god :",
 
 
 "cmd.god.missing.amount": "mrw ad num",
