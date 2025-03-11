@@ -690,6 +690,7 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.NO,
+      //defered: deferedActionType.DUMMY,
       notDeferred: true,
       systemOnly: true,
     },
@@ -903,12 +904,15 @@ export async function kira_cmd(f_deep, f_cmd) {
       errorWhen = "CmdPrepare1";
       const request_arg=kira_cmd_defered_get(f_deep);
       //send request
-      errorWhen = "CmdRequest1";
-      console.debug("clock : defered", Date.now());
-      await DiscordRequest(
-        // POST the deferred response
-        ...request_arg
-      );
+      if (request_arg)
+      {
+        errorWhen = "CmdRequest1";
+        console.debug("clock : defered", Date.now());
+        await DiscordRequest(
+          // POST the deferred response
+          ...request_arg
+        );
+      }
     }
 
     //-command-
@@ -979,7 +983,8 @@ function kira_cmd_defered_get(f_deep) {
   const defered_action = commands_structure[f_deep.cmd].atr.defered; //have to be set
   const defered_ephemeral = commands_structure[f_deep.cmd].atr?.ephemeral;
 
-  if (defered_action || defered_action !== deferedActionType.NO) {
+  if (!defered_action || (defered_action === deferedActionType.NO)) return;
+  {
     //request fundation
     let response_request = {
       method: "POST",
@@ -2630,7 +2635,7 @@ async function cmd_apple({ userdata, locale, lang }) {
         h_txt_claims +=
           translate(lang, `cmd.apples.claim.${h_claims[i].type}`, h_claims[i]) +
           "\n";
-        h_apples_claimed += h_claims[i].added; //no more here
+        //h_apples_claimed += h_claims[i].added; //NHA : no more there
       }
     }
   }
