@@ -913,7 +913,7 @@ export async function kira_cmd(f_deep, f_cmd) {
 
     //-command-
     errorWhen = "CmdQueue";
-    kira_cmd_queue(f_deep);
+    await kira_cmd_queue(f_deep);
   
   } catch (e) {
 
@@ -924,21 +924,20 @@ export async function kira_cmd(f_deep, f_cmd) {
 
 
 
-async function executeCommand(user, command) {
-    return new Promise(async (resolve) => {
-        queue.push(resolve);
-        if (queue.length > 1) return;
+let commands_queue=[]
 
-        while (queue.length > 0) {
-            const currentResolve = queue[0];
-            await command();
-            queue.shift();
-            currentResolve();
-        }
-    });
+async function kira_cmd_queue(f_deep) {
+  commands_queue.push(f_deep);
+  if (commands_queue.length > 1) return;
+  
+  while (commands_queue.length > 0) {
+    const current_deep = commands_queue[0];
+    await kira_cmd_exe(current_deep);
+    commands_queue.shift();
+  }
 }
 
-async function kira_cmd_queue(f_deep)
+async function kira_cmd_exe(f_deep)
 {
   let errorWhen = "CmdIdk2";
   try {
