@@ -13,6 +13,7 @@
 "check.nodrop.not": "*<:book_black:1281258833271849050>❌🗄",
 "check.hasbook.not": "*👈❌<:book_black:1281258833271849050>*",
 "check.feedback.not": "⏲️〰**$[time]**✨✉",
+"check.inguild.not": "❌🏘\n-# [📓➡️🏘️]($[discoverLink]) / [➡️📓👑]($[joinLink])",
 "check.ban.is.perma": "<:book_black:1281258833271849050>🛑",
 "check.ban.is.temp": "<:book_black:1281258833271849050>🛑⏲️$[time]*",
 "check.react.self.not": "❌▶🫵",

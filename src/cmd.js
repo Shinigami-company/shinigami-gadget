@@ -1,4 +1,4 @@
-console.log(` cmd : refresh`);
+console.log(`cmd : refresh`);
 //--- sett ---
 
 import {
@@ -149,11 +149,11 @@ const commands_structure = {
   god: {
     functions: {
       exe: cmd_god,
-      checks: [[check_mailbox, true], [check_is_god, false]],
+      checks: [[check_mailbox, true], [check_in_guild, true], [check_is_god, false]],
     },
     register: {
       name: "god",
-      contexts: [0],
+      //contexts: [0],//!disabled
       description: "An admin-only command",
 
       options: [
@@ -321,7 +321,7 @@ const commands_structure = {
   feedback_form: {
     functions: {
       exe: cmd_feedback_form,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
         [check_react_is_self, true],
         [check_can_feedback, true],
       ],
@@ -337,7 +337,8 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, true],
@@ -347,7 +348,7 @@ const commands_structure = {
     register: {
       name: "claim",
       description: "Claim your death note",
-      contexts: [0],
+      //contexts: [0],//!disabled
       options: [
         {
           type: 4,
@@ -366,7 +367,8 @@ const commands_structure = {
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [[check_mailbox, true], 
+      checks: [[check_in_guild, true],
+        [check_mailbox, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, true],
@@ -376,7 +378,7 @@ const commands_structure = {
     register: {
       name: "burn",
       description: "Burn your death note. Why would you do that?",
-      contexts: [0],
+      //contexts: [0],//!disabled
       type: 1,
     },
     atr: {
@@ -388,7 +390,8 @@ const commands_structure = {
   apple: {
     functions: {
       exe: cmd_apple,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
       ],
@@ -397,7 +400,7 @@ const commands_structure = {
       name: "apple",
       description:
         "Claim your daily apple, claim obtained apples, and get your number of apples",
-      contexts: [0],
+      //contexts: [0],//!disabled
       type: 1,
     },
     atr: {
@@ -408,12 +411,12 @@ const commands_structure = {
   lang: {
     functions: {
       exe: cmd_lang,
-      checks: [[check_mailbox, true], [check_can_alive, false]],
+      checks: [[check_mailbox, true], [check_in_guild, true], [check_can_alive, false]],
     },
     register: {
       name: "lang",
       description: "Set/Get the human language I speak",
-      contexts: [0],
+      //contexts: [0],//!disabled
       options: [
         {
           type: 3,
@@ -433,7 +436,8 @@ const commands_structure = {
   stats: {
     functions: {
       exe: cmd_stats,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -442,7 +446,7 @@ const commands_structure = {
     register: {
       name: "stats",
       description: "Getting your stats",
-      contexts: [0],
+      //contexts: [0],//!disabled
       type: 1,
       options: [
         {
@@ -466,7 +470,8 @@ const commands_structure = {
   running: {
     functions: {
       exe: cmd_running,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -475,7 +480,7 @@ const commands_structure = {
     register: {
       name: "running",
       description: "See who will be killed",
-      contexts: [0],
+      //contexts: [0],//!disabled
       type: 1,
     },
     atr: {
@@ -486,7 +491,8 @@ const commands_structure = {
   quest: {
     functions: {
       exe: cmd_quest,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -495,7 +501,7 @@ const commands_structure = {
     register: {
       name: "quest",
       description: "Your achievements",
-      contexts: [0],
+      //contexts: [0],//!disabled
       type: 1,
     },
     atr: {
@@ -506,7 +512,8 @@ const commands_structure = {
   top: {
     functions: {
       exe: cmd_top,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
       ],
@@ -514,7 +521,7 @@ const commands_structure = {
     register: {
       name: "top",
       description: "The top 3 players on multiples things",
-      contexts: [0],
+      //contexts: [0],//!disabled
       options: [
         {
           type: 3,
@@ -539,7 +546,8 @@ const commands_structure = {
   rules: {
     functions: {
       exe: cmd_rules,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -549,7 +557,7 @@ const commands_structure = {
     register: {
       name: "rules",
       description: "Get a random rules of the death note",
-      contexts: [0],
+      //contexts: [0],//!disabled
       type: 1,
     },
     atr: {
@@ -560,7 +568,8 @@ const commands_structure = {
   see: {
     functions: {
       exe: cmd_see,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -570,7 +579,7 @@ const commands_structure = {
     register: {
       name: "see",
       description: "Read what you wrote in your death note",
-      contexts: [0],
+      //contexts: [0],//!disabled
       options: [
         {
           type: 4,
@@ -589,7 +598,8 @@ const commands_structure = {
   see_edit: {
     functions: {
       exe: cmd_see,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -606,7 +616,8 @@ const commands_structure = {
   drop: {
     functions: {
       exe: cmd_drop,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, false],
@@ -617,7 +628,7 @@ const commands_structure = {
     register: {
       name: "drop",
       description: "Give up your death note to protect yourself",
-      contexts: [0],
+      //contexts: [0],//!disabled
       type: 1,
     },
     atr: {
@@ -628,7 +639,8 @@ const commands_structure = {
   trick: {
     functions: {
       exe: cmd_trick,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -638,7 +650,7 @@ const commands_structure = {
     register: {
       name: "trick",
       description: "Buy funny stuff with apples",
-      contexts: [0],
+      //contexts: [0],//!disabled
       type: 1,
     },
     atr: {
@@ -649,7 +661,8 @@ const commands_structure = {
   trick_resp: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -665,7 +678,8 @@ const commands_structure = {
   trick_resp_eph: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -681,7 +695,8 @@ const commands_structure = {
   trick_resp_edit: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -699,7 +714,8 @@ const commands_structure = {
   kira: {
     functions: {
       exe: cmd_kira,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -709,7 +725,7 @@ const commands_structure = {
     register: {
       name: "kira",
       description: "Kill someone after 40 seconds",
-      contexts: [0],
+      //contexts: [0],//!disabled
       options: [
         {
           type: 6,
@@ -742,7 +758,8 @@ const commands_structure = {
   know: {
     functions: {
       exe: cmd_know,
-      checks: [[check_mailbox, true], 
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, true],
         [check_has_noDrop, true],
@@ -759,7 +776,7 @@ const commands_structure = {
     {
       name: 'know',
       description: 'INDEV',
-      contexts: [0],
+      //contexts: [0],//!disabled
       options: [
         {
           type: 3,
@@ -1432,6 +1449,15 @@ async function check_can_feedback({ lang, userdata }) {
         time: time_format_string_from_int(h_gap, lang),
         //time: time_format_string_from_int(SETT_CMD.feedback.couldown, lang),
       }),
+    };
+  }
+  return undefined;
+}
+
+async function check_in_guild({ lang, guild }) {
+  if (!guild) {
+    return {
+      content: translate(lang, "check.inguild.not", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "discoverLink": process.env.invite_discover}),
     };
   }
   return undefined;

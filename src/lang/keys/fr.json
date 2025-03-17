@@ -13,6 +13,7 @@
 "check.nodrop.not": "*Tu as abandonné ton Death Note pendant encore **$[time]***.",
 "check.hasbook.not": "*Tu ne détiens pas de Death Note.*\n`*Fait* /claim` *pour en avoir un.*",
 "check.feedback.not": "Attends environ **$[time]**, le temps que j'ai une nouvelle enveloppe.",
+"check.inguild.not": "Fait ça sur un serveur.\n-# Tu peux [m'ajouter]($[discoverLink]) à un serveur ou [rejoindre]($[joinLink]) le royaume de Kira.",
 "check.ban.is.perma": "*Ton Death Note est confisqué.*",
 "check.ban.is.temp": "*Ton Death Note est confisqué pendant $[time].*",
 "check.react.self.not": "*Ce n'est pas ton bouton.*",

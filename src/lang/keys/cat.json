@@ -4,6 +4,7 @@
 "check.nodrop.not": "*u fogot ur buk 4 **$[time]***.",
 "check.hasbook.not": "*u donut hv feather buk* :(",
 "check.feedback.not": "Way **$[time]**, bcs i wananot.",
+"check.inguild.not": "Be nut alon.\n-# [mi join]($[discoverLink]) r [u join]($[joinLink]) :3",
 "check.ban.is.perma": "*ur NHA*",
 "check.ban.is.temp": "*ur NHA 4 $[time]*",
 "check.react.self.not": "*nut ur butn* :(",
