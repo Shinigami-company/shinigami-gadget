@@ -1464,7 +1464,7 @@ async function check_in_guild({ lang, guild }) {
 }
 
 async function check_mailbox({ lang, userdata }) {
-  const is_something = await kira_user_has_mail(userdata.id, userdata.FeedbackState);
+  const is_something = await kira_user_has_mail(userdata.id, userdata.feedbackState);
   if (!is_something) return undefined;
   //respond
   
