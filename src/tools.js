@@ -72,6 +72,55 @@ export function time_format_string_from_int(f_s, lang) {
 
 function time_format_int_from_string(f_text) {}
 
+
+const times_precise = [
+  {
+    divider: 3600000,
+    unit: "h",
+  },
+  {
+    divider: 60000,
+    unit: "m",
+  },
+  {
+    divider: 1000,
+    unit: "s",
+  },
+  {
+    divider: 1,
+    unit: "ms",
+  },
+];
+
+export function times_precise_string_from_int(f_ms) {
+  f_ms=Math.round(f_ms);
+  let r_text = "";
+
+  if (f_ms < 0) {
+    return "-Ms";
+  }
+  if (f_ms === 0) {
+    return "0Ms";
+  }
+  if (!f_ms) {
+    return "!Ms";
+  }
+
+  //find values
+  {
+    //let i = 0;//can be set to the shortest
+    for (let i = 0; i < times_precise.length; i++) {
+      let f_v = parseInt(f_ms / times_precise[i].divider);
+      if (f_v > 0) {
+        f_ms = f_ms % times_precise[i].divider;
+        r_text+=(" " + f_v.toString() + times_precise[i].unit);
+      }
+    }
+  }
+  return r_text;
+}
+
+
 function time_now_utc(f_offset = 0, f_timeMs = undefined) {
   const now = f_timeMs ? new Date(f_timeMs) : new Date();
   const localTime = now.getTime();

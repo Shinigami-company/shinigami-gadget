@@ -4,7 +4,7 @@ import { cmd_kira_execute, kira_error_report, cmd_comeback } from "../cmd.js";
 
 import { rememberTasksType } from "../enum.ts";
 
-const wakeup_minutes = 3;
+const wakeup_minutes = 1;
 const checkup_seconds = 1;
 
 var remember_interval_id = -1;

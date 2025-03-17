@@ -810,7 +810,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   // usable ~~unusable~~ (unused) [used here] |created here|
 
   //console.debug(`cmd : f_deep=`, f_deep);
-  console.debug("clock : compute ", Date.now());
+  f_deep.clock.emit("cmd");
 
   //new datas
   f_deep.cmd=f_cmd;
@@ -833,6 +833,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   //will change a lot here, used by catch
   f_deep.replyed = false;
 
+  f_deep.clock.emit("data got");
   //errors
   if (!commands_structure[f_deep.cmd]) {
     //error 404
@@ -874,6 +875,7 @@ export async function kira_cmd(f_deep, f_cmd) {
 ~~LAUNCH_ACTIVIT~~ : not an activity
 */
 
+  f_deep.clock.emit("checking");
   try {
     //-checks-
     errorWhen = "CmdCheck";
@@ -907,11 +909,12 @@ export async function kira_cmd(f_deep, f_cmd) {
       if (request_arg)
       {
         errorWhen = "CmdRequest1";
-        console.debug("clock : defered", Date.now());
+        f_deep.clock.emit("sending defered");
         await DiscordRequest(
           // POST the deferred response
           ...request_arg
         );
+        f_deep.clock.emit("sended defered");
       }
     }
 
@@ -958,11 +961,12 @@ async function kira_cmd_exe(f_deep)
       const request_url=kira_cmd_respond_get(f_deep);
 
       errorWhen = "CmdRequest2";
-      console.debug("clock : respond", Date.now());
+      f_deep.clock.emit("sending respond");
       await DiscordRequest(
         // POST the answer response
         request_url, return_request
       );
+      f_deep.clock.emit("sended respond");
       return;
     }
     
@@ -1072,7 +1076,6 @@ function kira_cmd_respond_get(f_deep)
       break;
   }
 
-  console.debug("clock : request", Date.now());
   //errorWhen = "CmdRequest2";
   return url;
 }

@@ -12,10 +12,21 @@ import { DiscordRequest } from '../../src/utils.js';
 
 //own
 import { kira_cmd, kira_error_msg } from '../../src/cmd';
-import { sleep } from "../../src/tools.js";
+import { sleep, times_precise_string_from_int } from "../../src/tools.js";
 
 //things
 const maxError = 1;
+
+
+class ClockTime {
+  constructor()
+  {
+    this.epoch=Date.now();
+  }
+  emit(name="time") {
+    console.log(`clock : ${name} = `,times_precise_string_from_int(Date.now()-this.epoch));
+  }
+}
 
 /**
  * Route handler for POST interactions
@@ -24,7 +35,8 @@ const maxError = 1;
  *
  */
 export default async function route({ request, reply, api, logger, connections }) {
-  console.debug("clock : RECIEVE ", Date.now());
+  const clock=new ClockTime();
+  clock.emit("RECIEVE");
   // Interaction type and data
   const source = request.body;
   const { type, id, token, locale, member, message, channel, guild } = source;//default
@@ -47,7 +59,7 @@ export default async function route({ request, reply, api, logger, connections }
 	  RESP_URL=webhooks/${process.env.APP_ID}/${token}/messages/@original
 	  `);
       
-      return await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild }, commandName);
+      return await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild, clock }, commandName);
       
       /*
       const return_patch = await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild }, commandName);
