@@ -125,11 +125,8 @@ import { Achievement, Schedule } from "./achiv.js"; // user achivements
 
 import {
   time_format_string_from_int,
-  time_userday_get,
-  time_day_int,
-  time_day_format,
+  times_precise_string_from_int,
   time_day_gap,
-  roman_from_int,
 } from "./tools.js"; // tools
 
 import { kira_remember_task_add } from "./use/remember.js";
@@ -142,6 +139,7 @@ import { cmd_rules } from "./cmd/rules.js";
 import { webhook_reporter } from "./use/post.js";
 import { channel } from "diagnostics_channel";
 import { error } from "console";
+import { register } from "module";
 
 //the structure to describe the command
 const commands_structure = {
@@ -268,6 +266,21 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
+    },
+  },
+
+  ping: {
+    functions: {
+      exe: cmd_ping,
+      checks: [],
+    },
+    register: {
+      name: "ping",
+      description: "How fast can I play ping pong?"
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+      //ephemeral: true,
     },
   },
 
@@ -808,6 +821,7 @@ export async function kira_cmd(f_deep, f_cmd) {
    * request
    *  - data
    *  - type
+   *  - timespam
    *  - (id)
    *  - ([token])
    * context
@@ -818,6 +832,7 @@ export async function kira_cmd(f_deep, f_cmd) {
    *  - guild
    * self
    * - |[cmd]|
+   * - ([clock])
    * - |lang|
    * - ([|replyed|])
    * datamodels
@@ -827,7 +842,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   // usable ~~unusable~~ (unused) [used here] |created here|
 
   //console.debug(`cmd : f_deep=`, f_deep);
-  f_deep.clock.emit("cmd");
+  f_deep.clock.emit("cmd", true);
 
   //new datas
   f_deep.cmd=f_cmd;
@@ -835,6 +850,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   //get the user data element
   //if dont exist, it's automaticly created
   f_deep.userdata = await kira_user_get(f_deep.user.id, true);
+  f_deep.clock.emit("got userdata");
   //get the user's book
   //if dont exist, is undefined
   if (f_deep.userdata.bookPtr)
@@ -843,14 +859,16 @@ export async function kira_cmd(f_deep, f_cmd) {
   } else {
     f_deep.userbook = undefined;
   }
+  f_deep.clock.emit("got userbook");
   //get user lang
   //lang selected, else discord lang
   f_deep.lang = lang_get(f_deep.userdata, f_deep.locale);
   //if replyed by
   //will change a lot here, used by catch
   f_deep.replyed = false;
+  
+  f_deep.clock.emit("fetched", true);
 
-  f_deep.clock.emit("data got");
   //errors
   if (!commands_structure[f_deep.cmd]) {
     //error 404
@@ -892,7 +910,6 @@ export async function kira_cmd(f_deep, f_cmd) {
 ~~LAUNCH_ACTIVIT~~ : not an activity
 */
 
-  f_deep.clock.emit("checking");
   try {
     //-checks-
     errorWhen = "CmdCheck";
@@ -917,6 +934,7 @@ export async function kira_cmd(f_deep, f_cmd) {
         );
       }
     }
+    f_deep.clock.emit("checks done");
 
     //-defered-
     {
@@ -926,17 +944,18 @@ export async function kira_cmd(f_deep, f_cmd) {
       if (request_arg)
       {
         errorWhen = "CmdRequest1";
-        f_deep.clock.emit("sending defered");
+        f_deep.clock.emit("sending defered", true);
         await DiscordRequest(
           // POST the deferred response
           ...request_arg
         );
-        f_deep.clock.emit("sended defered");
+        f_deep.clock.emit("sended defered", true);
       }
     }
 
     //-command-
     errorWhen = "CmdQueue";
+    f_deep.clock.emit("queue", true);
     await kira_cmd_queue(f_deep);
   
   } catch (e) {
@@ -963,6 +982,7 @@ async function kira_cmd_queue(f_deep) {
 
 async function kira_cmd_exe(f_deep)
 {
+  f_deep.clock.emit("exe", true);
   let errorWhen = "CmdIdk2";
   try {
     errorWhen = "CmdExecute";
@@ -2082,6 +2102,47 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
       }
       break;
   }
+}
+
+
+//#ping command
+async function cmd_ping({ lang, userbook, clock, timespam }) {
+  
+  clock.emit("pong", true);
+  
+  const timeDefered = clock.read("sended defered")-clock.read("sending defered");
+  const timeQueue = clock.read("queue")-clock.read("exe");
+  const timeServer = clock.read("pong");
+  const timeTravel = clock.epoch-timespam*1000;
+  const timeFetch = clock.read("fetched")-clock.read("cmd");
+  
+  var timesDict = {
+    timeTravel,
+    timeDefered,
+    timeFetch,
+    timeQueue,
+    timeCompute: timeServer - timeDefered - timeQueue - timeFetch,
+    timeTotal: timeServer + timeTravel
+  }
+
+  for (let v in timesDict)
+  {
+    timesDict[v]= times_precise_string_from_int(timesDict[v])
+  }
+        
+  
+  return {
+    method: "PATCH",
+    body: {
+      content: translate(lang, "cmd.ping.content"),
+      embeds: [
+        {
+          color: book_colors[userbook.color].int,
+          description: translate(lang, "cmd.ping.analyse", timesDict),
+        },
+      ],
+    },
+  };
 }
 
 //#feedback command
@@ -4038,7 +4099,7 @@ export async function cmd_comeback(data) {
   if (!SETT_CMD.kira.comebackBy.time[comeback_type].if) return;
 
   const userdata = await kira_user_get(data.userId, false);
-  const lang = pack.lang; //!
+  const lang = userdata.lang;
 
   const h_gap = parseInt(
     (new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000

@@ -37,6 +37,9 @@
 "cmd.god.sub.apple.done.fake.add": "gyft <@$[targetId]> $[displayed] $[word]",
 "cmd.god.sub.apple.done.fake.remove": "seal <@$[targetId]> $[displayed] $[word]",
 
+"cmd.ping.content": "PEW! 🧶",
+"cmd.ping.analyse": "tak : $[timeTravel] (discordo)\ndat : $[timeFetch]\nthk : $[timeCompute]\nwat : $[timeQueue]\nans : $[timeDefered] (discordo)\n**ALL : $[timeTotal]**",
+
 "cmd.feedback.confirm": "U wanna say somting 2 king kat?",
 "cmd.feedback.confirm.yes": "Yep",
 "cmd.feedback.confirm.no": "Nha",

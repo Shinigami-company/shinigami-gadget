@@ -46,6 +46,9 @@
 "cmd.god.sub.apple.done.fake.add": "<@$[targetId]>📥 $[displayed]$[word]",
 "cmd.god.sub.apple.done.fake.remove": "<@$[targetId]>📤 $[displayed]$[word]",
 
+"cmd.ping.content": "🏓🧶",
+"cmd.ping.analyse": "$[timeTravel]\n$[timeFetch]\n$[timeCompute]\n$[timeQueue]\n$[timeDefered]\n**$[timeTotal]**",
+
 "cmd.feedback.confirm": "✉➡️🗳️",
 "cmd.feedback.confirm.yes": "🖋️",
 "cmd.feedback.confirm.no": "❌",

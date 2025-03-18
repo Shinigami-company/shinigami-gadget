@@ -50,6 +50,9 @@
 "cmd.god.sub.tell.send.remitter.sended": "Tu as envoyé un message à <@$[targetId]>.",
 "cmd.god.sub.tell.send.remitter.failed": "Il est impossible d'envoyer dirrectement un message à <@$[targetId]>.",
 
+"cmd.ping.content": "Pong! 🏓",
+"cmd.ping.analyse": "délai de réception : $[timeTravel]\ntemps de lecture : $[timeFetch]\ntemps de rélfexion : $[timeCompute]\ntemps d'attente : $[timeQueue]\ntemps de réponse : $[timeDefered]\n**TEMPS TOTAL : $[timeTotal]**",
+
 "cmd.feedback.confirm": "Je peux transmettre une lettre de ta part au roi de dieux de la mort.",
 "cmd.feedback.confirm.yes": "Je le shouaite",
 "cmd.feedback.confirm.no": "En fait non",

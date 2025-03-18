@@ -22,9 +22,20 @@ class ClockTime {
   constructor()
   {
     this.epoch=Date.now();
+    this.data={};
   }
-  emit(name="time") {
-    console.log(`clock : ${name} = `,times_precise_string_from_int(Date.now()-this.epoch));
+  emit(name="time", save) {
+    const time_ms=Date.now()-this.epoch;
+    if (save)
+      this.write(name, time_ms)
+    console.debug(`clock : ${name} = `,times_precise_string_from_int(time_ms));
+  }
+
+  write(id="time", value_ms) {
+    this.data[id]=value_ms;
+  }
+  read(id="time") {
+    return this.data[id];
   }
 }
 
@@ -39,9 +50,14 @@ export default async function route({ request, reply, api, logger, connections }
   clock.emit("RECIEVE");
   // Interaction type and data
   const source = request.body;
+  const timespam = request.headers['x-signature-timestamp'];
   const { type, id, token, locale, member, message, channel, guild } = source;//default
   let { data } = source;
   const user = member ? member.user : source.user;
+
+  //console.log("1:",request.headers);
+  //console.log("2:",);
+  //console.log("3:",request.received);
 
   /**
    * Handle verification requests
@@ -59,7 +75,7 @@ export default async function route({ request, reply, api, logger, connections }
 	  RESP_URL=webhooks/${process.env.APP_ID}/${token}/messages/@original
 	  `);
       
-      return await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild, clock }, commandName);
+      return await kira_cmd({ source, timespam, data, type, id, token, locale, user, message, channel, guild, clock }, commandName);
       
       /*
       const return_patch = await kira_cmd({ source, data, type, id, token, locale, user, message, channel, guild }, commandName);

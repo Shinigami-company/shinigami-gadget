@@ -73,27 +73,27 @@ export function time_format_string_from_int(f_s, lang) {
 function time_format_int_from_string(f_text) {}
 
 
-const times_precise = [
-  {
-    divider: 3600000,
-    unit: "h",
-  },
-  {
-    divider: 60000,
-    unit: "m",
-  },
-  {
-    divider: 1000,
-    unit: "s",
-  },
-  {
-    divider: 1,
-    unit: "ms",
-  },
-];
+//const times_precise = [
+//  //{
+//  //  divider: 3600000,
+//  //  unit: "h",
+//  //},
+//  {
+//    divider: 60000,
+//    unit: "m",
+//  },
+//  {
+//    divider: 1000,
+//    unit: "s",
+//  },
+//  {
+//    divider: 1,
+//    unit: "ms",
+//  },
+//];
 
 export function times_precise_string_from_int(f_ms) {
-  f_ms=Math.round(f_ms);
+  f_ms=Math.floor(f_ms);
   let r_text = "";
 
   if (f_ms < 0) {
@@ -105,6 +105,7 @@ export function times_precise_string_from_int(f_ms) {
   if (!f_ms) {
     return "!Ms";
   }
+  return f_ms.toString() + "ms";
 
   //find values
   {
@@ -117,7 +118,6 @@ export function times_precise_string_from_int(f_ms) {
       }
     }
   }
-  return r_text;
 }
 
 

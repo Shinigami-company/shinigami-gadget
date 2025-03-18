@@ -53,6 +53,9 @@
 "cmd.god.sub.tell.send.remitter.sended": "You sended a message to <@$[targetId]>.",
 "cmd.god.sub.tell.send.remitter.failed": "This is impossible to directly send a message to <@$[targetId]>.",
 
+"cmd.ping.content": "Pong! 🏓",
+"cmd.ping.analyse": "reception time : $[timeTravel]\nreading time : $[timeFetch]\nthinking time : $[timeCompute]\nqueue time : $[timeQueue]\nanswer time : $[timeDefered]\n**TOTAL TIME : $[timeTotal]**",
+
 "cmd.feedback.confirm": "I can transmit a letter from you to the king of gods of death.",
 "cmd.feedback.confirm.yes": "I want",
 "cmd.feedback.confirm.no": "No",
