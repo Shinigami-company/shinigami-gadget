@@ -11,7 +11,7 @@
 "check.god.not": "**Nope !** Tu n'as pas le pouvoir d'un dieu.",
 "check.alive.not": "*Tu es mort·e pendant encore **$[time]***.",
 "check.nodrop.not": "*Tu as abandonné ton Death Note pendant encore **$[time]***.",
-"check.hasbook.not": "*Tu ne détiens pas de Death Note.*\n`*Fait* /claim` *pour en avoir un.*",
+"check.hasbook.not": "*Tu ne détiens pas de Death Note.*\n*Fait* `/claim` *pour en avoir un.*",
 "check.feedback.not": "Attends environ **$[time]**, le temps que j'ai une nouvelle enveloppe.",
 "check.inguild.not": "Fait ça sur un serveur.\n-# Tu peux [m'ajouter]($[discoverLink]) à un serveur ou [rejoindre]($[joinLink]) le royaume de Kira.",
 "check.ban.is.perma": "*Ton Death Note est confisqué.*",
@@ -51,7 +51,7 @@
 "cmd.god.sub.tell.send.remitter.failed": "Il est impossible d'envoyer dirrectement un message à <@$[targetId]>.",
 
 "cmd.ping.content": "Pong! 🏓",
-"cmd.ping.analyse": "délai de réception : $[timeTravel]\ntemps de lecture : $[timeFetch]\ntemps de rélfexion : $[timeCompute]\ntemps d'attente : $[timeQueue]\ntemps de réponse : $[timeDefered]\n**TEMPS TOTAL : $[timeTotal]**",
+"cmd.ping.analyse": "délai de réception : $[timeTravel]\ntemps de lecture : $[timeFetch]\ntemps de réflexion : $[timeCompute]\ntemps d'attente : $[timeQueue]\ntemps de réponse : $[timeDefered]\n**TEMPS TOTAL : $[timeTotal]**",
 
 "cmd.feedback.confirm": "Je peux transmettre une lettre de ta part au roi de dieux de la mort.",
 "cmd.feedback.confirm.yes": "Je le shouaite",
