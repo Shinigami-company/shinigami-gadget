@@ -772,7 +772,6 @@ const commands_structure = {
     functions: {
       exe: cmd_know,
       checks: [[check_mailbox, true],
-        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, true],
         [check_has_noDrop, true],
