@@ -29,7 +29,7 @@ const route = async ({ request, reply, api, logger, connections }) => {
   /**
    * Handle verification requests
    */
-  console.log(`feeler : something. source=`,source);
+  console.debug(`feeler : something. source=`,source);
 
   if (type === 0) {//that not InteractionType.PING ! (0!=1)
     return reply.send({ type: InteractionResponseType.PONG });
@@ -39,9 +39,19 @@ const route = async ({ request, reply, api, logger, connections }) => {
   const { guild, user, integration_type, scopes } = data;
 
   
-  console.log("feeler : OK. user=",user, " guild=", guild);
+  let guild_with_members={};
+  try {
+    guild_with_members=await DiscordRequest(
+      `guilds/${guild.id}?with_counts=1`,
+      {
+        method: "GET",
+      }
+    ).then((res) => res.json());
+  } catch (error) {
+    console.error(`kira : catch cant fetch guild count : ${error}`);
+  }
 
-  const all = { user, guild };
+  const all = { user, guild, presence_count: guild_with_members?.approximate_presence_count, member_count: guild_with_members?.approximate_member_count };
   await webhook_reporter.hall.post(
     user?.locale ? user?.locale : "en",
     all,
