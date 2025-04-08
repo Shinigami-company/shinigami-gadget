@@ -223,7 +223,7 @@ export async function kira_user_can_feedback(f_dataId) {
   const iso = await api.KiraUsers.findOne(f_dataId, {
     select: { feedbackCooldown: true },
   }).then((data) => data.feedbackCooldown);
-  if (!iso) return true;
+  if (!iso) return 0;
   const span = Math.ceil(
     (new Date(iso).getTime() - new Date().getTime()) / 1000
   );
