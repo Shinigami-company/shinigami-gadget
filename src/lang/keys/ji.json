@@ -113,6 +113,8 @@
 "cmd.rules.english": "📏👈🇬🇧",
 "cmd.rules.preamble": "👇",
 
+"cmd.how.content": "📄👆<:book_black:1281258833271849050>👇",
+
 "cmd.lang.define.get": "👈🗣😃🫵",
 "cmd.lang.define.set": "👈🗣😃🫵",
 "cmd.lang.your.get": "it's a custom language, it cannot be yours",
@@ -176,6 +178,7 @@
 "cmd.kira.fail.text.max": "🚫✏️🔤⬆️",
 "cmd.kira.fail.time.max": "🚫⏲️⬆️$[time]",
 "cmd.kira.start.mp.victim": "📖🪶👤🫵\n⏲️**$[time]**🫵💀❕🫵🔪👤",
+"cmd.kira.start.mp.victim.first": "IMPOSSIBLE. Screen that and win 10 apple. `JAT6`",
 "cmd.kira.start.mp.victim.pay.who": "$[price] - 💌🅰️👉👤",
 "cmd.kira.start.mp.victim.pay.where": "$[price] - 💌🏘️",
 "cmd.kira.start.mp.victim.pay.fullwho": "$[price] - 👤",

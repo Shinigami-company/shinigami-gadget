@@ -306,11 +306,32 @@ const commands_structure = {
     },
     register: {
       name: "help",
-      description: "how to use it",
+      description: "See some commands",
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
       //ephemeral: true,
+    },
+  },
+  
+  how: {
+    functions: {
+      exe: cmd_how,
+      checks: [[check_mailbox, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+        [check_has_book, false],
+      ],
+    },
+    register: {
+      name: "how",
+      description: "How to use it",
+      //contexts: [0],//!disabled
+      type: 1,
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
     },
   },
 
@@ -2394,6 +2415,32 @@ async function cmd_help({ lang })
     method: "PATCH",
     body: {
       content: body_content
+    },
+  };
+}
+
+
+async function cmd_how({ lang })
+{
+  var view_text = (parseInt(process.env.invite_enable))
+    ? translate(lang, "cmd.help.new.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm})
+    : "";
+  //var view_text = "";
+
+  let content=translate(lang, "cmd.how.content");
+  let title=translate(lang, "cmd.how.title");
+  let description=translate(lang, "cmd.how.description");
+
+  return {
+    method: "PATCH",
+    body: {
+      content,
+      embeds: [
+        {
+          title,
+          description
+        }
+      ]
     },
   };
 }

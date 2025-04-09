@@ -120,6 +120,10 @@
 "cmd.rules.english": "I've copied the rules of the Death Note in english, the most spoken human langage.",
 "cmd.rules.preamble": "Here's one of them :",
 
+"cmd.how.content": "This is written on Death Note's first page :\n-# The one who made it must be super smart!",
+"cmd.how.title": "𝕳𝖔𝖜 𝖙𝖔 𝖚𝖘𝖊 𝖎𝖙",
+"cmd.how.description": "- 𝔗𝔥𝔢 𝔥𝔲𝔪𝔞𝔫 𝔴𝔥𝔬𝔰𝔢 𝔫𝔞𝔪𝔢 𝔦𝔰 𝔴𝔯𝔦𝔱𝔱𝔢𝔫 𝔦𝔫 𝔱𝔥𝔦𝔰 𝔫𝔬𝔱𝔢 𝔰𝔥𝔞𝔩𝔩 𝔡𝔦𝔢.\n- 𝔄𝔣𝔱𝔢𝔯 𝔴𝔯𝔦𝔱𝔦𝔫𝔤 𝔱𝔥𝔢 𝔫𝔞𝔪𝔢, 𝔶𝔬𝔲 𝔥𝔞𝔳𝔢 ५𝔬 𝔰𝔢𝔠𝔬𝔫𝔡𝔰 𝔱𝔬 𝔴𝔯𝔦𝔱𝔢 𝔱𝔥𝔢 𝔠𝔞𝔲𝔰𝔢 𝔬𝔣 𝔡𝔢𝔞𝔱𝔥.\n- ℑ𝔣 𝔫𝔬 𝔠𝔞𝔲𝔰𝔢 𝔦𝔰 𝔴𝔯𝔦𝔱𝔱𝔢𝔫, 𝔱𝔥𝔢 𝔳𝔦𝔠𝔱𝔦𝔪 𝔴𝔦𝔩𝔩 𝔰𝔦𝔪𝔭𝔩𝔶 𝔡𝔦𝔢 𝔬𝔣 𝔞 𝔥𝔢𝔞𝔯𝔱 𝔞𝔱𝔱𝔞𝔠𝔨.\n- 𝔅𝔶 𝔴𝔯𝔦𝔱𝔦𝔫𝔤 𝔱𝔥𝔢𝔦𝔯 𝔨𝔦𝔩𝔩𝔢𝔯'𝔰 𝔫𝔞𝔪𝔢 𝔦𝔫 𝔞 𝔇𝔢𝔞𝔱𝔥 𝔑𝔬𝔱𝔢, 𝔞 𝔳𝔦𝔠𝔱𝔦𝔪 𝔠𝔞𝔫 𝔯𝔢𝔭𝔢𝔞𝔩 𝔱𝔥𝔢𝔦𝔯 𝔡𝔢𝔞𝔱𝔥.\n- ℜ𝔢𝔭𝔢𝔞𝔩𝔦𝔫𝔤 𝔡𝔢𝔞𝔱𝔥 𝟷𝟹 𝔱𝔦𝔪𝔢𝔰 𝔦𝔫 𝔞 𝔯𝔬𝔴 𝔦𝔰 𝔫𝔬𝔱 𝔰𝔬𝔪𝔢𝔱𝔥𝔦𝔫𝔤 𝔱𝔥𝔞𝔱 𝔠𝔞𝔫 𝔟𝔢 𝔡𝔬𝔫𝔢.\n- 𝔗𝔥𝔢 𝔰𝔠𝔢𝔫𝔞𝔯𝔦𝔬 𝔱𝔥𝔞𝔱 𝔩𝔢𝔞𝔡𝔰 𝔱𝔬 𝔡𝔢𝔞𝔱𝔥 𝔠𝔞𝔫𝔫𝔬𝔱 𝔢𝔵𝔠𝔢𝔢𝔡 𝟸𝟹 𝔡𝔞𝔶𝔰. 𝔗𝔥𝔦𝔰 𝔦𝔰 𝔱𝔥𝔢 𝟸𝟹-𝔡𝔞𝔶 𝔯𝔲𝔩𝔢.\n- 𝔗𝔥𝔢 𝔇𝔢𝔞𝔱𝔥 𝔑𝔬𝔱𝔢 𝔴𝔦𝔩𝔩 𝔫𝔢𝔳𝔢𝔯 𝔯𝔲𝔫 𝔬𝔲𝔱 𝔬𝔣 𝔭𝔞𝔤𝔢𝔰.",
+
 "cmd.lang.define.get": "I speak **english** to you.",
 "cmd.lang.define.set": "Ok, now I speak **english** to you.",
 "cmd.lang.your.get": "I speak your language.",
@@ -183,7 +187,7 @@
 "cmd.kira.fail.text.max": "This is too long to be written.",
 "cmd.kira.fail.time.max": "You cannot write a date longer than $[time].",
 "cmd.kira.start.mp.victim": "Someone used the Death Note on you!\nYou have **$[time]** to kill him before dying.",
-"cmd.kira.start.mp.victim.first": "The attack is coming from **$[channel]**, Use `/kira` on your attacker to save your life!\n-# Its the first and the last time I help you, human. Ho wait, is that apple you have here?",
+"cmd.kira.start.mp.victim.first": "The attack is coming from **$[channel]**. Use `/kira` on your attacker to save your life!\n-# Its the first and the last time I help you, human. Ho wait, is that apple you have here?",
 "cmd.kira.start.mp.victim.pay.who": "$[price] - get initial",
 "cmd.kira.start.mp.victim.pay.where": "$[price] - get channel name",
 "cmd.kira.start.mp.victim.pay.fullwho": "$[price] - who?",

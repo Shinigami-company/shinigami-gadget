@@ -104,6 +104,8 @@
 "cmd.rules.english": "Rul in english bcs i donut wanna writ yt anothr langaje.",
 "cmd.rules.preamble": "A rul of feather buk :",
 
+"cmd.how.content": "Frst paj tt yn yt :\n-# Im e supr smart kitn",
+
 "cmd.lang.define.get": "Mrew.",
 "cmd.lang.define.set": "Mrew!",
 "cmd.lang.your.get": "it's a custom language, it cannot be yours",
@@ -167,6 +169,7 @@
 "cmd.kira.fail.text.max": "txt 2 big",
 "cmd.kira.fail.time.max": "maxy tim ys $[time]",
 "cmd.kira.start.mp.victim": "a cat want u ded!\nu hav **$[time]** 2 ded tis cat befor nd avoid 2 b ded",
+"cmd.kira.start.mp.victim.first": "IMPOSSIBLE. Screen that and win 10 apple. `KAT6`",
 "cmd.kira.start.mp.victim.pay.who": "$[price] - frst letr :3",
 "cmd.kira.start.mp.victim.pay.where": "$[price] - were",
 "cmd.kira.start.mp.victim.pay.fullwho": "$[price] - wo?",
