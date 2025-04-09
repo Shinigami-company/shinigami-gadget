@@ -21,26 +21,8 @@ export async function kira_do_refreshCommands() {
 
 //manage
 export async function kira_user_get(f_userId, f_createIfNot = false) {
-  const h_preData = await api.KiraUsers.maybeFindFirst({
-    filter: {
-      userId: { equals: f_userId },
-    },
-    select: {
-      id: true,
-      statPtr: { id: true },
-      achivPtr: { id: true },
-    },
-  });
-  if (!h_preData) {
-    if (f_createIfNot)
-      //create it
-      await kira_user_create(f_userId);
-    //not created
-    else return undefined;
-  }
 
-  //get it
-  let userdata=await api.KiraUsers.findFirst({
+  let userdata=await api.KiraUsers.maybeFindFirst({
     filter: {
       userId: { equals: f_userId },
     },
@@ -63,8 +45,13 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       bookPtr: { id: true },
     },
   });
-  if (!h_preData)
+  if (!userdata)
   {
+    //not created
+    if (!f_createIfNot)
+      return undefined;
+    //create it
+    userdata=await kira_user_create(f_userId);
     userdata.justCreated=true;
   }
   return userdata;
@@ -101,9 +88,8 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
 
 
 export async function kira_user_create(f_userId) {
-  
-  
-  await api.KiraUsers.create({
+
+  return await api.KiraUsers.create({
     userId: f_userId,
     statPtr: {
       create: { userId: f_userId },
