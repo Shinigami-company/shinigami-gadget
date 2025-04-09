@@ -183,6 +183,7 @@
 "cmd.kira.fail.text.max": "This is too long to be written.",
 "cmd.kira.fail.time.max": "You cannot write a date longer than $[time].",
 "cmd.kira.start.mp.victim": "Someone used the Death Note on you!\nYou have **$[time]** to kill him before dying.",
+"cmd.kira.start.mp.victim.first": "The attack is coming from **$[channel]**, Use `/kira` on your attacker to save your life!\n-# Its the first and the last time I help you, human. Ho wait, is that apple you have here?",
 "cmd.kira.start.mp.victim.pay.who": "$[price] - get initial",
 "cmd.kira.start.mp.victim.pay.where": "$[price] - get channel name",
 "cmd.kira.start.mp.victim.pay.fullwho": "$[price] - who?",

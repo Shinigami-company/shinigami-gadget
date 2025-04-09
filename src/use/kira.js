@@ -40,7 +40,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
   }
 
   //get it
-  return await api.KiraUsers.findFirst({
+  let userdata=await api.KiraUsers.findFirst({
     filter: {
       userId: { equals: f_userId },
     },
@@ -63,6 +63,11 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       bookPtr: { id: true },
     },
   });
+  if (!h_preData)
+  {
+    userdata.justCreated=true;
+  }
+  return userdata;
 
   /*
   let r_data=await api.KiraUsers.maybeFindFirst(

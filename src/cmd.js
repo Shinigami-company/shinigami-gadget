@@ -3553,6 +3553,7 @@ async function cmd_kira({
   //message/victim
   const lang_victim = h_victim_data ? lang_get(h_victim_data, lang, false) : lang;
   if (h_will_ping_victim) {
+    let firstTime = (h_victim_data.justCreated===true);
     try {
       //open DM
       var h_victim_dm_id = await DiscordUserOpenDm(h_victim_id);
@@ -3568,7 +3569,8 @@ async function cmd_kira({
             content: translate(lang_victim, "cmd.kira.start.mp.victim", {
               time: h_txt_span,
             }),
-            components: [
+            components: (firstTime) ? undefined :
+            [
               {
                 type: MessageComponentTypes.ACTION_ROW,
                 components: (() => {
@@ -3598,6 +3600,18 @@ async function cmd_kira({
           },
         }
       ).then((res) => res.json());
+      if (firstTime)
+      {
+        await DiscordRequest(
+        `channels/${h_victim_dm_id}/messages`,
+        {
+          method: "POST",
+          body: {
+            content: translate(lang_victim, "cmd.kira.start.mp.victim.first", {channel: `<#${channel.id}>`})
+            }
+          }
+        )
+      }
     } catch (e) {
       let errorMsg = JSON.parse(e.message);
       if (errorMsg?.code === 50007) {
