@@ -51,7 +51,9 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
     if (!f_createIfNot)
       return undefined;
     //create it
-    userdata=await kira_user_create(f_userId);
+    await kira_user_create(f_userId);
+    //return it
+    userdata=await kira_user_get(f_userId, false);
     userdata.justCreated=true;
   }
   return userdata;
