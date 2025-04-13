@@ -206,6 +206,7 @@ const commands_structure = {
             },
             { name: "tell", value: "tell", description: "tell to someone" },
             { name: "mail", value: "mail", description: "mail to someone" },
+            { name: "info", value: "info", description: "get info about someone" },
           ],
         },
         {
@@ -882,7 +883,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   f_deep.clock.emit("got userbook");
   //get user lang
   //lang selected, else discord lang
-  f_deep.lang = lang_get(f_deep.userdata, f_deep.locale);
+  f_deep.lang = await lang_get(f_deep.userdata, f_deep.locale);
   //if replyed by
   //will change a lot here, used by catch
   f_deep.replyed = false;
@@ -3091,7 +3092,7 @@ async function cmd_lang({ data, userdata, locale, lang }) {
     let h_lang = data.options[0].value;
     if (h_lang === "mine") {
       let lore = lang_lore(locale);
-      await lang_set(userdata.id, null);
+      await lang_set(userdata.id, locale);
       r_txt = translate(locale, "cmd.lang.your.set") + lore;
     } else {
       let lore = lang_lore(h_lang);
@@ -3598,7 +3599,7 @@ async function cmd_kira({
   });
 
   //message/victim
-  const lang_victim = h_victim_data ? lang_get(h_victim_data, lang, false) : lang;
+  const lang_victim = h_victim_data ? await lang_get(h_victim_data, undefined) : lang;
   if (h_will_ping_victim) {
     let firstTime = (h_victim_data.justCreated===true);
     try {
@@ -3735,7 +3736,7 @@ async function cmd_kira({
       note_id: h_note.id,
 
       lang_attacker: lang,
-      lang_victim: lang_victim,
+      //lang_victim: lang_victim,
 
       will_ping_victim: h_will_ping_victim,
       will_ping_attacker: h_will_ping_attacker,
@@ -3797,8 +3798,9 @@ export async function cmd_kira_execute(data) {
   //datas reading again
   const user = await DiscordUserById(pack.attacker_id); //!
   const lang = pack.lang_attacker ? pack.lang_attacker : pack.lang; //!
-  const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang; //!
+  //const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang; //!
   const h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
+  const lang_victim = h_victim_data ? await lang_get(h_victim_data, undefined) : lang;
   const userdata = await kira_user_get(user.id, true);
   const h_attacker_book = await kira_book_get(userdata.bookPtr.id);
   //handle special case : burned book

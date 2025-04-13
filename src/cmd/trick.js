@@ -7,7 +7,7 @@ import {
   ButtonStyleTypes,
 } from 'discord-interactions';
 
-import { translate } from "../lang.js";
+import { translate, lang_get } from "../lang.js";
 import { time_format_string_from_int, sleep } from "../tools.js";
 
 //things needed from outside
@@ -106,6 +106,9 @@ export const tricks_all = [
         try {
           //open DM
           const victim_dm_id = await DiscordUserOpenDm(target_id);
+          
+          const h_victim_data = await kira_user_get(target_id, false);
+          const lang_victim = h_victim_data ? await lang_get(h_victim_data, undefined) : lang;
           //send message
 
           var victim_message_id = await DiscordRequest(
@@ -113,7 +116,7 @@ export const tricks_all = [
             {
               method: "POST",
               body: {
-                content: translate(lang, "cmd.kira.start.mp.victim", {
+                content: translate(lang_victim, "cmd.kira.start.mp.victim", {
                   time: txt_span,
                 }),
                 components: [
@@ -127,7 +130,7 @@ export const tricks_all = [
                             type: MessageComponentTypes.BUTTON,
                             custom_id: `makecmd know -1+qafbilwiv${i}`,
                             label: translate(
-                              lang,
+                              lang_victim,
                               `cmd.kira.start.mp.victim.pay.${i}`,
                               { price: sett_catalog_knows[i].price }
                             ),

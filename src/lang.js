@@ -176,13 +176,13 @@ export function lang_lore(f_lang) {
   return r_txt;
 }
 
-export function lang_get(userdata, locale, setToLocaleIfNone=false) {
+export async function lang_get(userdata, locale) {
   //need userdata && request
   if (userdata.lang) {
     return userdata.lang;
   } else {
-    if (setToLocaleIfNone)
-      lang_set(userdata.id, locale);
+    if (locale)
+      await lang_set(userdata.id, locale);
     return locale;
   }
 }
