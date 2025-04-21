@@ -129,6 +129,9 @@ import {
   time_day_gap,
 } from "./tools.js"; // tools
 
+import { kira_item_event_claim } from "./use/claim.js";
+import { kira_items_find } from "./use/item.js";
+
 import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
 linkme("linked from cmd"); //need to use a function from there
@@ -140,6 +143,7 @@ import { webhook_reporter } from "./use/post.js";
 import { channel } from "diagnostics_channel";
 import { error } from "console";
 import { register } from "module";
+
 
 //the structure to describe the command
 const commands_structure = {
@@ -646,6 +650,26 @@ const commands_structure = {
       systemOnly: true,
     },
   },
+
+  pocket: {
+    functions: {
+      exe: cmd_pocket,
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
+        [check_can_alive, false],
+      ],
+    },
+    register: {
+      name: "pocket",
+      description: "What do you have in your pockets?",
+      //contexts: [0],//!disabled
+      type: 1,
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    },
+  },
+
 
   //SET
   drop: {
@@ -2718,7 +2742,7 @@ async function cmd_burn({
 }
 
 //#apples command
-async function cmd_apple({ userdata, locale, lang }) {
+async function cmd_apple({ userdata, user, locale, lang }) {
   let h_apples_claimed = 0; //only for display
   let h_txt_claims = "";
   let h_txt_more = "";
@@ -2762,6 +2786,10 @@ async function cmd_apple({ userdata, locale, lang }) {
         }
       }
     }
+
+    //claim/event
+    //!temporary
+    h_txt_claims += await kira_item_event_claim(userdata, user, "event_egg_2025", lang);
 
     //claims/others
     const h_claims = await kira_apple_claims_get(userdata.id);
@@ -3191,6 +3219,50 @@ async function cmd_see({ data, userbook, lang }) {
       ],
     },
   };
+}
+
+//#pocket command
+async function cmd_pocket({ data, userdata, userbook, lang }) {
+  const items_carry=await kira_items_find(userdata.id);
+
+  if (items_carry.length===0)
+  {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.pocket.nothing"),
+      }
+    }
+  }
+
+  let fields=[];
+
+  for (let i=0; i<items_carry.length; i++)
+  {
+    fields.push(
+      {
+        name: translate(lang, "item."+items_carry[i].itemId+".name"),
+        value: items_carry[i].itemLoreTxt.markdown
+      }
+    )
+  }
+  
+  return {
+    method: "PATCH",
+    body: {
+      content: translate(lang, "cmd.pocket.content"),
+      embeds: [
+        {
+          color: book_colors[userbook.color].int,
+          //description: `${h_content}`,
+          footer: {
+            text: translate(lang, "cmd.pocket.capacity", { in:items_carry.length, size:"2" }),
+          },
+          fields
+        },
+      ],
+    }
+  }
 }
 
 //#drop command

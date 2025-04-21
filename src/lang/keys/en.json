@@ -134,6 +134,10 @@
 "cmd.page.get.left": "< Page $[page]",
 "cmd.page.get.right": "Page $[page] >",
 
+"cmd.pocket.content": "Here what you have in your pockets :\n-# `/pocket` is experimental.",
+"cmd.pocket.capacity": "Capacity : $[in]/$[size]",
+"cmd.pocket.nothing": "You dont carry anything else than apple.",
+
 "cmd.drop.shop": "Hum, yes, you could protect yourself for a while. :thinking:\nI can give you back the Death Note a certain time after you gave it up.\nBut I need apples to not become lazy!",
 "cmd.drop.shop.sentence": "I relinquish Death Note ownership...",
 "cmd.drop.shop.button.label": "$[price] $[unit] : for $[time]",
@@ -328,6 +332,11 @@
 "achievements.killDailyComeback.title":"a fake rule",
 "achievements.killDailyComeback.lore":"stop killing people for 13 days or more",
 "achievements.killDailyComeback.done":"by stopping killing people for more than 13 days and not dying from it",
+
+
+"item.event_egg_2025.name": "<:weirdegg:1363686307955740864> Weird egg",
+"item.event_egg_2025.claim": "You found a weird egg just here. You put it in your `/pocket`. <:weirdegg:1363686307955740864>",
+"item.event_egg_2025.lore": "2025 weird egg of **@$[user.username]**.\nDon't try to eat. Seems useless.",
 
 
 "rule.new.1":"**By writing their killer's name in a Death Note, a victim has the ability to undo their death. There is a limit to this.**",

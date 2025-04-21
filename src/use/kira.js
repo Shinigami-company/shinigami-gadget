@@ -493,7 +493,7 @@ export async function kira_line_get_page(f_book, f_page, f_ifBlank = true) {
   const h_data_lines_minimal = await api.KiraNotes.findMany({
     filter: [
       {
-        attackerBookPtr: { equals: f_book.id },
+        attackerBookPtrId: { equals: f_book.id },
       },
       {
         indexLine: {
