@@ -125,6 +125,10 @@
 "cmd.page.get.left": "< 📄$[page]",
 "cmd.page.get.right": "📄$[page] >",
 
+"cmd.pocket.content": "🧰",
+"cmd.pocket.capacity": "$[in]/$[size]🧰",
+"cmd.pocket.nothing": "❌🧰",
+
 "cmd.drop.shop": "🗑️⬅️<:book_black:1281258833271849050>🤔\n⏲️🫵🛡️🔪\n⏲️⏲️🗑️➡️<:book_black:1281258833271849050>🫵",
 "cmd.drop.shop.sentence": "🗑️⬅️📓⏲️❔",
 "cmd.drop.shop.button.label": "$[price] $[unit] : ⏲️$[time]",
@@ -319,6 +323,11 @@
 "achievements.killDailyComeback.title":"⁉️📏",
 "achievements.killDailyComeback.lore":"🛑🔪👥⏲️13d",
 "achievements.killDailyComeback.done":"🫵🛑🔪👥⏲️13d❗🫵❌💀",
+
+
+"item.event_egg_2025.name": "<:weirdegg:1363686307955740864>",
+"item.event_egg_2025.claim": "+<:weirdegg:1363686307955740864>🐇",
+"item.event_egg_2025.lore": "2025🐇**@$[user.username]**\n🤷‍♂️",
 
 
 "format.line": "$[victim]💀$[reason]⏲️$[time]",

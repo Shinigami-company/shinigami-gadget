@@ -8,6 +8,11 @@ export const schema: GadgetModel = {
   storageKey: "ajFsJt-RW_nN",
   fields: {
     itemId: { type: "string", storageKey: "J3mHD1CwWgaL" },
+    itemLoreArray: {
+      type: "json",
+      default: [],
+      storageKey: "oyuOM_XoAOry",
+    },
     itemLoreTxt: { type: "richText", storageKey: "BR9ljaH87ShH" },
     ownerPtr: {
       type: "belongsTo",

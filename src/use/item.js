@@ -3,17 +3,22 @@ import { api } from "gadget-server";
 export const items_info = {
   event_egg_2025: {
     message_claim: true,
-    message_lore: true
+    message_lore: true,
+    dolarsPath: [
+      "user.id",
+      "user.username"
+    ]
   }
 }
 
-export async function kira_item_create(userdataId, itemId, itemLoreTxt) {
+export async function kira_item_create(userdataId, itemId, itemLoreTxt, itemLoreArray) {
   return await api.KiraItems.create({
     ownerPtr: {
       _link: userdataId,
     },
     itemId,
-    itemLoreTxt: {markdown: itemLoreTxt}
+    itemLoreTxt: {markdown: itemLoreTxt},
+    itemLoreArray
   });
 }
 

@@ -131,6 +131,10 @@
 "cmd.page.get.left": "< page $[page]",
 "cmd.page.get.right": "page $[page] >",
 
+"cmd.pocket.content": "Voici ce que tu as dans tes poches :\n-# `/pocket` est experimental.",
+"cmd.pocket.capacity": "Capacitée : $[in]/$[size]",
+"cmd.pocket.nothing": "Tu ne portes rien d'autre que des pommes.",
+
 "cmd.drop.shop": "Hum, oui, tu peux te protéger pendant un moment. :thinking:\nPour cela il faut que abandonnes ton Death Note et je viendrais te le redonner après un certain temps.\nMais j'ai besoin de pommes, pour ne pas être en manque !",
 "cmd.drop.shop.sentence": "Je rennonce à la propriétée du Death Note...",
 "cmd.drop.shop.button.label": "$[price] $[unit] : pendant $[time]",
@@ -325,6 +329,11 @@
 "achievements.killDailyComeback.title":"une fausse règle",
 "achievements.killDailyComeback.lore":"arrêter de tuer pendant 13 jours ou plus",
 "achievements.killDailyComeback.done":"en arrêtant de tuer pendant 13 jours et de ne pas en être mort",
+
+
+"item.event_egg_2025.name": "<:weirdegg:1363686307955740864> œuf bizarre",
+"item.event_egg_2025.claim": "Tu as trouvé un œuf bizarre. Tu le met dans ta poche (`/pocket`). <:weirdegg:1363686307955740864>🐇",
+"item.event_egg_2025.lore": "œuf bizarre de **@$[user.username]**.\nNe pas manger. A l'air inutile.",
 
 
 "format.line": "$[victim] meurt $[reason] dans $[time]",

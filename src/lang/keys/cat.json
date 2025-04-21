@@ -116,6 +116,10 @@
 "cmd.page.get.left": "< pwg $[page]",
 "cmd.page.get.right": "pwg $[page] >",
 
+"cmd.pocket.content": "pkt :\n-# `/pocket` ys tring.",
+"cmd.pocket.capacity": "Lymit : $[in]/$[size]",
+"cmd.pocket.nothing": "U dnt us pkt.",
+
 "cmd.drop.shop": "U can 4get\nNd I can remind U aftr\nBut apl",
 "cmd.drop.shop.sentence": "I 4get...",
 "cmd.drop.shop.button.label": "$[price] $[unit] : 4 $[time]",
@@ -310,6 +314,11 @@
 "achievements.killDailyComeback.title":"trik rule",
 "achievements.killDailyComeback.lore":"donut kil 4 13 dai",
 "achievements.killDailyComeback.done":"u donut kil 4 13 dai nd u nt ded",
+
+
+"item.event_egg_2025.name": "<:weirdegg:1363686307955740864> BWA eg",
+"item.event_egg_2025.claim": "U get BWA eg. yn `/pocket`. Tht luks kul but ynst <:weirdegg:1363686307955740864>🐇",
+"item.event_egg_2025.lore": "eg 2025 **@$[user.username]** BWA.\nDunnut it. Usls :<",
 
 
 "format.line": "$[victim] in $[time] ded of $[reason]",
