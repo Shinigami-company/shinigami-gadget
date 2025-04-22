@@ -100,6 +100,7 @@
 "cmd.apples.claim.quest.done": "You achieved $[name]   **+$[added]**",
 "cmd.apples.claim.coinflip.bet": "You bet for a coin toss with <@$[opponentId]>   **-$[removed]**",
 "cmd.apples.claim.coinflip.win": "**$[side]** : You won the coin toss   **+$[added]**",
+"cmd.apples.claim.too": "...\nAnd you did other things but I'm too lazy to say everything   **+$[added]**\nDo `/apple` more often to avoid that",
 "cmd.apples.get.same": "You have **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.changed": "Now you have **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.why": "You don't understand why you keep so much apples with you.",

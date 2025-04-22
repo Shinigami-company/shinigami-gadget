@@ -2796,11 +2796,29 @@ async function cmd_apple({ userdata, user, locale, lang }) {
     await kira_apple_claims_set(userdata.id, []);
 
     if (h_claims.length > 0) {
+      
+      let too_much=false;
+      let too_amount=0;
+
       for (let i = 0; i < h_claims.length; i++) {
+        if (h_txt_claims.length>1750)
+        {
+          too_much=true;
+        }
+        if (too_much)
+        {
+          too_amount+=h_claims[i].added;
+        } else {
+          h_txt_claims +=
+            translate(lang, `cmd.apples.claim.${h_claims[i].type}`, h_claims[i]) +
+            "\n";
+        }
+      }
+
+      if (too_much)
+      {
         h_txt_claims +=
-          translate(lang, `cmd.apples.claim.${h_claims[i].type}`, h_claims[i]) +
-          "\n";
-        //h_apples_claimed += h_claims[i].added; //NHA : no more there
+          translate(lang, `cmd.apples.claim.too`, {'added': too_amount} ) + "\n";
       }
     }
   }

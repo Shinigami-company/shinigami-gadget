@@ -97,6 +97,7 @@
 "cmd.apples.claim.quest.done": "Tu as fais l'advancement $[name]   **+$[added]**",
 "cmd.apples.claim.coinflip.bet": "Tu as misé sur un pile ou face avec <@$[opponentId]>   **-$[removed]**",
 "cmd.apples.claim.coinflip.win": "**$[side]** : tu as gagné le pile ou face   **+$[added]**",
+"cmd.apples.claim.too": "...\nEt tu as fait d'autres trucs, mais j'ai la flemme de tout dire   **+$[added]**\nFait `/apple` plus souvent pour éviter ça",
 "cmd.apples.get.same": "Tu as **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.changed": "Tu as désormais **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.why": "Tu ne comprends pas pourquoi tu garde toutes ces pommes avec toi.",

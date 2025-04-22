@@ -84,6 +84,7 @@
 "cmd.apples.claim.quest.done": "You achieved $[name]  **+$[added]**",
 "cmd.apples.claim.coinflip.bet": "u bet wit <@$[opponentId]>   **-$[removed]**",
 "cmd.apples.claim.coinflip.win": "**$[side]** u won yay   **+$[added]**",
+"cmd.apples.claim.too": "...\nNd yts 2 much 4 didi to sai ya all   **+$[added]**\nDu `/apple` mr",
 "cmd.apples.get.same": "hav u **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.changed": "now hav u **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.why": "whi so apl",

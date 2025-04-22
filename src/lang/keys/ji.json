@@ -93,6 +93,7 @@
 "cmd.apples.claim.quest.done": "🎉$[name]   **+$[added]**",
 "cmd.apples.claim.coinflip.bet": "💰🪙🔄🆚<@$[opponentId]>   **-$[removed]**",
 "cmd.apples.claim.coinflip.win": "🪙🔄🍃**$[side]**➡️🏆💰   **+$[added]**",
+"cmd.apples.claim.too": "...\n🎞   **+$[added]**",
 "cmd.apples.get.same": "🫵$[emoji]",
 "cmd.apples.get.changed": "🫵$[emoji]",
 "cmd.apples.get.why": "🍎⁉",
