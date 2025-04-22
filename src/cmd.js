@@ -656,7 +656,10 @@ const commands_structure = {
       exe: cmd_pocket,
       checks: [[check_mailbox, true],
         [check_in_guild, true],
+        [check_is_clean, true],
         [check_can_alive, false],
+        [check_has_noDrop, true],
+        //[check_has_book, false],
       ],
     },
     register: {
@@ -3689,7 +3692,7 @@ async function cmd_kira({
   });
 
   //message/victim
-  const lang_victim = h_victim_data ? await lang_get(h_victim_data, undefined) : lang;
+  const lang_victim = h_victim_data ? await lang_get(h_victim_data, lang) : lang;
   if (h_will_ping_victim) {
     let firstTime = (h_victim_data.justCreated===true);
     try {
@@ -3890,7 +3893,7 @@ export async function cmd_kira_execute(data) {
   const lang = pack.lang_attacker ? pack.lang_attacker : pack.lang; //!
   //const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang; //!
   const h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
-  const lang_victim = h_victim_data ? await lang_get(h_victim_data, undefined) : lang;
+  const lang_victim = h_victim_data ? await lang_get(h_victim_data, lang) : lang;
   const userdata = await kira_user_get(user.id, true);
   const h_attacker_book = await kira_book_get(userdata.bookPtr.id);
   //handle special case : burned book
@@ -3986,7 +3989,7 @@ export async function cmd_kira_execute(data) {
       "cmd.kira.finish.attacker",
       { victimId: pack.victim_id, reason: pack.txt_reason }
     );
-    h_return_msg_victim.content = translate(lang_victim, "cmd.kira.finish.victim", {
+    h_return_msg_victim.content = translate(lang, "cmd.kira.finish.victim", {//was using lang_victim here but no more
       reason: pack.txt_reason,
     });
 
