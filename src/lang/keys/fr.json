@@ -1,5 +1,5 @@
 {
-"error.message.any": "Quelque chose s'est mal passé : `$[name]=$[message]`\nl'incident a été signalé au développeur",
+"error.message.any": "Quelque chose s'est mal passé : `$[name]=$[message]`\nl'incident a été signalé au développeur\nRéessayer devrait régler le problème.",
 "error.message.level.classic": "Quelque chose s'est mal passé : `$[name]=$[message]`\nmerci de le signaler au développeur si cela se réproduit",
 "error.message.level.critical": "Quelque chose s'est **TRÈS** mal passé : `$[name]=$[message]`\nl'incident a été signalé au développeur",
 "error.message.level.rare": "Quelque chose s'est ***étrangement*** mal passé : `$[name]=$[message]`\nmerci de donner plus de détails au développeur en utilisant `/feedback`",

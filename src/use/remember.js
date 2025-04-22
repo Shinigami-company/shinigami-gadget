@@ -110,7 +110,7 @@ async function kira_remember_checkup() {
       //console.log(` rem3mber : execute ${f_tasks.length} runs...`);
       for (let i = 0; i < f_tasks.length; i += 1) {
         console.log(
-          ` rem3mber : execute ${i} (taskType=${f_tasks[i].RememberingType}) : `,
+          ` rem3mber : execute ${i} (interval=${remember_interval_id},taskType=${f_tasks[i].RememberingType}) : `,
           f_tasks[i]
         );
         //remove the task from database

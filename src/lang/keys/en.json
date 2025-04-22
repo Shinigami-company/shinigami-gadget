@@ -1,5 +1,5 @@
 {
-"error.message.any": "Something went wrong : `$[name]=$[message]`\nincident has been reported to the developer",
+"error.message.any": "Something went wrong : `$[name]=$[message]`\nincident has been reported to the developer\nTrying again should fix the problem.",
 "error.message.level.classic": "Something went wrong : `$[name]=$[message]`\nif this happend again please report to the developer",
 "error.message.level.critical": "Something went **REALLY** wrong : `$[name]=$[message]`\nincident has been reported to the developer",
 "error.message.level.rare": "Something went ***strangely*** wrong : `$[name]=$[message]`\nplease give more context to the developer using `/feedback`",
