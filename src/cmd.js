@@ -2789,7 +2789,7 @@ async function cmd_apple({ userdata, user, locale, lang }) {
 
     //claim/event
     //!temporary
-    h_txt_claims += await kira_item_event_claim(userdata, user, "event_egg_2025", lang);
+    //h_txt_claims += await kira_item_event_claim(userdata, user, "event_egg_2025", lang);
 
     //claims/others
     const h_claims = await kira_apple_claims_get(userdata.id);
