@@ -95,6 +95,7 @@ export async function stats_simple_set(f_modelStatsId, f_statKey, f_statValue) {
   await api.KiraUserStats.update(f_modelStatsId, {
     [f_statKey]: f_statValue,
   });
+  return f_statValue;
 }
 
 //simply add to the value at a key to an stats model

@@ -86,6 +86,7 @@
 "cmd.burn.done": "**Tu as brûlé ton Death Note.** 🔥🔥🔥\nOn se reverra, humain·e.\n*Le shinigami disparait*",
 
 "cmd.apples.claim.daily": "Tu récupères ta pomme journalière !  **+$[added]**",
+"cmd.apples.claim.streak": "L'arbre récompense ta série de **$[day] jours** 🔥   **+$[added]**",
 "cmd.apples.claim.murderer": "Tu as tué **$[victim]**, meurtrier de $[kill] personnes !  **+$[added]**",
 "cmd.apples.claim.harmless": "Tu as tué **$[victim]**, c'était un humain plutôt inoffensif.  **+$[added]**",
 "cmd.apples.claim.admin.test": "Qldslmqsd  **+$[added]**",

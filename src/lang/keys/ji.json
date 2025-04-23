@@ -82,6 +82,7 @@
 "cmd.burn.done": "🔥<:book_black:1281258833271849050>🔥\n👋💨",
 
 "cmd.apples.claim.daily": "☀️🍎   **+$[added]**",
+"cmd.apples.claim.streak": "🌳**$[day]**🗓🔥   **+$[added]**",
 "cmd.apples.claim.murderer": "🫵🔪**$[victim]**👈🔪$[kill]👤   **+$[added]**",
 "cmd.apples.claim.harmless": "🫵🔪**$[victim]**👈😇   **+$[added]**",
 "cmd.apples.claim.admin.test": "🗯️   **+$[added]**",

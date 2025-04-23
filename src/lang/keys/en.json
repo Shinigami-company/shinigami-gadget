@@ -89,6 +89,7 @@
 "cmd.burn.done": "**You burnt your Death Note.** 🔥🔥🔥\nWell, see you later human.\n*The shinigami disappears*",
 
 "cmd.apples.claim.daily": "You claimed your daily apple!   **+$[added]**",
+"cmd.apples.claim.streak": "The tree reward your **$[day] days** streak 🔥   **+$[added]**",
 "cmd.apples.claim.murderer": "You killed **$[victim]**, murder of $[kill] human being!   **+$[added]**",
 "cmd.apples.claim.harmless": "You killed **$[victim]**, a pretty harmless guy   **+$[added]**",
 "cmd.apples.claim.admin.test": "Aldslmqsd   **+$[added]**",

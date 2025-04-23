@@ -77,6 +77,10 @@ export const sett_emoji_coin_throw = {
 
 //--commands--
 const dailyAmount = 1;
+const dailyStreakReward = [
+  {day:3,apple:1},
+  {day:7,apple:2},
+];
 
 function avangerAppleReward(killsOfVictim) {
   return parseInt(killsOfVictim ** 0.5); //squareroot
@@ -107,6 +111,7 @@ export const SETT_CMD = {
   apple: {
     dailyAmount,
     avangerAppleReward,
+    dailyStreakReward,
   },
   kira: {
     counterMax,

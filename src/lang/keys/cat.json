@@ -73,6 +73,7 @@
 "cmd.burn.done": "**U eat ur feather buk.** 🔥🔥🔥\nBye\n*Th shinigami get owt*",
 
 "cmd.apples.claim.daily": "u get a day appl!  **+$[added]**",
+"cmd.apples.claim.streak": "e tri get mr bcs **$[day] dai** flam 🔥   **+$[added]**",
 "cmd.apples.claim.murderer": "u kild **$[victim]**, murdr of $[kill] kitn!  **+$[added]**",
 "cmd.apples.claim.harmless": "u kild **$[victim]**, a cool kitty  **+$[added]**",
 "cmd.apples.claim.test": "Mrwayrerawew  **+$[added]**",

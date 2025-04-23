@@ -2764,6 +2764,7 @@ async function cmd_apple({ userdata, user, locale, lang }) {
       );
       const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
 
+      //if (true) {//!
       if (h_dayGapDiff != 0) {
         //claim you daily
         await kira_user_set_daily(userdata.id);
@@ -2774,19 +2775,42 @@ async function cmd_apple({ userdata, user, locale, lang }) {
         ); //!no claim message because rigth here
         h_apples_claimed += SETT_CMD.apple.dailyAmount;
         h_txt_claims +=
-          translate(lang, `cmd.apples.claim.daily`, { added: 1 }) + "\n";
+          translate(lang, `cmd.apples.claim.daily`, { added: SETT_CMD.apple.dailyAmount }) + "\n";
+
+        //streak
+        //+stats
+        const streak_day =
+          //(h_dayGapDiff === 1 || !h_dayGapDiff)//!
+          (h_dayGapDiff === 1)
+            ? await stats_simple_add(userdata.statPtr.id, "streak_appleDay")
+            : await stats_simple_set(
+                userdata.statPtr.id,
+                "streak_appleDay",
+                1
+              );
+        
+        let streak_apple=0;
+        for (let dic of SETT_CMD.apple.dailyStreakReward)
         {
-          //+stats
-          const stat =
-            h_dayGapDiff === 1
-              ? await stats_simple_add(userdata.statPtr.id, "streak_appleDay")
-              : await stats_simple_set(
-                  userdata.statPtr.id,
-                  "streak_appleDay",
-                  0
-                );
-          //await Achievement.list["appleDailyStreak"].do_check(userdata, stat, lang);
+          if (dic.day<=streak_day)
+          {
+            streak_apple=dic.apple;
+          }
         }
+
+        if (streak_apple>0)
+        {
+          await kira_user_set_daily(userdata.id);
+          await kira_apple_send(
+            userdata.id,
+            streak_apple,
+            userdata.statPtr.id
+          ); //!no claim message because rigth here
+          h_apples_claimed += streak_apple;
+          h_txt_claims +=
+            translate(lang, `cmd.apples.claim.streak`, { added: streak_apple, day: streak_day }) + "\n";
+        }
+        //await Achievement.list["appleDailyStreak"].do_check(userdata, stat, lang);
       }
     }
 
