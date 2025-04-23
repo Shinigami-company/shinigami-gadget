@@ -3829,7 +3829,7 @@ async function cmd_kira({
       note_id: h_note.id,
 
       lang_attacker: lang,
-      //lang_victim: lang_victim,
+      lang_victim: lang_victim,//used for counter
 
       will_ping_victim: h_will_ping_victim,
       will_ping_attacker: h_will_ping_attacker,
@@ -3889,18 +3889,20 @@ export async function cmd_kira_execute(data) {
   }
 
   //datas reading again
-  const user = await DiscordUserById(pack.attacker_id); //!
-  const lang = pack.lang_attacker ? pack.lang_attacker : pack.lang; //!
-  //const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang; //!
+  const user = await DiscordUserById(pack.attacker_id);
+  const lang = pack.lang_attacker;
   const h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
   const lang_victim = h_victim_data ? await lang_get(h_victim_data, lang) : lang;
   const userdata = await kira_user_get(user.id, true);
   const h_attacker_book = await kira_book_get(userdata.bookPtr.id);
+  //const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang_attacker; //old
+
   //handle special case : burned book
   const h_will_book =
     h_attacker_book && h_attacker_book.id === pack.attacker_book_id;
 
   //run delete
+  console.log(` kira : deleting... (runId=${data.runId})`);
   await kira_run_delete(data.runId, h_victim_data?.id);
   console.log(` kira : deleted. (runId=${data.runId})`);
 
@@ -4174,9 +4176,9 @@ export async function cmd_kira_cancel(data) {
   }
 
   //datas reading again
-  const user = DiscordUserById(pack.attacker_id); //!
-  const lang = pack.lang_attacker ? pack.lang_attacker : pack.lang; //!
-  const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang; //!
+  const lang = pack.lang_attacker;
+  const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang_attacker;
+  //const user = await DiscordUserById(pack.attacker_id);
   // let h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail);//needed to know if alive
 
   //run delete
