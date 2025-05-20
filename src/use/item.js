@@ -33,7 +33,7 @@ export const items_info = {
   },
 }
 
-export async function kira_item_create(userdataId, itemId, dolarValues = {}, metaDataValues) {
+export async function kira_item_create(userdataId, itemId, dolarValues = {}, metaDataValues = {}, returnClaimMsg=false) {
 
   let itemLoreTxt = undefined;
   let itemLoreDict = {};
@@ -52,7 +52,7 @@ export async function kira_item_create(userdataId, itemId, dolarValues = {}, met
     itemLoreTxt = translate(lang, "item."+itemId+".lore", dolarValues);
   }
 
-  await api.KiraItems.create({
+  const pen=await api.KiraItems.create({
     ownerPtr: {
       _link: userdataId,
     },
@@ -62,9 +62,11 @@ export async function kira_item_create(userdataId, itemId, dolarValues = {}, met
     meta: metaDataValues
   });
   
-  return (items_info[itemId].message_claim) 
-  ? translate(lang, "item."+itemId+".claim", dolarValues)+"\n"
-  : "";
+  return (returnClaimMsg) 
+  ? (items_info[itemId].message_claim) 
+    ? translate(lang, "item."+itemId+".claim", dolarValues)+"\n"
+    : ""
+  : pen;
 }
 
 export async function kira_items_find(userdataId, itemId) {

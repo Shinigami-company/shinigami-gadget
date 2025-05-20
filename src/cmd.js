@@ -143,6 +143,7 @@ import { webhook_reporter } from "./use/post.js";
 import { channel } from "diagnostics_channel";
 import { error } from "console";
 import { register } from "module";
+import { pen_create, pen_equip, pen_get } from "./use/pen.js";
 
 
 //the structure to describe the command
@@ -3537,6 +3538,25 @@ async function cmd_kira({
     throw error;
   }
 
+
+  // create it if has never got a pen
+  if (penItemId=="-1")
+  {
+    const pen=await pen_create(userdata.id, "pen_black")
+    console.log("pen created:",pen);
+    await pen_equip(userdata.id, pen.id);
+  }
+  let h_attacker_pen = await pen_get(userdata.equipedPen);
+  if (!h_attacker_pen)
+  {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.kira.fail.nopen"),
+      },
+    };
+  }
+
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
 
   if (!h_will_fail) {
@@ -3733,7 +3753,8 @@ async function cmd_kira({
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
     line: "```"+h_line+"```",
-    penmoji: "🪶" 
+    penmoji: h_attacker_pen.atr.emoji
+    //penmoji: "🪶a"
   });
 
   //message/victim

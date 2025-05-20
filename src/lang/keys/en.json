@@ -188,6 +188,7 @@
 "cmd.kira.fail.bot": "A bot is not alive, and so cant be dead.",
 "cmd.kira.fail.suicide": "Suicide is disabled for now.",
 "cmd.kira.fail.droped": "This person has been forgotten for the moment.",
+"cmd.kira.fail.nopen": "You dont have a pen. Buy it one.",
 "cmd.kira.fail.maxcombo": "You cant continue a combo above **$[max]** exchanges.",
 "cmd.kira.fail.remind": "You remind me that I had to kill them.",
 "cmd.kira.fail.text.max": "This is too long to be written.",

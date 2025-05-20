@@ -23,7 +23,7 @@ export const pen_atr = {
 
 export async function pen_create(userdataId, penItemId)
 {
-  await kira_item_create(userdataId, penItemId, {}, {durability: pen_atr[penItemId].max_durability});
+  return await kira_item_create(userdataId, penItemId, {}, {durability: pen_atr[penItemId].max_durability}, false);
 }
 
 export async function pen_equip(userdataId, penItemId)
@@ -34,6 +34,7 @@ export async function pen_equip(userdataId, penItemId)
 export async function pen_get(penItemId)
 {
   let pen=await kira_item_find(penItemId);
+  if (!pen) return undefined;
   pen.atr=pen_atr[pen.itemId];
   return pen;
 }
