@@ -31,3 +31,10 @@ export enum userBanType {
   PERMA = 1,
   TEMP = 2,
 }
+
+export enum itemType {
+  PEN = 3,
+  COLLECTOR = 4,
+  CONSOMABLE = 5,
+  MISC = 6,
+}

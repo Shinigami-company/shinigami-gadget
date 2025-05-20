@@ -2071,11 +2071,16 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
         //  console.timeEnd("test:cost");
         //}
 
-        throw EvalError("found a cat in the code");
+        //throw EvalError("found a cat in the code");
 
         //{
         //  r = Achievement.list["counter"].level_graduate(arg_amount);
         //}
+
+        
+        {
+          r = `\`\`ansi\n[2;31m${arg_texto}[0m\`\`\``;
+        }
 
         return {
           method: "PATCH",
@@ -3214,8 +3219,22 @@ async function cmd_see({ data, userbook, lang }) {
   let h_content = "";
   let t_delim = "";
   for (let i = 0; i < h_lines.length; i++) {
-    if (h_lines[i]) h_content += t_delim + h_lines[i].line.markdown;
-    else h_content += t_delim + "—————————————————————";
+
+    let text = "—————————————————————————";
+    if (h_lines[i])
+    {
+      text = h_lines[i].line.markdown;
+      if (text[0] == "*" && text[1] == "*" && text[text.length-1] == "*" && text[text.length-2] == "*")
+      {
+        text = "[1;2m" + text.slice(2,text.length-2) + "[0m";
+      }
+      if (text[0] == "*" && text[text.length-1] == "*")
+      {
+        text = "[4;2m" + text.slice(1,text.length-1) + "[0m";
+      }
+    }
+    
+    h_content += t_delim + text;
     t_delim = "\n";
   }
 
@@ -3226,7 +3245,8 @@ async function cmd_see({ data, userbook, lang }) {
       embeds: [
         {
           color: book_colors[lookedbook.color].int,
-          description: `${h_content}`,
+          //description: h_content,
+          description: `\`\`\`ansi\n${h_content}\`\`\``,
           footer: {
             text: `${show_page} / ${last_page}`,
           },
@@ -3712,7 +3732,8 @@ async function cmd_kira({
 
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
-    line: h_line,
+    line: "```"+h_line+"```",
+    penmoji: "🪶" 
   });
 
   //message/victim

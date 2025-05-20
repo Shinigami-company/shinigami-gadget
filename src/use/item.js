@@ -1,25 +1,70 @@
+import { equal } from "assert";
 import { api } from "gadget-server";
+import { itemType } from "../enum";
 
 export const items_info = {
   event_egg_2025: {
+    type: itemType.COLLECTOR,
     message_claim: true,
     message_lore: true,
     dolarsPath: [
       "user.id",
       "user.username"
-    ]
-  }
+    ],
+  },
+
+
+  pen_black: {
+    type: itemType.PEN,
+    message_claim: false,
+    message_lore: true,
+  },
+
+  pen_red: {
+    type: itemType.PEN,
+    message_claim: false,
+    message_lore: true,
+  },
+  
+  feather_white: {
+    type: itemType.PEN,
+    message_claim: false,
+    message_lore: true,
+  },
 }
 
-export async function kira_item_create(userdataId, itemId, itemLoreTxt, itemLoreArray) {
-  return await api.KiraItems.create({
+export async function kira_item_create(userdataId, itemId, dolarValues = {}, metaDataValues) {
+
+  let itemLoreTxt = undefined;
+  let itemLoreDict = {};
+  if (items_info[itemId].message_lore)
+  {
+    for (let fullKey of items_info[itemId].dolarsPath)
+    {
+      const path = fullKey.split(".");
+      let getting = dolarValues;
+
+      for (let p of path) {
+        getting = getting?.[p];
+      }
+      itemLoreDict[fullKey]=getting;
+    }
+    itemLoreTxt = translate(lang, "item."+itemId+".lore", dolarValues);
+  }
+
+  await api.KiraItems.create({
     ownerPtr: {
       _link: userdataId,
     },
     itemId,
     itemLoreTxt: {markdown: itemLoreTxt},
-    itemLoreArray
+    itemLoreDict,
+    meta: metaDataValues
   });
+  
+  return (items_info[itemId].message_claim) 
+  ? translate(lang, "item."+itemId+".claim", dolarValues)+"\n"
+  : "";
 }
 
 export async function kira_items_find(userdataId, itemId) {
@@ -30,6 +75,22 @@ export async function kira_items_find(userdataId, itemId) {
       },
       itemId: (itemId) ? {equals: itemId} : undefined
     }
+  });
+}
+
+export async function kira_item_page(userdataId, page) {
+  //! not woking
+  return await api.KiraItems.findMany({
+    filter: [{
+      ownerPtr: {
+        equals: userdataId,
+      },
+    },
+    {
+      indexLine: {
+        equal: page,
+      },
+    }]
   });
 }
 

@@ -75,11 +75,34 @@ export const sett_emoji_coin_throw = {
   name: "🪙", //coin
 };
 
+export const sett_emoji_pens = {
+  black: {
+    name: "pen_black",
+    id: "1374354563032940627",
+  },
+  blue: {
+    name: "pen_blue",
+    id: "1374353917768503326",
+  },
+  red: {
+    name: "pen_red",
+    id: "1374353922298351738",
+  },
+  green: {
+    name: "pen_green",
+    id: "1374353919786094683",
+  },
+  feather: {
+    name: "feather_white",
+    id: "1374353915675545770",
+  }
+};
+
 //--commands--
 const dailyAmount = 1;
 const dailyStreakReward = [
   {day:3,apple:1},
-  {day:7,apple:2},
+  //{day:7,apple:2},
 ];
 
 function avangerAppleReward(killsOfVictim) {

@@ -182,7 +182,7 @@
 "cmd.kira.start.mp.victim.pay.fullwhere": "$[price] - were?",
 "cmd.kira.start.mp.attacker.pay.delmsg": "$[price] - no prof",
 "cmd.kira.start.mp.attacker": "<@$[victimId]> ded in $[time]...",
-"cmd.kira.start.guild": "<@$[attackerId]> put in **feather buk** :\n`$[line]` 🪶",
+"cmd.kira.start.guild": "<@$[attackerId]> put in **feather buk** : $[penmoji]\n$[line]",
 "cmd.kira.warn.nomp": ":warning: <@$[userId]> dknw bcs wanna no msg",
 "cmd.kira.fail.shini": "mrw, nt mi",
 "cmd.kira.fail.notplayer": "but ys nt playr",

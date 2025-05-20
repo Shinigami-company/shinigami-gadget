@@ -43,6 +43,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       statPtr: { id: true },
       achivPtr: { id: true },
       bookPtr: { id: true },
+      equipedPen: { id: true },
     },
   });
   if (!userdata)

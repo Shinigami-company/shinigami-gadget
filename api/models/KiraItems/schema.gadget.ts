@@ -7,13 +7,19 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "ajFsJt-RW_nN",
   fields: {
+    equiperPtr: {
+      type: "belongsTo",
+      parent: { model: "KiraUsers" },
+      storageKey: "MaKMWTrmQLBp",
+    },
     itemId: { type: "string", storageKey: "J3mHD1CwWgaL" },
-    itemLoreArray: {
+    itemLoreDict: {
       type: "json",
-      default: [],
+      default: {},
       storageKey: "oyuOM_XoAOry",
     },
     itemLoreTxt: { type: "richText", storageKey: "BR9ljaH87ShH" },
+    meta: { type: "json", default: {}, storageKey: "hH4HSdLsgis9" },
     ownerPtr: {
       type: "belongsTo",
       parent: { model: "KiraUsers" },
