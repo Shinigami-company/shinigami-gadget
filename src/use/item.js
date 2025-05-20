@@ -1,6 +1,7 @@
 import { equal } from "assert";
 import { api } from "gadget-server";
 import { itemType } from "../enum";
+import { translate } from "../lang";
 
 export const items_info = {
   event_egg_2025: {
@@ -33,21 +34,24 @@ export const items_info = {
   },
 }
 
-export async function kira_item_create(userdataId, itemId, dolarValues = {}, metaDataValues = {}, returnClaimMsg=false) {
+export async function kira_item_create(userdataId, lang, itemId, dolarValues = {}, metaDataValues = {}, returnClaimMsg=false) {
 
   let itemLoreTxt = undefined;
   let itemLoreDict = {};
   if (items_info[itemId].message_lore)
   {
-    for (let fullKey of items_info[itemId].dolarsPath)
+    if (items_info[itemId].dolarsPath)
     {
-      const path = fullKey.split(".");
-      let getting = dolarValues;
+      for (let fullKey of items_info[itemId].dolarsPath)
+      {
+        const path = fullKey.split(".");
+        let getting = dolarValues;
 
-      for (let p of path) {
-        getting = getting?.[p];
+        for (let p of path) {
+          getting = getting?.[p];
+        }
+        itemLoreDict[fullKey]=getting;
       }
-      itemLoreDict[fullKey]=getting;
     }
     itemLoreTxt = translate(lang, "item."+itemId+".lore", dolarValues);
   }
@@ -96,13 +100,26 @@ export async function kira_item_page(userdataId, page) {
   });
 }
 
-export async function kira_item_find(userdataId, itemId) {
+// get by string id
+export async function kira_item_find(userdataId, itemNameId) {
   return await api.KiraItems.maybeFindFirst({
     filter: {
       ownerPtr: {
         equals: userdataId,
       },
-      itemId: (itemId) ? {equals: itemId} : undefined
+      itemId: (itemNameId) ? {equals: itemNameId} : undefined
+    }
+  });
+}
+
+// get by numeric id
+export async function kira_item_get(userdataId, itemId) {
+  return await api.KiraItems.maybeFindFirst({
+    filter: {
+      ownerPtr: {
+        equals: userdataId,
+      },
+      id: {equals: itemId}
     }
   });
 }

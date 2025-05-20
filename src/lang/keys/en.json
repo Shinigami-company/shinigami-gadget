@@ -201,7 +201,7 @@
 "cmd.kira.start.mp.victim.pay.fullwhere": "$[price] - where?",
 "cmd.kira.start.mp.attacker.pay.delmsg": "$[price] - delete the message",
 "cmd.kira.start.mp.attacker": "<@$[victimId]> will be hit in $[time]...",
-"cmd.kira.start.guild": "<@$[attackerId]> write in their **Death Note** : $[penmoji]\n$[line]",
+"cmd.kira.start.guild": "<@$[attackerId]> write in their **Death Note** $[penmoji]\n$[line]",
 "cmd.kira.warn.nomp": ":warning: <@$[userId]> wasn't informed because their mp are closed.",
 "cmd.kira.fail.shini": "Nice try, but a god of death is immune to Death Note.",
 "cmd.kira.fail.notplayer": "But he is not playing.",

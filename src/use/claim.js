@@ -10,5 +10,5 @@ export async function kira_item_event_claim(userdata, user, itemId, lang) {
 
   const dolarValues = { userdata, user };
 
-  return await kira_item_create(userdata.id, itemId, dolarValues);
+  return await kira_item_create(userdata.id, lang, itemId, dolarValues);
 }

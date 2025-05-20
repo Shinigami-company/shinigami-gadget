@@ -143,7 +143,7 @@ import { webhook_reporter } from "./use/post.js";
 import { channel } from "diagnostics_channel";
 import { error } from "console";
 import { register } from "module";
-import { pen_create, pen_equip, pen_get } from "./use/pen.js";
+import { pen_create, pen_equip, pen_get, pen_use } from "./use/pen.js";
 
 
 //the structure to describe the command
@@ -3538,23 +3538,35 @@ async function cmd_kira({
     throw error;
   }
 
-
-  // create it if has never got a pen
-  if (penItemId=="-1")
+  let pen_ptr=userdata.equipedPen;
+  if (!pen_ptr)
   {
-    const pen=await pen_create(userdata.id, "pen_black")
-    console.log("pen created:",pen);
-    await pen_equip(userdata.id, pen.id);
+    if (await stats_simple_get(
+        userdata.statPtr.id,
+        "ever_pen"
+      ))
+    { // fail because of no pen
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, "cmd.kira.fail.nopen"),
+        },
+      };
+    }
+    else
+    { // create it if has never got a pen
+      console.log("create and equip a first new pen for",user.username);
+      const pen=await pen_create(userdata.id, lang, "pen_black");
+      await pen_equip(userdata.id, pen);
+      pen_ptr=pen;
+    }
+   
   }
-  let h_attacker_pen = await pen_get(userdata.equipedPen);
+  let h_attacker_pen = await pen_get(userdata.id, pen_ptr.id);
   if (!h_attacker_pen)
   {
-    return {
-      method: "PATCH",
-      body: {
-        content: translate(lang, "cmd.kira.fail.nopen"),
-      },
-    };
+    await pen_equip(userdata.id, undefined);
+    throw Error("There is a pen but there is no pen.");
   }
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
@@ -3693,6 +3705,7 @@ async function cmd_kira({
   //checked !
 
   //validate writting
+  await pen_use(h_attacker_pen);
   const h_dayGap = time_day_gap(userbook.updatedAt, locale, true, true);
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
   const h_note = await kira_line_append(userbook, h_line, h_dayGap);
@@ -3753,7 +3766,7 @@ async function cmd_kira({
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
     line: "```"+h_line+"```",
-    penmoji: h_attacker_pen.atr.emoji
+    penmoji: `<:${h_attacker_pen.atr.emoji.name}:${h_attacker_pen.atr.emoji.id}>`
     //penmoji: "🪶a"
   });
 

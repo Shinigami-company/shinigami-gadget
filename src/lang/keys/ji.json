@@ -191,7 +191,7 @@
 "cmd.kira.start.mp.victim.pay.fullwhere": "$[price] - 🏘️",
 "cmd.kira.start.mp.attacker.pay.delmsg": "$[price] - 🗑️⬅️📰",
 "cmd.kira.start.mp.attacker": "<@$[victimId]>👈💀⏲️$[time]",
-"cmd.kira.start.guild": "<@$[attackerId]>$[penmoji]📖:\n$[line]",
+"cmd.kira.start.guild": "<@$[attackerId]>$[penmoji]📖\n$[line]",
 "cmd.kira.warn.nomp": ":warning:<@$[userId]>🗳️🔕",
 "cmd.kira.fail.shini": "👈🚫💀",
 "cmd.kira.fail.notplayer": "👤👉🙅",

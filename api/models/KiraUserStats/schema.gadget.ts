@@ -15,6 +15,7 @@ export const schema: GadgetModel = {
     do_try: { type: "number", storageKey: "-IHJS3dZcG1h" },
     ever_apple: { type: "number", storageKey: "mueABtRLk2rY" },
     ever_book: { type: "number", storageKey: "u0u9Zfy3zBZK" },
+    ever_pen: { type: "number", storageKey: "dfXHraC_-WoJ" },
     ever_test: { type: "number", storageKey: "1qzux-ugEPd0" },
     game_coinPlay: { type: "number", storageKey: "sVljNWfruivH" },
     game_coinWin: { type: "number", storageKey: "MnFcyFmgn6Q5" },
