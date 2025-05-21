@@ -20,8 +20,26 @@ export const items_info = {
     message_claim: false,
     message_lore: true,
   },
+  
+  pen_blue: {
+    type: itemType.PEN,
+    message_claim: false,
+    message_lore: true,
+  },
+  
+  pen_green: {
+    type: itemType.PEN,
+    message_claim: false,
+    message_lore: true,
+  },
 
   pen_red: {
+    type: itemType.PEN,
+    message_claim: false,
+    message_lore: true,
+  },
+  
+  pen_purple: {
     type: itemType.PEN,
     message_claim: false,
     message_lore: true,

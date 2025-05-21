@@ -92,6 +92,10 @@ export const sett_emoji_pens = {
     name: "pen_green",
     id: "1374353919786094683",
   },
+  purple: {
+    name: "pen_purple",
+    id: "1374590353109422141",
+  },
   feather: {
     name: "feather_white",
     id: "1374353915675545770",

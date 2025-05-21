@@ -8,10 +8,25 @@ export const pen_atr = {
     max_durability: 10,
     filters: [],
   },
+  pen_blue: {
+      emoji: sett_emoji_pens.blue,
+      max_durability: 5,
+      filters: ["blue"],
+  },
+  pen_green: {
+      emoji: sett_emoji_pens.green,
+      max_durability: 5,
+      filters: ["green"],
+  },
   pen_red: {
       emoji: sett_emoji_pens.red,
       max_durability: 5,
       filters: ["red"],
+  },
+  pen_purple: {
+      emoji: sett_emoji_pens.purple,
+      max_durability: 5,
+      filters: ["purple"],
   },
   feather_white: {
       emoji: sett_emoji_pens.feather,
@@ -23,6 +38,9 @@ export const pen_atr = {
 
 export const pen_filters = {
   red: (text) => `[2;31m${text}[0m`,
+  blue: (text) => `[2;34m${text}[0m`,
+  green: (text) => `[2;32m${text}[0m`,
+  purple: (text) => `[2;35m${text}[0m`,
 }
 
 export async function pen_create(userdataId, lang, penItemId)
