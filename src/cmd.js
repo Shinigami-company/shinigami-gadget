@@ -650,6 +650,7 @@ const commands_structure = {
     functions: {
       exe: cmd_see,
       checks: [[check_mailbox, true],
+        [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -688,6 +689,7 @@ const commands_structure = {
     functions: {
       exe: cmd_pocket,
       checks: [[check_mailbox, true],
+        [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -710,7 +712,7 @@ const commands_structure = {
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
-        [check_react_is_self, false],
+        [check_react_is_self, true],
         [check_has_noDrop, true],
         [check_has_book, false],
       ],
@@ -3471,7 +3473,9 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
    
   if (item_components.length>0)
   {
-    components.push({
+    //components.push({
+    components.push(components[0])
+    components[0]=({
       type: MessageComponentTypes.ACTION_ROW,
       components: item_components
     })
