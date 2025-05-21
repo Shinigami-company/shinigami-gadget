@@ -132,7 +132,7 @@ import {
 } from "./tools.js"; // tools
 
 import { kira_item_event_claim } from "./use/claim.js";
-import { items_info, kira_item_drop, kira_item_get, kira_items_ids } from "./use/item.js";
+import { items_info, kira_item_delete, e, kira_item_get, kira_items_ids, kira_item_gift_send, kira_item_gift_pick, kira_item_title, kira_item_gift_get } from "./use/item.js";
 
 import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
@@ -672,7 +672,6 @@ const commands_structure = {
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
-        //[check_has_book, false],
       ],
     },
     register: {
@@ -694,13 +693,65 @@ const commands_structure = {
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
-        //[check_has_book, false],
       ],
     },
     atr: {
       defered: deferedActionType.WAIT_UPDATE,
       systemOnly: true,
     },
+  },
+
+  gift: {
+    register: {
+      name: "gift",
+      description: "Gift one of your item or some apples.",
+      //contexts: [0],//!disabled
+      type: 1,
+    },
+    functions: {
+      exe: cmd_gift,
+      checks: [[check_mailbox, true],
+        [check_react_is_self, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+      ephemeral: true,
+    }
+  },
+  giftsend: {
+    functions: {
+      exe: cmd_gift,
+      checks: [[check_mailbox, true],
+        [check_react_is_self, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    }
+  },
+  giftclaim: {
+    functions: {
+      exe: cmd_gift_claim,
+      checks: [[check_mailbox, true],
+        [check_react_is_self, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_UPDATE,
+    }
   },
 
 
@@ -1527,8 +1578,8 @@ function check_react_is_self({ lang, user, type, message }) {
   );
   if (
     type === InteractionType.MESSAGE_COMPONENT &&
-    //message.interaction_metadata.user.id !== user.id
-    message.interaction.user.id !== user.id
+    message.interaction_metadata.user.id !== user.id
+    //message.interaction.user.id !== user.id (does not works for userselect button)
   ) {
     return {
       content: translate(lang, "check.react.self.not"),
@@ -3394,9 +3445,9 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
       const already = (userdata.equipedPen?.id===item_selected.id);
       fields.push(
         {
-          name: translate(lang, "item."+item_selected.itemId+".name") + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
+          name: kira_item_title(lang, item_selected.itemName) + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
           value: item_selected.itemLoreTxt.markdown
-        //value: translate(lang, "item."+item_selected.itemId+".lore", item_selected.itemLoreDict)
+        //value: kira_item_title(lang, item_selected.itemName), item_selected.itemLoreDict)
         }
       )
     }
@@ -3407,12 +3458,12 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     const already = (userdata.equipedPen?.id===item_selected.id);
     fields.push(
       {
-        name: translate(lang, "item."+item_selected.itemId+".name") + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
+        name: kira_item_title(lang, item_selected.itemName) + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
         value: item_selected.itemLoreTxt.markdown
       }
     );
 
-    if (items_info[item_selected.itemId].type === itemType.PEN)
+    if (items_info[item_selected.itemName].type === itemType.PEN)
     {
       let already = (userdata.equipedPen?.id===item_selected.id);
       console.log("already?",already,`(${userdata.equipedPen?.id}===${item_selected.id})`);
@@ -3435,7 +3486,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
 
     if (droped) 
     {
-      await kira_item_drop(userdata.id, item_selected.id);
+      await kira_item_delete(userdata.id, item_selected.id);
     }
     item_components.push(
       {
@@ -3499,6 +3550,165 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     }
   }
 }
+//#gift
+async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
+
+  let item_id = data.options?.find((opt) => opt.name === "itemid")?.value;
+  let gifted_id = data.options?.find((opt) => opt.name === "giftedid")?.value;
+
+  if (message) {
+    await DiscordRequest(
+      `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
+      {
+        method: "PATCH",
+        body: {
+          components: [],
+        },
+      }
+    );
+  }
+  
+  if (!item_id)
+  {
+    const items_all = await kira_items_ids(userdata.id);
+    let buttons = [];
+    for (let item of items_all) {
+      buttons.push({
+        value: item.id,
+        emoji: items_info[item.itemName].emoji,
+        label: kira_item_title(lang, item.itemName, false)
+      });
+    }
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.gift.pick.item"),
+        components: [
+          {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+              {
+                type: MessageComponentTypes.STRING_SELECT,
+                options: buttons,
+                custom_id: `makecmd gift <value>`,
+                label: translate(lang, "cmd.pocket.gift.button.claim"),
+                style: ButtonStyleTypes.PRIMARY,
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+
+  const item = await kira_item_get(userdata.id, item_id);
+  console.log("ITEM3:",item);
+
+  if (!gifted_id)
+  {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.gift.pick.user", {itemTitle: kira_item_title(lang, item.itemName, false)}),
+        components: [
+          {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+              {
+                type: MessageComponentTypes.USER_SELECT,
+                custom_id: `makecmd giftsend ${item_id}+<value>`,
+                placeholder: translate(lang, "cmd.gift.pick.user.place"),
+              }
+            ]
+          },
+          {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+              {
+                type: MessageComponentTypes.BUTTON,
+                custom_id: `makecmd giftsend ${item_id}+@everyone`,
+                label: translate(lang, "cmd.gift.pick.user.all"),
+                style: ButtonStyleTypes.PRIMARY,
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+
+  const recipientId = (gifted_id==="@everyone") ? undefined : gifted_id;
+
+  const itemgiftObj = await kira_item_gift_send(item_id, userdata.id, userdata.userId, recipientId);
+  console.log("GIFT3:",itemgiftObj);
+  return {
+    method: "PATCH",
+    body: {
+      content: translate(lang, "cmd.gift.post.content."+ ((recipientId) ? "one" : "everyone"), {gifterId: userdata.userId, giftedId: recipientId}),
+      components: [
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: [
+            {
+              type: MessageComponentTypes.BUTTON,
+              custom_id: `makecmd giftclaim ${itemgiftObj.id}`,
+              label: translate(lang, "cmd.gift.post.button.claim"),
+              style: ButtonStyleTypes.SUCCESS,
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+
+async function cmd_gift_claim({ data, userdata, lang, message, token }) {
+  let gift_id = data.options?.find((opt) => opt.name === "itemid")?.value;
+  const gift = await kira_item_gift_get(gift_id);
+
+  // checks
+  if (!gift)
+  {
+    return {
+      method: "POST",
+      body: {
+        content: translate(lang, "cmd.giftclaim.fail.disapear"),
+      }
+    }
+  }
+  if (gift.userIdRecipient) 
+  {
+    if (gift.userIdRecipient!==userdata.id)
+    {
+      //(gift.userIdOwner===userdata.id)
+      return {
+        method: "POST",
+        body: {
+          content: translate(lang, "cmd.giftclaim.fail.notu"),
+        }
+      }
+    }
+  }
+
+  console.log("GIFT4:",gift);
+
+  await kira_item_gift_pick(gift, userdata.id);
+  
+  const item = await kira_item_get(userdata.id, gift.itemPtrId);
+  console.log("ITEM4:",item);
+  {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.giftclaim.sucess", 
+        {gifterId: gift.userIdOwner, giftedId: userdata.userId, itemTitle: kira_item_title(lang, item.itemName)}),
+        components: []
+      }
+    }
+  }
+}
+
 
 //#drop command
 async function cmd_drop({ data, token, userdata, message, lang }) {
@@ -3514,6 +3724,26 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
   else {
     //send
     {
+      let buttons = [];
+      for (let i in sett_catalog_drops) {
+        const v = sett_catalog_drops[i];
+        buttons.push({
+          value: String(i),
+          emoji: sett_emoji_apple_croc,
+          label: translate(lang, `cmd.drop.shop.button.label`, {
+            price: v.price,
+            time: time_format_string_from_int(v.span, lang),
+            unit: translate(
+              lang,
+              `word.apple${v.price > 1 ? "s" : ""}`
+            ),
+          }),
+          description:
+            userdata.apples < v.price
+              ? translate(lang, `cmd.drop.shop.button.poor`)
+              : null,
+        });
+      }
       return {
         method: "PATCH",
         body: {
@@ -3526,29 +3756,7 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
                   type: MessageComponentTypes.STRING_SELECT,
                   custom_id: `makecmd drop <value>`, //"<value>" will be replaced with "value:" from button selected
                   placeholder: translate(lang, "cmd.drop.shop.sentence"),
-                  options: (() => {
-                    let buttons = [];
-                    for (let i in sett_catalog_drops) {
-                      const v = sett_catalog_drops[i];
-                      buttons.push({
-                        value: String(i),
-                        emoji: sett_emoji_apple_croc,
-                        label: translate(lang, `cmd.drop.shop.button.label`, {
-                          price: v.price,
-                          time: time_format_string_from_int(v.span, lang),
-                          unit: translate(
-                            lang,
-                            `word.apple${v.price > 1 ? "s" : ""}`
-                          ),
-                        }),
-                        description:
-                          userdata.apples < v.price
-                            ? translate(lang, `cmd.drop.shop.button.poor`)
-                            : null,
-                      });
-                    }
-                    return buttons;
-                  })(),
+                  options: buttons,
                 },
               ],
             },
@@ -3865,7 +4073,7 @@ async function cmd_kira({
     reason: h_txt_reason,
     time: h_txt_span,
   });
-  h_line = pen_apply_filters(h_line, h_attacker_pen.itemId)
+  h_line = pen_apply_filters(h_line, h_attacker_pen.itemName)
 
   if (h_line.length > 256 && !userdata.is_god) {
     //54*3 : 3 less than lines

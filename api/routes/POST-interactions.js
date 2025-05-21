@@ -160,9 +160,26 @@ export default async function route({ request, reply, api, logger, connections }
           //2 : equip
           //3 : drop
           //4 : confirm drop
-          data = { name: 'pocket_edit', options: [{ name: ((determinant!=0) ? 'page' : 'nopage'), type: 4, value: parseInt(h_arg[1]) },
-          { name: 'equipit', type: 4, value: (determinant==2 ? 1 : 0) },
-          { name: 'dropit', type: 4, value: (determinant==3 ? 1 : determinant==4 ? 2 : 0) }] };
+          data = { name: 'pocket_edit', options: [{ name: ((determinant!=0) ? 'page' : 'nopage'), value: parseInt(h_arg[1]) },
+          { name: 'equipit', value: (determinant==2 ? 1 : 0) },
+          { name: 'dropit', value: (determinant==3 ? 1 : determinant==4 ? 2 : 0) }] };
+        } break;
+
+        case ("gift"):
+        case ("giftsend"):
+        {
+          data = { name: h_cmd, 
+          options: [
+            { name: 'itemid', value: parseInt(h_arg[0])}, 
+            { name: 'giftedid', value: h_arg.length>1 ? h_arg[1] : undefined}
+          ]}
+        } break;
+        case ("giftclaim"):
+        {
+          data = { name: 'giftclaim', 
+          options: [
+            { name: 'giftid', value: parseInt(h_arg[0])},
+          ]}
         } break;
 
         case ("see"):

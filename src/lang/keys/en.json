@@ -108,16 +108,16 @@
 "cmd.apples.get.changed": "Now you have **$[amount]** $[word] $[emoji]",
 "cmd.apples.get.why": "You don't understand why you keep so much apples with you.",
 
-"cmd.top.get.apple.name": "apples",
+"cmd.top.get.apple.title": "apples",
 "cmd.top.get.apple.title": "Apples leaderboard :",
 "cmd.top.get.apple.place": "$[rank] : <@$[playerId]> with **$[amount]** :apple:",
-"cmd.top.get.kill.name": "kills",
+"cmd.top.get.kill.title": "kills",
 "cmd.top.get.kill.title": "Kills leaderboard :",
 "cmd.top.get.kill.place": "$[rank] : <@$[playerId]> with **$[amount]** kills",
-"cmd.top.get.murder.name": "murders",
+"cmd.top.get.murder.title": "murders",
 "cmd.top.get.murder.title": "Murders leaderboard :",
 "cmd.top.get.murder.place": "$[rank] : <@$[playerId]> with **$[amount]** murders",
-"cmd.top.get.time.name": "murdered time",
+"cmd.top.get.time.title": "murdered time",
 "cmd.top.get.time.title": "Murdered time leaderboard :",
 "cmd.top.get.time.place": "$[rank] : <@$[playerId]> with **$[amount]** time murdered",
 
@@ -153,6 +153,19 @@
 "cmd.pocket.drop.first": "Give up",
 "cmd.pocket.drop.confirm": "Really drop !?",
 "cmd.pocket.drop.done": "Dropped",
+
+"cmd.gift.pick.item": "Which item do you wanna gift?",
+"cmd.gift.pick.user": "Wanna give **$[itemTitle]** who?",
+"cmd.gift.pick.user.place": "The one you want to give the thing",
+"cmd.gift.pick.user.all": "Anyone",
+"cmd.gift.post.content.everyone": "<@$[gifterId]> put a giftbox on the ground",
+"cmd.gift.post.content.one": "<@$[gifterId]> put a giftbox in front of <@$[giftedId]>'s door",
+"cmd.gift.post.button.claim": "CLAIM",
+
+"cmd.giftclaim.fail.disapear": "The gift does not exist.",
+"cmd.giftclaim.fail.notu": "That not for you!",
+"cmd.giftclaim.fail.giver": "Given is given, retake is stolen!",
+"cmd.giftclaim.sucess": "<@$[gifterId]> gave **$[itemTitle]** to <@$[giftedId]>",
 
 "cmd.drop.shop": "Hum, yes, you could protect yourself for a while. :thinking:\nI can give you back the Death Note a certain time after you gave it up.\nBut I need apples to not become lazy!",
 "cmd.drop.shop.sentence": "I relinquish Death Note ownership...",
@@ -353,21 +366,21 @@
 "achievements.killDailyComeback.done":"by stopping killing people for more than 13 days and not dying from it",
 
 
-"item.event_egg_2025.name": "<:weirdegg:1363686307955740864> Weird egg",
+"item.event_egg_2025.title": "Weird egg",
 "item.event_egg_2025.claim": "You found a weird egg just here. You put it in your `/pocket`. <:weirdegg:1363686307955740864>🐇",
 "item.event_egg_2025.lore": "2025 weird egg of **@$[user.username]**.\nDon't try to eat. Seems useless.",
-"item.pen_black.name": "<:pen_black:1374354563032940627> Regular pen",
+"item.pen_black.title": "Regular pen",
 "item.pen_black.claim": "You where using this black pen since the begining. <:pen_black:1374354563032940627>",
 "item.pen_black.lore": "A regular black ball-point pen.",
-"item.pen_blue.name": "<:pen_blue:1374353917768503326> Blue pen",
+"item.pen_blue.title": "Blue pen",
 "item.pen_blue.lore": "A blue ball-point pen.",
-"item.pen_green.name": "<:pen_green:1374353919786094683> Green pen",
+"item.pen_green.title": "Green pen",
 "item.pen_green.lore": "A green ball-point pen.",
-"item.pen_red.name": "<:pen_red:1374353922298351738> Red pen",
+"item.pen_red.title": "Red pen",
 "item.pen_red.lore": "A red ball-point pen.",
-"item.pen_purple.name": "<:pen_purple:1374590353109422141> Purple pen",
+"item.pen_purple.title": "Purple pen",
 "item.pen_purple.lore": "A red ball-point pen.",
-"item.feather_white.name": "<:white_feather:1374353915675545770> Feather",
+"item.feather_white.title": "Feather",
 "item.feather_white.lore": "A writing nib. For discreet writing.",
 
 
@@ -419,13 +432,13 @@
 
 "post.feedback.title": "a letter",
 "post.feedback.description": "```$[letter]```\n-<@$[user.id]>",
-"post.feedback.author.name": "by @$[user.username] ($[userdata.id])",
+"post.feedback.author.title": "by @$[user.username] ($[userdata.id])",
 "post.feedback.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 "post.feedback.footer": "PS: $[last]",
 
-"post.error.title": "<$[error.name]>",
+"post.error.title": "<$[error.title]>",
 "post.error.description": "code=**$[errorCode]** key=**$[errorKey]**\n\n$[context]\n\n```json\n$[error.message]\n```\n```json\n$[errorStack]\n```",
-"post.error.author.name": "@$[user.username] ($[userdata.id])",
+"post.error.author.title": "@$[user.username] ($[userdata.id])",
 "post.error.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 "post.error.tree.context.any": "not specified context",
 "post.error.tree.context.error": "when **handling error**\nan error inside error catch (errorception)",
@@ -434,12 +447,12 @@
 
 "post.newbi.title": "claim a Death Note",
 "post.newbi.description": "Human <@$[user.id]>,\nYour life will be changed forever.\n**After they die, the place they go is MU.**\n\nat <#$[channel.id]>",
-"post.newbi.author.name": "@$[user.username] ($[userdata.id])",
+"post.newbi.author.title": "@$[user.username] ($[userdata.id])",
 "post.newbi.author.icon": "https://cdn.discordapp.com/avatars/$[user.id]/$[user.avatar].webp?size=1024&format=webp&width=640&height=640",
 
 "post.hall.title": "add the Shinigami",
-"post.hall.description": "**$[guild.name]** is now parth of the god of death world.\nWhat a great region for Shinigami to walkthought.\n**Death Notes will be dropped. Chaos will be propagated.**\n\n```\n$[guild.description]```\nmax=$[guild.max_members] lang=$[guild.preferred_locale] boost=$[guild.premium_subscription_count] vanity=$[guild.vanity_url_code]\nmembers : $[presence_count]/**$[member_count]**\n\n<#$[guild.system_channel_id]>\nowned by <@$[guild.owner_id]> ($[guild.owner])\nadded by <@$[user.id]> (@$[user.username])",
-"post.hall.author.name": "$[guild.name] ($[guild.id])",
+"post.hall.description": "**$[guild.title]** is now parth of the god of death world.\nWhat a great region for Shinigami to walkthought.\n**Death Notes will be dropped. Chaos will be propagated.**\n\n```\n$[guild.description]```\nmax=$[guild.max_members] lang=$[guild.preferred_locale] boost=$[guild.premium_subscription_count] vanity=$[guild.vanity_url_code]\nmembers : $[presence_count]/**$[member_count]**\n\n<#$[guild.system_channel_id]>\nowned by <@$[guild.owner_id]> ($[guild.owner])\nadded by <@$[user.id]> (@$[user.username])",
+"post.hall.author.title": "$[guild.title] ($[guild.id])",
 "post.hall.author.icon": "https://cdn.discordapp.com/icons/$[guild.id]/$[guild.icon].webp?size=1024&format=webp&width=640&height=640",
 
 

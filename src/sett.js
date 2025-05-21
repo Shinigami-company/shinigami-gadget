@@ -102,6 +102,14 @@ export const sett_emoji_pens = {
   }
 };
 
+
+export const sett_emoji_objects = {
+  event_egg_2025: {
+    name: "weirdegg",
+    id: "1363686307955740864",
+  },
+}
+
 //--commands--
 const dailyAmount = 1;
 const dailyStreakReward = [
