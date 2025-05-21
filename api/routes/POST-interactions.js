@@ -150,6 +150,11 @@ export default async function route({ request, reply, api, logger, connections }
           else
             data = { name: 'see_edit', options: [{ name: 'bookId', type: 4, value: parseInt(h_arg[0]) }]};
         } break;
+        
+        case ("pocket_edit"):
+        {
+          data = { name: 'pocket_edit', options: [{ name: parseInt(h_arg[0]) ? 'page' : 'nopage', type: 4, value: parseInt(h_arg[1]) }, { name: 'equipit', type: 4, value: ((parseInt(h_arg[0])===2) ? 1 : 0) }] };
+        } break;
 
         case ("see"):
         {//old

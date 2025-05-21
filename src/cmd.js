@@ -4,6 +4,7 @@ console.log(`cmd : refresh`);
 import {
   deferedActionType,
   FeedbackState,
+  itemType,
   KnowUsableBy,
   rememberTasksType,
   userBanType,
@@ -100,6 +101,7 @@ import {
   kira_apple_send,
   kira_apple_pay,
 } from "./use/apple.js"; //kira apples
+import { pen_create, pen_equip, pen_get, pen_use, pen_apply_filters } from "./use/pen.js";//kira pen
 
 import {
   stats_simple_get,
@@ -130,7 +132,7 @@ import {
 } from "./tools.js"; // tools
 
 import { kira_item_event_claim } from "./use/claim.js";
-import { kira_items_find } from "./use/item.js";
+import { items_info, kira_item_get, kira_items_ids } from "./use/item.js";
 
 import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
@@ -143,7 +145,7 @@ import { webhook_reporter } from "./use/post.js";
 import { channel } from "diagnostics_channel";
 import { error } from "console";
 import { register } from "module";
-import { pen_create, pen_equip, pen_get, pen_use } from "./use/pen.js";
+import { randomInt } from "crypto";
 
 
 //the structure to describe the command
@@ -671,6 +673,22 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
+    },
+  },
+  pocket_edit: {
+    functions: {
+      exe: cmd_pocket,
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+        //[check_has_book, false],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_UPDATE,
+      systemOnly: true,
     },
   },
 
@@ -2080,7 +2098,13 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
 
         
         {
+          let pentype = (arg_texto) ? arg_texto : "pen_black";
           r = `\`\`ansi\n[2;31m${arg_texto}[0m\`\`\``;
+
+          r = `\`\`ansi\n${pen_apply_filters(`pen [${pentype}] created and equiped`, pentype)}\`\``;
+          const pen=await pen_create(userdata.id, lang, pentype);
+          await pen_equip(userdata.id, pen.id);
+          await stats_simple_add(userdata.statPtr.id, "ever_pen");
         }
 
         return {
@@ -3289,9 +3313,9 @@ async function cmd_see({ data, userbook, lang }) {
 
 //#pocket command
 async function cmd_pocket({ data, userdata, userbook, lang }) {
-  const items_carry=await kira_items_find(userdata.id);
+  const items_all = await kira_items_ids(userdata.id);
 
-  if (items_carry.length===0)
+  if (items_all.length === 0)
   {
     return {
       method: "PATCH",
@@ -3300,33 +3324,123 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
       }
     }
   }
+  
+  //arg/page
+  const equipit = data.options?.find((opt) => opt.name === "equipit")?.value;
+  let no_page = data.options?.find((opt) => opt.name === "nopage")?.value;
+  let on_page = data.options?.find((opt) => opt.name === "page")?.value;
+  const last_page = items_all.length;
+  let show_page = -1;
+  if (on_page)
+  {
+    show_page = on_page;
+  }
+  else if (no_page>-2)
+  {
+    show_page = randomInt(last_page)+1;
+    if (no_page>-1 && last_page>1)
+    {
+      show_page = randomInt(last_page-1)+1;
+      if (show_page>= no_page) show_page+=1;
+    }
+  }
 
   let fields=[];
+  let item_components=[];
 
-  for (let i=0; i<items_carry.length; i++)
+  if (show_page === -1)
   {
+    for (let i=0; i<items_all.length; i++)
+    {
+      let item_selected = await kira_item_get(userdata.id, items_all[i].id);
+      const already = (userdata.equipedPen?.id===item_selected.id);
+      fields.push(
+        {
+          name: translate(lang, "item."+item_selected.itemId+".name") + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
+          value: item_selected.itemLoreTxt.markdown
+        //value: translate(lang, "item."+item_selected.itemId+".lore", item_selected.itemLoreDict)
+        }
+      )
+    }
+  }
+  else
+  {
+    const item_selected = await kira_item_get(userdata.id, items_all[show_page-1].id);
     fields.push(
       {
-        name: translate(lang, "item."+items_carry[i].itemId+".name"),
-        value: items_carry[i].itemLoreTxt.markdown
+        name: translate(lang, "item."+item_selected.itemId+".name"),
+        value: item_selected.itemLoreTxt.markdown
       }
-    )
+    );
+
+    if (items_info[item_selected.itemId].type === itemType.PEN)
+    {
+      let already = (userdata.equipedPen?.id===item_selected.id);
+      console.log("already?",already,`(${userdata.equipedPen?.id}===${item_selected.id})`);
+      if (equipit)
+      {
+        console.log("equipit!!",userdata.id, item_selected.id);
+        await pen_equip(userdata.id, item_selected.id);
+        already = true;
+      }
+      item_components.push(
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd pocket_edit 2+${show_page}`,
+          label: translate(lang, "cmd.pocket.equip."+((already) ? "out" : "in")),
+          style: ButtonStyleTypes.PRIMARY,
+          disabled: already
+        },
+      )
+    }
+  }
+
+  let components = [
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: 
+          [
+            {
+              type: MessageComponentTypes.BUTTON,
+              custom_id: `makecmd pocket_edit 0+-2`,
+              label: translate(lang, "cmd.pocket.get.all"),
+              style: ButtonStyleTypes.SECONDARY,
+              disabled: (show_page==-1)
+            },
+            {
+              type: MessageComponentTypes.BUTTON,
+              custom_id: `makecmd pocket_edit 0+${show_page}`,
+              label: translate(lang, "cmd.pocket.get."+((show_page==-1) ? "one" : "other")),
+              style: ButtonStyleTypes.SECONDARY,
+              disabled: (last_page<2 && show_page>-1)
+            },
+          ]
+        }
+      ];
+   
+  if (item_components.length>0)
+  {
+    components.push({
+      type: MessageComponentTypes.ACTION_ROW,
+      components: item_components
+    })
   }
   
   return {
     method: "PATCH",
     body: {
-      content: translate(lang, "cmd.pocket.content"),
+      content: translate(lang, "cmd.pocket.content."+((show_page==-1) ? "one" : "all")),
       embeds: [
         {
           color: book_colors[userbook.color].int,
           //description: `${h_content}`,
           footer: {
-            text: translate(lang, "cmd.pocket.capacity", { in:items_carry.length, size:"2" }),
+            text: translate(lang, "cmd.pocket.capacity", { at: show_page, in:last_page, max:"10" }),
           },
-          fields
+          fields,
         },
       ],
+      components
     }
   }
 }
@@ -3549,7 +3663,7 @@ async function cmd_kira({
       return {
         method: "PATCH",
         body: {
-          content: translate(lang, "cmd.kira.fail.nopen"),
+          content: translate(lang, "cmd.kira.fail.pen.no"),
         },
       };
     }
@@ -3557,7 +3671,8 @@ async function cmd_kira({
     { // create it if has never got a pen
       console.log("create and equip a first new pen for",user.username);
       const pen=await pen_create(userdata.id, lang, "pen_black");
-      await pen_equip(userdata.id, pen);
+      await pen_equip(userdata.id, pen.id);
+      await stats_simple_add(userdata.statPtr.id, "ever_pen");
       pen_ptr=pen;
     }
    
@@ -3566,7 +3681,12 @@ async function cmd_kira({
   if (!h_attacker_pen)
   {
     await pen_equip(userdata.id, undefined);
-    throw Error("There is a pen but there is no pen.");
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.kira.fail.pen.broke"),
+      },
+    };
   }
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
@@ -3685,11 +3805,12 @@ async function cmd_kira({
 
   //line
   let h_txt_span = time_format_string_from_int(h_span, lang);
-  const h_line = translate(lang, "format.line", {
+  let h_line = translate(lang, "format.line", {
     victim: h_victim_name,
     reason: h_txt_reason,
     time: h_txt_span,
   });
+  h_line = pen_apply_filters(h_line, h_attacker_pen.itemId)
 
   if (h_line.length > 256 && !userdata.is_god) {
     //54*3 : 3 less than lines
@@ -3705,7 +3826,7 @@ async function cmd_kira({
   //checked !
 
   //validate writting
-  await pen_use(h_attacker_pen);
+  const h_pen_remain = await pen_use(h_attacker_pen);
   const h_dayGap = time_day_gap(userbook.updatedAt, locale, true, true);
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
   const h_note = await kira_line_append(userbook, h_line, h_dayGap);
@@ -3765,10 +3886,11 @@ async function cmd_kira({
 
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
-    line: "```"+h_line+"```",
+    line: "```ansi\n"+h_line+"```",
     penmoji: `<:${h_attacker_pen.atr.emoji.name}:${h_attacker_pen.atr.emoji.id}>`
     //penmoji: "🪶a"
   });
+  var h_all_flags = 0;
 
   //message/victim
   const lang_victim = h_victim_data ? await lang_get(h_victim_data, lang) : lang;
@@ -3836,7 +3958,7 @@ async function cmd_kira({
       let errorMsg = JSON.parse(e.message);
       if (errorMsg?.code === 50007) {
         h_all_msg +=
-          "\n" + translate(lang, "cmd.kira.warn.nomp", { userId: h_victim_id });
+          translate(lang, "cmd.kira.warn.nomp", { userId: h_victim_id })+"\n";
         h_will_ping_victim = false;
       } else throw e;
     }
@@ -3892,10 +4014,21 @@ async function cmd_kira({
       let errorMsg = JSON.parse(e.message);
       if (errorMsg?.code === 50007) {
         h_all_msg +=
-          "\n" + translate(lang, "cmd.kira.warn.nomp", { userId: user.id });
+          translate(lang, "cmd.kira.warn.nomp", { userId: user.id })+"\n";
         h_will_ping_attacker = false;
       } else throw e;
     }
+  }
+
+  //others warnings
+  if (h_attacker_pen.atr.silent)
+  {
+    h_all_flags += Math.pow(2,12);//SUPPRESS_NOTIFICATIONS
+    console.log("h_all_flags;",h_all_flags);
+  }
+  if (!h_pen_remain)
+  {
+    h_all_msg += translate(lang, "cmd.kira.warn.pen.break")+"\n";
   }
 
   //packing before wait
@@ -3943,6 +4076,7 @@ async function cmd_kira({
     body: {
       content: h_all_msg,
     },
+    flags: h_all_flags,
   };
 
   //pretty old method

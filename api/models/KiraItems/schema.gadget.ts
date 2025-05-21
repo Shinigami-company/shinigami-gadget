@@ -8,8 +8,8 @@ export const schema: GadgetModel = {
   storageKey: "ajFsJt-RW_nN",
   fields: {
     equiperPtr: {
-      type: "belongsTo",
-      parent: { model: "KiraUsers" },
+      type: "hasOne",
+      child: { model: "KiraUsers", belongsToField: "equipedPen" },
       storageKey: "MaKMWTrmQLBp",
     },
     itemId: { type: "string", storageKey: "J3mHD1CwWgaL" },

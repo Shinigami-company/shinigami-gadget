@@ -55,9 +55,9 @@ export const schema: GadgetModel = {
       storageKey: "bRmM-ugIUS1a::_hVDoSZAH3eF",
     },
     equipedPen: {
-      type: "hasOne",
-      child: { model: "KiraItems", belongsToField: "equiperPtr" },
-      storageKey: "UXVxk7fi_fn7",
+      type: "belongsTo",
+      parent: { model: "KiraItems" },
+      storageKey: "9s6W1pikaoS_",
     },
     feedbackCooldown: {
       type: "dateTime",

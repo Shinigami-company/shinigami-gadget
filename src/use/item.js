@@ -73,41 +73,39 @@ export async function kira_item_create(userdataId, lang, itemId, dolarValues = {
   : pen;
 }
 
-export async function kira_items_find(userdataId, itemId) {
+// get all
+export async function kira_items_ids(userdataId) {
   return await api.KiraItems.findMany({
     filter: {
       ownerPtr: {
         equals: userdataId,
       },
-      itemId: (itemId) ? {equals: itemId} : undefined
+    },
+    select: {
+      id: true,
+      itemId: true,
     }
   });
 }
 
-export async function kira_item_page(userdataId, page) {
-  //! not woking
-  return await api.KiraItems.findMany({
-    filter: [{
-      ownerPtr: {
-        equals: userdataId,
-      },
-    },
-    {
-      indexLine: {
-        equal: page,
-      },
-    }]
-  });
-}
-
 // get by string id
-export async function kira_item_find(userdataId, itemNameId) {
+export async function kira_item_find(userdataId, itemType) {
   return await api.KiraItems.maybeFindFirst({
     filter: {
       ownerPtr: {
         equals: userdataId,
       },
-      itemId: (itemNameId) ? {equals: itemNameId} : undefined
+      itemId: (itemType) ? {equals: itemType} : undefined
+    }
+  });
+}
+export async function kira_items_find(userdataId, itemType) {
+  return await api.KiraItems.findMany({
+    filter: {
+      ownerPtr: {
+        equals: userdataId,
+      },
+      itemId: (itemType) ? {equals: itemType} : undefined
     }
   });
 }
