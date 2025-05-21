@@ -121,3 +121,12 @@ export async function kira_item_get(userdataId, itemId) {
     }
   });
 }
+
+// drop and gift
+
+// get by numeric id
+export async function kira_item_drop(userdataId, itemId) {
+  if (!await kira_item_get(userdataId, itemId)) return false;
+  await api.KiraItems.delete(itemId);
+  return true;
+}

@@ -132,7 +132,7 @@ import {
 } from "./tools.js"; // tools
 
 import { kira_item_event_claim } from "./use/claim.js";
-import { items_info, kira_item_get, kira_items_ids } from "./use/item.js";
+import { items_info, kira_item_drop, kira_item_get, kira_items_ids } from "./use/item.js";
 
 import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
@@ -174,6 +174,7 @@ const commands_structure = {
               description: "execute the test script",
             },
             { name: "update", value: "update", description: "update an user" },
+
             { name: "revive", value: "revive", description: "revive someone" },
             { name: "kill", value: "kill", description: "kill someone" },
             {
@@ -201,6 +202,7 @@ const commands_structure = {
               value: "mercy",
               description: "cancel someone's death",
             },
+            
             {
               name: "give apple",
               value: "apple_give",
@@ -211,9 +213,16 @@ const commands_structure = {
               value: "apple_fake",
               description: "fake giving apple",
             },
+
             { name: "tell", value: "tell", description: "tell to someone" },
             { name: "mail", value: "mail", description: "mail to someone" },
             { name: "info", value: "info", description: "get info about someone" },
+            
+            {
+              name: "give pen",
+              value: "pen",
+              description: "give a pen WOW",
+            },
           ],
         },
         {
@@ -2030,11 +2039,45 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
       }
       break;
 
+    //#pen subcommand
+    case "pen":
+      {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
 
+        
+        const h_targetId = arg_user;
+        const targetdata = await kira_user_get(h_targetId, false);
+
+        let pentype = (arg_texto) ? arg_texto : "pen_black";
+
+        const pen=await pen_create(targetdata.id, lang, pentype);
+        await pen_equip(targetdata.id, pen.id);
+        await stats_simple_add(targetdata.statPtr.id, "ever_pen");
+
+
+        return {
+          method: "PATCH",
+          body: {
+            content: `
+${translate(lang, "cmd.god.sub.pen.up", {targetId: targetdata.userId})}\`\`\`ansi
+${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
+\`\`\`
+`
+          }
+        };
+      }
 
     //#test subcommand
     case "test":
       {
+          //r = `\`\`ansi\n[2;31m${arg_texto}[0m\`\`\``;
         let r;
 
         //if (false) {
@@ -2090,22 +2133,13 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
         //  console.timeEnd("test:cost");
         //}
 
-        //throw EvalError("found a cat in the code");
+        throw EvalError("found a cat in the code");
 
         //{
         //  r = Achievement.list["counter"].level_graduate(arg_amount);
         //}
 
         
-        {
-          let pentype = (arg_texto) ? arg_texto : "pen_black";
-          r = `\`\`ansi\n[2;31m${arg_texto}[0m\`\`\``;
-
-          r = `\`\`ansi\n${pen_apply_filters(`pen [${pentype}] created and equiped`, pentype)}\`\``;
-          const pen=await pen_create(userdata.id, lang, pentype);
-          await pen_equip(userdata.id, pen.id);
-          await stats_simple_add(userdata.statPtr.id, "ever_pen");
-        }
 
         return {
           method: "PATCH",
@@ -3326,9 +3360,11 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   }
   
   //arg/page
-  const equipit = data.options?.find((opt) => opt.name === "equipit")?.value;
-  let no_page = data.options?.find((opt) => opt.name === "nopage")?.value;
-  let on_page = data.options?.find((opt) => opt.name === "page")?.value;
+  let no_page = data.options?.find((opt) => opt.name === "nopage")?.value;//1,n
+  let on_page = data.options?.find((opt) => opt.name === "page")?.value;//1,n
+  const equipit = (data.options?.find((opt) => opt.name === "equipit")?.value===1);//_,0,1
+  const dropit = data.options?.find((opt) => opt.name === "dropit")?.value;//_,0,1,2
+  const droped = dropit == 2;
   const last_page = items_all.length;
   let show_page = -1;
   if (on_page)
@@ -3366,9 +3402,10 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   else
   {
     const item_selected = await kira_item_get(userdata.id, items_all[show_page-1].id);
+    const already = (userdata.equipedPen?.id===item_selected.id);
     fields.push(
       {
-        name: translate(lang, "item."+item_selected.itemId+".name"),
+        name: translate(lang, "item."+item_selected.itemId+".name") + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
         value: item_selected.itemLoreTxt.markdown
       }
     );
@@ -3389,10 +3426,24 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
           custom_id: `makecmd pocket_edit 2+${show_page}`,
           label: translate(lang, "cmd.pocket.equip."+((already) ? "out" : "in")),
           style: ButtonStyleTypes.PRIMARY,
-          disabled: already
+          disabled: (already || droped)
         },
       )
     }
+
+    if (droped) 
+    {
+      await kira_item_drop(userdata.id, item_selected.id);
+    }
+    item_components.push(
+      {
+        type: MessageComponentTypes.BUTTON,
+        custom_id: `makecmd pocket_edit ${(dropit==1) ? 4 : 3}+${show_page}`,
+        label: translate(lang, "cmd.pocket.drop."+((dropit) ? (droped) ? "done" : "confirm" : "first")),
+        style: ButtonStyleTypes.DANGER,
+        disabled: droped
+      },
+    )
   }
 
   let components = [
@@ -3429,13 +3480,13 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   return {
     method: "PATCH",
     body: {
-      content: translate(lang, "cmd.pocket.content."+((show_page==-1) ? "one" : "all")),
+      content: translate(lang, "cmd.pocket.content."+((droped) ? "gone" : (show_page==-1) ? "all" : "one")),
       embeds: [
         {
           color: book_colors[userbook.color].int,
           //description: `${h_content}`,
           footer: {
-            text: translate(lang, "cmd.pocket.capacity", { at: show_page, in:last_page, max:"10" }),
+            text: translate(lang, "cmd.pocket.capacity."+((show_page==-1) ? "all" : "one"), { at: show_page, in:last_page, max:"10" }),
           },
           fields,
         },

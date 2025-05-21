@@ -153,7 +153,16 @@ export default async function route({ request, reply, api, logger, connections }
         
         case ("pocket_edit"):
         {
-          data = { name: 'pocket_edit', options: [{ name: parseInt(h_arg[0]) ? 'page' : 'nopage', type: 4, value: parseInt(h_arg[1]) }, { name: 'equipit', type: 4, value: ((parseInt(h_arg[0])===2) ? 1 : 0) }] };
+          const determinant = parseInt(h_arg[0]);
+          //-2 : all items page
+          //0 : nopage (reroll)
+          //1 : same page 
+          //2 : equip
+          //3 : drop
+          //4 : confirm drop
+          data = { name: 'pocket_edit', options: [{ name: ((determinant!=0) ? 'page' : 'nopage'), type: 4, value: parseInt(h_arg[1]) },
+          { name: 'equipit', type: 4, value: (determinant==2 ? 1 : 0) },
+          { name: 'dropit', type: 4, value: (determinant==3 ? 1 : determinant==4 ? 2 : 0) }] };
         } break;
 
         case ("see"):

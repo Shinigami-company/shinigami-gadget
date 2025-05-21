@@ -27,16 +27,14 @@ export const pen_filters = {
 
 export async function pen_create(userdataId, lang, penItemId)
 {
+  if (!pen_atr[penItemId]) throw Error(`the pen [${penItemId}] does not exist.`)
   return await kira_item_create(userdataId, lang, penItemId, {}, {durability: pen_atr[penItemId].max_durability}, false);
 }
 
 export async function pen_equip(userdataId, penItemId)
 {
-  console.log("bfr:",await kira_item_get(userdataId, penItemId), await api.KiraUsers.maybeFindFirst({filter:{id:{equals: userdataId}}}));
-  console.log(userdataId,{equipedPen: {_relink: {id: penItemId}}});
   await api.KiraUsers.update(userdataId,{equipedPen: {_link: penItemId}});
   //await api.KiraItems.update(penItemId, {ownerPtr: {_link: userdataId}});
-  console.log("afr:",await kira_item_get(userdataId, penItemId), await api.KiraUsers.maybeFindFirst({filter:{id:{equals: userdataId}}}));
 }
 
 export async function pen_get(userdataId, penItemId)
