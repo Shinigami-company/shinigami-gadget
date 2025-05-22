@@ -52,9 +52,15 @@ export const sett_catalog_drops = [
 
 export const sett_options_gift_apples = [
   (apple) => 1,
+  (apple) => 2,
+  (apple) => 5,
   (apple) => 10,
+  (apple) => 20,
   (apple) => 100,
-  (apple) => Math.ceil(apple/10),
+  (apple) => 200,
+  (apple) => 500,
+  (apple) => 1000,
+  (apple) => Math.ceil(Math.log10(apple)),
   (apple) => Math.ceil(apple/4),
   (apple) => Math.ceil(apple/2),
   (apple) => apple,

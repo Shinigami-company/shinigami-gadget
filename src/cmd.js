@@ -132,7 +132,7 @@ import {
 } from "./tools.js"; // tools
 
 import { kira_item_event_claim } from "./use/claim.js";
-import { items_info, kira_item_delete, e, kira_item_get, kira_items_ids, kira_item_gift_send, kira_item_gift_pick, kira_item_title, kira_item_gift_get } from "./use/item.js";
+import { items_info, kira_item_delete, e, kira_item_get, kira_items_ids, kira_item_gift_pick, kira_item_title, kira_item_gift_get, kira_item_gift_send_item, kira_item_gift_send_apples } from "./use/item.js";
 
 import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
@@ -3540,7 +3540,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     components[0]=({
       type: MessageComponentTypes.ACTION_ROW,
       components: item_components
-    });
+    })
   }
   
   return {
@@ -3562,7 +3562,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   }
 }
 //#gift
-async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
+async function cmd_gift({ data, userdata, user, lang, message, token}) {
 
   let item_id = data.options?.find((opt) => opt.name === "itemid")?.value;
   let gifted_id = data.options?.find((opt) => opt.name === "giftedid")?.value;
@@ -3592,12 +3592,10 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
     }
     
     let options_apples = [];
-    for (let i = 0; i < sett_options_gift_apples.length; i++) options_apples.push(userdata.apples);
-    console.log("options_apples1",options_apples);
+    for (let i = 0; i < sett_options_gift_apples.length; i++) options_apples.push(userdata.apples);//fill
     options_apples = options_apples.map((v,i) => sett_options_gift_apples[i](v));
-    console.log("options_apples2",options_apples);
     options_apples = [...new Set(options_apples)];//remove duplicates
-    console.log("options_apples3",options_apples);
+    options_apples = options_apples.sort((a,b) => (a<b) ? -1 : 1);
     options_apples = options_apples.map(
       (v,i) => {return {
         value: v, 
@@ -3611,7 +3609,6 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
             ),
       }),
     }});
-    console.log("options_apples4",options_apples);
     
     return {
       method: "PATCH",
@@ -3647,15 +3644,43 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
     }
   }
 
-  const item = await kira_item_get(userdata.id, item_id);
-  if (!item)
+  const isApple = (item_id<0);
+  let item;
+  let itemTitle;
+  let appleAmount;
+  if (isApple)
   {
-    return {
-      method: "PATCH",
-      body: {
-        content: translate(lang, "cmd.gift.fail.noitem"),
+    appleAmount = item_id*-1;
+    itemTitle = translate(lang, "cmd.gift.pick.apple", {
+      price: appleAmount,
+      unit: translate(
+        lang,
+        `word.apple${(appleAmount > 1) ? "s" : ""}`
+      )
+    });
+    if (appleAmount<0) throw Error(`trying to send negative amount of apples [${appleAmount}]`);
+    if (appleAmount>userdata.apples)
+    {
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, "cmd.gift.fail.poor"),
+        }
       }
     }
+  } else {
+
+    item = await kira_item_get(userdata.id, item_id);
+    if (!item)
+    {
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, "cmd.gift.fail.noitem"),
+        }
+      }
+    }
+    itemTitle = kira_item_title(lang, item.itemName, false);
   }
 
   if (!gifted_id)
@@ -3663,7 +3688,7 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, "cmd.gift.pick.user", {itemTitle: kira_item_title(lang, item.itemName, false)}),
+        content: translate(lang, "cmd.gift.pick.user", {itemTitle}),
         components: [
           {
             type: MessageComponentTypes.ACTION_ROW,
@@ -3693,9 +3718,12 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
 
   const recipientId = (gifted_id==="@everyone") ? undefined : gifted_id;
 
-  const itemgiftObj = await kira_item_gift_send(item_id, userdata.id, userdata.userId, recipientId);
-  console.log("gifted_id:",gifted_id,recipientId);
-  console.log("GIFT3:",itemgiftObj);
+  const gift = (isApple)
+   ? await kira_item_gift_send_apples(appleAmount, userdata, user.username, recipientId)
+   : await kira_item_gift_send_item(item_id, userdata, user.username, recipientId);
+  console.log("GIFT3:",gift);
+  
+  if (!gift) throw Error("the gift cannot be send");
   return {
     method: "PATCH",
     body: {
@@ -3706,7 +3734,7 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
           components: [
             {
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd giftclaim ${itemgiftObj.id}`,
+              custom_id: `makecmd giftclaim ${gift.id}`,
               label: translate(lang, "cmd.gift.post.button.claim"),
               style: ButtonStyleTypes.SUCCESS,
             }
@@ -3717,7 +3745,7 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
   }
 }
 
-
+//#gift_claim
 async function cmd_gift_claim({ data, userdata, lang, message, token }) {
   let gift_id = data.options?.find((opt) => opt.name === "giftid")?.value;
   if (!gift_id) 
@@ -3731,10 +3759,19 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
 
   // checks
   let fail_reason = "";
-  console.log( "gift.userIdRecipient:",gift, gift.userIdRecipient, gift.userIdOwner, userdata.userId);
   if (!gift)
   {
     fail_reason="disapear";
+    
+    await DiscordRequest(
+      `channels/${message.channel_id}/messages/${message.id}`,{
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.giftclaim.fail."+fail_reason),
+        components: [],
+      }
+    })
+    return;
   }
   else if (gift.userIdRecipient && gift.userIdRecipient!==userdata.userId)
   {
@@ -3761,17 +3798,37 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
   }
 
 
-  await kira_item_gift_pick(gift, userdata.id);
+  await kira_item_gift_pick(gift, userdata);
   
-  const item = await kira_item_get(userdata.id, gift.itemPtrId);
+  const isApple = (gift.appleAmount!=null);
+  let item;
+  let itemTitle;
+  if (isApple)
+  {
+    itemTitle = translate(lang, "cmd.gift.pick.apple", {
+      price: gift.appleAmount,
+      unit: translate(
+        lang,
+        `word.apple${(gift.appleAmount > 1) ? "s" : ""}`
+      )
+    });
+  } else {
+    item = await kira_item_get(userdata.id, gift.itemPtrId);
+    if (!item)
+    {
+      throw Error("the item fled");
+    }
+    itemTitle = kira_item_title(lang, item.itemName, false);
+  }
   console.log("ITEM4:",item);
+  
 
   await DiscordRequest(
     `channels/${message.channel_id}/messages/${message.id}`,{
     method: "PATCH",
     body: {
       content: translate(lang, "cmd.giftclaim.sucess", 
-      {gifterId: gift.userIdOwner, giftedId: userdata.userId, itemTitle: kira_item_title(lang, item.itemName)}),
+      {gifterId: gift.userIdOwner, giftedId: userdata.userId, itemTitle}),
       components: [],
     }
   })
