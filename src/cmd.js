@@ -3420,8 +3420,13 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   const equipit = (data.options?.find((opt) => opt.name === "equipit")?.value===1);//_,0,1
   const dropit = data.options?.find((opt) => opt.name === "dropit")?.value;//_,0,1,2
   const droped = dropit == 2;
+  const unic = items_all.length===1;
   const last_page = items_all.length;
   let show_page = -1;
+  if (unic)
+  {
+    on_page = 1;
+  }
   if (on_page)
   {
     show_page = on_page;
@@ -3501,7 +3506,10 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     )
   }
 
-  let components = [
+  let components = [];
+  if (!unic)
+  {
+    components.push(
         {
           type: MessageComponentTypes.ACTION_ROW,
           components: 
@@ -3522,16 +3530,17 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
             },
           ]
         }
-      ];
+    )
+  }
    
   if (item_components.length>0)
   {
-    //components.push({
-    components.push(components[0])
+    //to push them on the first row
+    components.push(components[0]);
     components[0]=({
       type: MessageComponentTypes.ACTION_ROW,
       components: item_components
-    })
+    });
   }
   
   return {
