@@ -132,7 +132,7 @@ import {
 } from "./tools.js"; // tools
 
 import { kira_item_event_claim } from "./use/claim.js";
-import { items_info, kira_item_delete, e, kira_item_get, kira_items_ids, kira_item_gift_pick, kira_item_title, kira_item_gift_get, kira_item_gift_send_item, kira_item_gift_send_apples } from "./use/item.js";
+import { items_info, kira_item_delete, e, kira_item_get, kira_items_ids, kira_item_gift_pick, kira_item_title, kira_item_gift_get, kira_item_gift_send_item, kira_item_gift_send_apples, kira_item_create } from "./use/item.js";
 
 import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
@@ -221,7 +221,12 @@ const commands_structure = {
             {
               name: "give pen",
               value: "pen",
-              description: "give a pen WOW",
+              description: "give a pen and equip it",
+            },
+            {
+              name: "give item",
+              value: "item",
+              description: "give a item",
             },
           ],
         },
@@ -2115,6 +2120,48 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
         const pen=await pen_create(targetdata.id, lang, pentype);
         await pen_equip(targetdata.id, pen.id);
         await stats_simple_add(targetdata.statPtr.id, "ever_pen");
+
+
+        return {
+          method: "PATCH",
+          body: {
+            content: `
+${translate(lang, "cmd.god.sub.pen.up", {targetId: targetdata.userId})}\`\`\`ansi
+${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
+\`\`\`
+`
+          }
+        };
+      }
+      
+    //#item subcommand
+    case "item":
+      {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
+        
+        if (!arg_texto) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.message"),
+            },
+          };
+        }
+
+        
+        const h_targetId = arg_user;
+        const targetdata = await kira_user_get(h_targetId, false);
+
+        let itemName = arg_texto;
+
+        const pen=await kira_item_create(userdata.id, lang, itemName);
 
 
         return {

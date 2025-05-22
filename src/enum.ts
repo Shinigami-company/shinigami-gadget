@@ -36,5 +36,6 @@ export enum itemType {
   PEN = 3,
   COLLECTOR = 4,
   CONSOMABLE = 5,
-  MISC = 6,
+  JUNK = 6,
+  MISC = 7,
 }

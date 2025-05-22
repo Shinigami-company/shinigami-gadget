@@ -115,6 +115,14 @@ export const sett_emoji_pens = {
   feather: {
     name: "feather_white",
     id: "1374353915675545770",
+  },
+  empty: {
+    name: "empty_pen",
+    id: "1375207833628446811",
+  },
+  broken: {
+    name: "empty_pen",
+    id: "1375207829794983986",
   }
 };
 

@@ -59,6 +59,13 @@ export const items_info = {
     message_claim: false,
     message_lore: true,
   },
+  
+  broken_pen: {
+    type: itemType.JUNK,
+    emoji: sett_emoji_pens.broken,
+    message_claim: false,
+    message_lore: true,
+  },
 }
 
 export async function kira_item_create(userdataId, lang, itemName, dolarValues = {}, metaDataValues = {}, returnClaimMsg=false) {
@@ -169,8 +176,20 @@ export async function kira_item_delete(userdataId, itemId) {
   return true;
 }
 
+export async function kira_unequip(userdata, itemId)
+{
+  // pen
+  if (toString(userdata.equipedPen.id)===toString(itemId))
+  {
+    await api.KiraUsers.update(userdata.id, {equipedPen: {_link: null}});
+  }
+
+  return;
+}
+
 export async function kira_item_gift_send_item(itemId, userdataOwner, usernameOwner, userIdRecipient) {
-  if (!await kira_item_get(userdataIdOwner, itemId)) return false;
+  if (!await kira_item_get(userdataOwner.id, itemId)) return false;
+  await kira_unequip(userdataOwner, itemId);
   //await api.KiraUsers.update(itemId, {myItems: {_unlink:[{id: userdataIdOwner}]}});//not this way
   await api.KiraItems.update(itemId, {ownerPtr: {_link:null}});
   return await api.KiraItemGift.create({itemPtr: {_link: itemId}, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient});
@@ -186,6 +205,7 @@ export async function kira_item_gift_send_apples(appleAmount, userdataOwner, use
 export async function kira_item_gift_get(giftId) {
   return await api.KiraItemGift.maybeFindFirst({filter: {id: {equals: giftId}}});
 }
+
 
 export async function kira_item_gift_pick(gift, userdata) {
   await api.KiraItemGift.delete(gift.id);

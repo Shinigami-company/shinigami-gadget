@@ -44,7 +44,7 @@ export async function pen_create(userdataId, lang, penName)
 
 export async function pen_equip(userdataId, penName)
 {
-  await api.KiraUsers.update(userdataId,{equipedPen: {_link: penName}});
+  await api.KiraUsers.update(userdataId, {equipedPen: {_link: penName}});
   //await api.KiraItems.update(penName, {ownerPtr: {_link: userdataId}});
 }
 
