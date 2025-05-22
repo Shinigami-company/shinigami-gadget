@@ -10,7 +10,7 @@ import {
   userBanType,
 } from "./enum.ts";
 
-import { Settings } from "./sett.js";
+import { sett_options_gift_apples, Settings } from "./sett.js";
 
 //--- imports ---
 
@@ -711,7 +711,6 @@ const commands_structure = {
     functions: {
       exe: cmd_gift,
       checks: [[check_mailbox, true],
-        [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -727,7 +726,6 @@ const commands_structure = {
     functions: {
       exe: cmd_gift,
       checks: [[check_mailbox, true],
-        [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -742,7 +740,6 @@ const commands_structure = {
     functions: {
       exe: cmd_gift_claim,
       checks: [[check_mailbox, true],
-        [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -3459,7 +3456,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   }
   else
   {
-    const item_selected = await kira_item_get(userdata.id, items_all[show_page-1].id);
+    const item_selected = await kira_item_get(userdata.id, items_all[show_page-1]?.id);
     const already = (userdata.equipedPen?.id===item_selected.id);
     fields.push(
       {
@@ -3575,15 +3572,38 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
   
   if (!item_id)
   {
+    let options_objects = [];
     const items_all = await kira_items_ids(userdata.id);
-    let buttons = [];
     for (let item of items_all) {
-      buttons.push({
+      options_objects.push({
         value: item.id,
         emoji: items_info[item.itemName].emoji,
         label: kira_item_title(lang, item.itemName, false)
       });
     }
+    
+    let options_apples = [];
+    for (let i = 0; i < sett_options_gift_apples.length; i++) options_apples.push(userdata.apples);
+    console.log("options_apples1",options_apples);
+    options_apples = options_apples.map((v,i) => sett_options_gift_apples[i](v));
+    console.log("options_apples2",options_apples);
+    options_apples = [...new Set(options_apples)];//remove duplicates
+    console.log("options_apples3",options_apples);
+    options_apples = options_apples.map(
+      (v,i) => {return {
+        value: v, 
+        emoji: sett_emoji_apple_croc, 
+        label: 
+          translate(lang, `cmd.gift.pick.item.apple.label`, {
+            price: v,
+            unit: translate(
+              lang,
+              `word.apple${v > 1 ? "s" : ""}`
+            ),
+      }),
+    }});
+    console.log("options_apples4",options_apples);
+    
     return {
       method: "PATCH",
       body: {
@@ -3594,9 +3614,21 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
             components: [
               {
                 type: MessageComponentTypes.STRING_SELECT,
-                options: buttons,
+                options: options_objects,
                 custom_id: `makecmd gift <value>`,
-                label: translate(lang, "cmd.pocket.gift.button.claim"),
+                placeholder: translate(lang, "cmd.gift.pick.item.object.place"),
+                style: ButtonStyleTypes.PRIMARY,
+              }
+            ]
+          },
+          {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+              {
+                type: MessageComponentTypes.STRING_SELECT,
+                options: options_apples,
+                custom_id: `makecmd gift -<value>`,
+                placeholder: translate(lang, "cmd.gift.pick.item.apple.place"),
                 style: ButtonStyleTypes.PRIMARY,
               }
             ]
@@ -3607,7 +3639,15 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
   }
 
   const item = await kira_item_get(userdata.id, item_id);
-  console.log("ITEM3:",item);
+  if (!item)
+  {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.gift.fail.noitem"),
+      }
+    }
+  }
 
   if (!gifted_id)
   {
@@ -3671,7 +3711,11 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
 
 async function cmd_gift_claim({ data, userdata, lang, message, token }) {
   let gift_id = data.options?.find((opt) => opt.name === "giftid")?.value;
-  if (!gift_id) throw Error("no gift id provided.");
+  if (!gift_id) 
+  {
+    console.log("data.options:",data.options);
+    throw Error("no gift id provided.");
+  }
   const gift = await kira_item_gift_get(gift_id);
 
   console.log("GIFT4:", gift);
@@ -3720,7 +3764,6 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
       content: translate(lang, "cmd.giftclaim.sucess", 
       {gifterId: gift.userIdOwner, giftedId: userdata.userId, itemTitle: kira_item_title(lang, item.itemName)}),
       components: [],
-      //flags: 4096//!
     }
   })
 }

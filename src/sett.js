@@ -50,6 +50,16 @@ export const sett_catalog_drops = [
   },
 ];
 
+export const sett_options_gift_apples = [
+  (apple) => 1,
+  (apple) => 10,
+  (apple) => 100,
+  (apple) => Math.ceil(apple/10),
+  (apple) => Math.ceil(apple/4),
+  (apple) => Math.ceil(apple/2),
+  (apple) => apple,
+];
+
 //--emoji--
 export const sett_emoji_apple_croc = {
   name: "apple_croc",
