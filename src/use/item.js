@@ -177,7 +177,7 @@ export async function kira_item_gift_send(itemId, userdataIdOwner, userIdOwner, 
 
 
 export async function kira_item_gift_get(giftId) {
-  return await api.KiraItemGift.maybeFindFirst({id: giftId});
+  return await api.KiraItemGift.maybeFindFirst({filter: {id: {equals: giftId}}});
 }
 
 export async function kira_item_gift_pick(gift, userdataId) {

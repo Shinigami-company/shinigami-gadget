@@ -750,7 +750,7 @@ const commands_structure = {
       ],
     },
     atr: {
-      defered: deferedActionType.WAIT_UPDATE,
+      defered: deferedActionType.NO,
     }
   },
 
@@ -1201,6 +1201,11 @@ function kira_cmd_defered_get(f_deep) {
     }
     //request replyed
     f_deep.replyed = response_request.body.type;
+
+    //test!!!!!!
+    //response_request.body.data = {
+    //  flags: 4096
+    //};
 
     return [
       `interactions/${f_deep.id}/${f_deep.token}/callback`,
@@ -3640,6 +3645,7 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
   const recipientId = (gifted_id==="@everyone") ? undefined : gifted_id;
 
   const itemgiftObj = await kira_item_gift_send(item_id, userdata.id, userdata.userId, recipientId);
+  console.log("gifted_id:",gifted_id,recipientId);
   console.log("GIFT3:",itemgiftObj);
   return {
     method: "PATCH",
@@ -3664,49 +3670,59 @@ async function cmd_gift({ data, userdata, userbook, lang, message, token}) {
 
 
 async function cmd_gift_claim({ data, userdata, lang, message, token }) {
-  let gift_id = data.options?.find((opt) => opt.name === "itemid")?.value;
+  let gift_id = data.options?.find((opt) => opt.name === "giftid")?.value;
+  if (!gift_id) throw Error("no gift id provided.");
   const gift = await kira_item_gift_get(gift_id);
 
+  console.log("GIFT4:", gift);
+
   // checks
+  let fail_reason = "";
+  console.log( "gift.userIdRecipient:",gift, gift.userIdRecipient, gift.userIdOwner, userdata.userId);
   if (!gift)
+  {
+    fail_reason="disapear";
+  }
+  else if (gift.userIdRecipient && gift.userIdRecipient!==userdata.userId)
+  {
+    if (gift.userIdOwner===userdata.userId)
+    {
+      fail_reason="giver";
+    } else {
+      fail_reason="notu";
+    }
+  }
+  if (fail_reason)
   {
     return {
       method: "POST",
       body: {
-        content: translate(lang, "cmd.giftclaim.fail.disapear"),
-      }
-    }
-  }
-  if (gift.userIdRecipient) 
-  {
-    if (gift.userIdRecipient!==userdata.id)
-    {
-      //(gift.userIdOwner===userdata.id)
-      return {
-        method: "POST",
-        body: {
-          content: translate(lang, "cmd.giftclaim.fail.notu"),
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data:
+        {
+          flags: InteractionResponseFlags.EPHEMERAL,
+          content: translate(lang, "cmd.giftclaim.fail."+fail_reason),
         }
-      }
-    }
+      },
+    };
   }
 
-  console.log("GIFT4:",gift);
 
   await kira_item_gift_pick(gift, userdata.id);
   
   const item = await kira_item_get(userdata.id, gift.itemPtrId);
   console.log("ITEM4:",item);
-  {
-    return {
-      method: "PATCH",
-      body: {
-        content: translate(lang, "cmd.giftclaim.sucess", 
-        {gifterId: gift.userIdOwner, giftedId: userdata.userId, itemTitle: kira_item_title(lang, item.itemName)}),
-        components: []
-      }
+
+  await DiscordRequest(
+    `channels/${message.channel_id}/messages/${message.id}`,{
+    method: "PATCH",
+    body: {
+      content: translate(lang, "cmd.giftclaim.sucess", 
+      {gifterId: gift.userIdOwner, giftedId: userdata.userId, itemTitle: kira_item_title(lang, item.itemName)}),
+      components: [],
+      //flags: 4096//!
     }
-  }
+  })
 }
 
 
@@ -4150,7 +4166,7 @@ async function cmd_kira({
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
     line: "```ansi\n"+h_line+"```",
-    penmoji: `<:${h_attacker_pen.atr.emoji.name}:${h_attacker_pen.atr.emoji.id}>`
+    penmoji: `<:${items_info[h_attacker_pen.itemName].emoji.name}:${items_info[h_attacker_pen.itemName].emoji.id}>`
     //penmoji: "🪶a"
   });
   var h_all_flags = 0;
