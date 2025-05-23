@@ -4309,7 +4309,6 @@ async function cmd_kira({
   //creat kira run
   let h_finalDate = new Date();
   h_finalDate.setSeconds(h_finalDate.getSeconds() + h_span);
-  const h_run = {id: 0};
   //const h_run = await kira_run_create(
   //  h_finalDate,
   //  user.id,
@@ -4469,43 +4468,43 @@ async function cmd_kira({
   }
 
   //packing before wait
-  //await kira_run_pack(
-  //  h_run.id,
-  //  {
-  //    //used to execute
-  //    txt_reason: h_txt_reason,
-  //    span: h_span,
-  //    note_id: h_note.id,
+  await kira_run_pack(
+    h_run.id,
+    {
+      //used to execute
+      txt_reason: h_txt_reason,
+      span: h_span,
+      note_id: h_note.id,
 
-  //    lang_attacker: lang,
-  //    lang_victim: lang_victim,//used for counter
+      lang_attacker: lang,
+      lang_victim: lang_victim,//used for counter
 
-  //    will_ping_victim: h_will_ping_victim,
-  //    will_ping_attacker: h_will_ping_attacker,
-  //    will_fail: h_will_fail,
+      will_ping_victim: h_will_ping_victim,
+      will_ping_attacker: h_will_ping_attacker,
+      will_fail: h_will_fail,
 
-  //    victim_id: h_victim.id,
-  //    victim_data_id: h_victim_data?.id, // is possibly undefined (when [will_fail])
-  //    victim_username: h_victim_name,
-  //    victim_dm_id: h_victim_dm_id, //can be undefined
-  //    victim_message_id: h_victim_message?.id, //can be undefined
-  //    attacker_id: user.id,
-  //    // attacker_data_id: ?,
-  //    attacker_dm_id: h_attacker_dm_id, //can be undefined
-  //    attacker_message_id: h_attacker_message?.id, //can be undefined
-  //    attacker_book_id: userbook.id,
-  //  },
-  //  {
-  //    //used to know
-  //    attacker_id: user.id,
-  //    attacker_name: user.username,
-  //    guild_id: channel.guild_id,
-  //    channel_id: channel.id,
-  //    channel_name: channel.name,
-  //    message_id: channel.id,
-  //    the_token: token,
-  //  }
-  //);
+      victim_id: h_victim.id,
+      victim_data_id: h_victim_data?.id, // is possibly undefined (when [will_fail])
+      victim_username: h_victim_name,
+      victim_dm_id: h_victim_dm_id, //can be undefined
+      victim_message_id: h_victim_message?.id, //can be undefined
+      attacker_id: user.id,
+      // attacker_data_id: ?,
+      attacker_dm_id: h_attacker_dm_id, //can be undefined
+      attacker_message_id: h_attacker_message?.id, //can be undefined
+      attacker_book_id: userbook.id,
+    },
+    {
+      //used to know
+      attacker_id: user.id,
+      attacker_name: user.username,
+      guild_id: channel.guild_id,
+      channel_id: channel.id,
+      channel_name: channel.name,
+      message_id: channel.id,
+      the_token: token,
+    }
+  );
 
   //message/all
   return {
