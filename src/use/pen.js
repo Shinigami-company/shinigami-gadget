@@ -1,31 +1,36 @@
 import { api } from "gadget-server";
-import { kira_item_create, kira_item_get } from "./item";
+import { kira_item_create, kira_item_get, kira_item_unequip } from "./item";
 
 export const pen_atr = {
   pen_black: {
     max_durability: 10,
     filters: [],
+    broke_item: "broken_pen",
   },
   pen_blue: {
-      max_durability: 5,
-      filters: ["blue"],
+    max_durability: 5,
+    filters: ["blue"],
+    broke_item: "broken_pen",
   },
   pen_green: {
-      max_durability: 5,
-      filters: ["green"],
+    max_durability: 5,
+    filters: ["green"],
+    broke_item: "broken_pen",
   },
   pen_red: {
-      max_durability: 5,
-      filters: ["red"],
+    max_durability: 5,
+    filters: ["red"],
+    broke_item: "broken_pen",
   },
   pen_purple: {
-      max_durability: 5,
-      filters: ["purple"],
+    max_durability: 5,
+    filters: ["purple"],
+    broke_item: "broken_pen",
   },
   feather_white: {
-      max_durability: 3,
-      filters: [],
-      silent: true,
+    max_durability: 3,
+    filters: [],
+    silent: true,
   }
 }
 
@@ -56,12 +61,20 @@ export async function pen_get(userdataId, penName)
   return pen;
 }
 
-export async function pen_use(penItem)
+export async function pen_use(userdata, penItem)
 {
   penItem.meta.durability-=1;
   if (penItem.meta.durability<=0)
   {
-    await api.KiraItems.delete(penItem.id);
+    const broke_item=pen_atr[penItem.itemName].broke_item;
+    if (broke_item)
+    {
+      penItem.meta.oldName = penItem.itemName;
+      await kira_item_unequip(userdata, penItem.id);
+      await api.KiraItems.update(penItem.id, {meta: penItem.meta, itemName: broke_item});
+    } else {
+      await api.KiraItems.delete(penItem.id);
+    }
     return false;
   } else {
     await api.KiraItems.update(penItem.id, {meta: penItem.meta});

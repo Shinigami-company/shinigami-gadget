@@ -10,7 +10,7 @@ import {
   userBanType,
 } from "./enum.ts";
 
-import { sett_options_gift_apples, Settings } from "./sett.js";
+import { sett_emoji_gift_claim, sett_options_gift_apples, Settings } from "./sett.js";
 
 //--- imports ---
 
@@ -3784,6 +3784,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
               custom_id: `makecmd giftclaim ${gift.id}`,
               label: translate(lang, "cmd.gift.post.button.claim"),
               style: ButtonStyleTypes.SUCCESS,
+              emoji: sett_emoji_gift_claim
             }
           ]
         }
@@ -4261,7 +4262,7 @@ async function cmd_kira({
   //checked !
 
   //validate writting
-  const h_pen_remain = await pen_use(h_attacker_pen);
+  const h_pen_remain = await pen_use(userdata, h_attacker_pen);
   const h_dayGap = time_day_gap(userbook.updatedAt, locale, true, true);
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
   const h_note = await kira_line_append(userbook, h_line, h_dayGap);
@@ -4308,16 +4309,17 @@ async function cmd_kira({
   //creat kira run
   let h_finalDate = new Date();
   h_finalDate.setSeconds(h_finalDate.getSeconds() + h_span);
-  const h_run = await kira_run_create(
-    h_finalDate,
-    user.id,
-    h_victim_id,
-    h_victim_data?.id,
-    run_combo
-  );
-  kira_remember_task_add(h_finalDate, rememberTasksType.KIRA, {
-    runId: h_run.id,
-  });
+  const h_run = {id: 0};
+  //const h_run = await kira_run_create(
+  //  h_finalDate,
+  //  user.id,
+  //  h_victim_id,
+  //  h_victim_data?.id,
+  //  run_combo
+  //);
+  //kira_remember_task_add(h_finalDate, rememberTasksType.KIRA, {
+  //  runId: h_run.id,
+  //});
 
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
@@ -4467,43 +4469,43 @@ async function cmd_kira({
   }
 
   //packing before wait
-  await kira_run_pack(
-    h_run.id,
-    {
-      //used to execute
-      txt_reason: h_txt_reason,
-      span: h_span,
-      note_id: h_note.id,
+  //await kira_run_pack(
+  //  h_run.id,
+  //  {
+  //    //used to execute
+  //    txt_reason: h_txt_reason,
+  //    span: h_span,
+  //    note_id: h_note.id,
 
-      lang_attacker: lang,
-      lang_victim: lang_victim,//used for counter
+  //    lang_attacker: lang,
+  //    lang_victim: lang_victim,//used for counter
 
-      will_ping_victim: h_will_ping_victim,
-      will_ping_attacker: h_will_ping_attacker,
-      will_fail: h_will_fail,
+  //    will_ping_victim: h_will_ping_victim,
+  //    will_ping_attacker: h_will_ping_attacker,
+  //    will_fail: h_will_fail,
 
-      victim_id: h_victim.id,
-      victim_data_id: h_victim_data?.id, // is possibly undefined (when [will_fail])
-      victim_username: h_victim_name,
-      victim_dm_id: h_victim_dm_id, //can be undefined
-      victim_message_id: h_victim_message?.id, //can be undefined
-      attacker_id: user.id,
-      // attacker_data_id: ?,
-      attacker_dm_id: h_attacker_dm_id, //can be undefined
-      attacker_message_id: h_attacker_message?.id, //can be undefined
-      attacker_book_id: userbook.id,
-    },
-    {
-      //used to know
-      attacker_id: user.id,
-      attacker_name: user.username,
-      guild_id: channel.guild_id,
-      channel_id: channel.id,
-      channel_name: channel.name,
-      message_id: channel.id,
-      the_token: token,
-    }
-  );
+  //    victim_id: h_victim.id,
+  //    victim_data_id: h_victim_data?.id, // is possibly undefined (when [will_fail])
+  //    victim_username: h_victim_name,
+  //    victim_dm_id: h_victim_dm_id, //can be undefined
+  //    victim_message_id: h_victim_message?.id, //can be undefined
+  //    attacker_id: user.id,
+  //    // attacker_data_id: ?,
+  //    attacker_dm_id: h_attacker_dm_id, //can be undefined
+  //    attacker_message_id: h_attacker_message?.id, //can be undefined
+  //    attacker_book_id: userbook.id,
+  //  },
+  //  {
+  //    //used to know
+  //    attacker_id: user.id,
+  //    attacker_name: user.username,
+  //    guild_id: channel.guild_id,
+  //    channel_id: channel.id,
+  //    channel_name: channel.name,
+  //    message_id: channel.id,
+  //    the_token: token,
+  //  }
+  //);
 
   //message/all
   return {

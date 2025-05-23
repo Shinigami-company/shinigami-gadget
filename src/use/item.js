@@ -112,7 +112,7 @@ export async function kira_item_create(userdataId, lang, itemName, dolarValues =
 export function kira_item_title(lang, itemName, withEmoji=true)
 {
   return ((withEmoji)
-    ? `<:${items_info[itemName].emoji.name}:${items_info[itemName].emoji.id}>`
+    ? `<:${items_info[itemName].emoji.name}:${items_info[itemName].emoji.id}> `
     : '')
   + translate(lang, "item."+itemName+".title");
 };
@@ -176,7 +176,7 @@ export async function kira_item_delete(userdataId, itemId) {
   return true;
 }
 
-export async function kira_unequip(userdata, itemId)
+export async function kira_item_unequip(userdata, itemId)
 {
   // pen
   if (toString(userdata.equipedPen.id)===toString(itemId))
@@ -189,7 +189,7 @@ export async function kira_unequip(userdata, itemId)
 
 export async function kira_item_gift_send_item(itemId, userdataOwner, usernameOwner, userIdRecipient) {
   if (!await kira_item_get(userdataOwner.id, itemId)) return false;
-  await kira_unequip(userdataOwner, itemId);
+  await kira_item_unequip(userdataOwner, itemId);
   //await api.KiraUsers.update(itemId, {myItems: {_unlink:[{id: userdataIdOwner}]}});//not this way
   await api.KiraItems.update(itemId, {ownerPtr: {_link:null}});
   return await api.KiraItemGift.create({itemPtr: {_link: itemId}, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient});

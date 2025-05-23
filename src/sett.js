@@ -134,6 +134,11 @@ export const sett_emoji_objects = {
   },
 }
 
+export const sett_emoji_gift_claim = {
+  id: null,
+  name: "🎁",
+}
+
 //--commands--
 const dailyAmount = 1;
 const dailyStreakReward = [

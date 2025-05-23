@@ -165,7 +165,7 @@
 "cmd.gift.pick.user": "Who do you wanna give **$[itemTitle]** to?",
 "cmd.gift.pick.user.place": "The one you want to give the thing",
 "cmd.gift.pick.user.all": "Anyone",
-"cmd.gift.pick.apple": ":apple:$[price] $[unit]",
+"cmd.gift.pick.apple": ":apple: $[price] $[unit]",
 "cmd.gift.post.content.everyone": "<@$[gifterId]> put a giftbox on the ground",
 "cmd.gift.post.content.one": "<@$[gifterId]> put a giftbox in front of <@$[giftedId]>'s door",
 "cmd.gift.post.button.claim": "CLAIM",
@@ -390,6 +390,10 @@
 "item.pen_purple.lore": "A red ball-point pen.",
 "item.feather_white.title": "Feather",
 "item.feather_white.lore": "A writing nib. For discreet writing.",
+"item.broken_pen.title": "Broken pen",
+"item.broken_pen.lore": "A pen but broken.",
+"item.empty_pen.title": "Empty pen",
+"item.empty_pen.lore": "A pen but empty.",
 
 
 "rule.new.1":"**By writing their killer's name in a Death Note, a victim has the ability to undo their death. There is a limit to this.**",
