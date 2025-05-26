@@ -54,6 +54,9 @@
 "cmd.god.sub.tell.send.remitter.failed": "This is impossible to directly send a message to <@$[targetId]>.",
 "cmd.god.sub.pen.up": "you send something to <@$[targetId]>",
 "cmd.god.sub.pen.in": "pen '$[pentype]' created and equiped",
+"cmd.god.sub.item.up": "you gave [`$[itemId]`] to <@$[targetId]>",
+"cmd.god.sub.info.description.is": "some infomations about player <@$[targetId]>",
+"cmd.god.sub.info.description.no": "<@$[targetId]> is not a player",
 
 "cmd.ping.content": "Pong! 🏓",
 "cmd.ping.analyse": "reception time : $[timeTravel]\nreading time : $[timeFetch]\nthinking time : $[timeCompute]\nqueue time : $[timeQueue]\nanswer time : $[timeDefered]\n**TOTAL TIME : $[timeTotal]**",

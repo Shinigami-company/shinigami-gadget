@@ -169,13 +169,15 @@ const commands_structure = {
           description: "the action to do",
           required: true,
           choices: [
+            //dev
             {
               name: "test",
               value: "test",
               description: "execute the test script",
             },
             { name: "update", value: "update", description: "update an user" },
-
+            
+            //account
             { name: "revive", value: "revive", description: "revive someone" },
             { name: "kill", value: "kill", description: "kill someone" },
             {
@@ -204,6 +206,7 @@ const commands_structure = {
               description: "cancel someone's death",
             },
             
+            //apple
             {
               name: "give apple",
               value: "apple_give",
@@ -215,10 +218,12 @@ const commands_structure = {
               description: "fake giving apple",
             },
 
+            //message
             { name: "tell", value: "tell", description: "tell to someone" },
             { name: "mail", value: "mail", description: "mail to someone" },
             { name: "info", value: "info", description: "get info about someone" },
             
+            //item
             {
               name: "give pen",
               value: "pen",
@@ -1952,6 +1957,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
       }
       break;
 
+    //#mercy subcommand
     case "mercy":
       {
         if (!arg_user) {
@@ -1970,6 +1976,62 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
           },
         };
       };
+
+    case "info": 
+      {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
+        
+        let targer_userdata = await kira_user_get(arg_user);
+        let target_user = await DiscordUserById(arg_user);
+        
+        
+        let fields = [
+          {
+            name: "userId",
+            value: arg_user,
+          },
+        ]
+        if (targer_userdata)
+          fields.push(
+            {
+              name: "lang",
+              value: targer_userdata.lang,
+            },
+            {
+              name: "apples",
+              value: targer_userdata.apples,
+            },
+            {
+              name: "dmId",
+              value: targer_userdata.dmId,
+            }
+          );
+
+        console.log("fields:",fields);
+
+        return {
+          method: "PATCH",
+          body: {
+            content: " ",
+            embeds:
+            [
+              {
+                description: (targer_userdata)
+                ? translate(lang, `cmd.god.sub.info.description.is`, {"targetId": arg_user } )
+                : translate(lang, `cmd.god.sub.info.description.no`, {"targetId": arg_user } ),
+                fields,
+              }
+            ]
+          },
+        };
+      }
 
 
     //#mail subcommand
@@ -2164,17 +2226,13 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
 
         let itemName = arg_texto;
 
-        const pen=await kira_item_create(userdata.id, lang, itemName);
+        const item=await kira_item_create(targetdata.id, lang, itemName);
 
 
         return {
           method: "PATCH",
           body: {
-            content: `
-${translate(lang, "cmd.god.sub.pen.up", {targetId: targetdata.userId})}\`\`\`ansi
-${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
-\`\`\`
-`
+            content: translate(lang, "cmd.god.sub.item.up", { targetId: targetdata.userId, itemName })
           }
         };
       }

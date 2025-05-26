@@ -3,8 +3,7 @@ import { api } from "gadget-server";
 import { SETT_CMD } from "../sett.js";
 
 import { FeedbackState, userBanType } from "../enum.ts";
-import { DiscordUserOpenDm } from "./utils.js";
-import { kira_user_dm_id } from "../use/kira.js";
+import { DiscordUserOpenDm } from "../utils.js";
 
 export async function kira_do_refreshCommands() {
   if (false)
