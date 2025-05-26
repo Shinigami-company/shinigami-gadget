@@ -3,6 +3,8 @@ import { api } from "gadget-server";
 import { SETT_CMD } from "../sett.js";
 
 import { FeedbackState, userBanType } from "../enum.ts";
+import { DiscordUserOpenDm } from "./utils.js";
+import { kira_user_dm_id } from "../use/kira.js";
 
 export async function kira_do_refreshCommands() {
   if (false)
@@ -39,6 +41,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       giveUp: true,
       banValue: true,
       //banTime: true,
+      dmId: true,
       feedbackState: true,
       statPtr: { id: true },
       achivPtr: { id: true },
@@ -140,6 +143,15 @@ export async function kira_users_rank(f_onKey) {
     first: 3,
   });
 } //return 3 best kills userdata
+
+export async function kira_user_dm_id(userdata)
+{
+  if (userdata.dmId)
+    return userdata.dmId;
+  let dmId = await DiscordUserOpenDm(userdata.userId);
+  await api.KiraUsers.update(userdata.id, { dmId });
+  return dmId;
+}
 
 export async function kira_user_set_daily(f_dataId) {
   await api.KiraUsers.update(f_dataId, {

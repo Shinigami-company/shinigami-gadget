@@ -26,7 +26,7 @@ import {
   TextStyleTypes,
 } from "discord-interactions";
 import { DiscordRequest } from "./utils.js";
-import { DiscordUserById, DiscordUserOpenDm } from "./utils.js";
+import { DiscordUserById } from "./utils.js";
 
 import {
   SETT_CMD,
@@ -55,6 +55,7 @@ import {
   kira_user_check_banTime,
   kira_user_remove_ban,
   kira_user_set_ban,
+  kira_user_dm_id,
 } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
@@ -739,6 +740,7 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
+      systemOnly: true
     }
   },
   giftclaim: {
@@ -753,6 +755,7 @@ const commands_structure = {
     },
     atr: {
       defered: deferedActionType.NO,
+      systemOnly: true
     }
   },
 
@@ -1488,7 +1491,7 @@ async function check_can_alive({ lang, userdata }) {
   //message
   if (SETT_CMD.kira.comebackBy.check.self.message) {
     //open DM
-    const dm_id = await DiscordUserOpenDm(userdata.userId);
+    const dm_id = await kira_user_dm_id(userdata);
     //send message
     try {
       //var h_victim_message =
@@ -1645,7 +1648,7 @@ async function check_mailbox({ lang, userdata }) {
 
   try {
     //open DM
-    var h_recipient_dm_id = await DiscordUserOpenDm(userdata.userId);
+    var h_recipient_dm_id = await kira_user_dm_id(userdata);
 
     //send message
     await DiscordRequest(
@@ -2065,7 +2068,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
 
         try {
           //open DM
-          var h_recipient_dm_id = await DiscordUserOpenDm(h_targetId);
+          var h_recipient_dm_id = await kira_user_dm_id(targetdata);
 
           //send message
           var h_recipient_message_response = await DiscordRequest(
@@ -4309,16 +4312,16 @@ async function cmd_kira({
   //creat kira run
   let h_finalDate = new Date();
   h_finalDate.setSeconds(h_finalDate.getSeconds() + h_span);
-  //const h_run = await kira_run_create(
-  //  h_finalDate,
-  //  user.id,
-  //  h_victim_id,
-  //  h_victim_data?.id,
-  //  run_combo
-  //);
-  //kira_remember_task_add(h_finalDate, rememberTasksType.KIRA, {
-  //  runId: h_run.id,
-  //});
+  const h_run = await kira_run_create(
+    h_finalDate,
+    user.id,
+    h_victim_id,
+    h_victim_data?.id,
+    run_combo
+  );
+  kira_remember_task_add(h_finalDate, rememberTasksType.KIRA, {
+    runId: h_run.id,
+  });
 
   var h_all_msg = translate(lang, "cmd.kira.start.guild", {
     attackerId: user.id,
@@ -4334,7 +4337,7 @@ async function cmd_kira({
     let firstTime = (h_victim_data.justCreated===true);
     try {
       //open DM
-      var h_victim_dm_id = await DiscordUserOpenDm(h_victim_id);
+      var h_victim_dm_id = await kira_user_dm_id(h_victim_data);
 
       //get lang
 
@@ -4404,7 +4407,7 @@ async function cmd_kira({
   if (h_will_ping_attacker) {
     try {
       //open DM
-      var h_attacker_dm_id = await DiscordUserOpenDm(user.id);
+      var h_attacker_dm_id = await kira_user_dm_id(userdata);
 
       //send message
       var h_attacker_message = await DiscordRequest(
@@ -4447,7 +4450,10 @@ async function cmd_kira({
         }
       ).then((res) => res.json());
     } catch (e) {
-      let errorMsg = JSON.parse(e.message);
+      let errorMsg;
+      try {
+        errorMsg = JSON.parse(e.message);
+      } catch (e2) {}
       if (errorMsg?.code === 50007) {
         h_all_msg +=
           translate(lang, "cmd.kira.warn.nomp", { userId: user.id })+"\n";
@@ -4462,9 +4468,13 @@ async function cmd_kira({
     h_all_flags += Math.pow(2,12);//SUPPRESS_NOTIFICATIONS
     console.log("h_all_flags;",h_all_flags);
   }
-  if (!h_pen_remain)
+  if (!h_pen_remain===-1)
   {
-    h_all_msg += translate(lang, "cmd.kira.warn.pen.break")+"\n";
+    h_all_msg += translate(lang, "cmd.kira.warn.pen.empty")+"\n";
+  }
+  if (!h_pen_remain===-2)
+  {
+    h_all_msg += translate(lang, "cmd.kira.warn.pen.broken")+"\n";
   }
 
   //packing before wait
@@ -4927,7 +4937,7 @@ export async function cmd_comeback(data) {
 
   {
     //open DM
-    const dm_id = await DiscordUserOpenDm(userdata.userId);
+    const dm_id = await kira_user_dm_id(userdata);
 
     //send message
     try {

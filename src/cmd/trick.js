@@ -13,9 +13,9 @@ import { time_format_string_from_int, sleep } from "../tools.js";
 //things needed from outside
 import { sett_emoji_apple_croc, sett_catalog_knows, sett_emoji_coin_throw } from "../sett.js";
 import { KnowUsableBy } from "../enum.ts";
-import { kira_user_add_apple, kira_user_get } from "../use/kira.js";
+import { kira_user_add_apple, kira_user_get, kira_user_dm_id } from "../use/kira.js";
 
-import { DiscordMessageChanged, DiscordRequest, DiscordUserOpenDm } from "../utils.js";
+import { DiscordMessageChanged, DiscordRequest } from "../utils.js";
 import { kira_apple_pay, kira_apple_send } from "../use/apple.js";
 import { kira_game_coin_clean, kira_game_coin_create, kira_game_coin_fail, kira_game_coin_get, kira_game_coin_pick_side, kira_game_coin_pick_user, kira_game_coin_pop } from "../use/game.js";
 import { stats_simple_add } from "../use/stats.js";
@@ -105,9 +105,9 @@ export const tricks_all = [
 
         try {
           //open DM
-          const victim_dm_id = await DiscordUserOpenDm(target_id);
           
           const h_victim_data = await kira_user_get(target_id, false);
+          const victim_dm_id = await kira_user_dm_id(h_victim_data);
           const lang_victim = h_victim_data ? await lang_get(h_victim_data, undefined) : lang;
           //send message
 

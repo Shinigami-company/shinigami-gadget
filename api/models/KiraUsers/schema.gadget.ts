@@ -49,6 +49,12 @@ export const schema: GadgetModel = {
       includeTime: true,
       storageKey: "bRmM-ugIUS1a::_hVDoSZAH3eF",
     },
+    dmDate: {
+      type: "dateTime",
+      includeTime: true,
+      storageKey: "XBySdkFWJxOn",
+    },
+    dmId: { type: "string", storageKey: "IaMZi7dVthSt" },
     equipedPen: {
       type: "belongsTo",
       parent: { model: "KiraItems" },

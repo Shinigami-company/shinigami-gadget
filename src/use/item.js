@@ -66,6 +66,12 @@ export const items_info = {
     message_claim: false,
     message_lore: true,
   },
+  empty_pen: {
+    type: itemType.JUNK,
+    emoji: sett_emoji_pens.empty,
+    message_claim: false,
+    message_lore: true,
+  },
 }
 
 export async function kira_item_create(userdataId, lang, itemName, dolarValues = {}, metaDataValues = {}, returnClaimMsg=false) {

@@ -3,34 +3,45 @@ import { kira_item_create, kira_item_get, kira_item_unequip } from "./item";
 
 export const pen_atr = {
   pen_black: {
-    max_durability: 10,
     filters: [],
-    broke_item: "broken_pen",
+    broken_item: "broken_pen",
+    broken_chance: .1,
+    empty_item: "empty_pen",
+    empty_durability: 10,
   },
   pen_blue: {
-    max_durability: 5,
     filters: ["blue"],
-    broke_item: "broken_pen",
+    broken_item: "broken_pen",
+    broken_chance: .1,
+    empty_item: "empty_pen",
+    empty_durability: 5,
   },
   pen_green: {
-    max_durability: 5,
     filters: ["green"],
-    broke_item: "broken_pen",
+    broken_item: "broken_pen",
+    broken_chance: .1,
+    empty_item: "empty_pen",
+    empty_durability: 5,
   },
   pen_red: {
-    max_durability: 5,
     filters: ["red"],
-    broke_item: "broken_pen",
+    broken_item: "broken_pen",
+    broken_chance: .1,
+    empty_item: "empty_pen",
+    empty_durability: 5,
   },
   pen_purple: {
-    max_durability: 5,
     filters: ["purple"],
-    broke_item: "broken_pen",
+    broken_item: "broken_pen",
+    broken_chance: .1,
+    empty_item: "empty_pen",
+    empty_durability: 5,
   },
   feather_white: {
-    max_durability: 3,
     filters: [],
     silent: true,
+    broken_chance: 0,//no item : will delete
+    empty_durability: 3,//no item : will delete
   }
 }
 
@@ -44,7 +55,7 @@ export const pen_filters = {
 export async function pen_create(userdataId, lang, penName)
 {
   if (!pen_atr[penName]) throw Error(`the pen [${penName}] does not exist.`)
-  return await kira_item_create(userdataId, lang, penName, {}, {durability: pen_atr[penName].max_durability}, false);
+  return await kira_item_create(userdataId, lang, penName, {}, {use: 0}, false);
 }
 
 export async function pen_equip(userdataId, penName)
@@ -63,22 +74,37 @@ export async function pen_get(userdataId, penName)
 
 export async function pen_use(userdata, penItem)
 {
-  penItem.meta.durability-=1;
-  if (penItem.meta.durability<=0)
-  {
-    const broke_item=pen_atr[penItem.itemName].broke_item;
-    if (broke_item)
+  penItem.meta.use+=1;
+  const empty_durability = pen_atr[penItem.itemName].empty_durability;
+  const broken_chance = pen_atr[penItem.itemName].broken_chance;
+  if (empty_durability && penItem.meta.use>=empty_durability)
+  {//empty
+    const newItemName=pen_atr[penItem.itemName].empty_item;
+    if (newItemName)
     {
       penItem.meta.oldName = penItem.itemName;
       await kira_item_unequip(userdata, penItem.id);
-      await api.KiraItems.update(penItem.id, {meta: penItem.meta, itemName: broke_item});
+      await api.KiraItems.update(penItem.id, {meta: penItem.meta, itemName: newItemName});
     } else {
       await api.KiraItems.delete(penItem.id);
     }
-    return false;
-  } else {
+    return -1;
+  }
+  else if (broken_chance && Math.random()<broken_chance)
+  {//break
+    const newItemName=pen_atr[penItem.itemName].broken_item;
+    if (newItemName)
+    {
+      penItem.meta.oldName = penItem.itemName;
+      await kira_item_unequip(userdata, penItem.id);
+      await api.KiraItems.update(penItem.id, {meta: penItem.meta, itemName: newItemName});
+    } else {
+      await api.KiraItems.delete(penItem.id);
+    }
+    return -2;
+  } else {//good
     await api.KiraItems.update(penItem.id, {meta: penItem.meta});
-    return true;
+    return 1;
   }
 }
 
