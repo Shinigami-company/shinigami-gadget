@@ -1,14 +1,14 @@
 import { translate } from "../lang";
-import { kira_item_create, kira_item_find, items_info } from "./item";
+import { Item } from "./item";
 
 
-export async function kira_item_event_claim(userdata, user, itemName, lang) {
-  if (await kira_item_find(userdata.id, itemName))
+export async function event_claim_item(userdata, user, itemName, lang) {
+  if (await Item.inventory_find_one(userdata.id, itemName))
   {//already an egg
     return "";
   }
 
   const dolarValues = { userdata, user };
 
-  return await kira_item_create(userdata.id, lang, itemName, dolarValues);
+  return await Item.create(userdata.id, lang, itemName, dolarValues)?.itemClaimTxt;
 }

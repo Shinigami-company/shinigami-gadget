@@ -132,8 +132,8 @@ import {
   time_day_gap,
 } from "./tools.js"; // tools
 
-import { kira_item_event_claim } from "./use/claim.js";
-import { items_info, kira_item_delete, e, kira_item_get, kira_items_ids, kira_item_gift_pick, kira_item_title, kira_item_gift_get, kira_item_gift_send_item, kira_item_gift_send_apples, kira_item_create } from "./use/item.js";
+import { event_claim_item } from "./use/claim.js";
+import { items_info, Item } from "./use/item";
 
 import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
@@ -148,6 +148,7 @@ import { channel } from "diagnostics_channel";
 import { error } from "console";
 import { register } from "module";
 import { randomInt } from "crypto";
+import { act } from "react-dom/test-utils";
 
 
 //the structure to describe the command
@@ -842,7 +843,7 @@ const commands_structure = {
       systemOnly: true,
     },
   },
-  shop_how: {
+  shophow: {
     functions: {
       exe: cmd_shop_how,
       checks: [[check_mailbox, true],
@@ -854,7 +855,7 @@ const commands_structure = {
       ],
     },
     atr: {
-      defered: deferedActionType.WAIT_UPDATE,
+      defered: deferedActionType.WAIT_MESSAGE,
       ephemeral: true,
       systemOnly: true,
     },
@@ -2374,7 +2375,7 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
 
         let itemName = arg_texto;
 
-        const item=await kira_item_create(targetdata.id, lang, itemName);
+        const item=await Item.create(targetdata.id, lang, itemName);
 
 
         return {
@@ -3284,7 +3285,7 @@ async function cmd_apple({ userdata, user, locale, lang }) {
 
     //claim/event
     //!temporary
-    //h_txt_claims += await kira_item_event_claim(userdata, user, "event_egg_2025", lang);
+    //h_txt_claims += await event_claim_item(userdata, user, "event_egg_2025", lang);
 
     //claims/others
     const h_claims = await kira_apple_claims_get(userdata.id);
@@ -3751,7 +3752,7 @@ async function cmd_see({ data, userbook, lang }) {
 
 //#pocket command
 async function cmd_pocket({ data, userdata, userbook, lang }) {
-  const items_all = await kira_items_ids(userdata.id);
+  const items_all = await Item.inventory_ids(userdata.id);
 
   if (items_all.length === 0)
   {
@@ -3797,24 +3798,23 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   {
     for (let i=0; i<items_all.length; i++)
     {
-      let item_selected = await kira_item_get(userdata.id, items_all[i].id);
+      let item_selected = await Item.get(userdata.id, items_all[i].id);
       const already = (userdata.equipedPen?.id===item_selected.id);
       fields.push(
         {
-          name: kira_item_title(lang, item_selected.itemName) + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
-          value: item_selected.itemLoreTxt.markdown
-        //value: kira_item_title(lang, item_selected.itemName), item_selected.itemLoreDict)
+          name: item_selected.get_title(lang) + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
+          value: item_selected.get_lore(lang)
         }
       )
     }
   }
   else
   {
-    const item_selected = await kira_item_get(userdata.id, items_all[show_page-1]?.id);
+    const item_selected = await Item.get(userdata.id, items_all[show_page-1]?.id);
     const already = (userdata.equipedPen?.id===item_selected.id);
     fields.push(
       {
-        name: kira_item_title(lang, item_selected.itemName) + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
+        name: item_selected.get_title(lang) + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
         value: item_selected.itemLoreTxt.markdown
       }
     );
@@ -3842,7 +3842,8 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
 
     if (droped) 
     {
-      await kira_item_delete(userdata.id, item_selected.id);
+      await item_selected.delete(userdata.id);
+      item_selected = null;
     }
     item_components.push(
       {
@@ -3927,36 +3928,53 @@ async function cmd_shop({ data, userdata, userbook, lang }) {
   
   //arg/page
   let action_page = data.options?.find((opt) => opt.name === "page")?.value;//1,n
-  //const equipit = (data.options?.find((opt) => opt.name === "buyit")?.value===1);//_,0,1
-  const buyit = data.options?.find((opt) => opt.name === "buyit")?.value;//_,0,1,2
+  const buyit = data.options?.find((opt) => opt.name === "buyit")?.value;//_,1,2
+  console.log("data.options;",data.options, action_page, buyit);
 
   let fields = [];
   let components=[];
   let content = translate(lang, "cmd.shop.content.all");
   let footer_text = "";
+  let toopoor=false;
 
-  for (let i in items_shop)
+  if (buyit === 2)
+  {// buy it if done
+    let product = items_shop[action_page - 1];
+    toopoor = !await kira_apple_pay(userdata.id, product.price, true);
+    if (!toopoor)
+    {
+      var buy_item = await Item.create(userdata.id, lang, product.name);
+    }
+  }
+
+  for (let i=0; i < items_shop.length; i++)
   {
-    let item = items_shop[i];
+    let product = items_shop[i];
     const actioned = (action_page===i+1);
 
     fields.push(
       {
-        name: kira_item_title(lang, item.name),
-        value: translate(lang, "cmd.shop.item.value", {"price": item.price})
+        name: Item.static_title(product.name, lang, true),
+        value: translate(lang, "cmd.shop.item.value", {"price": product.price})
         //value: item_selected.itemLoreTxt.markdown
       }
     )
-    let buy_state = "one";
+    let buy_action = 0;
+    if (actioned) buy_action = buyit;
+    let buy_state = ["one", "confirm", "done"][buy_action];
+    if (actioned && toopoor) buy_state = "poor";
+
+    console.log(`makecmd shop_edit ${buy_action+1}+${i+1}`);
+
     components.push(
       {
         type: MessageComponentTypes.ACTION_ROW,
         components: [
           {
             type: MessageComponentTypes.BUTTON,
-            custom_id: `makecmd shop_edit buy+${i}+1`,
-            label: translate(lang, "cmd.shop.get."+buy_state, {"price": item.price, "itemTitle": kira_item_title(lang, item.name, false)}),
-            style: (item.price>userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
+            custom_id: `makecmd shop_edit ${buy_action+1}+${i+1}`,
+            label: translate(lang, "cmd.shop.get."+buy_state, {"price": product.price, "unit": translate(lang, `word.apple${product.price > 1 ? "s" : ""}`), "itemTitle": Item.static_title(product.name, lang, false)}),
+            style: (product.price > userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
             emoji: sett_emoji_apple_croc,
             disabled: (buy_state == "done")
           },
@@ -3974,7 +3992,7 @@ async function cmd_shop({ data, userdata, userbook, lang }) {
         [
           {
             type: MessageComponentTypes.BUTTON,
-            custom_id: `makecmd shop_eph how`,
+            custom_id: `makecmd shophow`,
             label: translate(lang, "cmd.shop.get.how"),
             style: ButtonStyleTypes.SECONDARY,
           }
@@ -4032,12 +4050,12 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
   if (!item_id)
   {
     let options_objects = [];
-    const items_all = await kira_items_ids(userdata.id);
-    for (let item of items_all) {
+    const items_all = await Item.inventory_ids(userdata.id);
+    for (let item_minimal of items_all) {
       options_objects.push({
-        value: item.id,
-        emoji: items_info[item.itemName].emoji,
-        label: kira_item_title(lang, item.itemName, false)
+        value: item_minimal.id,
+        emoji: items_info[item_minimal.itemName].emoji,
+        label: Item.static_title(item_minimal.itemName, lang, false)
       });
     }
     
@@ -4120,7 +4138,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
     }
   } else {
 
-    item = await kira_item_get(userdata.id, item_id);
+    item = await Item.get(userdata.id, item_id);
     if (!item)
     {
       return {
@@ -4130,7 +4148,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
         }
       }
     }
-    itemTitle = kira_item_title(lang, item.itemName, false);
+    itemTitle = item.get_title(lang, false);
   }
 
   if (!gifted_id)
@@ -4168,9 +4186,15 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
 
   const recipientId = (gifted_id==="@everyone") ? undefined : gifted_id;
 
-  const gift = (isApple)
-   ? await kira_item_gift_send_apples(appleAmount, userdata, user.username, recipientId)
-   : await kira_item_gift_send_item(item_id, userdata, user.username, recipientId);
+  let gift;
+  if (isApple)
+  {
+   gift = await Item.gift_apples(appleAmount, userdata, user.username, recipientId)
+  } else {
+   let item = await Item.get(userdata.id, item_id);
+   console.log("item:",item.ownerPtr, item_id, item);
+   gift = await item.gift_send(userdata, user.username, recipientId);
+  }
   console.log("GIFT3:",gift);
   
   if (!gift) throw Error("the gift cannot be send");
@@ -4204,7 +4228,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     console.log("data.options:",data.options);
     throw Error("no gift id provided.");
   }
-  const gift = await kira_item_gift_get(gift_id);
+  const gift = await Item.gift_get(gift_id);
 
   console.log("GIFT4:", gift);
 
@@ -4249,7 +4273,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
   }
 
 
-  await kira_item_gift_pick(gift, userdata);
+  await Item.gift_pick(gift, userdata);
   
   const isApple = (gift.appleAmount!=null);
   let item;
@@ -4264,12 +4288,12 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
       )
     });
   } else {
-    item = await kira_item_get(userdata.id, gift.itemPtrId);
+    item = await Item.get(userdata.id, gift.itemPtrId);
     if (!item)
     {
       throw Error("the item fled");
     }
-    itemTitle = kira_item_title(lang, item.itemName, false);
+    itemTitle = item.get_title(lang, false);
   }
   console.log("ITEM4:",item);
   

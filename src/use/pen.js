@@ -1,5 +1,5 @@
 import { api } from "gadget-server";
-import { kira_item_create, kira_item_get, kira_item_unequip } from "./item";
+import { Item } from "./item";
 
 export const pen_atr = {
   pen_black: {
@@ -55,7 +55,7 @@ export const pen_filters = {
 export async function pen_create(userdataId, lang, penName)
 {
   if (!pen_atr[penName]) throw Error(`the pen [${penName}] does not exist.`)
-  return await kira_item_create(userdataId, lang, penName, {}, {use: 0}, false);
+  return await Item.create(userdataId, lang, penName, {}, {use: 0});
 }
 
 export async function pen_equip(userdataId, penName)
@@ -66,7 +66,7 @@ export async function pen_equip(userdataId, penName)
 
 export async function pen_get(userdataId, penName)
 {
-  let pen=await kira_item_get(userdataId, penName);
+  let pen = await Item.inventory_find_one(userdataId, penName);
   if (!pen) return undefined;
   pen.atr=pen_atr[pen.itemName];
   return pen;
@@ -83,7 +83,7 @@ export async function pen_use(userdata, penItem)
     if (newItemName)
     {
       penItem.meta.oldName = penItem.itemName;
-      await kira_item_unequip(userdata, penItem.id);
+      await penItem.unequip(userdata);
       await api.KiraItems.update(penItem.id, {meta: penItem.meta, itemName: newItemName});
     } else {
       await api.KiraItems.delete(penItem.id);
@@ -96,10 +96,11 @@ export async function pen_use(userdata, penItem)
     if (newItemName)
     {
       penItem.meta.oldName = penItem.itemName;
-      await kira_item_unequip(userdata, penItem.id);
-      await api.KiraItems.update(penItem.id, {meta: penItem.meta, itemName: newItemName});
+      await penItem.unequip(userdata);
+      await penItem.change(newItemName, penItem.meta);
     } else {
-      await api.KiraItems.delete(penItem.id);
+      await penItem.delete();
+      penItem = null;
     }
     return -2;
   } else {//good

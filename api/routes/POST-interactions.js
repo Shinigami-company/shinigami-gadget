@@ -170,9 +170,11 @@ export default async function route({ request, reply, api, logger, connections }
           //2 : equip
           //3 : drop
           //4 : confirm drop
-          data = { name: 'pocket_edit', options: [{ name: ((determinant!=0) ? 'page' : 'nopage'), value: parseInt(h_arg[1]) },
-          { name: 'equipit', value: (determinant==2 ? 1 : 0) },
-          { name: 'dropit', value: (determinant==3 ? 1 : determinant==4 ? 2 : 0) }] };
+          data = { name: 'pocket_edit', options: [
+            { name: ((determinant!=0) ? 'page' : 'nopage'), value: parseInt(h_arg[1]) },
+            { name: 'equipit', value: (determinant==2 ? 1 : 0) },
+            { name: 'dropit', value: (determinant==3 ? 1 : determinant==4 ? 2 : 0) }
+          ] };
         } break;
 
         case ("gift"):
@@ -191,6 +193,16 @@ export default async function route({ request, reply, api, logger, connections }
             { name: 'giftid', value: parseInt(h_arg[0])},
           ]}
         } break;
+
+        case ("shop_edit"): {
+          data = { name: 'shop_edit',
+          options: [
+            {name: 'page', value: parseInt(h_arg[1])},
+            {name: 'buyit', value: parseInt(h_arg[0])}
+          ]
+          }
+        } break;
+        case ("shophow"): {} break;
 
         case ("see"):
         {//old

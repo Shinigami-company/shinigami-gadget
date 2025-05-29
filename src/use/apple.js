@@ -28,14 +28,14 @@ export async function kira_apple_pay(f_dataId, f_amountPay, f_poorHandle=false) 
 }
 
 
-export async function kira_apple_send(f_dataId, f_amount, f_userdataStatId=undefined, f_claimType=false, f_claimValue={}) {
+export async function kira_apple_send(f_dataId, f_amount, f_userdataStatId=undefined, f_claimType="", f_claimValue={}) {
   //add apples
   await kira_user_add_apple(f_dataId, f_amount);
   //add stats
   if (f_amount>0 && f_userdataStatId)
     await stats_simple_add(f_userdataStatId, "ever_apple", f_amount); //+stats
   //add a claim message
-  if (f_claimType)
+  if (f_claimType!="")
   {
     if (f_amount<0)
       f_claimValue['removed']=f_amount*-1;
