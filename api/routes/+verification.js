@@ -10,10 +10,10 @@ import { VerifyDiscordRequest } from '../../src/utils.js';
  */
 export default async function (server) {
   server.addHook('preHandler', (request, reply, done) => {
-    //console.log("RAW REQUEST:",request.raw.url);
-    if (request.raw.url !== '/awake') {
-      VerifyDiscordRequest(request, reply, process.env.PUBLIC_KEY);
-    }
+    console.log("RAW REQUEST:",request.raw.url);
+    //if (request.raw.url !== '/awake') {
+    //  VerifyDiscordRequest(request, reply, process.env.PUBLIC_KEY);
+    //}
     done();
   })
 }

@@ -141,6 +141,7 @@ linkme("linked from cmd"); //need to use a function from there
 
 //commands components
 import { tricks_all } from "./cmd/trick.js";
+import { shop_byable_items } from "./cmd/shop.js";
 import { cmd_rules } from "./cmd/rules.js";
 import { webhook_reporter } from "./use/post.js";
 import { channel } from "diagnostics_channel";
@@ -296,6 +297,33 @@ const commands_structure = {
       defered: deferedActionType.WAIT_MESSAGE,
     },
   },
+  god_form: {
+    functions: {
+      exe: cmd_god_form,
+      checks: [[check_mailbox, true],
+        [check_react_is_self, true],
+        [check_is_god, true]
+      ],
+    },
+    atr: {
+      defered: deferedActionType.NO,
+      notDeferred: true,
+      systemOnly: true,
+    },
+  },
+  god_submit: {
+    functions: {
+      exe: cmd_god,
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
+        [check_is_god, true]
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+      systemOnly: true,
+    },
+  },
 
   ping: {
     functions: {
@@ -391,6 +419,20 @@ const commands_structure = {
     atr: {
       defered: deferedActionType.NO,
       notDeferred: true,
+      systemOnly: true,
+    },
+  },
+  feedback_submit: {
+    functions: {
+      exe: cmd_feedback,
+      checks: [[check_mailbox, true],
+        [check_react_is_self, true],
+        [check_can_feedback, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+      ephemeral: true,
       systemOnly: true,
     },
   },
@@ -762,6 +804,60 @@ const commands_structure = {
       defered: deferedActionType.NO,
       systemOnly: true
     }
+  },
+
+  shop: {
+    functions: {
+      exe: cmd_shop,
+      checks: [[check_mailbox, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
+    },
+    register: {
+      name: "shop",
+      description: "You can buy cool things here",
+      //contexts: [0],//!disabled
+      type: 1,
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    },
+  },
+  shop_edit: {
+    functions: {
+      exe: cmd_shop,
+      checks: [[check_mailbox, true],
+        [check_react_is_self, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_UPDATE,
+      systemOnly: true,
+    },
+  },
+  shop_how: {
+    functions: {
+      exe: cmd_shop_how,
+      checks: [[check_mailbox, true],
+        [check_react_is_self, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_UPDATE,
+      ephemeral: true,
+      systemOnly: true,
+    },
   },
 
 
@@ -1977,6 +2073,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
         };
       };
 
+    //#info subcommand
     case "info": 
       {
         if (!arg_user) {
@@ -2086,83 +2183,134 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
     //#tell subcommand
     case "tell":
       {
-        if (!arg_user) {
-          return {
-            method: "PATCH",
-            body: {
-              content: translate(lang, "cmd.god.missing.user"),
-            },
-          };
-        }
+        const letter = data.options.find((opt) => opt.name === "letter")?.value;
+        const author = data.options.find((opt) => opt.name === "author")?.value;
+        let dmid = data.options.find((opt) => opt.name === "dmid")?.value;
+        let targetId = data.options.find((opt) => opt.name === "targetid")?.value;
 
-        if (!arg_texto) {
-          return {
-            method: "PATCH",
-            body: {
-              content: translate(lang, "cmd.god.missing.message"),
-            },
-          };
-        }
-
-        const h_targetId = arg_user;
-        const targetdata = await kira_user_get(h_targetId, false);
-
-        if (!targetdata) {
-          return {
-            method: "PATCH",
-            body: {
-              content: translate(lang, "cmd.god.sub.tell.fail.notplayer"),
-            },
-          };
-        }
-        
-        var recipient_content = translate(lang, "cmd.god.sub.tell.send.recipient.context");
-        var recipient_description = arg_texto;
-        var sucess = true;
-
-        const message_embed = [
-            {
-              color: book_colors[userbook.color].int,
-              description: recipient_description,
-            },
-          ]
-
-
-        try {
-          //open DM
-          var h_recipient_dm_id = await kira_user_dm_id(targetdata);
-
-          //send message
-          var h_recipient_message_response = await DiscordRequest(
-            `channels/${h_recipient_dm_id}/messages`,
-            {
-              method: "POST",
+        if (!letter)
+        {//then will send the form request
+          if (!arg_user) {
+            return {
+              method: "PATCH",
               body: {
-                content: recipient_content,
-                embeds: message_embed
+                content: translate(lang, "cmd.god.missing.user"),
               },
-            }
-          ).then((res) => res.json());
-        } catch (e) {
-          let errorMsg = JSON.parse(e.message);
-          if (errorMsg?.code === 50007) {
-            sucess=false;
-          } else throw e;
-        }
+            };
+          }
 
+          //if (!arg_texto) {
+          //  return {
+          //    method: "PATCH",
+          //    body: {
+          //      content: translate(lang, "cmd.god.missing.message"),
+          //    },
+          //  };
+          //}
+
+          const h_targetId = arg_user;
+          const targetdata = await kira_user_get(h_targetId, false);
+
+          if (!targetdata) {
+            return {
+              method: "PATCH",
+              body: {
+                content: translate(lang, "cmd.god.sub.tell.fail.notplayer"),
+              },
+            };
+          }
+
+          var sucess = true;
+          try {
+            //open DM
+            dmid = await kira_user_dm_id(targetdata);
+          } catch (e) {
+            let errorMsg = JSON.parse(e.message);
+            if (errorMsg?.code === 50007) {
+              sucess=false;
+            } else throw e;
+          }
+
+          if (!sucess)
+          {
+            return {
+              method: "PATCH",
+              body: {
+                content: translate(lang, "cmd.god.sub.tell.fail.nomp", {
+                  targetId: h_targetId,
+                })
+              },
+            };
+          }
+          
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.sub.tell.confirm", {
+                targetId: h_targetId,
+              }),
+              components: [
+                {
+                  type: MessageComponentTypes.ACTION_ROW,
+                  components: [
+                    {
+                      type: MessageComponentTypes.BUTTON,
+                      custom_id: `makecmd god_form true+${h_targetId}+${dmid}`,
+                      label: translate(lang, "cmd.god.sub.tell.confirm.yes"),
+                      emoji: sett_emoji_feedback_confirm,
+                      style: ButtonStyleTypes.PRIMARY,
+                    },
+                    {
+                      type: MessageComponentTypes.BUTTON,
+                      custom_id: `makecmd god_form false`,
+                      label: translate(lang, "cmd.god.sub.tell.confirm.no"),
+                      style: ButtonStyleTypes.SECONDARY,
+                    },
+                  ],
+                }
+              ]
+            },
+          };
+        }
+      else
+      {// will post the message
+
+        let embeds=[
+          {
+            color: book_colors[userbook.color].int,
+            description: letter,
+            footer: (author) 
+            ? {
+                text: author,
+              }
+            : undefined,
+          }
+        ];
+
+        //send message
+        await DiscordRequest(
+          `channels/${dmid}/messages`,
+          {
+            method: "POST",
+            body: {
+              content: translate(lang, 'cmd.god.sub.tell.send.recipient.content'),//! is the lang of the sender and not of the reciepient
+              embeds,
+            },
+          }
+        );
 
         return {
           method: "PATCH",
           body: {
-            content: translate(lang, "cmd.god.sub.tell.send.remitter." + ((sucess) ? "sended" : "failed"), {
-              targetId: h_targetId,
-              //targetName: targetdata.username,
+            content: translate(lang, "cmd.god.sub.tell.send.sender.content", {
+              targetId,
             }),
-            embeds: (sucess) ? message_embed : undefined
-          },
-        };
+            embeds,
+          }
+        }
       }
-      break;
+    }
+    break;
 
     //#pen subcommand
     case "pen":
@@ -2379,6 +2527,99 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
   }
 }
 
+async function cmd_god_form({ data, lang, token, id }) {
+  
+  if (!data.options[0].value) 
+  {//"NO" button
+    await DiscordRequest(`interactions/${id}/${token}/callback`, {
+      method: "POST",
+      body: {
+        type: InteractionResponseType.UPDATE_MESSAGE,
+      },
+    });
+    //else didnt valid token
+
+    //remove the message
+    await DiscordRequest(
+      `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
+      {
+        method: "DELETE",
+      }
+    );
+    return; //! return nothing withtout feedback
+  }
+
+  //POST input modal
+  {
+    await DiscordRequest(`interactions/${id}/${token}/callback`, {
+      method: "POST",
+      body: {
+        type: InteractionResponseType.MODAL,
+        data: {
+          title: translate(lang, "cmd.god.sub.tell.modal.title"),
+          custom_id: `makecmd god_submit ${data.options[1].value}+${data.options[2].value}`,
+          components: [
+            {
+              type: MessageComponentTypes.ACTION_ROW,
+              components: [
+                {
+                  type: MessageComponentTypes.INPUT_TEXT,
+                  style: TextStyleTypes.PARAGRAPH,
+                  custom_id: `godtellin`,
+                  label: translate(lang, "cmd.god.sub.tell.modal.letter.label"),
+                  placeholder: translate(
+                    lang,
+                    "cmd.god.sub.tell.modal.letter.placeholder"
+                  ),
+                  required: true,
+                  //min_length: 13,
+                  //max_length: 666,
+                },
+              ],
+            },
+            {
+              type: MessageComponentTypes.ACTION_ROW,
+              components: [
+                {
+                  type: MessageComponentTypes.INPUT_TEXT,
+                  style: TextStyleTypes.SHORT,
+                  custom_id: `godtelllast`,
+                  label: translate(lang, "cmd.god.sub.tell.modal.author.label"),
+                  placeholder: translate(
+                    lang,
+                    "cmd.god.sub.tell.modal.author.placeholder"
+                  ),
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    });
+  }
+
+  //remove buttons
+  //cant be done before
+  //await DiscordRequest(
+  //  `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
+  //  {
+  //    method: "PATCH",
+  //    body: {
+  //      components: [],
+  //    },
+  //  }
+  //);
+  //remove the message
+  await DiscordRequest(
+    `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
+    {
+      method: "DELETE",
+    }
+  );
+}
+
+
 
 //#ping command
 async function cmd_ping({ lang, userbook, clock, timespam }) {
@@ -2519,7 +2760,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
         type: InteractionResponseType.MODAL,
         data: {
           title: translate(lang, "cmd.feedback.modal.title"),
-          custom_id: `makecmd feedback`,
+          custom_id: `makecmd feedback_submit`,
           components: [
             {
               type: MessageComponentTypes.ACTION_ROW,
@@ -3669,6 +3910,107 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     }
   }
 }
+
+//#shop command
+async function cmd_shop({ data, userdata, userbook, lang }) {
+  const items_shop = await shop_byable_items(userdata);
+
+  //if (items_name.length === 0)
+  //{
+  //  return {
+  //    method: "PATCH",
+  //    body: {
+  //      content: translate(lang, "cmd.pocket.nothing"),
+  //    }
+  //  }
+  //}
+  
+  //arg/page
+  let action_page = data.options?.find((opt) => opt.name === "page")?.value;//1,n
+  //const equipit = (data.options?.find((opt) => opt.name === "buyit")?.value===1);//_,0,1
+  const buyit = data.options?.find((opt) => opt.name === "buyit")?.value;//_,0,1,2
+
+  let fields = [];
+  let components=[];
+  let content = translate(lang, "cmd.shop.content.all");
+  let footer_text = "";
+
+  for (let i in items_shop)
+  {
+    let item = items_shop[i];
+    const actioned = (action_page===i+1);
+
+    fields.push(
+      {
+        name: kira_item_title(lang, item.name),
+        value: translate(lang, "cmd.shop.item.value", {"price": item.price})
+        //value: item_selected.itemLoreTxt.markdown
+      }
+    )
+    let buy_state = "one";
+    components.push(
+      {
+        type: MessageComponentTypes.ACTION_ROW,
+        components: [
+          {
+            type: MessageComponentTypes.BUTTON,
+            custom_id: `makecmd shop_edit buy+${i}+1`,
+            label: translate(lang, "cmd.shop.get."+buy_state, {"price": item.price, "itemTitle": kira_item_title(lang, item.name, false)}),
+            style: (item.price>userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
+            emoji: sett_emoji_apple_croc,
+            disabled: (buy_state == "done")
+          },
+        ]
+      }
+    )
+  }
+
+  //if (!unic)
+  {
+    components.push(
+      {
+        type: MessageComponentTypes.ACTION_ROW,
+        components: 
+        [
+          {
+            type: MessageComponentTypes.BUTTON,
+            custom_id: `makecmd shop_eph how`,
+            label: translate(lang, "cmd.shop.get.how"),
+            style: ButtonStyleTypes.SECONDARY,
+          }
+        ]
+      }
+    )
+  }
+  
+  return {
+    method: "PATCH",
+    body: {
+      content,
+      embeds: [
+        {
+          color: book_colors[userbook.color].int,
+          //description: `${h_content}`,
+          footer: {
+            text: footer_text,
+          },
+          fields,
+        },
+      ],
+      components
+    }
+  }
+}
+
+async function cmd_shop_how({ lang }) {
+  return {
+    method: "PATCH",
+    body: {
+      content: translate(lang, 'cmd.shop.get.how.respond')
+    }
+  }
+}
+
 //#gift
 async function cmd_gift({ data, userdata, user, lang, message, token}) {
 

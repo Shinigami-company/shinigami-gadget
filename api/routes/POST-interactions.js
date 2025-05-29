@@ -142,6 +142,16 @@ export default async function route({ request, reply, api, logger, connections }
         {
           data = { name: 'feedback_form', options: [{ name: 'want', value: h_arg[0]==="true" }] };
         } break;
+        case ("god_form"):
+        {
+          let options = [{ name: 'want', value: h_arg[0]==="true" }];
+          if (options[0].value)
+          {
+            options.push({ name: 'tagetid', value: h_arg[1] });
+            options.push({ name: 'dmid', value: h_arg[2] });
+          }
+          data = { name: 'god_form', options };
+        } break;
 
         case ("see_edit"):
         {
@@ -226,11 +236,17 @@ export default async function route({ request, reply, api, logger, connections }
         } break;
 
         //--InteractionType.MESSAGE_COMPONENT--
-        case ("feedback"): 
+        case ("feedback_submit"): 
         {
           const get_letter = data.components[0].components[0].value;
           const get_ps = data.components[1].components[0].value;
-          data = {name: 'feedback', options: [{name:'letter', value: get_letter}, {name:'last', value: get_ps}]}
+          data = {name: 'feedback_submit', options: [{name:'letter', value: get_letter}, {name:'last', value: get_ps}]}
+        } break;
+        case ("god_submit"): 
+        {
+          const get_letter = data.components[0].components[0].value;
+          const get_author = data.components[1].components[0].value;
+          data = {name: 'god_submit', options: [{name:'action', value: 'tell'}, {name:'targetid', value: h_arg[0]}, {name:'dmid', value: h_arg[1]}, {name:'letter', value: get_letter}, {name:'author', value: get_author}]}
         } break;
 
         default: {
