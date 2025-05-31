@@ -843,23 +843,6 @@ const commands_structure = {
       systemOnly: true,
     },
   },
-  shophow: {
-    functions: {
-      exe: cmd_shop_how,
-      checks: [[check_mailbox, true],
-        [check_react_is_self, true],
-        [check_in_guild, true],
-        [check_is_clean, true],
-        [check_can_alive, false],
-        [check_has_noDrop, true],
-      ],
-    },
-    atr: {
-      defered: deferedActionType.WAIT_MESSAGE,
-      ephemeral: true,
-      systemOnly: true,
-    },
-  },
 
 
   //SET
@@ -3913,7 +3896,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
 }
 
 //#shop command
-async function cmd_shop({ data, userdata, userbook, lang }) {
+async function cmd_shop({ data, userdata, userbook, lang, token }) {
   let items_shop = await shop_byable_items(userdata);
 
   //if (items_name.length === 0)
@@ -3929,7 +3912,7 @@ async function cmd_shop({ data, userdata, userbook, lang }) {
   //arg/page
   let action_seed = data.options?.find((opt) => opt.name === "seed")?.value;//1,n
   const buyit = data.options?.find((opt) => opt.name === "buyit")?.value;//_,1,2
-  console.log("data.options;",data.options, action_seed, buyit);
+  const how = data.options?.find((opt) => opt.name === "how")?.value;//true,false
 
   let fields = [];
   let components=[];
@@ -4023,7 +4006,7 @@ async function cmd_shop({ data, userdata, userbook, lang }) {
         [
           {
             type: MessageComponentTypes.BUTTON,
-            custom_id: `makecmd shophow`,
+            custom_id: `makecmd shop_edit -2+0`,
             label: translate(lang, "cmd.shop.get.how"),
             style: ButtonStyleTypes.SECONDARY,
           }
@@ -4031,6 +4014,22 @@ async function cmd_shop({ data, userdata, userbook, lang }) {
       }
     )
   }
+
+  if (how)
+  {
+    await DiscordRequest(
+      `webhooks/${process.env.APP_ID}/${token}`,
+      {
+        method: "POST",
+        body: 
+        {
+          content: translate(lang, 'cmd.shop.get.how.respond'),
+          flags: InteractionResponseFlags.EPHEMERAL
+        }
+      }
+    )
+  }
+
   //content=content+"\n"+footer_text;
   return {
     method: "PATCH",
@@ -4047,15 +4046,6 @@ async function cmd_shop({ data, userdata, userbook, lang }) {
         },
       ],
       components
-    }
-  }
-}
-
-async function cmd_shop_how({ lang }) {
-  return {
-    method: "PATCH",
-    body: {
-      content: translate(lang, 'cmd.shop.get.how.respond')
     }
   }
 }
