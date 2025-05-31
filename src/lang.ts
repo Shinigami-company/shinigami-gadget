@@ -79,11 +79,26 @@ function lang_load() {
   return h_lang;
 }
 
-const lang_texts = lang_load();
-const commands_id : {string: string} = lang_load();
+const lang_texts: {
+  [key: string]: {
+    selectable: boolean;
+    name: string;
+    lore: string;
+    hlore: string;
+    progress: number;
+    sublang: string;
+    keys: boolean;
+    key: { [key: string]: string };
+  };
+} = lang_load();
+const commands_id: { string: string } = lang_load();
 
 //for translations
-export function translate(f_lang, f_key, f_dolarValues) {
+export function translate(
+  f_lang: string,
+  f_key: string,
+  f_dolarValues: { [key: string]: string } = {}
+) {
   if (!lang_texts[f_lang]) {
     console.error(`lang : unknown lang [${f_lang}]`);
     f_lang = "en";
@@ -94,8 +109,8 @@ export function translate(f_lang, f_key, f_dolarValues) {
     else f_lang = lang_texts[f_lang].sublang;
   }
 
-  let translated=varEx(lang_texts[f_lang].key[f_key], f_dolarValues);
-  translated
+  let translated = varEx(lang_texts[f_lang].key[f_key], f_dolarValues);
+  translated;
   return translated;
   //return lang_texts[f_lang].key[f_key](f_dolarValues);
 }
@@ -136,12 +151,12 @@ const discordLang_to_timezone = {
   ko: "Asia/Seoul",
 };
 
-export function lang_get_timezone(f_discordLang) {
+export function lang_get_timezone(f_discordLang: string) {
   return discordLang_to_timezone[f_discordLang];
 }
 
 //for lang command
-export function lang_choice(r_choices : [{name: string, value: string}]) {
+export function lang_choice(r_choices: { name: string; value: string }[] = []) {
   for (let i in lang_texts) {
     if (lang_texts[i].selectable) {
       r_choices.push({
@@ -184,8 +199,7 @@ export async function lang_get(userdata, locale) {
   if (userdata.lang) {
     return userdata.lang;
   } else {
-    if (locale)
-      await lang_set(userdata.id, locale);
+    if (locale) await lang_set(userdata.id, locale);
     return locale;
   }
 }
