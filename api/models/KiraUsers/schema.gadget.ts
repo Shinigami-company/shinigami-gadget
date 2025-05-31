@@ -118,6 +118,11 @@ export const schema: GadgetModel = {
       },
       storageKey: "Kj8rEbQNOmvL",
     },
+    shopAlready: {
+      type: "json",
+      default: [],
+      storageKey: "FiIz_833esLK",
+    },
     statPtr: {
       type: "hasOne",
       child: { model: "KiraUserStats", belongsToField: "userPtr" },

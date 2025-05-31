@@ -141,7 +141,7 @@ linkme("linked from cmd"); //need to use a function from there
 
 //commands components
 import { tricks_all } from "./cmd/trick.js";
-import { shop_byable_items } from "./cmd/shop.js";
+import { shop_buy_item, shop_byable_items, shop_get_time_next, shop_get_time_remain } from "./cmd/shop.js";
 import { cmd_rules } from "./cmd/rules.js";
 import { webhook_reporter } from "./use/post.js";
 import { channel } from "diagnostics_channel";
@@ -3902,7 +3902,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
           color: book_colors[userbook.color].int,
           //description: `${h_content}`,
           footer: {
-            text: translate(lang, "cmd.pocket.capacity."+((show_page==-1) ? "all" : "one"), { at: show_page, in:last_page, max:"10" }),
+            text: translate(lang, "cmd.pocket.capacity."+((show_page==-1) ? "all" : "one"), { at: show_page, in:last_page, max: SETT_CMD.pocketmaxCarryItems }),
           },
           fields,
         },
@@ -3914,7 +3914,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
 
 //#shop command
 async function cmd_shop({ data, userdata, userbook, lang }) {
-  const items_shop = await shop_byable_items(userdata);
+  let items_shop = await shop_byable_items(userdata);
 
   //if (items_name.length === 0)
   //{
@@ -3927,60 +3927,91 @@ async function cmd_shop({ data, userdata, userbook, lang }) {
   //}
   
   //arg/page
-  let action_page = data.options?.find((opt) => opt.name === "page")?.value;//1,n
+  let action_seed = data.options?.find((opt) => opt.name === "seed")?.value;//1,n
   const buyit = data.options?.find((opt) => opt.name === "buyit")?.value;//_,1,2
-  console.log("data.options;",data.options, action_page, buyit);
+  console.log("data.options;",data.options, action_seed, buyit);
 
   let fields = [];
   let components=[];
   let content = translate(lang, "cmd.shop.content.all");
   let footer_text = "";
-  let toopoor=false;
+  let fail_reason = "";
 
   if (buyit === 2)
-  {// buy it if done
-    let product = items_shop[action_page - 1];
-    toopoor = !await kira_apple_pay(userdata.id, product.price, true);
-    if (!toopoor)
+  {// check for buy
+    let product = items_shop.find((prod) => (prod.seed == action_seed));
+    if (product)
     {
-      var buy_item = await Item.create(userdata.id, lang, product.name);
+      let items_all = await Item.inventory_ids(userdata.id);
+      let toopoor = !await kira_apple_pay(userdata.id, product.price, true);
+      if (toopoor)
+      {
+        fail_reason = "poor";
+      }
+      else if (items_all.length >= SETT_CMD.pocket.maxCarryItems)
+      {
+        fail_reason = "full";
+      }
+      else
+      {// buy it defenetively
+        await shop_buy_item(userdata.id, action_seed);
+        var buy_item = await Item.create(userdata.id, lang, product.name);
+      }
     }
+    //refresh
+    items_shop = await shop_byable_items(userdata);
   }
 
-  for (let i=0; i < items_shop.length; i++)
+  for (let product of items_shop)
   {
-    let product = items_shop[i];
-    const actioned = (action_page===i+1);
+    if (product.already)
+    {// nothing
 
-    fields.push(
-      {
-        name: Item.static_title(product.name, lang, true),
-        value: translate(lang, "cmd.shop.item.value", {"price": product.price})
-        //value: item_selected.itemLoreTxt.markdown
-      }
-    )
-    let buy_action = 0;
-    if (actioned) buy_action = buyit;
-    let buy_state = ["one", "confirm", "done"][buy_action];
-    if (actioned && toopoor) buy_state = "poor";
+      let value = translate(lang, "cmd.shop.empty.value");
+      if (product.older)
+        value += "\n-# " + translate(lang, "cmd.shop.soon", {"time": time_format_string_from_int(shop_get_time_remain(), lang), "timestamp": shop_get_time_next()})
 
-    console.log(`makecmd shop_edit ${buy_action+1}+${i+1}`);
+      fields.push(
+        {
+          name: translate(lang, "cmd.shop.empty.title"),
+          value
+        }
+      )
 
-    components.push(
-      {
-        type: MessageComponentTypes.ACTION_ROW,
-        components: [
-          {
-            type: MessageComponentTypes.BUTTON,
-            custom_id: `makecmd shop_edit ${buy_action+1}+${i+1}`,
-            label: translate(lang, "cmd.shop.get."+buy_state, {"price": product.price, "unit": translate(lang, `word.apple${product.price > 1 ? "s" : ""}`), "itemTitle": Item.static_title(product.name, lang, false)}),
-            style: (product.price > userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
-            emoji: sett_emoji_apple_croc,
-            disabled: (buy_state == "done")
-          },
-        ]
-      }
-    )
+    } else {
+      const actioned = (product.seed == action_seed);
+      
+      let value = translate(lang, "cmd.shop.item.value", {"price": product.price});
+      if (product.older)
+        value += "\n-# " + translate(lang, "cmd.shop.soon", {"time": time_format_string_from_int(shop_get_time_remain(), lang), "timestamp": shop_get_time_next()})
+
+      fields.push(
+        {
+          name: Item.static_title(product.name, lang, true),
+          value
+        }
+      )
+      let buy_action = 0;
+      if (actioned) buy_action = buyit;
+      let buy_state = ["one", "confirm", "done"][buy_action];
+      if (actioned && fail_reason!="") buy_state = "fail."+fail_reason;
+
+      components.push(
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: [
+            {
+              type: MessageComponentTypes.BUTTON,
+              custom_id: `makecmd shop_edit ${buy_action+1}+${product.seed}`,
+              label: translate(lang, "cmd.shop.get."+buy_state, {"price": product.price, "unit": translate(lang, `word.apple${product.price > 1 ? "s" : ""}`), "itemTitle": Item.static_title(product.name, lang, false)}),
+              style: (product.price > userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
+              emoji: sett_emoji_apple_croc,
+              disabled: (buy_state == "done" || (actioned && fail_reason!=""))
+            },
+          ]
+        }
+      )
+    }
   }
 
   //if (!unic)
@@ -4000,7 +4031,7 @@ async function cmd_shop({ data, userdata, userbook, lang }) {
       }
     )
   }
-  
+  //content=content+"\n"+footer_text;
   return {
     method: "PATCH",
     body: {

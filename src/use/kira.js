@@ -108,23 +108,23 @@ export async function kira_user_create(f_userId) {
 } //return the created element
 
 //capsule
-export async function kira_user_set_life(f_dataId, f_bool, f_backDate = null) {
+export async function kira_user_set_life(userdataId, f_bool, f_backDate = null) {
   if (f_backDate) f_backDate = f_backDate.toISOString();
-  await api.KiraUsers.update(f_dataId, {
+  await api.KiraUsers.update(userdataId, {
     is_alive: f_bool,
     backDate: f_backDate,
   });
 }
 
-export async function kira_user_add_apple(f_dataId, f_amount = 1) {
-  console.debug(`kira : kira_user_add_apple : adding [${f_amount}] apples to [${f_dataId}]...`);
-  const f_apples = await api.KiraUsers.findOne(f_dataId, {
+export async function kira_user_add_apple(userdataId, f_amount = 1) {
+  console.debug(`kira : kira_user_add_apple : adding [${f_amount}] apples to [${userdataId}]...`);
+  const f_apples = await api.KiraUsers.findOne(userdataId, {
     select: { apples: true },
   }).then((data) => data.apples);
-  await api.KiraUsers.update(f_dataId, {
+  await api.KiraUsers.update(userdataId, {
     apples: f_apples + f_amount,
   });
-  console.debug(`kira : kira_user_add_apple : added [${f_amount}] apples to [${f_dataId}] now at (${f_apples+f_amount})`);
+  console.debug(`kira : kira_user_add_apple : added [${f_amount}] apples to [${userdataId}] now at (${f_apples+f_amount})`);
 }
 
 export async function kira_users_rank(f_onKey) {
@@ -152,23 +152,38 @@ export async function kira_user_dm_id(userdata)
   return dmId;
 }
 
-export async function kira_user_set_daily(f_dataId) {
-  await api.KiraUsers.update(f_dataId, {
+export async function kira_user_set_daily(userdataId) {
+  await api.KiraUsers.update(userdataId, {
     apples_daily: new Date().toISOString(),
   });
 }
 
-export async function kira_user_get_daily(f_dataId) {
-  return await api.KiraUsers.findOne(f_dataId, {
+export async function kira_user_get_daily(userdataId) {
+  return await api.KiraUsers.findOne(userdataId, {
     select: { apples_daily: true },
   })
     .then((data) => data.apples_daily)
     .then((iso) => new Date(iso));
 }
 
-export async function kira_user_check_banTime(f_dataId) {
+export async function kira_user_get_shopAlready(userdataId)
+{
+  return await api.KiraUsers.findOne(userdataId, {
+    select: { shopAlready: true },
+  })
+    .then((data) => data.shopAlready)
+}
+
+export async function kira_user_set_shopAlready(userdataId, shopAlready)
+{
+  return await api.KiraUsers.update(userdataId,
+    { shopAlready },
+  );
+}
+
+export async function kira_user_check_banTime(userdataId) {
   //get
-  const banTime=await api.KiraUsers.findOne(f_dataId, {
+  const banTime=await api.KiraUsers.findOne(userdataId, {
     select: { banTime: true },
   })
     .then((data) => data.banTime)
@@ -184,11 +199,11 @@ export async function kira_user_check_banTime(f_dataId) {
   }
 
   //update
-  await api.KiraUsers.update(f_dataId, {banTime: null, banValue: userBanType.EXPIRE});//expire
+  await api.KiraUsers.update(userdataId, {banTime: null, banValue: userBanType.EXPIRE});//expire
   return 0;
 }
 
-export async function kira_user_set_ban(f_dataId, f_span=0) {
+export async function kira_user_set_ban(userdataId, f_span=0) {
   let banValue = userBanType.PERMA;
   let banTime = null;
   if (f_span)
@@ -198,34 +213,34 @@ export async function kira_user_set_ban(f_dataId, f_span=0) {
     banTime.setSeconds(banTime.getSeconds() + f_span);
     banTime=banTime.toISOString();
   }
-  await api.KiraUsers.update(f_dataId, {banTime, banValue});//ban
+  await api.KiraUsers.update(userdataId, {banTime, banValue});//ban
 }
 
-export async function kira_user_remove_ban(f_dataId) {
-  await api.KiraUsers.update(f_dataId, {banTime: null, banValue: userBanType.PARDON});//unban
+export async function kira_user_remove_ban(userdataId) {
+  await api.KiraUsers.update(userdataId, {banTime: null, banValue: userBanType.PARDON});//unban
 }
 
 
 
-export async function kira_user_set_drop(f_dataId, f_span) {
+export async function kira_user_set_drop(userdataId, f_span) {
   let h_date = new Date();
   h_date.setSeconds(h_date.getSeconds() + f_span);
-  await api.KiraUsers.update(f_dataId, {
+  await api.KiraUsers.update(userdataId, {
     giveUp: h_date.toISOString(),
   });
 }
 
-export async function kira_user_set_feedback(f_dataId, f_state, f_span = 0) {
+export async function kira_user_set_feedback(userdataId, f_state, f_span = 0) {
   let h_date = new Date();
   h_date.setSeconds(h_date.getSeconds() + f_span);
-  await api.KiraUsers.update(f_dataId, {
+  await api.KiraUsers.update(userdataId, {
     feedbackState: f_state,
     feedbackCooldown: h_date.toISOString(),
   });
 }
 
-export async function kira_user_can_feedback(f_dataId) {
-  const iso = await api.KiraUsers.findOne(f_dataId, {
+export async function kira_user_can_feedback(userdataId) {
+  const iso = await api.KiraUsers.findOne(userdataId, {
     select: { feedbackCooldown: true },
   }).then((data) => data.feedbackCooldown);
   if (!iso) return 0;
@@ -235,10 +250,10 @@ export async function kira_user_can_feedback(f_dataId) {
   return (span);
 }
 
-export async function kira_user_has_mail(f_dataId, feedbackState=undefined) {
+export async function kira_user_has_mail(userdataId, feedbackState=undefined) {
   const state = (feedbackState) 
     ? feedbackState 
-    : await api.KiraUsers.findOne(f_dataId, {
+    : await api.KiraUsers.findOne(userdataId, {
         select: { feedbackState: true },
       }).then((data) => data.feedbackState);
   
@@ -246,19 +261,19 @@ export async function kira_user_has_mail(f_dataId, feedbackState=undefined) {
   return (state===FeedbackState.MAILED);
 }
 
-export async function kira_user_pickup_mails(f_dataId) {
+export async function kira_user_pickup_mails(userdataId) {
   
-  await kira_user_set_feedback(f_dataId, FeedbackState.READED);
+  await kira_user_set_feedback(userdataId, FeedbackState.READED);
 
   //const h_data_messages = await api.KiraNotes.findMany({
   //  filter: [
   //    {
-  //      recipientPtr: { equals: f_dataId },
+  //      recipientPtr: { equals: userdataId },
   //    }
   //  ],
   //});
 
-  const h_user = await api.KiraUsers.findOne(f_dataId, {
+  const h_user = await api.KiraUsers.findOne(userdataId, {
     select: {
       mailboxLettersPtr: {
         edges: {
@@ -288,16 +303,16 @@ export async function kira_user_pickup_mails(f_dataId) {
 
 
 
-export async function kira_user_send_mail(f_dataId, message)
+export async function kira_user_send_mail(userdataId, message)
 {
-  await kira_user_set_feedback(f_dataId, FeedbackState.MAILED);
+  await kira_user_set_feedback(userdataId, FeedbackState.MAILED);
 
   await api.KiraLetters.create({
     content: {
       markdown: message,
     },
     recipientPtr: {
-      _link: f_dataId,
+      _link: userdataId,
     },
   });
 }
@@ -340,8 +355,8 @@ export const book_colors = [
 
 //manage
 /*old
-export async function kira_book_get(f_dataId) {
-  const h_userToBook = await api.KiraUsers.findOne(f_dataId, {
+export async function kira_book_get(userdataId) {
+  const h_userToBook = await api.KiraUsers.findOne(userdataId, {
     select: {
       bookPtr: {
         id: true,

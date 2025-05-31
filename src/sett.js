@@ -166,6 +166,8 @@ const comebackBy = {
 const cancelWhenDeadAttacker = true;
 const cancelWhenDeadVictim = true;
 
+const maxCarryItems = 10;
+
 const maxLines = 10;
 const maxPages = 70;
 
@@ -191,4 +193,10 @@ export const SETT_CMD = {
   feedback: {
     couldown,
   },
+  pocket: {
+    maxCarryItems,
+  }
 };
+
+export const shopNewItemSeconds = 60;
+export const shopNewItemRound = 10;

@@ -197,7 +197,7 @@ export default async function route({ request, reply, api, logger, connections }
         case ("shop_edit"): {
           data = { name: 'shop_edit',
           options: [
-            {name: 'page', value: parseInt(h_arg[1])},
+            {name: 'seed', value: parseInt(h_arg[1])},
             {name: 'buyit', value: parseInt(h_arg[0])}
           ]
           }
