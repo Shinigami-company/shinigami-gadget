@@ -80,6 +80,7 @@ function lang_load() {
 }
 
 const lang_texts = lang_load();
+const commands_id : {string: string} = lang_load();
 
 //for translations
 export function translate(f_lang, f_key, f_dolarValues) {
@@ -93,7 +94,9 @@ export function translate(f_lang, f_key, f_dolarValues) {
     else f_lang = lang_texts[f_lang].sublang;
   }
 
-  return varEx(lang_texts[f_lang].key[f_key], f_dolarValues);
+  let translated=varEx(lang_texts[f_lang].key[f_key], f_dolarValues);
+  translated
+  return translated;
   //return lang_texts[f_lang].key[f_key](f_dolarValues);
 }
 
@@ -138,7 +141,7 @@ export function lang_get_timezone(f_discordLang) {
 }
 
 //for lang command
-export function lang_choice(r_choices = []) {
+export function lang_choice(r_choices : [{name: string, value: string}]) {
   for (let i in lang_texts) {
     if (lang_texts[i].selectable) {
       r_choices.push({

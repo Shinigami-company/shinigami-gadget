@@ -1,7 +1,7 @@
 import { api } from "gadget-server";
 
 import { kira_apple_claims_add } from "./use/apple.js";
-import { translate } from "./lang.js";
+import { translate } from "./lang";
 import { roman_from_int } from "./tools.js";
 
 import { DiscordRequest } from "./utils.js";

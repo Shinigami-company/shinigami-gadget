@@ -1,5 +1,5 @@
 import { DiscordRequest } from "../utils.js";
-import { translate } from "../lang.js";
+import { translate } from "../lang";
 
 class Report {
   constructor(

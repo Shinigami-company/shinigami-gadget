@@ -1,4 +1,4 @@
-import { translate } from "../lang.js";
+import { translate } from "../lang";
 
 import {
   book_colors,

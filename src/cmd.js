@@ -47,7 +47,7 @@ import {
   lang_lore,
   lang_get,
   lang_set,
-} from "./lang.js"; //all user langugage things
+} from "./lang"; //all user langugage things
 
 import {
   kira_do_refreshCommands,
@@ -3777,38 +3777,34 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   let fields=[];
   let item_components=[];
 
+  let get_item_field =  (item_selected) => {
+    let equiped;
+    if (userdata.equipedPen?.id===item_selected.id)
+      equiped = "pen";
+    return {
+      name: item_selected.get_title(lang) + ((equiped) ? translate(lang, "cmd.pocket.list.equiped." + equiped) : ""),
+      value: item_selected.get_lore(lang)
+    }
+  }
+
   if (show_page === -1)
   {
     for (let i=0; i<items_all.length; i++)
     {
       let item_selected = await Item.get(userdata.id, items_all[i].id);
-      const already = (userdata.equipedPen?.id===item_selected.id);
-      fields.push(
-        {
-          name: item_selected.get_title(lang) + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
-          value: item_selected.get_lore(lang)
-        }
-      )
+      fields.push(get_item_field(item_selected));
     }
   }
   else
   {
-    const item_selected = await Item.get(userdata.id, items_all[show_page-1]?.id);
-    const already = (userdata.equipedPen?.id===item_selected.id);
-    fields.push(
-      {
-        name: item_selected.get_title(lang) + ((already) ? translate(lang, "cmd.pocket.list.equiped") : ""),
-        value: item_selected.itemLoreTxt.markdown
-      }
-    );
+    let item_selected = await Item.get(userdata.id, items_all[show_page-1]?.id);
+    fields.push(get_item_field(item_selected));
 
     if (items_info[item_selected.itemName].type === itemType.PEN)
     {
       let already = (userdata.equipedPen?.id===item_selected.id);
-      console.log("already?",already,`(${userdata.equipedPen?.id}===${item_selected.id})`);
       if (equipit)
       {
-        console.log("equipit!!",userdata.id, item_selected.id);
         await pen_equip(userdata.id, item_selected.id);
         already = true;
       }
@@ -3826,7 +3822,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     if (droped) 
     {
       await item_selected.delete(userdata.id);
-      item_selected = null;
+      //item_selected = null;
     }
     item_components.push(
       {
@@ -3885,7 +3881,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
           color: book_colors[userbook.color].int,
           //description: `${h_content}`,
           footer: {
-            text: translate(lang, "cmd.pocket.capacity."+((show_page==-1) ? "all" : "one"), { at: show_page, in:last_page, max: SETT_CMD.pocketmaxCarryItems }),
+            text: translate(lang, "cmd.pocket.capacity."+((show_page==-1) ? "all" : "one"), { at: show_page, in:last_page, max: SETT_CMD.pocket.maxCarryItems }),
           },
           fields,
         },
@@ -3988,7 +3984,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
               custom_id: `makecmd shop_edit ${buy_action+1}+${product.seed}`,
               label: translate(lang, "cmd.shop.get."+buy_state, {"price": product.price, "unit": translate(lang, `word.apple${product.price > 1 ? "s" : ""}`), "itemTitle": Item.static_title(product.name, lang, false)}),
               style: (product.price > userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
-              emoji: sett_emoji_apple_croc,
+              emoji: (product.price > 0) ? sett_emoji_apple_croc : sett_emoji_apple_none,
               disabled: (buy_state == "done" || (actioned && fail_reason!=""))
             },
           ]

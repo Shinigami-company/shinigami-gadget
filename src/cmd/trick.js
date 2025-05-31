@@ -7,7 +7,7 @@ import {
   ButtonStyleTypes,
 } from 'discord-interactions';
 
-import { translate, lang_get } from "../lang.js";
+import { translate, lang_get } from "../lang";
 import { time_format_string_from_int, sleep } from "../tools.js";
 
 //things needed from outside

@@ -30,8 +30,8 @@ export const items_info = {
     lore_dynamic: true,
     shopData: {
       proba: 10,
-      price_min: 3,
-      price_max: 5,
+      price_min: 2,
+      price_max: 4,
     }
   },
   
@@ -56,8 +56,8 @@ export const items_info = {
     lore_dynamic: true,
     shopData: {
       proba: 2.5,
-      price_min: 10,
-      price_max: 15,
+      price_min: 5,
+      price_max: 10,
     }
   },
 
@@ -69,8 +69,8 @@ export const items_info = {
     lore_dynamic: true,
     shopData: {
       proba: 2.5,
-      price_min: 10,
-      price_max: 15,
+      price_min: 5,
+      price_max: 10,
     }
   },
   
@@ -93,6 +93,11 @@ export const items_info = {
     message_claim: false,
     lore_static: true,
     lore_dynamic: true,
+    shopData: {
+      proba: 2.5,
+      price_min: 10,
+      price_max: 15,
+    }
   },
   
   broken_pen: {
@@ -101,6 +106,11 @@ export const items_info = {
     message_claim: false,
     lore_static: true,
     lore_dynamic: true,
+    shopData: {
+      proba: 5,
+      price_min: 0,
+      price_max: 1,
+    }
   },
   empty_pen: {
     type: itemType.JUNK,
@@ -108,6 +118,11 @@ export const items_info = {
     message_claim: false,
     lore_static: true,
     lore_dynamic: true,
+    shopData: {
+      proba: 5,
+      price_min: 0,
+      price_max: 1,
+    }
   },
 }
 

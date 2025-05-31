@@ -1,4 +1,4 @@
-import { translate, lang_get_timezone } from "./lang.js";
+import { translate, lang_get_timezone } from "./lang";
 
 const times = [
   {
