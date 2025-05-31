@@ -170,7 +170,7 @@ export class Item {
   static async create(userdataId, lang, itemName, dolarValues = {}, metaDataValues = {})
   {
     // create item lore
-    let itemLoreTxt = undefined;
+    let itemLoreTxt : string | undefined = undefined;
     let itemLoreDict = {};
     if (items_info[itemName].lore_static)
     {

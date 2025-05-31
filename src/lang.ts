@@ -1,4 +1,5 @@
 import { api } from "gadget-server";
+import { DiscordRequest } from "./utils";
 
 /**
 //the gpt tag function
@@ -30,7 +31,7 @@ function dolar(f_text,f_value)
 */
 
 //varEx, from [https://github.com/OlaHulleberg/varEx/blob/main/index.js]
-function varEx(inputString, inputObject) {
+function varEx(inputString: string, inputObject) {
   // Early return if there are no $[] blocks
   if (!inputString.includes("$[")) return inputString;
 
@@ -66,11 +67,21 @@ function varEx(inputString, inputObject) {
   });
 }
 
+function varId(inputString: string, cmdToId: {[key: string]: string}) {
+  // Early return if there are no `/` blocks
+  if (!inputString.includes("`/")) return inputString;
+
+  
+  return inputString.replace(/\`\/(['"`\w[\`.]+)\`/g, (_, key) => {
+    if (!cmdToId[key])
+    {
+      return `\`/${key}\``;
+    }
+    return `</${key}:${cmdToId[key]}>`;
+  });
+}
+
 //all templates
-const fileExists = (file) =>
-  fetch(file, { method: "HEAD", cache: "no-store" })
-    .then((response) => ({ 200: true, 404: false }[response.status]))
-    .catch((exception) => undefined);
 function lang_load() {
   let h_lang = require(`./lang/lang.json`);
   for (let i in h_lang) {
@@ -91,7 +102,22 @@ const lang_texts: {
     key: { [key: string]: string };
   };
 } = lang_load();
-const commands_id: { string: string } = lang_load();
+
+async function get_commands_id() : Promise<{ [key: string]: string }>
+{
+  let response = await DiscordRequest(`/applications/${process.env.APP_ID}/commands`, { method: "GET" });
+  let commands_discord = await response.json();
+  let dict_command_to_id = {};
+  for (let command of commands_discord) {
+    dict_command_to_id[command.name] = command.id;
+  }
+  return dict_command_to_id;
+};
+
+let commands_id: { [key: string]: string };
+(async () => {
+  commands_id = await get_commands_id();
+})();
 
 //for translations
 export function translate(
@@ -110,7 +136,7 @@ export function translate(
   }
 
   let translated = varEx(lang_texts[f_lang].key[f_key], f_dolarValues);
-  translated;
+  translated = varId(translated, commands_id);
   return translated;
   //return lang_texts[f_lang].key[f_key](f_dolarValues);
 }
