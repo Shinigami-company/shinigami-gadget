@@ -153,6 +153,11 @@ export default async function route({ request, reply, api, logger, connections }
           data = { name: 'god_form', options };
         } break;
 
+        case ("help_edit"):
+        {
+          data = { name: 'help_edit', options: [{ name: 'page', type: 4, value: parseInt(h_arg[0]) }]};
+        } break;
+
         case ("see_edit"):
         {
           if (h_arg.length>1)

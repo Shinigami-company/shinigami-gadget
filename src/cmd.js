@@ -363,11 +363,24 @@ const commands_structure = {
     },
     register: {
       name: "help",
-      description: "See some commands",
+      description: "Get a little tutorial, and advance help on commands.",
     },
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
       //ephemeral: true,
+    },
+  },
+  help_edit: {
+    functions: {
+      exe: cmd_help,
+      checks: [[check_mailbox, true],
+        [check_react_is_self, true],
+        //[check_in_guild, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_UPDATE,
+      systemOnly: true,
     },
   },
   
@@ -2881,20 +2894,91 @@ async function cmd_invite({ lang })
 
 
 //#help command
-async function cmd_help({ lang })
-{
-  var view_text = (parseInt(process.env.invite_enable))
-    ? translate(lang, "cmd.help.new.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm})
-    : "";
-  //var view_text = "";
+//async function cmd_help({ lang })
+//{
+//  var view_text = (parseInt(process.env.invite_enable))
+//    ? translate(lang, "cmd.help.new.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm})
+//    : "";
+//  //var view_text = "";
 
-  var body_content=translate(lang, "cmd.help.new.content", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "view": view_text});
-  //var button_label=translate(lang, "cmd.help.button.invite");
+//  var body_content=translate(lang, "cmd.help.new.content", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "view": view_text});
+//  //var button_label=translate(lang, "cmd.help.button.invite");
+
+//  return {
+//    method: "PATCH",
+//    body: {
+//      content: body_content
+//    },
+//  };
+//}
+
+async function cmd_help({ data, userbook, userdata, lang }) {
+  //arg/page
+  let show_page = data.options?.find((opt) => opt.name === "page")?.value;
+  const last_page = await stats_simple_get(userdata.statPtr.id, "help_state");
+  const max_page = 17;
+  const min_page = 0;
+  if (!show_page)
+  {
+    show_page = last_page;
+  }
+
+  if (show_page < min_page || show_page > max_page) {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, `cmd.help.fail.none`, { number: show_page }),
+      }
+    };
+  }
+
+  //page/make
+  let content = " ";
+  let description = translate(lang, `cmd.help.step.${show_page}`);
+  let color = (userbook) ? book_colors[userbook.color].int : 0;
+  let buttons = [];
+
+  let ifQuest = false;
+  let ifQuestDone = false;
+
+  buttons.push(
+    {
+      type: MessageComponentTypes.BUTTON,
+      custom_id: `makecmd help_edit ${show_page - 1}`,
+      label: translate(lang, `cmd.help.button.back`, { page: show_page - 1 }),
+      style: ButtonStyleTypes.SECONDARY,
+      disabled: (show_page <= min_page),
+    },
+  );
+  buttons.push(
+    {
+      type: MessageComponentTypes.BUTTON,
+      custom_id: `makecmd help_edit ${show_page + 1}`,
+      label: translate(lang, `cmd.help.button.${(ifQuest) ? "done" : "ok"}`, { page: show_page + 1 }),
+      style: ButtonStyleTypes.SECONDARY,
+      disabled: (show_page >= max_page) || (ifQuest && !ifQuestDone),
+    },
+  );
 
   return {
     method: "PATCH",
     body: {
-      content: body_content
+      content,
+      embeds: [
+        {
+          color,
+          description,
+          footer: {
+            text: `${show_page} / ${max_page}`,
+          },
+        },
+      ],
+      components: [
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: buttons,
+        },
+      ],
     },
   };
 }

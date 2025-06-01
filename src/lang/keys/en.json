@@ -69,14 +69,14 @@
 "cmd.ping.content": "Pong! 🏓",
 "cmd.ping.analyse": "reception time : $[timeTravel]\nreading time : $[timeFetch]\nthinking time : $[timeCompute]\nqueue time : $[timeQueue]\nanswer time : $[timeDefered]\n**TOTAL TIME : $[timeTotal]**",
 
-"cmd.feedback.confirm": "I can transmit a letter from you to the king of gods of death.",
+"cmd.feedback.confirm": "I can transmit a letter from you to the King Death.",
 "cmd.feedback.confirm.yes": "I want",
 "cmd.feedback.confirm.no": "No",
 "cmd.feedback.writting": "I let you write your letter.",
 "cmd.feedback.modal.title": "Send a feedback",
-"cmd.feedback.modal.letter.label": "To the king of god of death",
+"cmd.feedback.modal.letter.label": "To the King of Death",
 "cmd.feedback.modal.letter.placeholder": "writte your letter here",
-"cmd.feedback.modal.letter.value": "Dear king of god of death,\n\nI have a suggestion /\nI have a problem /\nI found a spelling mistake /\nI am a huge fan of cats\n\ntell more...\n\nSincerely, \nKira.",
+"cmd.feedback.modal.letter.value": "Dear King of Death,\n\nI have a suggestion /\nI have a problem /\nI found a spelling mistake /\nI am a huge fan of cats\n\ntell more...\n\nSincerely, \nKira.",
 "cmd.feedback.modal.last.label": "PS",
 "cmd.feedback.modal.last.placeholder": "a short note, can be out of context",
 "cmd.feedback.modal.last.value": " ",
@@ -89,7 +89,7 @@
 "cmd.claim.confirm.color.red": "The red one is pretty rare, you have to deserve it.",
 "cmd.claim.confirm.color.white": "The white one is extremly rare, you have to deserve it.",
 "cmd.claim.confirm.button": "$[price] - i REALLY want it",
-"cmd.claim.done.free": "**Here's your Death Note!** $[emoji]",
+"cmd.claim.done.free": "**Here's your Death Note!** $[emoji]\nDiscover all you are able to do with `/help`.",
 "cmd.claim.done.paid": "Yum! **Here's your beautiful Death Note!** $[emoji]",
 
 "cmd.burn.already": "*You burned a book, but it wasn't the Death Note.*",
@@ -196,6 +196,7 @@
 "cmd.gift.pick.apple": ":apple: $[price] $[unit]",
 "cmd.gift.post.content.everyone": "<@$[gifterId]> put a giftbox on the ground",
 "cmd.gift.post.content.one": "<@$[gifterId]> put a giftbox in front of <@$[giftedId]>'s door",
+"cmd.gift.post.expire": "-# Will expire <t:$[timestamp]:R>",
 "cmd.gift.post.button.claim": "CLAIM",
 
 "cmd.giftclaim.fail.disapear": "The gift does not exist.",
@@ -305,8 +306,38 @@
 "cmd.invite.button.join": "Join Kira's kingdom",
 "cmd.invite.no": "I dont want to join new guilds for now.\n`$[details]`",
 
-"cmd.help.new.content": "I am a Shinigami, coming from the realm of death. :wing:\n\n**Claim your Death Note using `/claim`**\nYou can writte names with `/kira`\nDefend yourself by killing your attacker\nGather apples using `/apple`\nTrick your friends with `/trick`\nGrow up Kira's world `/invite`\nAnd others, but im lazy to explain. $[view]\n-# Commands are aviable on guilds",
-"cmd.help.new.view": "You can see all there :\n$[inviteLink]",
+
+"cmd.help.old.content": "I am a Shinigami, coming from the realm of death. :wing:\n\n**Claim your Death Note using `/claim`**\nYou can writte names with `/kira`\nDefend yourself by killing your attacker\nGather apples using `/apple`\nTrick your friends with `/trick`\nGrow up Kira's world `/invite`\nAnd others, but im lazy to explain. $[view]\n-# Commands are aviable on guilds",
+"cmd.help.old.view": "You can see all there :\n$[inviteLink]",
+
+"cmd.help.button.back": "< back",
+"cmd.help.button.ok": "next >",
+"cmd.help.button.done": "done >",
+"cmd.help.fail.none": "**Nope!** **page $[number]** does not exist.",
+"cmd.help.fail.notdone": "Your are not done with this task.",
+
+"cmd.help.step.0": "I am a Shinigami, coming from the realm of death. :wing:\nComplete this `/help` tutorial and will give you a cool pen.\n-# Remember that I can speak many languages, change with `/lang`.",
+
+"cmd.help.step.1": "First of all, **Claim your Death Note using `/claim`.**",
+"cmd.help.step.2": "Then, you can use it on someone with `/kira`.\nDo `/how` to read __How to Use It__ (rules of Death Note).",
+"cmd.help.step.3": "### Now, your life is changed forever, dear killer.\nBut death is parth of life, so that fine.\n\n-# Author warning : Death Note is a roleplay and sometimes ironical.\n-# Never harm or bully someone. This is the first and last warning.",
+"cmd.help.step.4": "You can look at your running attacks with `/running`.\nCounter an attack by using `/kira` on your attacker.\nBut be warned : there is a limit to that!",
+"cmd.help.step.5": "Read your Death Note with `/see`.\nCan be funny.",
+
+"cmd.help.step.6": "Get apples with `/apple`.\nKilling huge killers gets you more apples. :feather:",
+"cmd.help.step.7": "Check you pen with `/pocket`.\nYou can get a new one with `/shop`. :pen_fountain:",
+"cmd.help.step.8": "Items can have different uses and properties.\nFind them all! :tools:",
+"cmd.help.step.9": "You can gift something with `/gift`.\nIt can be apples or an item. :gift:",
+
+"cmd.help.step.10": "You can also use apples to make a fake attack!\n Do `/trick` then `Fake Death Note`. :goblin:",
+"cmd.help.step.11": "Use `/drop` and I can protect you for a while. :shield:\nThis would prevent you from using your Death Note, though.",
+"cmd.help.step.12": "With apples, you can remove your attacking message,\nor get informations about the one attacking you.\nTry to do that. :apple:",
+"cmd.help.step.13": "I'm not corrupted. I'm just *hungry*. <a:apple_croc:1266010583623532574>",
+
+"cmd.help.step.14": "Send a letter to the King of Death if you have any feedback to provide.\nSome examples : something is wrong, send a suggestion, found typo, report Ryuk...\nIf your request is intresting, you may change the world. :globe_with_meridians:\nStart writing with `/feedback`.",
+"cmd.help.step.15": "There is a `/quest` to never run out of things to do.\nBy the way, would you make it to the `/top`?\nBut mabe you didn't want to. :thinking:",
+"cmd.help.step.16": "### Never forget : *You* choose your destiny. :index_pointing_at_the_viewer:\nYou can kill, get revenge, be rich, burn...\nOr just troll you friends.\n**The Death Note has the power. It's up to *you*.**",
+"cmd.help.step.17": "Are you ready to build your Kira's destiny?\nDo `/invite` to join Kira's Kingdom.",
 
 
 "stats.broad.fail.nothing": "You are responsible of absolutely nothing (yet)",
