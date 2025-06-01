@@ -313,15 +313,15 @@
 "cmd.help.old.content": "I am a Shinigami, coming from the realm of death. :wing:\n\n**Claim your Death Note using `/claim`**\nYou can writte names with `/kira`\nDefend yourself by killing your attacker\nGather apples using `/apple`\nTrick your friends with `/trick`\nGrow up Kira's world `/invite`\nAnd others, but im lazy to explain. $[view]\n-# Commands are aviable on guilds",
 "cmd.help.old.view": "You can see all there :\n$[inviteLink]",
 
-"cmd.help.button.back": "< back",
-"cmd.help.button.next": "next >",
-"cmd.help.button.ok": "OK   >",
-"cmd.help.button.done": "done >",
-"cmd.help.button.notdone": "do it >",
-"cmd.help.button.step": "back",
-"cmd.help.fail.none": "**Nope!** **page $[number]** does not exist.",
-"cmd.help.fail.notdone": "**Nope!** Your are not done with this task.",
-"cmd.help.fail.jump": "**Nope!** You skiped steps. ",
+"cmd.help.step.button.back": "< back",
+"cmd.help.step.button.next": "next >",
+"cmd.help.step.button.ok": "OK   >",
+"cmd.help.step.button.done": "done >",
+"cmd.help.step.button.notdone": "do it >",
+"cmd.help.step.button.path": "back",
+"cmd.help.step.fail.none": "**Nope!** **page $[number]** does not exist.",
+"cmd.help.step.fail.notdone": "**Nope!** Your are not done with this task.",
+"cmd.help.step.fail.jump": "**Nope!** You skiped steps. ",
 
 "cmd.help.step.0": "I am a Shinigami, coming from the realm of death. :wing:\nComplete this `/help` tutorial and I will give you a cool pen.\n-# Remember that I can speak many languages, change with `/lang`.",
 
@@ -345,7 +345,7 @@
 "cmd.help.step.15": "### Never forget : *You* choose your destiny. :index_pointing_at_the_viewer:\nYou can kill, get revenge, be rich, burn things...\nOr just troll you friends.\n**The Death Note has the power. It's up to *you*.**",
 "cmd.help.step.16": "### Join and have fun\nAre you ready to build your Kira's destiny?\n- Meet others Kira in **[Kira's Kingdom]($[joinLink])**.\n- Bring me in **[your own server]($[inviteLink])**.",
 "cmd.help.step.17": "### Help and be helped\nSend a letter to the King of Death if you have **any feedback** to provide.\nSome examples : you need help, something is wrong, send a suggestion, found typo, report Ryuk...\nIf your request is intresting, you may **change the world**. :globe_with_meridians:\nStart writing anytime with `/feedback`.",
-"cmd.help.step.18": "### That it!\nFull `/help` unlocked.\nYou can now :\n- Send help message\n- See all commands details\n- Claim your **cool pen**",
+"cmd.help.step.18": "### That it! :tada:\nFull `/help` unlocked.\nYou can now :\n- Send help message\n- See all commands details\n- Claim your **cool pen**",
 
 
 "stats.broad.fail.nothing": "You are responsible of absolutely nothing (yet)",
@@ -463,7 +463,7 @@
 "item.empty_pen.title": "Empty pen",
 "item.empty_pen.lore": "A pen but empty.",
 
-"lore.pens.dura": "Has $[dura] use remaining.",
+"items.pens.flow": "Has $[item.meta.dura] ink remaining.",
 
 
 "rule.new.1":"**By writing their killer's name in a Death Note, a victim has the ability to undo their death. There is a limit to this.**",

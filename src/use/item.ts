@@ -5,6 +5,8 @@ import { translate } from "../lang";
 import { sett_emoji_pens, sett_emoji_objects } from "../sett";
 import { kira_apple_send } from "./apple";
 
+
+//flow is like a dynamic lore.
 export const items_info = {
   event_egg_2025: {
     type: itemType.COLLECTOR,
@@ -27,7 +29,7 @@ export const items_info = {
     emoji: sett_emoji_pens.black,
     message_claim: false,
     lore_static: true,
-    lore_dynamic: true,
+    lore_dynamic: "items.pens.flow",
     shopData: {
       proba: 10,
       price_min: 2,
@@ -40,7 +42,7 @@ export const items_info = {
     emoji: sett_emoji_pens.blue,
     message_claim: false,
     lore_static: true,
-    lore_dynamic: true,
+    lore_dynamic: "items.pens.flow",
     shopData: {
       proba: 5,
       price_min: 3,
@@ -53,7 +55,7 @@ export const items_info = {
     emoji: sett_emoji_pens.green,
     message_claim: false,
     lore_static: true,
-    lore_dynamic: true,
+    lore_dynamic: "items.pens.flow",
     shopData: {
       proba: 2.5,
       price_min: 5,
@@ -66,7 +68,7 @@ export const items_info = {
     emoji: sett_emoji_pens.red,
     message_claim: false,
     lore_static: true,
-    lore_dynamic: true,
+    lore_dynamic: "items.pens.flow",
     shopData: {
       proba: 2.5,
       price_min: 5,
@@ -79,7 +81,7 @@ export const items_info = {
     emoji: sett_emoji_pens.purple,
     message_claim: false,
     lore_static: true,
-    lore_dynamic: true,
+    lore_dynamic: "items.pens.flow",
     shopData: {
       proba: 2.5,
       price_min: 10,
@@ -92,7 +94,7 @@ export const items_info = {
     emoji: sett_emoji_pens.feather,
     message_claim: false,
     lore_static: true,
-    lore_dynamic: true,
+    lore_dynamic: "items.pens.flow",
     shopData: {
       proba: 2.5,
       price_min: 10,
@@ -105,7 +107,7 @@ export const items_info = {
     emoji: sett_emoji_pens.broken,
     message_claim: false,
     lore_static: true,
-    lore_dynamic: true,
+    lore_dynamic: false,
     shopData: {
       proba: 5,
       price_min: 0,
@@ -117,7 +119,7 @@ export const items_info = {
     emoji: sett_emoji_pens.empty,
     message_claim: false,
     lore_static: true,
-    lore_dynamic: true,
+    lore_dynamic: false,
     shopData: {
       proba: 5,
       price_min: 0,
@@ -187,7 +189,9 @@ export class Item {
           itemLoreDict[fullKey]=getting;
         }
       }
-      itemLoreTxt = translate(lang, "item."+itemName+".lore", dolarValues);
+      let translateKey = items_info[itemName].lore_static;
+      if (typeof translateKey != "string") translateKey = "item."+itemName+".lore";
+      itemLoreTxt = translate(lang, translateKey, dolarValues);
     }
 
     // create item obj
@@ -205,7 +209,9 @@ export class Item {
     // claim message
     if (items_info[itemName].message_claim) 
     {
-      item.itemClaimTxt = translate(lang, "item."+itemName+".claim", dolarValues);
+      let translateKey = items_info[itemName].message_claim;
+      if (typeof translateKey != "string") translateKey = "item."+itemName+".claim";
+      item.itemClaimTxt = translate(lang, translateKey, dolarValues);
     }
     return item;
   }
@@ -276,12 +282,12 @@ export class Item {
   }
 
   // INFOS
-  get_title(lang, withEmoji=true)
+  get_title(lang: string, withEmoji=true)
   {
     return Item.static_title(this.itemName, lang, withEmoji);
   };
   
-  static static_title(itemName, lang, withEmoji)
+  static static_title(itemName: string, lang: string, withEmoji=true)
   {
     return ((withEmoji)
       ? `<:${items_info[itemName].emoji.name}:${items_info[itemName].emoji.id}> `
@@ -289,8 +295,25 @@ export class Item {
     + translate(lang, "item."+itemName+".title");
   }
 
-  get_lore(lang) {
-    return this.itemLoreTxt.markdown;
+  get_lore(lang: string, dolarValues={}) {
+    let lore = "";
+    if (items_info[this.itemName].lore_static)
+    {
+      lore += this.itemLoreTxt.markdown;
+    }
+    if (items_info[this.itemName].lore_dynamic)
+    {
+      if (lore != "")
+        lore += "\n";
+      
+      dolarValues["item"] = this;
+      let translateKey = items_info[this.itemName].lore_dynamic;
+      if (typeof translateKey != "string") translateKey = "item."+this.itemName+".flow";
+      lore += translate(lang, translateKey, dolarValues);
+    }
+    if (lore === "")
+      lore += " ";
+    return lore;
   }
 
   // GIFT

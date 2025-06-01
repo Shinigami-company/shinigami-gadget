@@ -2903,7 +2903,7 @@ async function cmd_invite({ lang })
 //  //var view_text = "";
 
 //  var body_content=translate(lang, "cmd.help.new.content", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "view": view_text});
-//  //var button_label=translate(lang, "cmd.help.button.invite");
+//  //var button_label=translate(lang, "cmd.help.step.button.invite");
 
 //  return {
 //    method: "PATCH",
@@ -2933,7 +2933,7 @@ async function cmd_help({ data, userbook, userdata, lang }) {
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, `cmd.help.fail.none`, { number: show_page }),
+        content: translate(lang, `cmd.help.step.fail.none`, { number: show_page }),
       }
     };
   }
@@ -2947,12 +2947,12 @@ async function cmd_help({ data, userbook, userdata, lang }) {
   if (show_page > last_page + 1)
   {//fail bcs jumped over a step
   
-    content = translate(lang, `cmd.help.fail.jump`);
+    content = translate(lang, `cmd.help.step.fail.jump`);
     buttons.push(
       {
         type: MessageComponentTypes.BUTTON,
         custom_id: `makecmd help_edit`,
-        label: translate(lang, `cmd.help.button.step`),
+        label: translate(lang, `cmd.help.step.button.path`),
         style: ButtonStyleTypes.SECONDARY,
       }
     );
@@ -3013,7 +3013,7 @@ async function cmd_help({ data, userbook, userdata, lang }) {
     {
       type: MessageComponentTypes.BUTTON,
       custom_id: `makecmd help_edit ${show_page - 1}`,
-      label: translate(lang, `cmd.help.button.back`, { page: show_page - 1 }),
+      label: translate(lang, `cmd.help.step.button.back`, { page: show_page - 1 }),
       style: ButtonStyleTypes.SECONDARY,
       disabled: (show_page <= min_page),
     },
@@ -3022,7 +3022,7 @@ async function cmd_help({ data, userbook, userdata, lang }) {
     {
       type: MessageComponentTypes.BUTTON,
       custom_id: `makecmd help_edit ${show_page + 1}`,
-      label: translate(lang, `cmd.help.button.${(!ifFirstTimeNextStep) ? "next" : (ifQuest) ? (ifFailedNextQuest) ? "notdone" : "done" : "ok"}`, { page: show_page + 1 }),
+      label: translate(lang, `cmd.help.step.button.${(!ifFirstTimeNextStep) ? "next" : (ifQuest) ? (ifFailedNextQuest) ? "notdone" : "done" : "ok"}`, { page: show_page + 1 }),
       style: (ifFailedNextQuest) ? ButtonStyleTypes.DANGER : (ifFirstTimeNextStep && ifQuestDone) ? ButtonStyleTypes.SUCCESS : ButtonStyleTypes.SECONDARY,
       disabled: (show_page >= max_page),// || !ifQuestDone
     },

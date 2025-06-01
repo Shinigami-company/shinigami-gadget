@@ -75,6 +75,7 @@ export async function pen_get(userdataId, penId)
 export async function pen_use(userdata, penItem)
 {
   penItem.meta.use+=1;
+  penItem.meta.dura = pen_atr[penItem.itemName].empty_durability - penItem.meta.use;
   const empty_durability = pen_atr[penItem.itemName].empty_durability;
   const broken_chance = pen_atr[penItem.itemName].broken_chance;
   if (empty_durability && penItem.meta.use>=empty_durability)
