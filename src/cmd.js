@@ -4361,14 +4361,19 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
   }
 
   const recipientId = (gifted_id==="@everyone") ? undefined : gifted_id;
+  
+  // expire
+  let expireSpan = (3600 * 24 * 2);
+  let expireDate = new Date();
+  expireDate.setSeconds(expireDate.getSeconds() + (expireSpan));
 
   let gift;
   if (isApple)
   {
-   gift = await Item.gift_apples(appleAmount, userdata, user.username, recipientId)
+   gift = await Item.gift_apples(appleAmount, userdata, user.username, expireDate, recipientId)
   } else {
    let item = await Item.get(userdata.id, item_id);
-   gift = await item.gift_send(userdata, user.username, recipientId);
+   gift = await item.gift_send(userdata, user.username, expireDate, recipientId);
   }
   
   if (!gift) throw Error("the gift cannot be send");
@@ -4376,10 +4381,13 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
   //+stats
   await stats_simple_add(userdata.statPtr.id, "do_gift");
 
+  let content = translate(lang, "cmd.gift.post.content."+ ((recipientId) ? "one" : "everyone"), {gifterId: userdata.userId, giftedId: recipientId});
+  content += "\n" + translate(lang, "cmd.gift.post.expire", { "timestamp": Math.ceil(expireDate.getTime() / 1000) });
+
   return {
     method: "PATCH",
     body: {
-      content: translate(lang, "cmd.gift.post.content."+ ((recipientId) ? "one" : "everyone"), {gifterId: userdata.userId, giftedId: recipientId}),
+      content,
       components: [
         {
           type: MessageComponentTypes.ACTION_ROW,

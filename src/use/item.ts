@@ -317,7 +317,7 @@ export class Item {
   }
 
   // GIFT
-  async gift_send(userdataOwner, usernameOwner, userIdRecipient) {
+  async gift_send(userdataOwner, usernameOwner, expireTimestamp, userIdRecipient) {
     if (!await this.if_own(userdataOwner.id)) return false;
     
     await this.unequip(userdataOwner);
@@ -325,13 +325,13 @@ export class Item {
     await api.KiraItems.update(this.id, {ownerPtr: {_link:null}});
     this.ownerPtrId = null;
     
-    return await api.KiraItemGift.create({itemPtr: {_link: this.id}, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient});
+    return await api.KiraItemGift.create({itemPtr: {_link: this.id}, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient, expireDate: expireTimestamp});
   }
 
-  static async gift_apples(appleAmount, userdataOwner, usernameOwner, userIdRecipient) {
+  static async gift_apples(appleAmount, userdataOwner, usernameOwner, expireTimestamp, userIdRecipient) {
     //await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, "gift.send."+(userIdRecipient) ? "one" : "everyone", {gifted: });//got lazy
     await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, "gift.send.everyone");
-    return await api.KiraItemGift.create({appleAmount, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient});
+    return await api.KiraItemGift.create({appleAmount, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient, expireDate: expireTimestamp});
   }
 
 

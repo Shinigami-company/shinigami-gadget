@@ -8,6 +8,11 @@ export const schema: GadgetModel = {
   storageKey: "h5yqaGyCRxSC",
   fields: {
     appleAmount: { type: "number", storageKey: "wvcd1qQV6a_M" },
+    expireDate: {
+      type: "dateTime",
+      includeTime: true,
+      storageKey: "BYdqxzu_mg9d",
+    },
     itemPtr: {
       type: "belongsTo",
       parent: { model: "KiraItems" },
