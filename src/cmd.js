@@ -149,6 +149,7 @@ import { error } from "console";
 import { register } from "module";
 import { randomInt } from "crypto";
 import { act } from "react-dom/test-utils";
+import { help_steps } from "./cmd/help.js";
 
 
 //the structure to describe the command
@@ -2943,7 +2944,6 @@ async function cmd_help({ data, userbook, userdata, lang }) {
   let color = 2326507;//discord blue
   let buttons = [];
 
-  //check quest
   if (show_page > last_page + 1)
   {//fail bcs jumped over a step
   
@@ -2971,43 +2971,65 @@ async function cmd_help({ data, userbook, userdata, lang }) {
       },
     };
   }
+  
   let ifFirstTimeThisStep = (show_page === last_page + 1);
-  let ifFirstTimeNextStep = ((show_page === last_page) || ifFirstTimeThisStep) && !(show_page >= max_page);
-  let ifQuest = false;
-  let ifQuestDone = (!ifQuest || false);// true if !ifQuest
-
-  //check state
+  let ifFailedNextQuest = false;
   if (ifFirstTimeThisStep)
   {
-    if (!ifQuestDone)
+    let lastHelpStep = help_steps[show_page - 1];
+    let ifLastQuestDone = (!lastHelpStep.ifQuest || await lastHelpStep.checkQuest(userdata.statPtr.id));
+    
+    if (ifLastQuestDone)
     {
-      content = translate(lang, `cmd.help.fail.notdone`);
-      buttons.push(
-        {
-          type: MessageComponentTypes.BUTTON,
-          custom_id: `makecmd help_edit`,
-          label: translate(lang, `cmd.help.button.step`),
-          style: ButtonStyleTypes.SECONDARY,
-        }
-      );
-
-      return {
-        method: "PATCH",
-        body: {
-          content,
-          components: [
-            {
-              type: MessageComponentTypes.ACTION_ROW,
-              components: buttons,
-            },
-          ],
-          embeds: []
-        },
-      };
+      await stats_simple_set(userdata.statPtr.id, "help_state", show_page);
+    } else {
+      show_page -= 1;
+      ifFirstTimeThisStep = false;
+      ifFailedNextQuest = true;
     }
 
-    await stats_simple_set(userdata.statPtr.id, "help_state", show_page);
   }
+  
+  let ifFirstTimeNextStep = ((show_page === last_page) || ifFirstTimeThisStep) && !(show_page >= max_page);
+  let thisHelpStep = help_steps[show_page];
+  let ifQuest = thisHelpStep.ifQuest;
+  let ifQuestDone = (!ifQuest || await thisHelpStep.checkQuest(userdata.statPtr.id));// true if !ifQuest
+
+  //check state
+  //if (ifFirstTimeThisStep)
+  //{
+  //  let lastHelpStep = help_steps[show_page - 1];
+  //  let ifLastQuestDone = (!lastHelpStep.ifQuest || await lastHelpStep.checkQuest(userdata.statPtr.id));
+    
+  //  if (!ifLastQuestDone)
+  //  {
+  //    content = translate(lang, `cmd.help.fail.notdone`);
+  //    buttons.push(
+  //      {
+  //        type: MessageComponentTypes.BUTTON,
+  //        custom_id: `makecmd help_edit`,
+  //        label: translate(lang, `cmd.help.button.step`),
+  //        style: ButtonStyleTypes.SECONDARY,
+  //      }
+  //    );
+
+  //    return {
+  //      method: "PATCH",
+  //      body: {
+  //        content,
+  //        components: [
+  //          {
+  //            type: MessageComponentTypes.ACTION_ROW,
+  //            components: buttons,
+  //          },
+  //        ],
+  //        embeds: []
+  //      },
+  //    };
+  //  }
+
+  //  await stats_simple_set(userdata.statPtr.id, "help_state", show_page);
+  //}
 
 
   // done : show up
@@ -3025,9 +3047,9 @@ async function cmd_help({ data, userbook, userdata, lang }) {
     {
       type: MessageComponentTypes.BUTTON,
       custom_id: `makecmd help_edit ${show_page + 1}`,
-      label: translate(lang, `cmd.help.button.${(!ifFirstTimeNextStep) ? "next" : (ifQuest) ? "done" : "ok"}`, { page: show_page + 1 }),
-      style: (ifFirstTimeNextStep && ifQuestDone) ? ButtonStyleTypes.SUCCESS : ButtonStyleTypes.SECONDARY,
-      disabled: (show_page >= max_page) || !ifQuestDone,
+      label: translate(lang, `cmd.help.button.${(!ifFirstTimeNextStep) ? "next" : (ifQuest) ? (ifFailedNextQuest) ? "notdone" : "done" : "ok"}`, { page: show_page + 1 }),
+      style: (ifFailedNextQuest) ? ButtonStyleTypes.DANGER : (ifFirstTimeNextStep && ifQuestDone) ? ButtonStyleTypes.SUCCESS : ButtonStyleTypes.SECONDARY,
+      disabled: (show_page >= max_page),// || !ifQuestDone
     },
   );
 

@@ -314,6 +314,7 @@
 "cmd.help.button.next": "next >",
 "cmd.help.button.ok": "OK   >",
 "cmd.help.button.done": "done >",
+"cmd.help.button.notdone": "do it >",
 "cmd.help.button.step": "back",
 "cmd.help.fail.none": "**Nope!** **page $[number]** does not exist.",
 "cmd.help.fail.notdone": "**Nope!** Your are not done with this task.",
@@ -322,7 +323,7 @@
 "cmd.help.step.0": "I am a Shinigami, coming from the realm of death. :wing:\nComplete this `/help` tutorial and I will give you a cool pen.\n-# Remember that I can speak many languages, change with `/lang`.",
 
 "cmd.help.step.1": "First of all, **Claim your Death Note using `/claim`.**",
-"cmd.help.step.2": "Then, you can use it on someone with `/kira`.\nDo `/how` to read __How to Use It__ (rules of Death Note).",
+"cmd.help.step.2": "Then, you can write someone's name with `/kira`.\nDo `/how` to read __How to Use It__ (rules of Death Note).",
 "cmd.help.step.3": "### Now, your life is changed forever, dear killer.\nBut death is parth of life, so that fine.\n\n-# Author warning : Death Note is a roleplay and sometimes ironical.\n-# Never harm or bully someone. This is the first and last warning.",
 "cmd.help.step.4": "You can look at your running attacks with `/running`.\nCounter an attack by using `/kira` on your attacker.\nBut be warned : there is a limit to that!",
 "cmd.help.step.5": "Read your Death Note with `/see`.\nCan be funny.",
@@ -337,7 +338,7 @@
 "cmd.help.step.12": "With apples, you can **remove** your attacking message,\nor **get informations** about the one attacking you.\nTry it. :apple:",
 "cmd.help.step.13": "I'm not corrupted. I'm just *hungry*. <a:apple_croc:1266010583623532574>",
 
-"cmd.help.step.14": "Send a letter to the King of Death if you have **any feedback** to provide.\nSome examples : something is wrong, send a suggestion, found typo, report Ryuk...\nIf your request is intresting, you may **change the world**. :globe_with_meridians:\nStart writing with `/feedback`.",
+"cmd.help.step.14": "Send a letter to the King of Death if you have **any feedback** to provide.\nSome examples : something is wrong, send a suggestion, found typo, report Ryuk...\nIf your request is intresting, you may **change the world**. :globe_with_meridians:\nStart writing anytime with `/feedback`.",
 "cmd.help.step.15": "There is a `/quest` to never run out of things to do.\nWould you make it to the `/top`?\nBut mabe you didn't want to. :thinking:",
 "cmd.help.step.16": "### Never forget : *You* choose your destiny. :index_pointing_at_the_viewer:\nYou can kill, get revenge, be rich, burn...\nOr just troll you friends.\n**The Death Note has the power. It's up to *you*.**",
 "cmd.help.step.17": "Are you ready to build your Kira's destiny?\nDo `/invite` to join Kira's Kingdom.",
