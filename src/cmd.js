@@ -2915,10 +2915,15 @@ async function cmd_invite({ lang })
 async function cmd_help({ data, userbook, userdata, lang }) {
   //arg/page
   let show_page = data.options?.find((opt) => opt.name === "page")?.value;
-  const last_page = await stats_simple_get(userdata.statPtr.id, "help_state");
+  let last_page = await stats_simple_get(userdata.statPtr.id, "help_state");
+  if (last_page===null)
+  {
+    stats_simple_set(userdata.statPtr.id, "help_state", 0);
+    last_page = 0;
+  }
   const max_page = 17;
   const min_page = 0;
-  if (!show_page)
+  if (show_page===undefined)
   {
     show_page = last_page;
   }
@@ -2934,13 +2939,79 @@ async function cmd_help({ data, userbook, userdata, lang }) {
 
   //page/make
   let content = " ";
-  let description = translate(lang, `cmd.help.step.${show_page}`);
-  let color = (userbook) ? book_colors[userbook.color].int : 0;
+  //let color = (userbook) ? book_colors[userbook.color].int : 0;
+  let color = 2326507;//discord blue
   let buttons = [];
 
-  let ifQuest = false;
-  let ifQuestDone = false;
+  //check quest
+  if (show_page > last_page + 1)
+  {//fail bcs jumped over a step
+  
+    content = translate(lang, `cmd.help.fail.jump`);
+    buttons.push(
+      {
+        type: MessageComponentTypes.BUTTON,
+        custom_id: `makecmd help_edit`,
+        label: translate(lang, `cmd.help.button.step`),
+        style: ButtonStyleTypes.SECONDARY,
+      }
+    );
 
+    return {
+      method: "PATCH",
+      body: {
+        content,
+        components: [
+          {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: buttons,
+          },
+        ],
+        embeds: []
+      },
+    };
+  }
+  let ifFirstTimeThisStep = (show_page === last_page + 1);
+  let ifFirstTimeNextStep = ((show_page === last_page) || ifFirstTimeThisStep) && !(show_page >= max_page);
+  let ifQuest = false;
+  let ifQuestDone = (!ifQuest || false);// true if !ifQuest
+
+  //check state
+  if (ifFirstTimeThisStep)
+  {
+    if (!ifQuestDone)
+    {
+      content = translate(lang, `cmd.help.fail.notdone`);
+      buttons.push(
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd help_edit`,
+          label: translate(lang, `cmd.help.button.step`),
+          style: ButtonStyleTypes.SECONDARY,
+        }
+      );
+
+      return {
+        method: "PATCH",
+        body: {
+          content,
+          components: [
+            {
+              type: MessageComponentTypes.ACTION_ROW,
+              components: buttons,
+            },
+          ],
+          embeds: []
+        },
+      };
+    }
+
+    await stats_simple_set(userdata.statPtr.id, "help_state", show_page);
+  }
+
+
+  // done : show up
+  let description = translate(lang, `cmd.help.step.${show_page}`);
   buttons.push(
     {
       type: MessageComponentTypes.BUTTON,
@@ -2954,9 +3025,9 @@ async function cmd_help({ data, userbook, userdata, lang }) {
     {
       type: MessageComponentTypes.BUTTON,
       custom_id: `makecmd help_edit ${show_page + 1}`,
-      label: translate(lang, `cmd.help.button.${(ifQuest) ? "done" : "ok"}`, { page: show_page + 1 }),
-      style: ButtonStyleTypes.SECONDARY,
-      disabled: (show_page >= max_page) || (ifQuest && !ifQuestDone),
+      label: translate(lang, `cmd.help.button.${(!ifFirstTimeNextStep) ? "next" : (ifQuest) ? "done" : "ok"}`, { page: show_page + 1 }),
+      style: (ifFirstTimeNextStep && ifQuestDone) ? ButtonStyleTypes.SUCCESS : ButtonStyleTypes.SECONDARY,
+      disabled: (show_page >= max_page) || !ifQuestDone,
     },
   );
 

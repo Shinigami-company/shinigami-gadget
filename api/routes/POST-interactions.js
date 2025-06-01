@@ -155,7 +155,7 @@ export default async function route({ request, reply, api, logger, connections }
 
         case ("help_edit"):
         {
-          data = { name: 'help_edit', options: [{ name: 'page', type: 4, value: parseInt(h_arg[0]) }]};
+          data = { name: 'help_edit', options: (h_arg) ? [{ name: 'page', type: 4, value: parseInt(h_arg[0]) }] : []};
         } break;
 
         case ("see_edit"):
