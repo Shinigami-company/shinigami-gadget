@@ -99,14 +99,39 @@ export const tricks_all = [
         const span=40;//slices[1];
         const txt_span = time_format_string_from_int(span, lang);
 
+        const h_victim_data = await kira_user_get(target_id, false);
+        let fail = "";
+        if (target_id === process.env.APP_ID)
+        {
+          fail = "shini";
+        }
+        else if (!h_victim_data)
+        {
+          fail = "notplayer";
+        }
+        
+        if (fail!="")
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(
+                lang,
+                `cmd.trick.item.fakemsg.fail.${fail}`,
+                {
+                  "targetId": target_id,
+                  "price": tricks_all[1].price//self price
+                }
+              )
+            },
+          };
+        
         //send fake attack
-
+        await stats_simple_add(userdata.statPtr.id, "misc_trickFake"); //+stats
         //message/victim
-
         try {
-          //open DM
           
-          const h_victim_data = await kira_user_get(target_id, false);
+
+          //open DM
           const victim_dm_id = await kira_user_dm_id(h_victim_data);
           const lang_victim = h_victim_data ? await lang_get(h_victim_data, undefined) : lang;
           //send message

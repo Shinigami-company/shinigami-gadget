@@ -64,9 +64,9 @@ export async function pen_equip(userdataId, penName)
   //await api.KiraItems.update(penName, {ownerPtr: {_link: userdataId}});
 }
 
-export async function pen_get(userdataId, penName)
+export async function pen_get(userdataId, penId)
 {
-  let pen = await Item.inventory_find_one(userdataId, penName);
+  let pen = await Item.get(userdataId, penId);
   if (!pen) return undefined;
   pen.atr=pen_atr[pen.itemName];
   return pen;

@@ -2330,7 +2330,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
 
         const pen=await pen_create(targetdata.id, lang, pentype);
         await pen_equip(targetdata.id, pen.id);
-        await stats_simple_add(targetdata.statPtr.id, "ever_pen");
+        await stats_simple_add(targetdata.statPtr.id, "ever_penBuy");
 
 
         return {
@@ -2922,7 +2922,7 @@ async function cmd_help({ data, userbook, userdata, lang }) {
     stats_simple_set(userdata.statPtr.id, "help_state", 0);
     last_page = 0;
   }
-  const max_page = 17;
+  const max_page = 18;
   const min_page = 0;
   if (show_page===undefined)
   {
@@ -2977,11 +2977,12 @@ async function cmd_help({ data, userbook, userdata, lang }) {
   if (ifFirstTimeThisStep)
   {
     let lastHelpStep = help_steps[show_page - 1];
-    let ifLastQuestDone = (!lastHelpStep.ifQuest || await lastHelpStep.checkQuest(userdata.statPtr.id));
+    let ifLastQuestDone = (((!lastHelpStep) || (!lastHelpStep.ifQuest) || (await lastHelpStep.checkQuest(userdata.statPtr.id))));
     
     if (ifLastQuestDone)
     {
       await stats_simple_set(userdata.statPtr.id, "help_state", show_page);
+      last_page = show_page;
     } else {
       show_page -= 1;
       ifFirstTimeThisStep = false;
@@ -2994,46 +2995,20 @@ async function cmd_help({ data, userbook, userdata, lang }) {
   let thisHelpStep = help_steps[show_page];
   let ifQuest = thisHelpStep.ifQuest;
   let ifQuestDone = (!ifQuest || await thisHelpStep.checkQuest(userdata.statPtr.id));// true if !ifQuest
+  let dolarDesc = {};
 
-  //check state
-  //if (ifFirstTimeThisStep)
-  //{
-  //  let lastHelpStep = help_steps[show_page - 1];
-  //  let ifLastQuestDone = (!lastHelpStep.ifQuest || await lastHelpStep.checkQuest(userdata.statPtr.id));
-    
-  //  if (!ifLastQuestDone)
-  //  {
-  //    content = translate(lang, `cmd.help.fail.notdone`);
-  //    buttons.push(
-  //      {
-  //        type: MessageComponentTypes.BUTTON,
-  //        custom_id: `makecmd help_edit`,
-  //        label: translate(lang, `cmd.help.button.step`),
-  //        style: ButtonStyleTypes.SECONDARY,
-  //      }
-  //    );
+  let footer_text = `${SETT_CMD.help.footBarFull.repeat(show_page)}/${SETT_CMD.help.footBarFull.repeat(last_page - show_page)}${SETT_CMD.help.footBarVoid.repeat(max_page - last_page)}`;
 
-  //    return {
-  //      method: "PATCH",
-  //      body: {
-  //        content,
-  //        components: [
-  //          {
-  //            type: MessageComponentTypes.ACTION_ROW,
-  //            components: buttons,
-  //          },
-  //        ],
-  //        embeds: []
-  //      },
-  //    };
-  //  }
-
-  //  await stats_simple_set(userdata.statPtr.id, "help_state", show_page);
-  //}
+  // specials
+  if (thisHelpStep.special?.invite)
+  {
+    dolarDesc["inviteLink"] = process.env.invite_bot;
+    dolarDesc["joinLink"] = process.env.invite_realm;
+  }
 
 
   // done : show up
-  let description = translate(lang, `cmd.help.step.${show_page}`);
+  let description = translate(lang, `cmd.help.step.${show_page}`, dolarDesc);
   buttons.push(
     {
       type: MessageComponentTypes.BUTTON,
@@ -3062,7 +3037,7 @@ async function cmd_help({ data, userbook, userdata, lang }) {
           color,
           description,
           footer: {
-            text: `${show_page} / ${max_page}`,
+            text: footer_text,
           },
         },
       ],
@@ -4112,6 +4087,13 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
       {// buy it defenetively
         await shop_buy_item(userdata.id, action_seed);
         var buy_item = await Item.create(userdata.id, lang, product.name);
+        
+        //+stats
+        await stats_simple_add(userdata.statPtr.id, "ever_itemBuy");
+        if (buy_item.info.type === itemType.PEN)
+        {
+          await stats_simple_add(userdata.statPtr.id, "ever_penBuy");
+        }
       }
     }
     //refresh
@@ -4386,12 +4368,14 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
    gift = await Item.gift_apples(appleAmount, userdata, user.username, recipientId)
   } else {
    let item = await Item.get(userdata.id, item_id);
-   console.log("item:",item.ownerPtr, item_id, item);
    gift = await item.gift_send(userdata, user.username, recipientId);
   }
-  console.log("GIFT3:",gift);
   
   if (!gift) throw Error("the gift cannot be send");
+
+  //+stats
+  await stats_simple_add(userdata.statPtr.id, "do_gift");
+
   return {
     method: "PATCH",
     body: {
@@ -4424,7 +4408,6 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
   }
   const gift = await Item.gift_get(gift_id);
 
-  console.log("GIFT4:", gift);
 
   // checks
   let fail_reason = "";
@@ -4468,6 +4451,9 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
 
 
   await Item.gift_pick(gift, userdata);
+
+  //+stats
+  await stats_simple_add(userdata.statPtr.id, "is_gift");
   
   const isApple = (gift.appleAmount!=null);
   let item;
@@ -4586,6 +4572,9 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
 
   //set
   await kira_user_set_drop(userdata.id, h_span);
+
+  //+stats
+  await stats_simple_add(userdata.statPtr.id, "count_dropTime", h_span);
 
   //remove components from the message
   //this does not works if drop is used as a command
@@ -4714,8 +4703,8 @@ async function cmd_kira({
   {
     if (await stats_simple_get(
         userdata.statPtr.id,
-        "ever_pen"
-      ))
+        "ever_penBuy"
+      ) >=0 )
     { // fail because of no pen
       return {
         method: "PATCH",
@@ -4729,7 +4718,7 @@ async function cmd_kira({
       console.log("create and equip a first new pen for",user.username);
       const pen=await pen_create(userdata.id, lang, "pen_black");
       await pen_equip(userdata.id, pen.id);
-      await stats_simple_add(userdata.statPtr.id, "ever_pen");
+      await stats_simple_set(userdata.statPtr.id, "ever_penBuy", 0);
       pen_ptr=pen;
     }
    
@@ -4867,7 +4856,8 @@ async function cmd_kira({
     reason: h_txt_reason,
     time: h_txt_span,
   });
-  h_line = pen_apply_filters(h_line, h_attacker_pen.itemName)
+  console.log("h_attacker_pen.itemName:", h_attacker_pen.itemName, h_attacker_pen);
+  h_line = pen_apply_filters(h_line, h_attacker_pen.itemName);
 
   if (h_line.length > 256 && !userdata.is_god) {
     //54*3 : 3 less than lines
@@ -5641,6 +5631,9 @@ async function cmd_know({ data, message, userdata, lang }) {
     };
   }
   await kira_apple_pay(userdata.id, h_price);
+
+  //+stats
+  await stats_simple_add(userdata.statPtr.id, "misc_know");
 
   //wich info/action
   let h_info;

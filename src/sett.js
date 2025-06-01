@@ -195,6 +195,10 @@ export const SETT_CMD = {
   },
   pocket: {
     maxCarryItems,
+  },
+  help: {
+    footBarFull: '▰',
+    footBarVoid: '▱',
   }
 };
 

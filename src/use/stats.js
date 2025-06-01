@@ -15,18 +15,24 @@ const stats_simple_all = {
   do_try: { type: 1 },
   do_counter: { type: 1 },
   do_outerTime: { type: 4 },
+  do_gift: { type: 4 },
 
   is_killed: { type: 1 },
   is_hited: { type: 1 },
   is_tried: { type: 1 },
   is_countered: { type: 1 },
   is_outedTime: { type: 4 },
+  is_gift: { type: 4 },
 
   ever_apple: { type: 1 },
   ever_book: { type: 1 },
   ever_test: { type: 1 },
+  ever_penBuy: { type: 1 },
+  ever_itemBuy: { type: 1 },
 
   misc_match: { type: 1 },
+  misc_know: { type: 1 },
+  misc_trickFake: { type: 1 },
 
   game_coinPlay: { type: 1 },
   game_coinWin: { type: 1 },
@@ -34,6 +40,11 @@ const stats_simple_all = {
   streak_appleDay: { type: 1 },
   streak_killDay: { type: 1 },
   streak_pageFilled: { type: 1 },
+
+  help_state: { type: 1 },
+  help_update: { type: 1 },
+
+  count_dropTime: { type: 4 },
 };
 
 //used in #stats command

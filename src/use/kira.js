@@ -145,7 +145,7 @@ export async function kira_users_rank(f_onKey) {
 
 export async function kira_user_dm_id(userdata)
 {
-  if (userdata.dmId)
+  if (userdata?.dmId)
     return userdata.dmId;
   let dmId = await DiscordUserOpenDm(userdata.userId);
   await api.KiraUsers.update(userdata.id, { dmId });

@@ -224,7 +224,7 @@ export class Item {
     });
   }
 
-  static async inventory_find_one(userdataId, itemName) {
+  static async inventory_find_one(userdataId, itemName) {// return an empty Item if dont find
     return new Item(await api.KiraItems.maybeFindFirst({
       filter: {
         ownerPtr: {
