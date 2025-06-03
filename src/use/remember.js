@@ -39,6 +39,7 @@ async function kira_remember_set_interval() {
       60 * 1000 * wakeup_minutes
     );
     console.log(`rem3mber : start wakeup. interval=${wakeup_interval_id}`);
+    await kira_remember_wakeup();//!
   }
 }
 
@@ -147,7 +148,11 @@ async function kira_remember_checkup() {
 var ocurence_wakeup = 0;
 async function kira_remember_wakeup() {
   console.debug(` rem3mber : mrew (min=${ocurence_wakeup * wakeup_minutes})`);
-  ocurence_wakeup+=1;
+  ocurence_wakeup += 1;
+  // clean up
+  await cleanup_gift();
+  await cleanup_run();
+  // awake
   let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
     raw.json()
   );
@@ -160,4 +165,57 @@ export async function linkme(f_txt) {
   await kira_remember_set_interval();
   console.log(` rem3mber : LINKED : `, f_txt);
   //remembering = 0;
+}
+
+
+// --- CLEANUP ---
+
+async function cleanup_gift()
+{
+  const date=new Date();
+  date.setSeconds(date.getSeconds() - 15);
+  let all_datas = await api.KiraItemGift.findMany({
+    filter: [
+      {
+        expireDate: {
+          before: date.toISOString()
+        },
+      },
+    ],
+    select: {id: true, itemPtrId: true, itemPtr: { id: true }, appleAmount: true }
+    });
+  if (!all_datas) return;
+
+  for (let gift of all_datas)
+  {
+    console.log(`cl3nup : gift ${gift.id}`);
+    await api.KiraItemGift.delete(gift.id);
+    if (!gift.appleAmount)
+    {
+      await api.KiraItems.delete(gift.itemPtrId);
+    }
+  }
+}
+
+async function cleanup_run()
+{
+  const date=new Date();
+  date.setSeconds(date.getSeconds() - 15);
+  let all_datas = await api.KiraRun.findMany({
+    filter: [
+      {
+        finalDate: {
+          before: date.toISOString()
+        },
+      },
+    ],
+    select: {id: true }
+    });
+  if (!all_datas) return;
+
+  for (let run of all_datas)
+  {
+    console.log(`cl3nup : run ${run.id}`);
+    await api.KiraRun.delete(run.id);
+  }
 }
