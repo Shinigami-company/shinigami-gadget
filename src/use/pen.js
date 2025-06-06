@@ -75,10 +75,10 @@ export async function pen_get(userdataId, penId)
 export async function pen_use(userdata, penItem)
 {
   penItem.meta.use+=1;
-  penItem.meta.dura = pen_atr[penItem.itemName].empty_durability - penItem.meta.use;
+  //penItem.meta.dura = pen_atr[penItem.itemName].empty_durability - penItem.meta.use;//no more needed
   const empty_durability = pen_atr[penItem.itemName].empty_durability;
   const broken_chance = pen_atr[penItem.itemName].broken_chance;
-  if (empty_durability && penItem.meta.use>=empty_durability)
+  if (empty_durability && penItem.meta.use >= empty_durability)
   {//empty
     const newItemName=pen_atr[penItem.itemName].empty_item;
     if (newItemName)
@@ -117,4 +117,15 @@ export function pen_apply_filters(text, penType)
     text=pen_filters[filterKey](text);
   }
   return text;
+}
+
+
+
+export function flow_pen(deep) {
+  let key = "items.pens.flow";
+  let penItem = deep.item;
+  let use = (penItem.meta?.use) ? penItem.meta.use : 0;
+  let dura = pen_atr[penItem.itemName].empty_durability - use;
+  let dolar = { dura };
+  return { key, dolar };
 }

@@ -4411,11 +4411,10 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
   let gift_id = data.options?.find((opt) => opt.name === "giftid")?.value;
   if (!gift_id) 
   {
-    console.log("data.options:",data.options);
     throw Error("no gift id provided.");
   }
-  const gift = await Item.gift_get(gift_id);
 
+  const gift = await Item.gift_get(gift_id);
 
   // checks
   let fail_reason = "";
@@ -4427,7 +4426,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
       `channels/${message.channel_id}/messages/${message.id}`,{
       method: "PATCH",
       body: {
-        content: translate(lang, "cmd.giftclaim.fail."+fail_reason),
+        content: translate(lang, "cmd.gift.claim.fail."+fail_reason),
         components: [],
       }
     })
@@ -4451,7 +4450,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
         data:
         {
           flags: InteractionResponseFlags.EPHEMERAL,
-          content: translate(lang, "cmd.giftclaim.fail."+fail_reason),
+          content: translate(lang, "cmd.gift.claim.fail."+fail_reason),
         }
       },
     };
@@ -4490,7 +4489,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     `channels/${message.channel_id}/messages/${message.id}`,{
     method: "PATCH",
     body: {
-      content: translate(lang, "cmd.giftclaim.sucess", 
+      content: translate(lang, "cmd.gift.claim.sucess", 
       {gifterId: gift.userIdOwner, giftedId: userdata.userId, itemTitle}),
       components: [],
     }

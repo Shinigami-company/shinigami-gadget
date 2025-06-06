@@ -33,6 +33,7 @@ export enum userBanType {
 }
 
 export enum itemType {
+  BOOK = 2,
   PEN = 3,
   COLLECTOR = 4,
   CONSOMABLE = 5,

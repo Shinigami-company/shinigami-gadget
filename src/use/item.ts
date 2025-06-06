@@ -4,6 +4,8 @@ import { itemType } from "../enum";
 import { translate } from "../lang";
 import { sett_emoji_pens, sett_emoji_objects } from "../sett";
 import { kira_apple_send } from "./apple";
+import { book_colors } from "./kira";
+import { flow_pen } from "./pen";
 
 
 //flow is like a dynamic lore.
@@ -11,8 +13,19 @@ export const items_info = {
   event_egg_2025: {
     type: itemType.COLLECTOR,
     emoji: sett_emoji_objects.event_egg_2025,
-    message_claim: true,
-    lore_static: true,
+    fields: {
+      claim: true,
+      lore: true,
+      //flow: {
+      //  default: true,
+      //  key: "items.pens.flow",
+      //  function: (deep) => {
+      //      let key = "items.pens.flow";
+      //      let dolar = {};
+      //      return { key, dolar };
+      //    },
+      //}
+    },
     dolarsPath: [
       "user.id",
       "user.username"
@@ -27,9 +40,13 @@ export const items_info = {
   pen_black: {
     type: itemType.PEN,
     emoji: sett_emoji_pens.black,
-    message_claim: false,
-    lore_static: true,
-    lore_dynamic: "items.pens.flow",
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_pen
+      }
+    },
     shopData: {
       proba: 10,
       price_min: 2,
@@ -40,9 +57,13 @@ export const items_info = {
   pen_blue: {
     type: itemType.PEN,
     emoji: sett_emoji_pens.blue,
-    message_claim: false,
-    lore_static: true,
-    lore_dynamic: "items.pens.flow",
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_pen
+      }
+    },
     shopData: {
       proba: 5,
       price_min: 3,
@@ -53,9 +74,13 @@ export const items_info = {
   pen_green: {
     type: itemType.PEN,
     emoji: sett_emoji_pens.green,
-    message_claim: false,
-    lore_static: true,
-    lore_dynamic: "items.pens.flow",
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_pen
+      }
+    },
     shopData: {
       proba: 2.5,
       price_min: 5,
@@ -66,9 +91,13 @@ export const items_info = {
   pen_red: {
     type: itemType.PEN,
     emoji: sett_emoji_pens.red,
-    message_claim: false,
-    lore_static: true,
-    lore_dynamic: "items.pens.flow",
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_pen
+      }
+    },
     shopData: {
       proba: 2.5,
       price_min: 5,
@@ -79,9 +108,13 @@ export const items_info = {
   pen_purple: {
     type: itemType.PEN,
     emoji: sett_emoji_pens.purple,
-    message_claim: false,
-    lore_static: true,
-    lore_dynamic: "items.pens.flow",
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_pen
+      }
+    },
     shopData: {
       proba: 2.5,
       price_min: 10,
@@ -92,34 +125,60 @@ export const items_info = {
   feather_white: {
     type: itemType.PEN,
     emoji: sett_emoji_pens.feather,
-    message_claim: false,
-    lore_static: true,
-    lore_dynamic: "items.pens.flow",
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_pen
+      }
+    },
     shopData: {
       proba: 2.5,
       price_min: 10,
       price_max: 15,
     }
   },
-  
+
+
   broken_pen: {
     type: itemType.JUNK,
     emoji: sett_emoji_pens.broken,
-    message_claim: false,
-    lore_static: true,
-    lore_dynamic: false,
+    fields: {
+      claim: false,
+      lore: true,
+      flow: false
+    },
     shopData: {
       proba: 5,
       price_min: 0,
       price_max: 1,
     }
   },
+
   empty_pen: {
     type: itemType.JUNK,
     emoji: sett_emoji_pens.empty,
-    message_claim: false,
-    lore_static: true,
-    lore_dynamic: false,
+    fields: {
+      claim: false,
+      lore: true,
+      flow: false
+    },
+    shopData: {
+      proba: 5,
+      price_min: 0,
+      price_max: 1,
+    }
+  },
+  
+
+  book_black: {
+    type: itemType.BOOK,
+    emoji: book_colors[0].emojiObj,
+    fields: {
+      claim: false,
+      lore: true,
+      flow: false
+    },
     shopData: {
       proba: 5,
       price_min: 0,
@@ -129,6 +188,10 @@ export const items_info = {
 }
 
 
+
+
+
+
 function copyAttrs(source: any, target: Item) {
   const keys = Object.keys(target); // Get all property keys defined in the class
   keys.forEach(key => {
@@ -136,6 +199,30 @@ function copyAttrs(source: any, target: Item) {
       target[key] = source[key];
     }
   });
+}
+
+function field_translation(lang: string, itemName: string, fieldKey: string, deep: {}) : undefined | string
+{
+  let field_object = items_info[itemName].fields[fieldKey];
+
+  if (!field_object)
+  {
+    return;
+  }
+  
+  if (field_object.key)
+  {//key
+    return translate(lang, field_object.key, deep);
+  }
+  
+  if (field_object.function)
+  {//function
+    let result = field_object.function(deep);
+    return translate(lang, result.key, result?.dolar);
+  }
+
+  //default key
+  return translate(lang, `item.${itemName}.${fieldKey}`, deep);
 }
 
 export class Item {
@@ -149,7 +236,6 @@ export class Item {
   ownerPtrId;
 
   itemLoreTxt;
-  itemLoreDict;
   
   meta;
 
@@ -172,27 +258,7 @@ export class Item {
   static async create(userdataId, lang, itemName, dolarValues = {}, metaDataValues = {})
   {
     // create item lore
-    let itemLoreTxt : string | undefined = undefined;
-    let itemLoreDict = {};
-    if (items_info[itemName].lore_static)
-    {
-      if (items_info[itemName].dolarsPath)
-      {
-        for (let fullKey of items_info[itemName].dolarsPath)
-        {
-          const path = fullKey.split(".");
-          let getting = dolarValues;
-
-          for (let p of path) {
-            getting = getting?.[p];
-          }
-          itemLoreDict[fullKey]=getting;
-        }
-      }
-      let translateKey = items_info[itemName].lore_static;
-      if (typeof translateKey != "string") translateKey = "item."+itemName+".lore";
-      itemLoreTxt = translate(lang, translateKey, dolarValues);
-    }
+    let itemLoreTxt : string | undefined = field_translation(lang, itemName, "lore", dolarValues);
 
     // create item obj
     const itemDbObj = await api.KiraItems.create({
@@ -201,18 +267,12 @@ export class Item {
       },
       itemName,
       itemLoreTxt: {markdown: itemLoreTxt},
-      itemLoreDict,
       meta: metaDataValues
     });
     let item = new Item(itemDbObj);
     
     // claim message
-    if (items_info[itemName].message_claim) 
-    {
-      let translateKey = items_info[itemName].message_claim;
-      if (typeof translateKey != "string") translateKey = "item."+itemName+".claim";
-      item.itemClaimTxt = translate(lang, translateKey, dolarValues);
-    }
+    item.itemClaimTxt = field_translation(lang, itemName, "claim", dolarValues);
     return item;
   }
   
@@ -297,19 +357,16 @@ export class Item {
 
   get_lore(lang: string, dolarValues={}) {
     let lore = "";
-    if (items_info[this.itemName].lore_static)
+    //if (items_info[this.itemName].fields.lore)
+    if (this.itemLoreTxt)
     {
       lore += this.itemLoreTxt.markdown;
     }
-    if (items_info[this.itemName].lore_dynamic)
+    if (items_info[this.itemName].fields.flow)
     {
       if (lore != "")
         lore += "\n";
-      
-      dolarValues["item"] = this;
-      let translateKey = items_info[this.itemName].lore_dynamic;
-      if (typeof translateKey != "string") translateKey = "item."+this.itemName+".flow";
-      lore += translate(lang, translateKey, dolarValues);
+      lore += field_translation(lang, this.itemName, 'flow', { item: this, ...dolarValues });
     }
     if (lore === "")
       lore += " ";
