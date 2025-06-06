@@ -1309,6 +1309,7 @@ function kira_cmd_defered_get(f_deep) {
     //test!!!!!!
     //response_request.body.data = {
     //  flags: 4096
+    //  //flags: InteractionResponseFlags.EPHEMERAL
     //};
 
     return [
@@ -4944,7 +4945,7 @@ async function cmd_kira({
     penmoji: `<:${items_info[h_attacker_pen.itemName].emoji.name}:${items_info[h_attacker_pen.itemName].emoji.id}>`
     //penmoji: "🪶a"
   });
-  var h_all_flags = 0;
+  var isSilent = false;
 
   //message/victim
   const lang_victim = h_victim_data ? await lang_get(h_victim_data, lang) : lang;
@@ -5080,8 +5081,7 @@ async function cmd_kira({
   //others warnings
   if (h_attacker_pen.atr.silent)
   {
-    h_all_flags += Math.pow(2,12);//SUPPRESS_NOTIFICATIONS
-    console.log("h_all_flags;",h_all_flags);
+    isSilent = true;
   }
   if (!h_pen_remain===-1)
   {
@@ -5132,17 +5132,36 @@ async function cmd_kira({
   );
 
   //message/all
+  if (isSilent)
+  {//silent
+    await DiscordRequest(
+      `webhooks/${process.env.APP_ID}/${token}/messages/@original`,
+      {
+        method: "DELETE",
+      }
+    );
+    await DiscordRequest(
+      `webhooks/${process.env.APP_ID}/${token}`,
+      {
+        method: "POST",
+        body: {
+          content: h_all_msg,
+          flags: Math.pow(2, 12),
+        },
+      }
+    );
+    return;
+  }
+
   return {
     method: "PATCH",
     body: {
       content: h_all_msg,
-    },
-    flags: h_all_flags,
+    }
   };
 
   //pretty old method
   //setTimeout(() => { cmd_kira_execute({ data, user, lang }); }, h_span * 1000);
-  s;
 }
 
 //is executed by [./remember.js]
