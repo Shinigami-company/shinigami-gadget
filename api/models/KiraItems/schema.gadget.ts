@@ -7,11 +7,6 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "ajFsJt-RW_nN",
   fields: {
-    equiperPtr: {
-      type: "hasOne",
-      child: { model: "KiraUsers", belongsToField: "equipedPen" },
-      storageKey: "MaKMWTrmQLBp",
-    },
     giftPtr: {
       type: "hasOne",
       child: { model: "KiraItemGift", belongsToField: "itemPtr" },

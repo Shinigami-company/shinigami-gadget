@@ -55,6 +55,16 @@ export const schema: GadgetModel = {
       storageKey: "XBySdkFWJxOn",
     },
     dmId: { type: "string", storageKey: "IaMZi7dVthSt" },
+    equipedBag: {
+      type: "belongsTo",
+      parent: { model: "KiraItems" },
+      storageKey: "bG5FE6CIlvsS",
+    },
+    equipedBook: {
+      type: "belongsTo",
+      parent: { model: "KiraItems" },
+      storageKey: "5QEZtdKyrjy7",
+    },
     equipedPen: {
       type: "belongsTo",
       parent: { model: "KiraItems" },

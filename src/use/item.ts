@@ -26,14 +26,6 @@ export const items_info = {
       //    },
       //}
     },
-    dolarsPath: [
-      "user.id",
-      "user.username"
-    ],
-    shopData: {
-      proba: 1,
-      price: 1000,
-    }
   },
 
 
@@ -149,7 +141,7 @@ export const items_info = {
       flow: false
     },
     shopData: {
-      proba: 5,
+      proba: 1,
       price_min: 0,
       price_max: 1,
     }
@@ -164,7 +156,7 @@ export const items_info = {
       flow: false
     },
     shopData: {
-      proba: 5,
+      proba: 1,
       price_min: 0,
       price_max: 1,
     }
@@ -180,7 +172,7 @@ export const items_info = {
       flow: false
     },
     shopData: {
-      proba: 5,
+      proba: 1,
       price_min: 0,
       price_max: 1,
     }
@@ -189,6 +181,37 @@ export const items_info = {
 
 
 
+
+export const items_types = {
+  [itemType.PEN]: {
+    str: 'pen',
+
+    equipable: true,
+    equip : async (userdata, item) => {
+      await api.KiraUsers.update(userdata.id, {equipedPen: {_link: item.id}});
+    },
+    unequip: async (userdata, item) : Promise<boolean> => {
+      if (items_types[itemType.PEN]?.if_equiped(userdata, item))
+      {
+        await api.KiraUsers.update(userdata.id, {equipedPen: {_link: null}});
+        return true;
+      }
+      return false;
+    },
+    if_equiped: (userdata, item) : boolean => {
+      return ((userdata.equipedPen.id.toString())===(item.id.toString()));
+    },
+    get_equiped: async (userdata) : Promise<Item | undefined> => {
+      if (!userdata.equipedPen?.id)
+        return;
+      return await Item.get(userdata.id, userdata.equipedPen.id);
+    }
+  },
+
+  [itemType.BOOK]: {
+    str: 'book',
+  },
+}
 
 
 
@@ -320,20 +343,38 @@ export class Item {
     return true;
   }
 
+  // TYPE
   async unequip(userdata)
   {
-    // pen
-    if ((userdata.equipedPen.id.toString())===(this.id.toString()))
-    {
-      await api.KiraUsers.update(userdata.id, {equipedPen: {_link: null}});
-    }
-    return true;
+    if (!items_types[this.info.type]?.equipable) return false;
+    return await items_types[this.info.type].unequip(userdata, this);
+  }
+
+  async equip(userdata)
+  {
+    if (!items_types[this.info.type]?.equipable) return false;
+    return await items_types[this.info.type].equip(userdata, this);
+  }
+  
+  if_equiped(userdata) : boolean
+  {
+    if (!items_types[this.info.type]?.equipable) return false;
+    return items_types[this.info.type].if_equiped(userdata, this);
+  }
+  
+  static async get_equiped(userdata, itemType) : Promise<Item | boolean | undefined>
+  {
+    if (!items_types[itemType]?.equipable) return false;
+    return await items_types[itemType].get_equiped(userdata);
   }
 
   // SET
-  async change(itemName: string, meta: {})
+  async change(itemName: string, meta: {} | undefined)
   {
-    await api.KiraItems.update(this.id, {meta, itemName});
+    let change : {} = { itemName };
+    if (meta!=undefined)
+      change =  { itemName, meta };
+    await api.KiraItems.update(this.id, change);
   }
   
   // IF

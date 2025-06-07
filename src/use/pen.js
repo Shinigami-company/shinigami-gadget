@@ -52,25 +52,6 @@ export const pen_filters = {
   purple: (text) => `[2;35m${text}[0m`,
 }
 
-export async function pen_create(userdataId, lang, penName)
-{
-  if (!pen_atr[penName]) throw Error(`the pen [${penName}] does not exist.`)
-  return await Item.create(userdataId, lang, penName, {}, {use: 0});
-}
-
-export async function pen_equip(userdataId, penName)
-{
-  await api.KiraUsers.update(userdataId, {equipedPen: {_link: penName}});
-  //await api.KiraItems.update(penName, {ownerPtr: {_link: userdataId}});
-}
-
-export async function pen_get(userdataId, penId)
-{
-  let pen = await Item.get(userdataId, penId);
-  if (!pen) return undefined;
-  pen.atr=pen_atr[pen.itemName];
-  return pen;
-}
 
 export async function pen_use(userdata, penItem)
 {

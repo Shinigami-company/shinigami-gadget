@@ -102,7 +102,7 @@ import {
   kira_apple_send,
   kira_apple_pay,
 } from "./use/apple.js"; //kira apples
-import { pen_create, pen_equip, pen_get, pen_use, pen_apply_filters } from "./use/pen.js";//kira pen
+import { pen_create, pen_use, pen_apply_filters } from "./use/pen.js";//kira pen
 
 import {
   stats_simple_get,
@@ -133,7 +133,7 @@ import {
 } from "./tools.js"; // tools
 
 import { event_claim_item } from "./use/claim.js";
-import { items_info, Item } from "./use/item";
+import { items_info, Item, items_types } from "./use/item";
 
 import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
@@ -2329,8 +2329,8 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
 
         let pentype = (arg_texto) ? arg_texto : "pen_black";
 
-        const pen=await pen_create(targetdata.id, lang, pentype);
-        await pen_equip(targetdata.id, pen.id);
+        const pen = await Item.create(targetdata.id, lang, pentype);
+        await pen.equip(targetdata);
         await stats_simple_add(targetdata.statPtr.id, "ever_penBuy");
 
 
@@ -3930,10 +3930,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   let fields=[];
   let item_components=[];
 
-  let get_item_field =  (item_selected) => {
-    let equiped;
-    if (userdata.equipedPen?.id===item_selected.id)
-      equiped = "pen";
+  let get_item_field = (item_selected, equiped) => {
     return {
       name: item_selected.get_title(lang) + ((equiped) ? translate(lang, "cmd.pocket.list.equiped." + equiped) : ""),
       value: item_selected.get_lore(lang)
@@ -3945,32 +3942,39 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     for (let i=0; i<items_all.length; i++)
     {
       let item_selected = await Item.get(userdata.id, items_all[i].id);
-      fields.push(get_item_field(item_selected));
+      let equiped;
+      if (item_selected.if_equiped(userdata))
+        equiped = items_types[item_selected.info.type].str;
+      fields.push(get_item_field(item_selected, equiped));
     }
   }
   else
   {
     let item_selected = await Item.get(userdata.id, items_all[show_page-1]?.id);
-    fields.push(get_item_field(item_selected));
 
-    if (items_info[item_selected.itemName].type === itemType.PEN)
+    //equip button and equipit
+    let equiped;
+    if (items_types[item_selected.info.type]?.equipable)
     {
-      let already = (userdata.equipedPen?.id===item_selected.id);
+      if (item_selected.if_equiped(userdata))
+        equiped = items_types[item_selected.info.type].str;
       if (equipit)
       {
-        await pen_equip(userdata.id, item_selected.id);
-        already = true;
+        await item_selected.equip(userdata);
+        equiped = items_types[item_selected.info.type].str;
       }
       item_components.push(
         {
           type: MessageComponentTypes.BUTTON,
           custom_id: `makecmd pocket_edit 2+${show_page}`,
-          label: translate(lang, "cmd.pocket.equip."+((already) ? "out" : "in")),
+          label: translate(lang, "cmd.pocket.equip."+items_types[item_selected.info.type].str+"."+((equiped) ? "out" : "in")),
           style: ButtonStyleTypes.PRIMARY,
-          disabled: (already || droped)
+          disabled: (equiped!=undefined || droped)
         },
       )
     }
+    
+    fields.push(get_item_field(item_selected, equiped));
 
     if (droped) 
     {
@@ -4143,7 +4147,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
               type: MessageComponentTypes.BUTTON,
               custom_id: `makecmd shop_edit ${buy_action+1}+${product.seed}`,
               label: translate(lang, "cmd.shop.get."+buy_state, {"price": product.price, "unit": translate(lang, `word.apple${product.price > 1 ? "s" : ""}`), "itemTitle": Item.static_title(product.name, lang, false)}),
-              style: (product.price > userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
+              style: (actioned && fail_reason!="") ? ButtonStyleTypes.DANGER : (product.price > userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
               emoji: (product.price > 0) ? sett_emoji_apple_croc : sett_emoji_apple_none,
               disabled: (buy_state == "done" || (actioned && fail_reason!=""))
             },
@@ -4724,17 +4728,16 @@ async function cmd_kira({
     else
     { // create it if has never got a pen
       console.log("create and equip a first new pen for",user.username);
-      const pen=await pen_create(userdata.id, lang, "pen_black");
-      await pen_equip(userdata.id, pen.id);
+      const pen=await Item.create(userdata.id, lang, "pen_black");
+      await pen.equip(userdata);
       await stats_simple_set(userdata.statPtr.id, "ever_penBuy", 0);
       pen_ptr=pen;
     }
    
   }
-  let h_attacker_pen = await pen_get(userdata.id, pen_ptr.id);
+  let h_attacker_pen = await Item.get_equiped(userdata, itemType.PEN);
   if (!h_attacker_pen)
   {
-    await pen_equip(userdata.id, undefined);
     return {
       method: "PATCH",
       body: {
