@@ -30,6 +30,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
     select: {
       id: true,
       userId: true,
+      userName: true,
       is_alive: true,
       is_god: true,
       apples: true,
@@ -46,6 +47,8 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       achivPtr: { id: true },
       bookPtr: { id: true },
       equipedPen: { id: true },
+      equipedBook: { id: true },
+      equipedBag: { id: true },
     },
   });
   if (!userdata)
@@ -106,6 +109,18 @@ export async function kira_user_create(f_userId) {
   //await posting_newbi(f_userId, userdata);
 
 } //return the created element
+
+export async function kira_user_update(user, userdata)
+{
+  if (userdata && user.username != userdata.userName)
+  {
+    userdata.userName = user.username;
+    await api.KiraUsers.update(userdata.id, {
+      userName: user.username
+    }); 
+  }
+}
+
 
 //capsule
 export async function kira_user_set_life(userdataId, f_bool, f_backDate = null) {
@@ -318,111 +333,6 @@ export async function kira_user_send_mail(userdataId, message)
 }
 
 
-//---kira_book---
-//DATA about the book
-
-export const book_colors = [
-  {
-    //the first must be free
-    color: "black",
-    int: 0,
-    emoji: "<:book_black:1281258833271849050>",
-    emojiObj: { id: "1281258833271849050" },
-    price: 0,
-  },
-  {
-    color: "red",
-    int: 16711680,
-    emoji: "<:book_red:1281258840570204283>",
-    emojiObj: { id: "1281258840570204283" },
-    price: 42,
-  },
-  {
-    color: "white",
-    int: 16777215,
-    emoji: "<:book_white:1281258835214073972>",
-    emojiObj: { id: "1281258835214073972" },
-    price: 333,
-  },
-  {
-    color: "purple",
-    int: 11665663,
-    emoji: "<:book_purple:1281258837076082688>",
-    emojiObj: { id: "1281258837076082688" },
-    price: -1,
-  },
-];
-
-//manage
-/*old
-export async function kira_book_get(userdataId) {
-  const h_userToBook = await api.KiraUsers.findOne(userdataId, {
-    select: {
-      bookPtr: {
-        id: true,
-      },
-    },
-  });
-  if (!h_userToBook.bookPtr) return undefined;
-  return await api.KiraBooks.findOne(h_userToBook.bookPtr.id);
-}
-*/
-export async function kira_book_get(bookId) {
-  return await api.KiraBooks.findOne(bookId);
-}
-
-export function kira_book_color_choice() {
-  let r = [];
-
-  for (let i = 0; i < book_colors.length; i++) {
-    if (book_colors[i].price != -1)
-      r.push({ value: i, name: book_colors[i].color });
-  }
-
-  return r;
-}
-
-export async function kira_book_create(f_userdata, f_color) {
-  return await api.KiraBooks.create({
-    index: 0,
-    ownerPtr: {
-      _link: f_userdata.id,
-    },
-    userId: f_userdata.userId,
-    color: f_color,
-  });
-  /* 
-  return await api.KiraUsers.update( f_userdata.id,
-    {
-      bookPtr: [{
-        create: {
-          index: 0,
-          userId: f_userdata.userId,
-        },
-      },],
-    },
-  );
-   */
-} //return the created book
-
-export async function kira_book_delete(f_book) {
-  const h_bookToNotes = await api.KiraBooks.findOne(f_book.id, {
-    select: {
-      notesPtr: {
-        edges: {
-          node: {
-            id: true,
-          },
-        },
-      },
-    },
-  });
-  await api.KiraNotes.bulkDelete(
-    h_bookToNotes.notesPtr.edges.map((the) => the.node.id)
-  );
-
-  await api.KiraBooks.delete(f_book.id);
-}
 
 //uses
 //kira_line : DATA

@@ -7,16 +7,12 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "QKAfU7RSLj_r",
   fields: {
-    color: {
-      type: "number",
-      default: 0,
-      storageKey: "ii217u7WjZs-::IErty4wRhxVC",
-    },
     index: {
       type: "number",
       default: 0,
       storageKey: "vmXzMfwAfqKZ::rMik1-7hyux1",
     },
+    itemName: { type: "string", storageKey: "ZU-b6qC31Fxk" },
     lastNoteId: {
       type: "string",
       storageKey: "eJP-KDJwE-QR::gJDYOmlFxvF5",

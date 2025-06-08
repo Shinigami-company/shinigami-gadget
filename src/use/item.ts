@@ -1,26 +1,25 @@
-import { equal } from "assert";
-import { api } from "gadget-server";
-import { itemType } from "../enum";
-import { translate } from "../lang";
-import { sett_emoji_pens, sett_emoji_objects } from "../sett";
-import { kira_apple_send } from "./apple";
-import { book_colors } from "./kira";
-import { flow_pen } from "./pen";
+import { equal } from 'assert';
+import { api } from 'gadget-server';
+import { itemType } from '../enum';
+import { translate } from '../lang';
+import { sett_emoji_items, godNamesProba } from '../sett';
+import { kira_apple_send } from './apple';
+import { kira_book_create, kira_book_delete, kira_book_get, kira_book_link } from './itemType/book';
 
 
 //flow is like a dynamic lore.
 export const items_info = {
   event_egg_2025: {
     type: itemType.COLLECTOR,
-    emoji: sett_emoji_objects.event_egg_2025,
+    emoji: sett_emoji_items.event_egg_2025,
     fields: {
       claim: true,
       lore: true,
       //flow: {
       //  default: true,
-      //  key: "items.pens.flow",
+      //  key: 'items.pens.flow',
       //  function: (deep) => {
-      //      let key = "items.pens.flow";
+      //      let key = 'items.pens.flow';
       //      let dolar = {};
       //      return { key, dolar };
       //    },
@@ -31,7 +30,14 @@ export const items_info = {
 
   pen_black: {
     type: itemType.PEN,
-    emoji: sett_emoji_pens.black,
+    emoji: sett_emoji_items.pen_black,
+    atr: {
+      filters: [],
+      broken_item: 'broken_pen',
+      broken_chance: .1,
+      empty_item: 'empty_pen',
+      empty_durability: 10,
+    },
     fields: {
       claim: false,
       lore: true,
@@ -48,7 +54,14 @@ export const items_info = {
   
   pen_blue: {
     type: itemType.PEN,
-    emoji: sett_emoji_pens.blue,
+    emoji: sett_emoji_items.pen_blue,
+    atr: {
+      filters: ['blue'],
+      broken_item: 'broken_pen',
+      broken_chance: .1,
+      empty_item: 'empty_pen',
+      empty_durability: 5,
+    },
     fields: {
       claim: false,
       lore: true,
@@ -65,7 +78,14 @@ export const items_info = {
   
   pen_green: {
     type: itemType.PEN,
-    emoji: sett_emoji_pens.green,
+    emoji: sett_emoji_items.pen_green,
+    atr: {
+      filters: ['green'],
+      broken_item: 'broken_pen',
+      broken_chance: .1,
+      empty_item: 'empty_pen',
+      empty_durability: 5,
+    },
     fields: {
       claim: false,
       lore: true,
@@ -82,7 +102,14 @@ export const items_info = {
 
   pen_red: {
     type: itemType.PEN,
-    emoji: sett_emoji_pens.red,
+    emoji: sett_emoji_items.pen_red,
+    atr: {
+      filters: ['red'],
+      broken_item: 'broken_pen',
+      broken_chance: .1,
+      empty_item: 'empty_pen',
+      empty_durability: 5,
+    },
     fields: {
       claim: false,
       lore: true,
@@ -99,7 +126,14 @@ export const items_info = {
   
   pen_purple: {
     type: itemType.PEN,
-    emoji: sett_emoji_pens.purple,
+    emoji: sett_emoji_items.pen_purple,
+    atr: {
+      filters: ['purple'],
+      broken_item: 'broken_pen',
+      broken_chance: .1,
+      empty_item: 'empty_pen',
+      empty_durability: 5,
+    },
     fields: {
       claim: false,
       lore: true,
@@ -116,7 +150,13 @@ export const items_info = {
   
   feather_white: {
     type: itemType.PEN,
-    emoji: sett_emoji_pens.feather,
+    emoji: sett_emoji_items.feather_white,
+    atr: {
+      filters: [],
+      silent: true,
+      broken_chance: 0,//no item : will delete
+      empty_durability: 3,//no item : will delete
+    },
     fields: {
       claim: false,
       lore: true,
@@ -134,7 +174,7 @@ export const items_info = {
 
   broken_pen: {
     type: itemType.JUNK,
-    emoji: sett_emoji_pens.broken,
+    emoji: sett_emoji_items.broken_pen,
     fields: {
       claim: false,
       lore: true,
@@ -149,7 +189,7 @@ export const items_info = {
 
   empty_pen: {
     type: itemType.JUNK,
-    emoji: sett_emoji_pens.empty,
+    emoji: sett_emoji_items.empty_pen,
     fields: {
       claim: false,
       lore: true,
@@ -165,14 +205,21 @@ export const items_info = {
 
   book_black: {
     type: itemType.BOOK,
-    emoji: book_colors[0].emojiObj,
+    emoji: sett_emoji_items.book_black,
+    atr: {
+      color: {
+        ord: 0,
+        int: 0,
+        text: 'black',
+      }
+    },
     fields: {
       claim: false,
-      lore: true,
-      flow: false
+      lore: { function: lore_book },
+      flow: { function: flow_book }
     },
     shopData: {
-      proba: 1,
+      proba: 100,
       price_min: 0,
       price_max: 1,
     }
@@ -187,10 +234,10 @@ export const items_types = {
     str: 'pen',
 
     equipable: true,
-    equip : async (userdata, item) => {
+    equip : async (userdata, item: Item) => {
       await api.KiraUsers.update(userdata.id, {equipedPen: {_link: item.id}});
     },
-    unequip: async (userdata, item) : Promise<boolean> => {
+    unequip: async (userdata, item: Item) : Promise<boolean> => {
       if (items_types[itemType.PEN]?.if_equiped(userdata, item))
       {
         await api.KiraUsers.update(userdata.id, {equipedPen: {_link: null}});
@@ -199,7 +246,7 @@ export const items_types = {
       return false;
     },
     if_equiped: (userdata, item) : boolean => {
-      return ((userdata.equipedPen.id.toString())===(item.id.toString()));
+      return ((userdata.equipedPen?.id.toString())===(item.id.toString()));
     },
     get_equiped: async (userdata) : Promise<Item | undefined> => {
       if (!userdata.equipedPen?.id)
@@ -210,9 +257,89 @@ export const items_types = {
 
   [itemType.BOOK]: {
     str: 'book',
+
+    equipable: true,
+    equip : async (userdata, item: Item) => {
+      if (!item.meta.bookId)
+      {
+        item.meta.bookId = await kira_book_create(userdata, item.itemName).then((obj) => obj.id);
+      }
+      await kira_book_link(item.meta.bookId, userdata.id);
+
+      item.meta.ownerId = userdata.userId;
+      item.meta.ownerName = userdata.userName;
+      await item.change(undefined, item.meta)
+      
+      await api.KiraUsers.update(userdata.id, {equipedBook: {_link: item.id}});
+    },
+    unequip: async (userdata, item: Item) : Promise<boolean> => {
+      if (items_types[itemType.BOOK]?.if_equiped(userdata, item))
+      {
+        await kira_book_link(item.meta.bookId, null);
+        await api.KiraUsers.update(userdata.id, {equipedBook: {_link: null}});
+        return true;
+      }
+      return false;
+    },
+    if_equiped: (userdata, item) : boolean => {
+      return ((userdata.equipedBook?.id.toString())===(item.id.toString()));
+    },
+    get_equiped: async (userdata) : Promise<Item | undefined> => {
+      if (!userdata.equipedBook?.id)
+        return;
+      return await Item.get(userdata.id, userdata.equipedBook.id);
+    },
+
+    delete: async (userdata, item) => {
+      if (item.meta.bookId)
+        await kira_book_delete(await kira_book_get(item.meta.bookId));
+    }
   },
 }
 
+
+
+
+export function flow_pen(deep) {
+  let key = 'items.pens.flow';
+  let penItem = deep.item;
+  let use = (penItem.meta?.use) ? penItem.meta.use : 0;
+  let dura = items_info[penItem.itemName].atr.empty_durability - use;
+  let dolar = { dura };
+  return { key, dolar };
+}
+
+
+export function lore_book(deep) {  
+  let godOwner : string = '';
+  for (let nameType in godNamesProba)
+  {
+    const nameProba = godNamesProba[nameType];
+    if (nameProba.chance >= 1 || Math.random() < nameProba.chance)
+    {
+      if (godOwner !== '')
+        godOwner += ' ';
+      godOwner += translate(deep.lang, `items.books.god.${nameType}.${Math.ceil(Math.random()*nameProba.amount)}`)
+    }
+  }
+
+  let dolar = { godOwner };
+  return { dolar };
+}
+
+
+export function flow_book(deep) {
+  let key = 'items.books.flow.';
+  let dolar = {};
+  if (deep.item.meta.ownerId)
+  {
+    key += 'owned';
+    dolar = { ownerName: deep.item.meta.ownerName, ownerId: deep.item.meta.ownerId };
+  } else {
+    key += 'never';
+  }
+  return { key, dolar };
+}
 
 
 function copyAttrs(source: any, target: Item) {
@@ -233,19 +360,24 @@ function field_translation(lang: string, itemName: string, fieldKey: string, dee
     return;
   }
   
+  let key = `item.${itemName}.${fieldKey}`;
+  let dolar = deep;
+
   if (field_object.key)
   {//key
-    return translate(lang, field_object.key, deep);
+    key = field_object.key;
   }
   
   if (field_object.function)
   {//function
-    let result = field_object.function(deep);
-    return translate(lang, result.key, result?.dolar);
+    let deeper = { ...deep, itemName, fieldKey, lang };// usefull deep propeties
+    let result = field_object.function(deeper);
+    if (result.key) key = result.key;
+    if (result.dolar) dolar = result.dolar;
   }
 
   //default key
-  return translate(lang, `item.${itemName}.${fieldKey}`, deep);
+  return translate(lang, key, dolar);
 }
 
 export class Item {
@@ -264,12 +396,14 @@ export class Item {
 
   itemClaimTxt;// special add
   info;// special add
+  atr;// special add
 
   constructor(itemDbObj: any) {
     if (!itemDbObj) return;
     copyAttrs(itemDbObj, this);
-    //console.log("CONSTRUCT ITEM:", itemDbObj, this)
+    //console.log('CONSTRUCT ITEM:', itemDbObj, this)
     this.info = items_info[this.itemName];
+    this.atr = items_info[this.itemName].atr;
   }
 
   async refresh() {
@@ -281,7 +415,7 @@ export class Item {
   static async create(userdataId, lang, itemName, dolarValues = {}, metaDataValues = {})
   {
     // create item lore
-    let itemLoreTxt : string | undefined = field_translation(lang, itemName, "lore", dolarValues);
+    let itemLoreTxt : string | undefined = field_translation(lang, itemName, 'lore', dolarValues);
 
     // create item obj
     const itemDbObj = await api.KiraItems.create({
@@ -295,7 +429,7 @@ export class Item {
     let item = new Item(itemDbObj);
     
     // claim message
-    item.itemClaimTxt = field_translation(lang, itemName, "claim", dolarValues);
+    item.itemClaimTxt = field_translation(lang, itemName, 'claim', dolarValues);
     return item;
   }
   
@@ -336,8 +470,12 @@ export class Item {
   }
 
   // DELETE
-  async delete(userdataId) {
-    if (!await this.if_own(userdataId)) return false;
+  async delete(userdata) {
+    if (!await this.if_own(userdata.id)) return false;
+    if (items_types[this.info.type]?.delete)
+    {
+      await items_types[this.info.type].delete(userdata, this);
+    }
     await api.KiraItems.delete(this.id);
     //del this;
     return true;
@@ -369,11 +507,13 @@ export class Item {
   }
 
   // SET
-  async change(itemName: string, meta: {} | undefined)
+  async change(itemName: string | undefined, meta: {} | undefined)
   {
-    let change : {} = { itemName };
+    let change: any = {};
     if (meta!=undefined)
-      change =  { itemName, meta };
+      change.meta = meta;
+    if (itemName!=undefined)
+      change.itemName = itemName;
     await api.KiraItems.update(this.id, change);
   }
   
@@ -393,11 +533,11 @@ export class Item {
     return ((withEmoji)
       ? `<:${items_info[itemName].emoji.name}:${items_info[itemName].emoji.id}> `
       : '')
-    + translate(lang, "item."+itemName+".title");
+    + translate(lang, 'item.'+itemName+'.title');
   }
 
   get_lore(lang: string, dolarValues={}) {
-    let lore = "";
+    let lore = '';
     //if (items_info[this.itemName].fields.lore)
     if (this.itemLoreTxt)
     {
@@ -405,12 +545,12 @@ export class Item {
     }
     if (items_info[this.itemName].fields.flow)
     {
-      if (lore != "")
-        lore += "\n";
+      if (lore != '')
+        lore += '\n';
       lore += field_translation(lang, this.itemName, 'flow', { item: this, ...dolarValues });
     }
-    if (lore === "")
-      lore += " ";
+    if (lore === '')
+      lore += ' ';
     return lore;
   }
 
@@ -427,8 +567,8 @@ export class Item {
   }
 
   static async gift_apples(appleAmount, userdataOwner, usernameOwner, expireTimestamp, userIdRecipient) {
-    //await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, "gift.send."+(userIdRecipient) ? "one" : "everyone", {gifted: });//got lazy
-    await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, "gift.send.everyone");
+    //await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, 'gift.send.'+(userIdRecipient) ? 'one' : 'everyone', {gifted: });//got lazy
+    await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, 'gift.send.everyone');
     return await api.KiraItemGift.create({appleAmount, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient, expireDate: expireTimestamp});
   }
 
@@ -441,7 +581,7 @@ export class Item {
     await api.KiraItemGift.delete(gift.id);
     if (gift.appleAmount)
     {
-      return await kira_apple_send(userdata.id, gift.appleAmount, userdata.statPtr.id, "gift.recive", {"gifter": gift.usernameOwner});
+      return await kira_apple_send(userdata.id, gift.appleAmount, userdata.statPtr.id, 'gift.recive', {'gifter': gift.usernameOwner});
     } else {
       return await api.KiraItems.update(gift.itemPtrId, {ownerPtr: {_link: userdata.id}});
     }

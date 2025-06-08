@@ -50,19 +50,38 @@ export const sett_catalog_drops = [
   },
 ];
 
+
+export const godNamesProba = {
+  first:
+  {
+    amount: 15,
+    chance: 1
+  },
+  second:
+  {
+    amount: 1,
+    chance: .1
+  },
+  last:
+  {
+    amount: 15,
+    chance: .9
+  }
+};
+
 export const sett_options_gift_apples = [
-  (apple) => 1,
-  (apple) => 2,
-  (apple) => 5,
-  (apple) => 10,
-  (apple) => 20,
-  (apple) => 100,
-  (apple) => 200,
-  (apple) => 500,
-  (apple) => 1000,
-  (apple) => Math.ceil(Math.log10(apple)),
-  (apple) => Math.ceil(apple/4),
-  (apple) => Math.ceil(apple/2),
+  (apple) => Math.min(apple, 1),
+  (apple) => Math.min(apple, 2),
+  (apple) => Math.min(apple, 5),
+  (apple) => Math.min(apple, 10),
+  (apple) => Math.min(apple, 20),
+  (apple) => Math.min(apple, 100),
+  (apple) => Math.min(apple, 200),
+  (apple) => Math.min(apple, 500),
+  (apple) => Math.min(apple, 1000),
+  (apple) => Math.min(apple, Math.ceil(Math.log10(apple))),
+  (apple) => Math.min(apple, Math.ceil(apple/4)),
+  (apple) => Math.min(apple, Math.ceil(apple/2)),
   (apple) => apple,
 ];
 
@@ -91,48 +110,60 @@ export const sett_emoji_coin_throw = {
   name: "🪙", //coin
 };
 
-export const sett_emoji_pens = {
-  black: {
+export const sett_emoji_items = {
+  pen_black: {
     name: "pen_black",
     id: "1374354563032940627",
   },
-  blue: {
+  pen_blue: {
     name: "pen_blue",
     id: "1374353917768503326",
   },
-  red: {
+  pen_red: {
     name: "pen_red",
     id: "1374353922298351738",
   },
-  green: {
+  pen_green: {
     name: "pen_green",
     id: "1374353919786094683",
   },
-  purple: {
+  pen_purple: {
     name: "pen_purple",
     id: "1374590353109422141",
   },
-  feather: {
+  feather_white: {
     name: "feather_white",
     id: "1374353915675545770",
   },
-  empty: {
-    name: "empty_pen",
+  broken_pen: {
+    name: "broken_pen",
     id: "1375207833628446811",
   },
-  broken: {
+  empty_pen: {
     name: "empty_pen",
     id: "1375207829794983986",
-  }
-};
-
-
-export const sett_emoji_objects = {
+  },
+  book_black: {
+    name: "book_black",
+    id: "1281258833271849050",
+  },
+  book_red: {
+    name: "book_red",
+    id: "1281258840570204283",
+  },
+  book_white: {
+    name: "book_white",
+    id: "1281258835214073972",
+  },
+  book_purple: {
+    name: "book_purple",
+    id: "1281258837076082688",
+  },
   event_egg_2025: {
     name: "weirdegg",
     id: "1363686307955740864",
   },
-}
+};
 
 export const sett_emoji_gift_claim = {
   id: null,

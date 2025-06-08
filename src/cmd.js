@@ -56,6 +56,7 @@ import {
   kira_user_remove_ban,
   kira_user_set_ban,
   kira_user_dm_id,
+  kira_user_update,
 } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
@@ -72,12 +73,11 @@ import {
 } from "./use/kira.js"; //kira user
 import { kira_users_rank } from "./use/kira.js"; //kira user
 import {
-  kira_book_create,
   kira_book_delete,
   kira_book_get,
   kira_book_color_choice,
   book_colors,
-} from "./use/kira.js"; //kira book
+} from "./use/itemType/book.js"; //kira book
 import {
   kira_run_create,
   kira_run_delete,
@@ -102,7 +102,7 @@ import {
   kira_apple_send,
   kira_apple_pay,
 } from "./use/apple.js"; //kira apples
-import { pen_create, pen_use, pen_apply_filters } from "./use/pen.js";//kira pen
+import { pen_use, pen_apply_filters } from "./use/itemType/pen";//kira pen
 
 import {
   stats_simple_get,
@@ -1083,6 +1083,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   //get the user data element
   //if dont exist, it's automaticly created
   f_deep.userdata = await kira_user_get(f_deep.user.id, true);
+  await kira_user_update(f_deep.user, f_deep.userdata);
   f_deep.clock.emit("got userdata");
   //get the user's book
   //if dont exist, is undefined
@@ -2276,7 +2277,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
 
         let embeds=[
           {
-            color: book_colors[userbook.color].int,
+            color: 37,
             description: letter,
             footer: (author) 
             ? {
@@ -2652,7 +2653,7 @@ async function cmd_ping({ lang, userbook, clock, timespam }) {
       content: translate(lang, "cmd.ping.content"),
       embeds: [
         {
-          color: book_colors[userbook.color].int,
+          color: 37,
           description: translate(lang, "cmd.ping.analyse", timesDict),
         },
       ],
@@ -2941,7 +2942,7 @@ async function cmd_help({ data, userbook, userdata, lang }) {
 
   //page/make
   let content = " ";
-  //let color = (userbook) ? book_colors[userbook.color].int : 0;
+  //let color = (userbook) ? 37 : 0;
   let color = 2326507;//discord blue
   let buttons = [];
 
@@ -3217,7 +3218,9 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
     //9533180// purple 
     );
   }
-  await kira_book_create(userdata, h_color);
+
+  name_by_color = ['book_black', 'book_red', 'book_white', 'book_purple'];
+  Item.create(userdata, lang, name_by_color[h_color]);
   await stats_simple_add(userdata.statPtr.id, "ever_book"); //+stats
 
   return {
@@ -3551,7 +3554,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
         content: translate(lang, `cmd.top.get.${h_on}.title`),
         embeds: [
           {
-            color: book_colors[userbook.color].int,
+            color: 37,
             description: h_txt,
           },
         ],
@@ -3704,7 +3707,7 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
           ? undefined
           : [
               {
-                color: book_colors[userbook.color].int,
+                color: 37,
                 description: r_lore,
               },
             ],
@@ -3743,7 +3746,7 @@ async function cmd_running({ userbook, user, lang }) {
           ? undefined
           : [
               {
-                color: book_colors[userbook.color].int,
+                color: 37,
                 description: r_lore,
               },
             ],
@@ -3757,7 +3760,7 @@ async function cmd_quest({ userdata, userbook, lang }) {
     method: "PATCH",
     body: await Achievement.display_get(
       userdata,
-      book_colors[userbook.color].int,
+      37,
       lang
     ),
   };
@@ -3978,7 +3981,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
 
     if (droped) 
     {
-      await item_selected.delete(userdata.id);
+      await item_selected.delete(userdata);
       //item_selected = null;
     }
     item_components.push(
@@ -4035,7 +4038,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
       content: translate(lang, "cmd.pocket.content."+((droped) ? "gone" : (show_page==-1) ? "all" : "one")),
       embeds: [
         {
-          color: book_colors[userbook.color].int,
+          color: (userbook) ? 37 : 0,
           //description: `${h_content}`,
           footer: {
             text: translate(lang, "cmd.pocket.capacity."+((show_page==-1) ? "all" : "one"), { at: show_page, in:last_page, max: SETT_CMD.pocket.maxCarryItems }),
@@ -4197,7 +4200,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
       content,
       embeds: [
         {
-          color: book_colors[userbook.color].int,
+          color: 37,
           //description: `${h_content}`,
           footer: {
             text: footer_text,
@@ -5082,7 +5085,7 @@ async function cmd_kira({
   }
 
   //others warnings
-  if (h_attacker_pen.atr.silent)
+  if (items_info[h_attacker_pen.itemName].atr.silent)
   {
     isSilent = true;
   }

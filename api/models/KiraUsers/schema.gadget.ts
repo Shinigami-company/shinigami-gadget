@@ -142,5 +142,6 @@ export const schema: GadgetModel = {
       type: "string",
       storageKey: "04zNJTwrlf0Z::koCfbDR4Qxvo",
     },
+    userName: { type: "string", storageKey: "86u085r2lfQA" },
   },
 };
