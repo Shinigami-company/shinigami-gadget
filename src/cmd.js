@@ -1070,12 +1070,7 @@ export async function kira_cmd(f_deep, f_cmd) {
   f_deep.clock.emit("got userdata");
   //get the user's book
   //if dont exist, is undefined
-  if (f_deep.userdata.noteBookId)
-  {
-    f_deep.userbook = await NoteBook.get(f_deep.userdata.noteBookId);
-  } else {
-    f_deep.userbook = undefined;
-  }
+  f_deep.userbook = await NoteBook.get(f_deep.userdata.noteBookId, true);
   f_deep.clock.emit("got userbook");
   //get user lang
   //lang selected, else discord lang

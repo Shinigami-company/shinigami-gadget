@@ -219,7 +219,70 @@ export const items_info = {
       flow: { function: flow_book }
     },
     shopData: {
-      proba: 100,
+      proba: 10,
+      price_min: 0,
+      price_max: 1,
+    }
+  },
+  book_red: {
+    type: itemType.BOOK,
+    emoji: sett_emoji_items.book_red,
+    atr: {
+      color: {
+        ord: 1,
+        int: 16711680,
+        text: 'red',
+      }
+    },
+    fields: {
+      claim: false,
+      lore: { function: lore_book },
+      flow: { function: flow_book }
+    },
+    shopData: {
+      proba: 10,
+      price_min: 0,
+      price_max: 1,
+    }
+  },
+  book_white: {
+    type: itemType.BOOK,
+    emoji: sett_emoji_items.book_white,
+    atr: {
+      color: {
+        ord: 2,
+        int: 16777215,
+        text: 'white',
+      }
+    },
+    fields: {
+      claim: false,
+      lore: { function: lore_book },
+      flow: { function: flow_book }
+    },
+    shopData: {
+      proba: 10,
+      price_min: 0,
+      price_max: 1,
+    }
+  },
+  book_purple: {
+    type: itemType.BOOK,
+    emoji: sett_emoji_items.book_purple,
+    atr: {
+      color: {
+        ord: 3,
+        int: 11665663,
+        text: 'purple',
+      }
+    },
+    fields: {
+      claim: false,
+      lore: { function: lore_book },
+      flow: { function: flow_book }
+    },
+    shopData: {
+      proba: 10,
       price_min: 0,
       price_max: 1,
     }

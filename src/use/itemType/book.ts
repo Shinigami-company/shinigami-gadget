@@ -21,9 +21,20 @@ export class NoteBook {
     this.emoji = items_info[this.itemName].emoji;
   };
 
-  static async get(noteBookId : string) : Promise<NoteBook>
+  static async get(noteBookId : string, canNone : boolean = false) : Promise<NoteBook | undefined>
   {
-    let userbook = await api.KiraBooks.findOne(noteBookId);
+    let userbook;
+    if (canNone)
+    {
+      try {
+        userbook = await api.KiraBooks.findOne(noteBookId);
+      } catch (e)
+      {
+        return;
+      }
+    } else {
+      userbook = await api.KiraBooks.findOne(noteBookId);
+    }
     return new NoteBook(userbook);
   }
 
