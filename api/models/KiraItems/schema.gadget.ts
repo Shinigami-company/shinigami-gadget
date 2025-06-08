@@ -12,6 +12,11 @@ export const schema: GadgetModel = {
       child: { model: "KiraItemGift", belongsToField: "itemPtr" },
       storageKey: "v38ySHtBT5vs",
     },
+    itemLoreDict: {
+      type: "json",
+      default: {},
+      storageKey: "oyuOM_XoAOry",
+    },
     itemLoreTxt: { type: "richText", storageKey: "BR9ljaH87ShH" },
     itemName: { type: "string", storageKey: "J3mHD1CwWgaL" },
     meta: { type: "json", default: {}, storageKey: "hH4HSdLsgis9" },
