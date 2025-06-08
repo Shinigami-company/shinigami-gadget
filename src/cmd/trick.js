@@ -11,7 +11,7 @@ import { translate, lang_get } from "../lang";
 import { time_format_string_from_int, sleep } from "../tools.js";
 
 //things needed from outside
-import { sett_emoji_apple_croc, sett_catalog_knows, sett_emoji_coin_throw } from "../sett.js";
+import { sett_emoji_apple_croc, sett_catalog_knows, sett_emoji_coin_throw } from "../sett";
 import { KnowUsableBy } from "../enum.ts";
 import { kira_user_add_apple, kira_user_get, kira_user_dm_id } from "../use/kira.js";
 

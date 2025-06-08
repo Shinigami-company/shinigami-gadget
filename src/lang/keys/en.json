@@ -82,8 +82,8 @@
 "cmd.feedback.modal.last.value": " ",
 "cmd.feedback.done": "I hope for you it's relevant.\n*The Shinigami puts your message in an envelope and takes it to the realm of the dead.*",
 
-"cmd.claim.fail.already.free": "**Nope!** You already have a Death Note.",
-"cmd.claim.fail.already.paid": "**Nope!** You already have a Death Note.\nThe $[color] one cost $[price] :apple:",
+"cmd.claim.fail.already.free": "**Nope!** You already own a Death Note.",
+"cmd.claim.fail.already.paid": "**Nope!** You already own a Death Note.\nThe $[color] one cost $[price] :apple:",
 "cmd.claim.fail.color.young": "*You cant pick this color for your first Death Note.*",
 "cmd.claim.fail.color.poor": "You don't have enough apples to take this color... Just, take the black one.",
 "cmd.claim.confirm.color.red": "The red one is pretty rare, you have to deserve it.",

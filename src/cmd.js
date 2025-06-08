@@ -10,7 +10,7 @@ import {
   userBanType,
 } from "./enum.ts";
 
-import { sett_emoji_gift_claim, sett_options_gift_apples, Settings } from "./sett.js";
+import { sett_emoji_gift_claim, sett_options_gift_apples, Settings } from "./sett";
 
 //--- imports ---
 
@@ -36,7 +36,7 @@ import {
   sett_emoji_apple_none,
   sett_emoji_burn_confirm,
   sett_emoji_feedback_confirm,
-} from "./sett.js";
+} from "./sett";
 
 //own
 //import { sleep } from './tools.js';
@@ -73,11 +73,8 @@ import {
 } from "./use/kira.js"; //kira user
 import { kira_users_rank } from "./use/kira.js"; //kira user
 import {
-  kira_book_delete,
-  kira_book_get,
-  kira_book_color_choice,
-  book_colors,
-} from "./use/itemType/book.js"; //kira book
+  NoteBook
+} from "./use/itemType/book"; //kira book
 import {
   kira_run_create,
   kira_run_delete,
@@ -88,13 +85,6 @@ import {
   kira_run_unpack_know,
   kira_runs_by,
 } from "./use/kira.js"; //kira run
-import {
-  kira_line_append,
-  kira_line_get_page,
-  kira_line_get_last_indexPage,
-  kira_line_if_pageGood,
-  kira_line_taste,
-} from "./use/kira.js"; //kira line
 import {
   kira_apple_claims_set,
   kira_apple_claims_get,
@@ -150,6 +140,7 @@ import { register } from "module";
 import { randomInt } from "crypto";
 import { act } from "react-dom/test-utils";
 import { help_steps } from "./cmd/help.js";
+import { string_emoji } from "./use/tools.ts";
 
 
 //the structure to describe the command
@@ -468,14 +459,6 @@ const commands_structure = {
       name: "claim",
       description: "Claim your death note",
       //contexts: [0],//!disabled
-      options: [
-        {
-          type: 4,
-          name: "color",
-          description: "choose black please",
-          choices: kira_book_color_choice(),
-        },
-      ],
       type: 1,
     },
     atr: {
@@ -1087,9 +1070,9 @@ export async function kira_cmd(f_deep, f_cmd) {
   f_deep.clock.emit("got userdata");
   //get the user's book
   //if dont exist, is undefined
-  if (f_deep.userdata.bookPtr)
+  if (f_deep.userdata.noteBookId)
   {
-    f_deep.userbook = await kira_book_get(f_deep.userdata.bookPtr.id);
+    f_deep.userbook = await NoteBook.get(f_deep.userdata.noteBookId);
   } else {
     f_deep.userbook = undefined;
   }
@@ -2277,7 +2260,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
 
         let embeds=[
           {
-            color: 37,
+            color: userbook?.color.int,
             description: letter,
             footer: (author) 
             ? {
@@ -2653,7 +2636,7 @@ async function cmd_ping({ lang, userbook, clock, timespam }) {
       content: translate(lang, "cmd.ping.content"),
       embeds: [
         {
-          color: 37,
+          color: userbook?.color.int,
           description: translate(lang, "cmd.ping.analyse", timesDict),
         },
       ],
@@ -2871,7 +2854,7 @@ async function cmd_invite({ lang })
               type: MessageComponentTypes.BUTTON,
               url: process.env.invite_bot,
               style: ButtonStyleTypes.LINK,
-              emoji: book_colors[1].emojiObj,
+              //emoji: items_info['book_red'].emoji,//!
               label: button_label_invite,
               disabled: false,
             },
@@ -2884,7 +2867,7 @@ async function cmd_invite({ lang })
               type: MessageComponentTypes.BUTTON,
               url: process.env.invite_realm,
               style: ButtonStyleTypes.LINK,
-              emoji: book_colors[2].emojiObj,
+              //emoji: items_info['book_white'].emoji,//!
               label: button_label_join,
               disabled: false,
             },
@@ -2942,7 +2925,7 @@ async function cmd_help({ data, userbook, userdata, lang }) {
 
   //page/make
   let content = " ";
-  //let color = (userbook) ? 37 : 0;
+  //let color = (userbook) ? userbook?.color.int : 0;
   let color = 2326507;//discord blue
   let buttons = [];
 
@@ -3079,55 +3062,9 @@ async function cmd_how({ lang })
   };
 }
 
-      //embeds: [
-      //  {
-      //    color: book_colors[lookedbook.color].int,
-      //    description: embed_content,
-      //    footer: {
-      //      text: `${show_page} / ${last_page}`,
-      //    },
-      //  },
-      //],
-      //components: [
-      //  {
-      //    type: MessageComponentTypes.ACTION_ROW,
-      //    components: [
-      //      {
-      //        type: MessageComponentTypes.BUTTON,
-      //        custom_id: `makecmd see_edit ${lookedbook.id}`,
-      //        style: ButtonStyleTypes.SECONDARY,
-      //        emoji: book_colors[lookedbook.color].emojiObj,
-      //        disabled: false,
-      //      },
-      //      {
-      //        type: MessageComponentTypes.BUTTON,
-      //        custom_id: `makecmd see_edit ${lookedbook.id}+${show_page - 1}`,
-      //        label: translate(lang, "cmd.page.get.left", { page: show_page - 1 }),
-      //        style: ButtonStyleTypes.SECONDARY,
-      //        disabled: !(await kira_line_if_pageGood(lookedbook, show_page - 2)),
-      //      },
-      //      {
-      //        type: MessageComponentTypes.BUTTON,
-      //        custom_id: `makecmd see_edit ${lookedbook.id}+${show_page + 1}`,
-      //        label: translate(lang, "cmd.page.get.right", {
-      //          page: show_page + 1,
-      //        }),
-      //        style: ButtonStyleTypes.SECONDARY,
-      //        disabled: !(await kira_line_if_pageGood(lookedbook, show_page)),
-      //      },
-      //    ],
-      //  },
-      //],
-
 //#claim command
 async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
   //variables
-  let h_color = 0;
-  let h_price = 0;
-  if (data.options) {
-    h_color = data.options[0].value;
-    h_price = book_colors[h_color].price;
-  }
   const h_book_amount = await stats_simple_get(
     userdata.statPtr.id,
     "ever_book"
@@ -3137,78 +3074,9 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
     return {
       method: "PATCH",
       body: {
-        content: !h_price
-          ? translate(lang, "cmd.claim.fail.already.free")
-          : translate(lang, "cmd.claim.fail.already.paid", {
-              price: h_price,
-              color: translate(
-                lang,
-                `word.color.${book_colors[h_color].color}`
-              ),
-            }),
+        content: translate(lang, "cmd.claim.fail.already.free")
       },
     };
-  }
-
-  if (data.options) {
-    if (h_price > 0) {
-      if (!h_book_amount > 0) {
-        //cant pay your first death note
-        return {
-          method: "PATCH",
-          body: {
-            content: translate(lang, "cmd.claim.fail.color.young"),
-          },
-        };
-      }
-
-      if (data.options[1]) {
-        //has clicked on the button
-        if (userdata.apples < h_price) {
-          //fail because too poor
-          return {
-            method: "PATCH",
-            body: {
-              content: translate(lang, "cmd.claim.fail.color.poor"),
-            },
-          };
-        } else {
-          //pay to continue
-          await kira_apple_pay(userdata.id, h_price);
-        }
-      } else {
-        //send the button
-        return {
-          method: "PATCH",
-          body: {
-            content: translate(
-              lang,
-              `cmd.claim.confirm.color.${book_colors[h_color].color}`
-            ),
-            components: [
-              {
-                type: MessageComponentTypes.ACTION_ROW,
-                components: [
-                  {
-                    type: MessageComponentTypes.BUTTON,
-                    custom_id: `makecmd claim ${h_color}+true`,
-                    label: translate(lang, `cmd.claim.confirm.button`, {
-                      price: h_price,
-                    }),
-                    emoji: sett_emoji_apple_croc,
-                    style:
-                      userdata.apples < h_price
-                        ? ButtonStyleTypes.SECONDARY
-                        : ButtonStyleTypes.SUCCESS,
-                    disabled: false,
-                  },
-                ],
-              },
-            ],
-          },
-        };
-      }
-    }
   }
 
   if (!h_book_amount > 0) {
@@ -3219,8 +3087,8 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
     );
   }
 
-  name_by_color = ['book_black', 'book_red', 'book_white', 'book_purple'];
-  Item.create(userdata, lang, name_by_color[h_color]);
+  let newUserbook = await Item.create(userdata.id, lang, 'book_black');
+  await newUserbook.equip(userdata);
   await stats_simple_add(userdata.statPtr.id, "ever_book"); //+stats
 
   return {
@@ -3228,8 +3096,8 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
     body: {
       content: translate(
         lang,
-        `cmd.claim.done.${h_price === 0 ? "free" : "paid"}`,
-        { emoji: book_colors[h_color].emoji }
+        `cmd.claim.done.free`,
+        { emoji: string_emoji(items_info[newUserbook.itemName].emoji) }
       ),
     },
   };
@@ -3342,7 +3210,7 @@ async function cmd_burn({
 
   console.debug(`cmd : burn userbook=`, userbook);
   //throw new Error("you would have burned it with sucress.");
-  await kira_book_delete(userbook);
+  await NoteBook.delete(userbook.id);
 
   return {
     method: "PATCH",
@@ -3554,7 +3422,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
         content: translate(lang, `cmd.top.get.${h_on}.title`),
         embeds: [
           {
-            color: 37,
+            color: userbook?.color.int,
             description: h_txt,
           },
         ],
@@ -3707,7 +3575,7 @@ async function cmd_stats({ data, userdata, userbook, lang }) {
           ? undefined
           : [
               {
-                color: 37,
+                color: userbook?.color.int,
                 description: r_lore,
               },
             ],
@@ -3746,7 +3614,7 @@ async function cmd_running({ userbook, user, lang }) {
           ? undefined
           : [
               {
-                color: 37,
+                color: userbook?.color.int,
                 description: r_lore,
               },
             ],
@@ -3760,7 +3628,7 @@ async function cmd_quest({ userdata, userbook, lang }) {
     method: "PATCH",
     body: await Achievement.display_get(
       userdata,
-      37,
+      userbook?.color.int,
       lang
     ),
   };
@@ -3798,17 +3666,17 @@ async function cmd_lang({ data, userdata, locale, lang }) {
 async function cmd_see({ data, userbook, lang }) {
   //arg/book
   const bookId = data.options?.find((opt) => opt.name === "bookId")?.value;
-  const lookedbook = (bookId) ? await kira_book_get(bookId) : userbook;
+  const lookedbook = (bookId) ? await NoteBook.get(bookId) : userbook;
 
   //arg/page
   let show_page = data.options?.find((opt) => opt.name === "page")?.value;
-  const last_page = await kira_line_get_last_indexPage(lookedbook);
+  const last_page = await lookedbook.line_get_last_indexPage();
   if (!show_page)
   {
     show_page=last_page;
   }
 
-  if (!(await kira_line_if_pageGood(lookedbook, show_page - 1))) {
+  if (!(await lookedbook.line_if_pageGood(show_page - 1))) {
     return {
       method: "PATCH",
       body: {
@@ -3818,7 +3686,7 @@ async function cmd_see({ data, userbook, lang }) {
   }
 
   //page/make
-  const h_lines = await kira_line_get_page(lookedbook, show_page - 1);
+  const h_lines = await lookedbook.get_page(show_page - 1);
   let h_content = "";
   let t_delim = "";
   for (let i = 0; i < h_lines.length; i++) {
@@ -3847,7 +3715,7 @@ async function cmd_see({ data, userbook, lang }) {
       content: translate(lang, "cmd.page.get.up", { number: show_page }),
       embeds: [
         {
-          color: book_colors[lookedbook.color].int,
+          color: lookedbook.color.int,
           //description: h_content,
           description: `\`\`\`ansi\n${h_content}\`\`\``,
           footer: {
@@ -3863,7 +3731,7 @@ async function cmd_see({ data, userbook, lang }) {
               type: MessageComponentTypes.BUTTON,
               custom_id: `makecmd see_edit ${lookedbook.id}`,
               style: ButtonStyleTypes.SECONDARY,
-              emoji: book_colors[lookedbook.color].emojiObj,
+              emoji: lookedbook.emoji,
               disabled: false,
             },
             {
@@ -3871,7 +3739,7 @@ async function cmd_see({ data, userbook, lang }) {
               custom_id: `makecmd see_edit ${lookedbook.id}+${show_page - 1}`,
               label: translate(lang, "cmd.page.get.left", { page: show_page - 1 }),
               style: ButtonStyleTypes.SECONDARY,
-              disabled: !(await kira_line_if_pageGood(lookedbook, show_page - 2)),
+              disabled: !(await lookedbook.line_if_pageGood(show_page - 2)),
             },
             {
               type: MessageComponentTypes.BUTTON,
@@ -3880,7 +3748,7 @@ async function cmd_see({ data, userbook, lang }) {
                 page: show_page + 1,
               }),
               style: ButtonStyleTypes.SECONDARY,
-              disabled: !(await kira_line_if_pageGood(lookedbook, show_page)),
+              disabled: !(await lookedbook.line_if_pageGood(show_page)),
             },
           ],
         },
@@ -4038,7 +3906,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
       content: translate(lang, "cmd.pocket.content."+((droped) ? "gone" : (show_page==-1) ? "all" : "one")),
       embeds: [
         {
-          color: (userbook) ? 37 : 0,
+          color: userbook?.color.int,
           //description: `${h_content}`,
           footer: {
             text: translate(lang, "cmd.pocket.capacity."+((show_page==-1) ? "all" : "one"), { at: show_page, in:last_page, max: SETT_CMD.pocket.maxCarryItems }),
@@ -4200,7 +4068,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
       content,
       embeds: [
         {
-          color: 37,
+          color: userbook?.color.int,
           //description: `${h_content}`,
           footer: {
             text: footer_text,
@@ -4713,7 +4581,7 @@ async function cmd_kira({
     throw error;
   }
 
-  let pen_ptr=userdata.equipedPen;
+  let pen_ptr = userdata.equipedPen;
   if (!pen_ptr)
   {
     if (await stats_simple_get(
@@ -4888,9 +4756,9 @@ async function cmd_kira({
 
   //validate writting
   const h_pen_remain = await pen_use(userdata, h_attacker_pen);
-  const h_dayGap = time_day_gap(userbook.updatedAt, locale, true, true);
+  const h_dayGap = time_day_gap(userbook.noteBook.updatedAt, locale, true, true);
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
-  const h_note = await kira_line_append(userbook, h_line, h_dayGap);
+  const h_note = await userbook.line_append(h_line, h_dayGap);
   console.debug(
     `kira : h_dayGapDiff=${h_dayGapDiff}=${locale}-${userbook.updatedAt}`
   );
@@ -5193,7 +5061,7 @@ export async function cmd_kira_execute(data) {
   const h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
   const lang_victim = h_victim_data ? await lang_get(h_victim_data, lang) : lang;
   const userdata = await kira_user_get(user.id, true);
-  const h_attacker_book = await kira_book_get(userdata.bookPtr.id);
+  const h_attacker_book = await NoteBook.get(userdata.noteBookId);
   //const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang_attacker; //old
 
   //handle special case : burned book
@@ -5304,7 +5172,7 @@ export async function cmd_kira_execute(data) {
         ifSuicide: pack.victim_id == pack.attacker_id,
         msgReference: pack.victim_message_id,
       });
-      if (h_will_book) await kira_line_taste(pack.note_id, 1); //note need to exist
+      if (h_will_book) await NoteBook.line_taste(pack.note_id, 1); //note need to exist
     }
 
     {

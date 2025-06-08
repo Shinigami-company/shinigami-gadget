@@ -1,9 +1,5 @@
 import { translate } from "../lang";
 
-import {
-  book_colors,
-} from "../use/kira.js";
-
 //rules
 const all_rules = [
   //custom ones
@@ -104,7 +100,7 @@ export async function cmd_rules({ userdata, userbook, lang }) {
         translate(lang, "cmd.rules.preamble"),
       embeds: [
         {
-          color: book_colors[userbook.color].int,
+          color: userbook.color.int,
           description: translate(lang, "rule." + ruleKey),
           footer: { text: rule_key_parse(ruleKey) },
         },

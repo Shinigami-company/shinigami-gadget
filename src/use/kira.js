@@ -1,7 +1,5 @@
 import { api } from "gadget-server";
 
-import { SETT_CMD } from "../sett.js";
-
 import { FeedbackState, userBanType } from "../enum.ts";
 import { DiscordUserOpenDm } from "../utils.js";
 
@@ -45,7 +43,8 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       feedbackState: true,
       statPtr: { id: true },
       achivPtr: { id: true },
-      bookPtr: { id: true },
+      noteBookId: true,
+      //noteBookPtr: { id: true },
       equipedPen: { id: true },
       equipedBook: { id: true },
       equipedBag: { id: true },
@@ -335,121 +334,6 @@ export async function kira_user_send_mail(userdataId, message)
 
 
 //uses
-//kira_line : DATA
-
-export async function kira_line_append(f_book, f_line, f_TimeDayGapObject) {
-  let h_indexLine = f_book.index;
-
-  //date
-  if (
-    f_book.index === 0 ||
-    f_TimeDayGapObject.now.day != f_TimeDayGapObject.last.day
-  ) {
-    await api.KiraNotes.create({
-      indexLine: h_indexLine,
-      line: {
-        markdown: `*${f_TimeDayGapObject.now.format}*`,
-      },
-      attackerBookPtr: {
-        _link: f_book.id,
-      },
-    });
-    h_indexLine++;
-  }
-
-  //line
-  let r_line = await api.KiraNotes.create({
-    indexLine: h_indexLine,
-    line: {
-      markdown: f_line,
-    },
-    attackerBookPtr: {
-      _link: f_book.id,
-    },
-  });
-
-  //stats
-  await api.KiraBooks.update(f_book.id, {
-    index: h_indexLine + 1,
-    lastNoteId: r_line.id,
-    //stats_kills: f_book.stats_kills+1,
-  });
-
-  //await api.KiraUsers.update(f_userdata.id, {stats_kills: f_userdata.stats_kills+1});
-
-  return r_line;
-}
-
-//give a taste/style to a line.
-export async function kira_line_taste(f_noteId, f_code) {
-  let r_line = await api.KiraNotes.findOne(f_noteId, {
-    select: {
-      line: { markdown: true },
-    },
-  }).then((obj) => obj.line.markdown);
-
-  //-- codes --
-
-  //sucessful kill
-  if (f_code === 1) {
-    r_line = `**${r_line}**`;
-  }
-
-  await api.KiraNotes.update(f_noteId, {
-    line: { markdown: r_line },
-  });
-}
-
-export async function kira_line_get_last_indexPage(f_book) {
-  //const h_data_gtr = await api.KiraNotes.maybeFindFirst(
-  // {
-  //  filter:
-  //  {
-  //    attackerBookPtr: { equals: f_book.id }
-  //  },
-  //  sort:
-  //  {
-  //    indexLine: "Descending",
-  //  }
-  //});
-  //if (!h_data_gtr) return 1;
-  if (!f_book.lastNoteId) return 1;
-  const h_data_gtr = await api.KiraNotes.findOne(f_book.lastNoteId);
-  return Math.ceil((h_data_gtr.indexLine + 1) / SETT_CMD.see.maxLines);
-}
-
-export async function kira_line_if_pageGood(f_book, f_page) {
-  return (
-    f_page >= 0 &&
-    (f_page < SETT_CMD.see.maxPages ||
-      f_page < (await kira_line_get_last_indexPage(f_book)))
-  );
-}
-
-export async function kira_line_get_page(f_book, f_page, f_ifBlank = true) {
-  const h_data_lines_minimal = await api.KiraNotes.findMany({
-    filter: [
-      {
-        attackerBookPtrId: { equals: f_book.id },
-      },
-      {
-        indexLine: {
-          greaterThanOrEqual: SETT_CMD.see.maxLines * f_page,
-          lessThan: SETT_CMD.see.maxLines * (f_page + 1),
-        },
-      },
-    ],
-  });
-  if (!f_ifBlank) return h_data_lines_minimal;
-
-  let h_data_lines_blanked = new Array(SETT_CMD.see.maxLines).fill(false);
-  for (let i = 0; i < h_data_lines_minimal.length; i++) {
-    h_data_lines_blanked[
-      h_data_lines_minimal[i].indexLine - SETT_CMD.see.maxLines * f_page
-    ] = h_data_lines_minimal[i];
-  }
-  return h_data_lines_blanked;
-}
 
 export async function kira_run_create(
   f_finalDate,

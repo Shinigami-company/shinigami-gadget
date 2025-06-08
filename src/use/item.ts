@@ -1,10 +1,10 @@
-import { equal } from 'assert';
 import { api } from 'gadget-server';
 import { itemType } from '../enum';
 import { translate } from '../lang';
 import { sett_emoji_items, godNamesProba } from '../sett';
 import { kira_apple_send } from './apple';
-import { kira_book_create, kira_book_delete, kira_book_get, kira_book_link } from './itemType/book';
+import { NoteBook } from './itemType/book';
+import { copyAttrs } from './tools';
 
 
 //flow is like a dynamic lore.
@@ -262,9 +262,9 @@ export const items_types = {
     equip : async (userdata, item: Item) => {
       if (!item.meta.bookId)
       {
-        item.meta.bookId = await kira_book_create(userdata, item.itemName).then((obj) => obj.id);
+        item.meta.bookId = await NoteBook.create(userdata, item.itemName).then((obj) => obj.noteBook.id);
       }
-      await kira_book_link(item.meta.bookId, userdata.id);
+      await NoteBook.link_writter(item.meta.bookId, userdata.id);
 
       item.meta.ownerId = userdata.userId;
       item.meta.ownerName = userdata.userName;
@@ -275,7 +275,7 @@ export const items_types = {
     unequip: async (userdata, item: Item) : Promise<boolean> => {
       if (items_types[itemType.BOOK]?.if_equiped(userdata, item))
       {
-        await kira_book_link(item.meta.bookId, null);
+        await NoteBook.unlink_writter(userdata.id);
         await api.KiraUsers.update(userdata.id, {equipedBook: {_link: null}});
         return true;
       }
@@ -292,7 +292,7 @@ export const items_types = {
 
     delete: async (userdata, item) => {
       if (item.meta.bookId)
-        await kira_book_delete(await kira_book_get(item.meta.bookId));
+        await NoteBook.delete(item.meta.bookId);
     }
   },
 }
@@ -342,14 +342,6 @@ export function flow_book(deep) {
 }
 
 
-function copyAttrs(source: any, target: Item) {
-  const keys = Object.keys(target); // Get all property keys defined in the class
-  keys.forEach(key => {
-    if (key in source) {
-      target[key] = source[key];
-    }
-  });
-}
 
 function field_translation(lang: string, itemName: string, fieldKey: string, deep: {}) : undefined | string
 {
@@ -401,7 +393,6 @@ export class Item {
   constructor(itemDbObj: any) {
     if (!itemDbObj) return;
     copyAttrs(itemDbObj, this);
-    //console.log('CONSTRUCT ITEM:', itemDbObj, this)
     this.info = items_info[this.itemName];
     this.atr = items_info[this.itemName].atr;
   }

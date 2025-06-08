@@ -39,11 +39,6 @@ export const schema: GadgetModel = {
       storageKey: "mEHu8wCFxIeg",
     },
     banValue: { type: "number", storageKey: "olZPOzgP4MKN" },
-    bookPtr: {
-      type: "hasOne",
-      child: { model: "KiraBooks", belongsToField: "ownerPtr" },
-      storageKey: "EArr0Ke5jyl_::6O8gs-HKWqKg",
-    },
     deathDate: {
       type: "dateTime",
       includeTime: true,
@@ -119,6 +114,16 @@ export const schema: GadgetModel = {
     nameReal: {
       type: "string",
       storageKey: "talKrltdWT_C::DmyRhXFBFJYQ",
+    },
+    noteBook: {
+      type: "belongsTo",
+      parent: { model: "KiraBooks" },
+      storageKey: "-HzuHqzEaIWT",
+    },
+    ownedBooksPtr: {
+      type: "hasMany",
+      children: { model: "KiraBooks", belongsToField: "owner" },
+      storageKey: "EArr0Ke5jyl_",
     },
     pairsPtr: {
       type: "hasMany",

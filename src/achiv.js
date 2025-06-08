@@ -263,7 +263,6 @@ export class Achievement {
         {
           color: f_bookColor,
           description: r_list_txt,
-          //color: book_colors[userbook.color].int,
         },
       ],
     };

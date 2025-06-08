@@ -177,8 +177,8 @@ const dailyStreakReward = [
   //{day:7,apple:2},
 ];
 
-function avangerAppleReward(killsOfVictim) {
-  return parseInt(killsOfVictim ** 0.5); //squareroot
+function avangerAppleReward(killsOfVictim : number) : number {
+  return Math.floor(killsOfVictim ** 0.5); //squareroot
 }
 const counterMax = 13;
 
