@@ -3796,44 +3796,51 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   }
   
   //arg/page
-  let no_page = data.options?.find((opt) => opt.name === "nopage")?.value;//1,n
-  let on_page = data.options?.find((opt) => opt.name === "page")?.value;//1,n
-  const equipit = (data.options?.find((opt) => opt.name === "equipit")?.value===1);//_,0,1
-  const dropit = data.options?.find((opt) => opt.name === "dropit")?.value;//_,0,1,2
-  const droped = dropit == 2;
-  const unic = items_all.length===1;
+  const action = (data.options?.find((opt) => opt.name === "action")?.value);//str
+  const on_page = data.options?.find((opt) => opt.name === "page")?.value;//1,n
+  console.log("pocker : "+action+" "+on_page);
+  
+  const unic = items_all.length === 1;
   const last_page = items_all.length;
+  
+  const actionEquip = (action == 'equip') ? 1 : 0;//0,1
+  const actionDropState = (action == 'drop_confirm') ? 2 : (action == 'drop') ? 1 : 0;//0,1,2
+  const droped = actionDropState == 2;
+  
   let show_page = -1;
   if (unic)
   {
     on_page = 1;
   }
-  if (on_page)
+  else if (action == 'roll')
+  {// random page
+    if (on_page && on_page >= 0)
+    {// cant get same page
+      show_page = randomInt(last_page-1)+1;
+      if (show_page >= on_page) show_page+=1;
+    } else {
+      show_page = randomInt(last_page)+1;
+    }
+  }
+  else if (on_page)
   {
     show_page = on_page;
-  }
-  else if (no_page>-2)
-  {
-    show_page = randomInt(last_page)+1;
-    if (no_page>-1 && last_page>1)
-    {
-      show_page = randomInt(last_page-1)+1;
-      if (show_page>= no_page) show_page+=1;
-    }
   }
 
   let fields=[];
   let item_components=[];
 
-  let get_item_field = (item_selected, equiped) => {
+  let get_item_field = (item_selected, equipedStr) => {
+    let name = item_selected.get_title(lang) + ((equipedStr) ? translate(lang, "cmd.pocket.list.equiped." + equipedStr) : "");
+    if (droped) name = `~~${name}~~`;
     return {
-      name: item_selected.get_title(lang) + ((equiped) ? translate(lang, "cmd.pocket.list.equiped." + equiped) : ""),
+      name,
       value: item_selected.get_lore(lang)
     }
   }
 
   if (show_page === -1)
-  {
+  {// all items
     for (let i=0; i<items_all.length; i++)
     {
       let item_selected = await Item.get(items_all[i].id, userdata.id);
@@ -3844,33 +3851,38 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     }
   }
   else
-  {
+  {// one item
     let item_selected = await Item.get(items_all[show_page-1]?.id, userdata.id);
 
     //equip button and equipit
     let equiped;
     if (items_types[item_selected.info.type]?.equipable)
     {
-      if (item_selected.if_equiped(userdata))
-        equiped = items_types[item_selected.info.type].str;
-      if (equipit)
+      // do equipit
+      if (actionEquip)
       {
         await item_selected.equip(userdata);
+        equiped = items_types[item_selected.info.type].str;
+      }
+      // show
+      if (item_selected.if_equiped(userdata))
+      {
         equiped = items_types[item_selected.info.type].str;
       }
       item_components.push(
         {
           type: MessageComponentTypes.BUTTON,
-          custom_id: `makecmd pocket_edit 2+${show_page}`,
+          custom_id: `makecmd pocket_edit equip+${show_page}`,
           label: translate(lang, "cmd.pocket.equip."+items_types[item_selected.info.type].str+"."+((equiped) ? "out" : "in")),
           style: ButtonStyleTypes.PRIMARY,
-          disabled: (equiped!=undefined || droped)
+          disabled: (equiped != undefined || droped)
         },
       )
     }
     
     fields.push(get_item_field(item_selected, equiped));
 
+    // do drop
     if (droped) 
     {
       await item_selected.delete(userdata);
@@ -3879,8 +3891,8 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     item_components.push(
       {
         type: MessageComponentTypes.BUTTON,
-        custom_id: `makecmd pocket_edit ${(dropit==1) ? 4 : 3}+${show_page}`,
-        label: translate(lang, "cmd.pocket.drop."+((dropit) ? (droped) ? "done" : "confirm" : "first")),
+        custom_id: `makecmd pocket_edit ${(actionDropState==1) ? 'drop_confirm' : 'drop'}+${show_page}`,
+        label: translate(lang, "cmd.pocket.drop."+((actionDropState) ? (droped) ? "done" : "confirm" : "first")),
         style: ButtonStyleTypes.DANGER,
         disabled: droped
       },
@@ -3897,14 +3909,14 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
           [
             {
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd pocket_edit 0+-2`,
+              custom_id: `makecmd pocket_edit all`,
               label: translate(lang, "cmd.pocket.get.all"),
               style: ButtonStyleTypes.SECONDARY,
               disabled: (show_page==-1)
             },
             {
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd pocket_edit 0+${show_page}`,
+              custom_id: `makecmd pocket_edit roll+${show_page}`,
               label: translate(lang, "cmd.pocket.get."+((show_page==-1) ? "one" : "other")),
               style: ButtonStyleTypes.SECONDARY,
               disabled: (last_page<2 && show_page>-1)
