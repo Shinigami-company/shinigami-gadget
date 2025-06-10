@@ -57,6 +57,7 @@ import {
   kira_user_set_ban,
   kira_user_dm_id,
   kira_user_update,
+  kira_user_get_owned_booksItemId,
 } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
@@ -3065,20 +3066,48 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
     "ever_book"
   );
 
+  //checks
+  let fail_reason;
+
   if (userbook) {
+    fail_reason = 'table';
+  } else {
+    const owned_books_id = await kira_user_get_owned_booksItemId(userdata.id);
+
+    if (owned_books_id.length > 0)
+    {
+      let books_item = [];
+      let carry_amount = 0;
+      for (let bookId in owned_books_id)
+      {
+        let item = Item.get(bookId);
+        books_item.push(item);
+        if (item.if_own(userdata.id))
+        {
+          carry_amount += 1;
+        }
+      }
+
+      fail_reason = (carry_amount > 0) ? 'pocket' : 'given';
+    }
+  }
+
+
+  if (fail_reason)
+  {
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, "cmd.claim.fail.already.free")
+        content: translate(lang, 'cmd.claim.fail.already.'+fail_reason)
       },
     };
   }
 
+  // pass
   if (!h_book_amount > 0) {
     const all = { user, userdata, channel };
     await webhook_reporter.newbi.post(lang, all, {}, 
     user.accent_color
-    //9533180// purple 
     );
   }
 
@@ -3807,7 +3836,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   {
     for (let i=0; i<items_all.length; i++)
     {
-      let item_selected = await Item.get(userdata.id, items_all[i].id);
+      let item_selected = await Item.get(items_all[i].id, userdata.id);
       let equiped;
       if (item_selected.if_equiped(userdata))
         equiped = items_types[item_selected.info.type].str;
@@ -3816,7 +3845,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   }
   else
   {
-    let item_selected = await Item.get(userdata.id, items_all[show_page-1]?.id);
+    let item_selected = await Item.get(items_all[show_page-1]?.id, userdata.id);
 
     //equip button and equipit
     let equiped;
@@ -4185,7 +4214,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
     }
   } else {
 
-    item = await Item.get(userdata.id, item_id);
+    item = await Item.get(item_id, userdata.id);
     if (!item)
     {
       return {
@@ -4243,7 +4272,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
   {
    gift = await Item.gift_apples(appleAmount, userdata, user.username, expireDate, recipientId)
   } else {
-   let item = await Item.get(userdata.id, item_id);
+   let item = await Item.get(item_id, userdata.id);
    gift = await item.gift_send(userdata, user.username, expireDate, recipientId);
   }
   
@@ -4346,7 +4375,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
       )
     });
   } else {
-    item = await Item.get(userdata.id, gift.itemPtrId);
+    item = await Item.get(gift.itemPtrId, userdata.id);
     if (!item)
     {
       throw Error("the item fled");

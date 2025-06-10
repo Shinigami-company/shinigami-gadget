@@ -38,13 +38,13 @@ export class NoteBook {
     return new NoteBook(userbook);
   }
 
-  static async create(userdata, itemName) : Promise<NoteBook> {
+  static async create(ownerUserdata, itemName) : Promise<NoteBook> {
     return new NoteBook(await api.KiraBooks.create({
       index: 0,
       owner: {
-        _link: userdata.id,
+        _link: ownerUserdata.id,
       },
-      userId: userdata.userId,
+      ownerUserId: ownerUserdata.userId,
       itemName: itemName
     }));
   } //return the created book

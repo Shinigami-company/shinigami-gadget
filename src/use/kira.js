@@ -333,6 +333,24 @@ export async function kira_user_send_mail(userdataId, message)
 
 
 
+export async function kira_user_get_owned_booksItemId(userdataId) {
+
+  const h_user = await api.KiraUsers.findOne(userdataId, {
+    select: {
+      ownedBooksPtr: {
+        edges: {
+          node: {
+            id: true,
+          },
+        },
+      },
+    },
+  });
+
+  return h_user.ownedBooksPtr.edges.map((the) => the.node.id);
+}
+
+
 //uses
 
 export async function kira_run_create(

@@ -364,10 +364,27 @@ export const items_types = {
 
 
 export function flow_pen(deep) {
-  let key = 'items.pens.flow';
+  let key = 'items.pens.flow.ink.';
   let penItem = deep.item;
   let use = (penItem.meta?.use) ? penItem.meta.use : 0;
   let dura = items_info[penItem.itemName].atr.empty_durability - use;
+  let progress = dura / items_info[penItem.itemName].atr.empty_durability;
+  if (progress >= 1)
+  {
+    key += 'full';
+  }
+  else if (progress >= .5)
+  {
+    key += 'half';
+  }
+  else if (progress >= .25)
+  {
+    key += 'quater';
+  }
+  else
+  {
+    key += 'last';
+  }
   let dolar = { dura };
   return { key, dolar };
 }
@@ -512,20 +529,28 @@ export class Item {
     }));
   }
 
-  static async get(userdataId, itemId) {
-    return new Item(await api.KiraItems.maybeFindFirst({
-      filter: {
-        ownerPtr: {
-          equals: userdataId,
-        },
-        id: {equals: itemId}
+  static async get(itemId : string, userdataId? : string) : Promise<Item | undefined> {
+    let itemObj; 
+    try {
+      itemObj = await api.KiraItems.findById(itemId);
+    } catch (e) {
+      return;
+    }
+    if (itemObj)
+    {
+      const item = new Item(itemObj);
+      if (userdataId && !item.if_own(userdataId))
+      {
+        throw new Error(`item [${item.get_title('en')}] is not owned by user [${userdataId}]`);//!
+        return;
       }
-    }));
+      return item;
+    }
   }
 
   // DELETE
   async delete(userdata) {
-    if (!await this.if_own(userdata.id)) return false;
+    if (!this.if_own(userdata.id)) return false;
     if (items_types[this.info.type]?.delete)
     {
       await items_types[this.info.type].delete(userdata, this);
@@ -572,7 +597,7 @@ export class Item {
   }
   
   // IF
-  async if_own(userdataId) {
+  if_own(userdataId : string) {
     return ((this.ownerPtrId.toString()) == (userdataId.toString()));
   }
 
@@ -610,7 +635,7 @@ export class Item {
 
   // GIFT
   async gift_send(userdataOwner, usernameOwner, expireTimestamp, userIdRecipient) {
-    if (!await this.if_own(userdataOwner.id)) return false;
+    if (!this.if_own(userdataOwner.id)) return false;
     
     await this.unequip(userdataOwner);
     //await api.KiraUsers.update(itemId, {myItems: {_unlink:[{id: userdataIdOwner}]}});//not this way

@@ -7,11 +7,6 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "QKAfU7RSLj_r",
   fields: {
-    colorIndex: {
-      type: "number",
-      default: 0,
-      storageKey: "ii217u7WjZs-::IErty4wRhxVC",
-    },
     index: {
       type: "number",
       default: 0,
@@ -30,12 +25,17 @@ export const schema: GadgetModel = {
       },
       storageKey: "Jtt1CwS0jzFN::78HP6MC2vS-K",
     },
+    oldColorIndex: {
+      type: "number",
+      default: 0,
+      storageKey: "ii217u7WjZs-::IErty4wRhxVC",
+    },
     owner: {
       type: "belongsTo",
       parent: { model: "KiraUsers" },
       storageKey: "yPEocCeFGmWb::Un0pqDvHhn0t",
     },
-    userId: {
+    ownerUserId: {
       type: "string",
       storageKey: "ig49tU621fkR::SvA9LHRntTO9",
     },
