@@ -1,4 +1,4 @@
-import { shopNewItemRound, shopNewItemSeconds } from "../sett";
+import { SETT_CMD_SHOP, shopNewItemRound, shopNewItemSeconds } from "../sett";
 import { items_info } from "../use/item";
 import { kira_user_get_shopAlready, kira_user_set_shopAlready } from "../use/kira";
 
@@ -45,9 +45,9 @@ export async function shop_byable_items(userdata) {
 
   let shopAlready = await kira_user_get_shopAlready(userdata.id);
 
-  let items_seed = [ten, ten+1, ten+2];
+  let items_seed = new Array(SETT_CMD_SHOP.itemAmount).fill(ten).map((v, i) => v + i);
   let older_index = 0;
-  while ((items_seed[0]%3) != 0)
+  while ((items_seed[0] % SETT_CMD_SHOP.itemAmount) != 0)
   {
     older_index++;
     let last = items_seed.pop();

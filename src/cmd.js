@@ -11,7 +11,7 @@ import {
   userBanType,
 } from "./enum.ts";
 
-import { sett_emoji_gift_claim, sett_options_gift_apples, Settings } from "./sett";
+import { SETT_CMD_GIFT, sett_emoji_gift_claim, sett_options_gift_apples, Settings } from "./sett";
 
 //--- imports ---
 
@@ -4049,6 +4049,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
     items_shop = await shop_byable_items(userdata);
   }
 
+  let buttonBuy_amount = 0;
   for (let product of items_shop)
   {
     if (product.already)
@@ -4083,21 +4084,31 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
       let buy_state = ["one", "confirm", "done"][buy_action];
       if (actioned && fail_reason!="") buy_state = "fail."+fail_reason;
 
-      components.push(
+      let buttonBuy = 
         {
-          type: MessageComponentTypes.ACTION_ROW,
-          components: [
-            {
-              type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd shop_edit ${buy_action+1}+${product.seed}`,
-              label: translate(lang, "cmd.shop.get."+buy_state, {"price": product.price, "unit": translate(lang, `word.apple${product.price > 1 ? "s" : ""}`), "itemTitle": Item.static_title(product.name, lang, false)}),
-              style: (actioned && fail_reason!="") ? ButtonStyleTypes.DANGER : (product.price > userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
-              emoji: (product.price > 0) ? sett_emoji_apple_croc : sett_emoji_apple_none,
-              disabled: (buy_state == "done" || (actioned && fail_reason!=""))
-            },
-          ]
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd shop_edit ${buy_action+1}+${product.seed}`,
+          label: translate(lang, "cmd.shop.get."+buy_state, {"price": product.price, "unit": translate(lang, `word.apple${product.price > 1 ? "s" : ""}`), "itemTitle": Item.static_title(product.name, lang, false)}),
+          style: (actioned && fail_reason!="") ? ButtonStyleTypes.DANGER : (product.price > userdata.apples) ? ButtonStyleTypes.SECONDARY : ButtonStyleTypes.SUCCESS,
+          emoji: (product.price > 0) ? sett_emoji_apple_croc : sett_emoji_apple_none,
+          disabled: (buy_state == "done" || (actioned && fail_reason!=""))
         }
-      )
+
+
+      if (buttonBuy_amount < 4)
+      {
+        components.push(
+          {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+              buttonBuy
+            ]
+          }
+        )
+      } else {
+        components[(buttonBuy_amount) % 4].components.push(buttonBuy);
+      }
+      buttonBuy_amount += 1;
     }
   }
 
@@ -4312,7 +4323,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
   const recipientId = (gifted_id==="@everyone") ? undefined : gifted_id;
   
   // expire
-  let expireSpan = (3600 * 24 * 2);
+  let expireSpan = SETT_CMD_GIFT.expireSpanSecond;
   let expireDate = new Date();
   expireDate.setSeconds(expireDate.getSeconds() + (expireSpan));
 

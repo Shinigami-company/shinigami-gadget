@@ -233,5 +233,13 @@ export const SETT_CMD = {
   }
 };
 
+export const SETT_CMD_GIFT = {
+  expireSpanSecond: (3600 * 24 * 2)
+}
+
+export const SETT_CMD_SHOP = {
+  itemAmount: 3//max 20
+}
+
 export const shopNewItemSeconds = 60;
 export const shopNewItemRound = 10;

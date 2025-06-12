@@ -289,13 +289,13 @@ export const items_types = {
 
     equipable: true,
     equip : async (userdata, item: Item) => {
-      userdata.equipedPen.id = item.id;
+      userdata.equipedPen = { id: item.id };
       await api.KiraUsers.update(userdata.id, {equipedPen: {_link: item.id}});
     },
     unequip: async (userdata, item: Item) : Promise<boolean> => {
       if (items_types[itemType.PEN]?.if_equiped(userdata, item))
       {
-        userdata.equipedPen.id = null;
+        userdata.equipedPen = { id: null };
         await api.KiraUsers.update(userdata.id, {equipedPen: {_link: null}});
         return true;
       }
@@ -326,7 +326,7 @@ export const items_types = {
       item.meta.ownerId = userdata.userId;
       await item.change(undefined, item.meta)
       
-      userdata.equipedBook.id = item.id;
+      userdata.equipedBook = { id: item.id };
       await api.KiraUsers.update(userdata.id, {equipedBook: {_link: item.id}});
     },
     unequip: async (userdata, item: Item) : Promise<boolean> => {
@@ -336,7 +336,7 @@ export const items_types = {
         console.log(`is book equiped, so unequip.`);
         await NoteBook.unlink_writter(userdata);
         
-        userdata.equipedBook.id = null;
+        userdata.equipedBook = { id: null };
         await api.KiraUsers.update(userdata.id, 
         {
           equipedBook: {_link: null },
