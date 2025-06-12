@@ -370,7 +370,7 @@ export const items_types = {
         {
           if (godOwner !== '')
             godOwner += ' ';
-          godOwner += translate(lang, `items.books.god.${nameType}.${Math.ceil(Math.random()*nameProba.amount)}`)
+          godOwner += translate(lang, `name.god.${nameType}.${Math.ceil(Math.random()*nameProba.amount)}`)
         }
       }
       // mutate them.

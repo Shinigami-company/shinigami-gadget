@@ -4451,7 +4451,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     //+achiv
     if (gift.appleAmount>=3 && ownerdata.apples < userdata.apples)
     {
-      await Achievement.list["giftAway"].do_grant(ownerdata, lang);
+      await Achievement.list["giftAway"].do_grant(ownerdata, lang, 1, {personId: userdata.id});
     }
   } else {
     item = await Item.get(gift.itemPtrId, userdata.id);
@@ -4463,11 +4463,11 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     //+achiv
     if (gift.userIdOwner===userdata.userId)
     {
-      await Achievement.list["giftSelf"].do_grant(ownerdata, lang);
+      await Achievement.list["giftSelf"].do_grant(userdata, lang);
     }
-    if (item.info.type === itemType.JUNK)
+    else if (item.info.type === itemType.JUNK)
     {
-      await Achievement.list["giftJunk"].do_grant(ownerdata, lang);
+      await Achievement.list["giftJunk"].do_grant(userdata, lang);
     }
   }
   
