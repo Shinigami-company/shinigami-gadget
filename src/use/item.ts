@@ -332,7 +332,6 @@ export const items_types = {
       await NoteBook.link_writter(item.meta.bookId, userdata);
 
       item.meta.ownerId = userdata.userId;
-      item.meta.ownerName = userdata.userName;
       await item.change(undefined, item.meta)
       
       await api.KiraUsers.update(userdata.id, {equipedBook: {_link: item.id}});
@@ -428,7 +427,7 @@ export function flow_book(deep) {
   if (deep.item.meta.ownerId)
   {
     key += 'owned';
-    dolar = { ownerName: deep.item.meta.ownerName, ownerId: deep.item.meta.ownerId };
+    dolar = { ownerId: deep.item.meta.ownerId };
   } else {
     key += 'never';
   }
