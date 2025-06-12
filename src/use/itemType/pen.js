@@ -12,7 +12,8 @@ export const pen_filters = {
 
 export async function pen_use(userdata, penItem)
 {
-  if (!penItem.meta.use) penItem.meta.use=0;
+  const firstUse = (!penItem.meta.use);
+  if (firstUse) penItem.meta.use=0;
   penItem.meta.use += 1;
   //penItem.meta.dura = items_info[penItem.itemName].atr.empty_durability - penItem.meta.use;//no more needed
   const empty_durability = items_info[penItem.itemName].atr.empty_durability;
@@ -30,7 +31,7 @@ export async function pen_use(userdata, penItem)
     }
     return penState.EMPTY;
   }
-  else if (broken_chance && Math.random()<broken_chance)
+  else if (broken_chance && !firstUse && Math.random()<broken_chance)
   {//break
     const newItemName=items_info[penItem.itemName].atr.broken_item;
     if (newItemName)
