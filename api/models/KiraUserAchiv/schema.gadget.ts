@@ -9,6 +9,9 @@ export const schema: GadgetModel = {
   fields: {
     done_counterMax: { type: "number", storageKey: "KD5akNfwxXEy" },
     done_counterShort: { type: "number", storageKey: "ymPoh5WS76ci" },
+    done_giftAway: { type: "number", storageKey: "8IIwE--QcbVc" },
+    done_giftJunk: { type: "number", storageKey: "LvGsPbLNFT74" },
+    done_giftSelf: { type: "number", storageKey: "zuzVk25eYZUM" },
     done_killDailyComeback: {
       type: "number",
       storageKey: "oCNto3mBnRsx",
@@ -22,6 +25,7 @@ export const schema: GadgetModel = {
     },
     done_outer23d: { type: "number", storageKey: "sFgvupAv1nja" },
     done_secretRule: { type: "number", storageKey: "DAyFzbNa3vNb" },
+    done_shopEmpty: { type: "number", storageKey: "nX7e4MHreESb" },
     done_test1: {
       type: "number",
       default: 0,

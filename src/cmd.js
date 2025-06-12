@@ -116,7 +116,7 @@ import {
   stats_pair_get_multiples,
 } from "./use/stats.js"; // pair user statstics
 import { stats_checkup } from "./use/stats.js"; // update user statistics
-import { Achievement, Schedule } from "./achiv.js"; // user achivements
+import { Achievement, Schedule } from "./achiv"; // user achivements
 
 import {
   time_format_string_from_int,
@@ -4050,11 +4050,12 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
   }
 
   let buttonBuy_amount = 0;
+  let empty_amount = 0;
   for (let product of items_shop)
   {
     if (product.already)
     {// nothing
-
+      empty_amount++;
       let value = translate(lang, "cmd.shop.empty.value");
       if (product.older)
         value += "\n-# " + translate(lang, "cmd.shop.soon", {"time": time_format_string_from_int(shop_get_time_remain(), lang), "timestamp": shop_get_time_next()})
@@ -4143,6 +4144,12 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
         }
       }
     )
+  }
+
+  //+achiv
+  if (empty_amount == items_shop.length)
+  {
+    Achievement.list['shopEmpty'].do_grant(userdata, lang);
   }
 
   //content=content+"\n"+footer_text;
@@ -4420,8 +4427,14 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
 
   await Item.gift_pick(gift, userdata);
 
+  const ownerdata = await kira_user_get(gift.userIdOwner);
   //+stats
   await stats_simple_add(userdata.statPtr.id, "is_gift");
+  //+achiv
+  if (gift.userIdOwner===userdata.userId)
+  {
+    await Achievement.list["giftSelf"].do_grant(ownerdata, lang);
+  }
   
   const isApple = (gift.appleAmount!=null);
   let item;
@@ -4435,6 +4448,11 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
         `word.apple${(gift.appleAmount > 1) ? "s" : ""}`
       )
     });
+    //+achiv
+    if (gift.appleAmount>=3 && ownerdata.apples < userdata.apples)
+    {
+      await Achievement.list["giftAway"].do_grant(ownerdata, lang);
+    }
   } else {
     item = await Item.get(gift.itemPtrId, userdata.id);
     if (!item)
@@ -4442,8 +4460,16 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
       throw Error("the item fled");
     }
     itemTitle = item.get_title(lang, false);
+    //+achiv
+    if (gift.userIdOwner===userdata.userId)
+    {
+      await Achievement.list["giftSelf"].do_grant(ownerdata, lang);
+    }
+    if (item.info.type === itemType.JUNK)
+    {
+      await Achievement.list["giftJunk"].do_grant(ownerdata, lang);
+    }
   }
-  console.log("ITEM4:",item);
   
 
   await DiscordRequest(
@@ -5050,7 +5076,8 @@ async function cmd_kira({
   if (h_pen_remain===penState.BROKEN)
   {
     h_all_msg += translate(lang, "cmd.kira.warn.pen.broken")+"\n";
-    await stats_simple_add(userdata.statPtr.id, "ever_penBroken");//+ stats
+    const stat = await stats_simple_add(userdata.statPtr.id, "ever_penBroken");//+ stats
+    await Achievement.list["penBreaker"].do_check(userdata, stat, lang);
   }
 
   //packing before wait

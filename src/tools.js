@@ -216,7 +216,7 @@ const roman_letters = {
 };
 const roman_stack = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
 export function roman_from_int(f_int) {
-  if (f_int === 0) return roman_stack[0];
+  if (f_int === 0) return roman_stack[0].toString();
 
   let r_txt = "";
   let i = 0;
