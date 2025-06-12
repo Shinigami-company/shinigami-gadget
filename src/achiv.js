@@ -343,4 +343,5 @@ Achievement.listDisplayed = [
   "onLeaderboard",
   "secretRule",
   "killDailyComeback",
+  "shopEmpty",
 ];

@@ -137,11 +137,11 @@ export const sett_emoji_items = {
   },
   broken_pen: {
     name: "broken_pen",
-    id: "1375207833628446811",
+    id: "1375207829794983986",
   },
   empty_pen: {
     name: "empty_pen",
-    id: "1375207829794983986",
+    id: "1375207833628446811",
   },
   book_black: {
     name: "book_black",

@@ -446,6 +446,10 @@
 "achievements.killDailyComeback.lore":"stop killing people for 13 days or more",
 "achievements.killDailyComeback.done":"by stopping killing people for more than 13 days and not dying from it",
 
+"achievements.shopEmpty.title":"overconsumption",
+"achievements.shopEmpty.lore":"empty the shop",
+"achievements.shopEmpty.done":"by buying all items of the shop",
+
 
 "item.event_egg_2025.title": "Weird egg",
 "item.event_egg_2025.claim": "You found a weird egg just here. You put it in your `/pocket`. <:weirdegg:1363686307955740864>🐇",

@@ -4675,7 +4675,7 @@ async function cmd_kira({
       console.log("create and equip a first new pen for",user.username);
       const pen=await Item.create(userdata.id, lang, "pen_black");
       await pen.equip(userdata);
-      await stats_simple_set(userdata.statPtr.id, "ever_penBuy", 0);
+      await stats_simple_set(userdata.statPtr.id, "ever_penBuy", 1);
       pen_ptr=pen;
     }
    

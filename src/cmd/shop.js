@@ -14,7 +14,7 @@ function mulberry32(seed) {
 }
 function randint(r_float_function = () => {}, a_in=0, b_out=1)
 {
-  return Math.floor(r_float_function() * (Math.abs(a_in) + Math.abs(b_out))) + a_in;
+  return Math.floor(r_float_function() * (Math.abs(b_out) - Math.abs(a_in))) + a_in;
 }
 
 

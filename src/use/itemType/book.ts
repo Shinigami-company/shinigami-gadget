@@ -12,7 +12,7 @@ export class NoteBook {
   color : { text: string, int: number, ord: number };
   emoji : { [key: string]: any };
 
-  constructor(noteBookObject : any)
+  constructor(noteBookObject : any, canItemNone: boolean = false)
   {
     if (!noteBookObject) return;
     this.noteBook = noteBookObject;
@@ -20,6 +20,16 @@ export class NoteBook {
     this.itemId = noteBookObject.itemId;
     this.id = noteBookObject.id;
     console.log(`noteBookObject(${noteBookObject}) = items_info[${this.itemName}] = ${items_info[this.itemName]}`)
+    console.log(noteBookObject);
+    if (!this.itemName)
+    {
+      if (canItemNone)
+      {
+        return this;
+      } else {
+        throw Error(`this.itemName undefined (${this.itemName}) for noteBook object constructor.`)
+      }
+    }
     this.color = items_info[this.itemName].atr.color;
     this.emoji = items_info[this.itemName].emoji;
   };
@@ -53,8 +63,14 @@ export class NoteBook {
     }));
   } //return the created book
 
+  // update
+  
+  static async get_old(noteBookId : string) : Promise<NoteBook>
+  {
+    let userbook = await api.KiraBooks.findOne(noteBookId);
+    return new NoteBook(userbook, true);
+  }
 
-  // STATIC THINGS BUT COULD NOT BE
   async link_item(bookItem)
   {
     
@@ -65,6 +81,8 @@ export class NoteBook {
     bookItem.meta.bookId = this.id;
     await bookItem.change(undefined,  bookItem.meta);
   }
+
+  // STATIC THINGS BUT COULD NOT BE
 
 
   static async link_owner(noteBookId : string, userdataId : string | undefined) {

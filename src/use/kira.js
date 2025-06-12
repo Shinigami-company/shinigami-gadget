@@ -133,7 +133,7 @@ export async function kira_user_update(user, userdata, lang)
     if (noteBooksId.length > 0)
     {
       let bookItem = await Item.create(userdata.id, lang, 'book_black');//manually add meta
-      let noteBook = await NoteBook.get(noteBooksId[0]);
+      let noteBook = await NoteBook.get_old(noteBooksId[0]);
       if (!noteBook) throw Error(`try to update, but cant find book.`);
       await noteBook.link_item(bookItem);
       await bookItem.equip(userdata);//then equip
