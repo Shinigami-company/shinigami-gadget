@@ -40,3 +40,9 @@ export enum itemType {
   JUNK = 6,
   MISC = 7,
 }
+
+export enum penState {
+  FINE = 1,
+  EMPTY = -1,
+  BROKEN = -2,
+}

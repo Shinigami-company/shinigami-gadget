@@ -4,7 +4,7 @@ export const help_steps = [// step propety is just indicative.
   {step: 0, ifQuest: false},
   
   {step: 1, ifQuest: true, checkQuest: async (statPtr) => {
-    let amount = await stats_simple_get(statPtr, "ever_book");
+    let amount = await stats_simple_get(statPtr, "ever_bookFirst");
     return (amount > 0);
   }},
   

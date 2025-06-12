@@ -7,6 +7,7 @@ import { SETT_CMD } from '../../sett';
 export class NoteBook {
   noteBook : any;
   itemName : string;
+  itemId : string;
   id : string;
   color : { text: string, int: number, ord: number };
   emoji : { [key: string]: any };
@@ -16,7 +17,9 @@ export class NoteBook {
     if (!noteBookObject) return;
     this.noteBook = noteBookObject;
     this.itemName = noteBookObject.itemName;
+    this.itemId = noteBookObject.itemId;
     this.id = noteBookObject.id;
+    console.log(`noteBookObject(${noteBookObject}) = items_info[${this.itemName}] = ${items_info[this.itemName]}`)
     this.color = items_info[this.itemName].atr.color;
     this.emoji = items_info[this.itemName].emoji;
   };
@@ -38,19 +41,32 @@ export class NoteBook {
     return new NoteBook(userbook);
   }
 
-  static async create(ownerUserdata, itemName) : Promise<NoteBook> {
+  static async create(ownerUserdata, item) : Promise<NoteBook> {
     return new NoteBook(await api.KiraBooks.create({
       index: 0,
       owner: {
         _link: ownerUserdata.id,
       },
       ownerUserId: ownerUserdata.userId,
-      itemName: itemName
+      itemName: item.itemName,
+      itemId: item.id
     }));
   } //return the created book
 
 
   // STATIC THINGS BUT COULD NOT BE
+  async link_item(bookItem)
+  {
+    
+    this.itemName = bookItem.itemName;
+    this.itemId = bookItem.id;
+    await api.KiraBooks.update(this.id, { itemName: this.itemName, itemId: this.itemId });
+
+    bookItem.meta.bookId = this.id;
+    await bookItem.change(undefined,  bookItem.meta);
+  }
+
+
   static async link_owner(noteBookId : string, userdataId : string | undefined) {
     return await api.KiraBooks.update(noteBookId, {
       owner: {
@@ -59,18 +75,20 @@ export class NoteBook {
     });
   }
 
-  static async link_writter(noteBookId : string, userdataId : string) {
-    return await api.KiraUsers.update(userdataId, {
+  static async link_writter(noteBookId : string, userdata : any) {
+    userdata.noteBookId = noteBookId;
+    return await api.KiraUsers.update(userdata.id, {
       noteBook: {
         _link: noteBookId,
       },
     });
   }
   
-  static async unlink_writter(userdataId : string) {
-    return await api.KiraUsers.update(userdataId, {
+  static async unlink_writter(userdata : any) {
+    userdata.noteBookId = undefined;
+    return await api.KiraUsers.update(userdata.id, {
       noteBook: {
-        _link: undefined,
+        _link: null,
       },
     });
   }

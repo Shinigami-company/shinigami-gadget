@@ -5,6 +5,7 @@ import { sett_emoji_items, godNamesProba } from '../sett';
 import { kira_apple_send } from './apple';
 import { NoteBook } from './itemType/book';
 import { copyAttrs } from './tools';
+import { stats_simple_add } from './stats';
 
 
 //flow is like a dynamic lore.
@@ -36,7 +37,7 @@ export const items_info = {
       broken_item: 'broken_pen',
       broken_chance: .1,
       empty_item: 'empty_pen',
-      empty_durability: 10,
+      empty_durability: 5,
     },
     fields: {
       claim: false,
@@ -314,7 +315,7 @@ export const items_types = {
     get_equiped: async (userdata) : Promise<Item | undefined> => {
       if (!userdata.equipedPen?.id)
         return;
-      return await Item.get(userdata.id, userdata.equipedPen.id);
+      return await Item.get(userdata.equipedPen.id, userdata.id);
     }
   },
 
@@ -325,9 +326,10 @@ export const items_types = {
     equip : async (userdata, item: Item) => {
       if (!item.meta.bookId)
       {
-        item.meta.bookId = await NoteBook.create(userdata, item.itemName).then((obj) => obj.noteBook.id);
+        item.meta.bookId = await NoteBook.create(userdata, item).then((obj) => obj.noteBook.id);
+        await stats_simple_add(userdata.statPtr.id, "ever_bookFirst"); //+stats
       }
-      await NoteBook.link_writter(item.meta.bookId, userdata.id);
+      await NoteBook.link_writter(item.meta.bookId, userdata);
 
       item.meta.ownerId = userdata.userId;
       item.meta.ownerName = userdata.userName;
@@ -336,12 +338,20 @@ export const items_types = {
       await api.KiraUsers.update(userdata.id, {equipedBook: {_link: item.id}});
     },
     unequip: async (userdata, item: Item) : Promise<boolean> => {
+      console.log(`unequip book : ${userdata.id}. so [${userdata?.noteBookId}] is (${userdata?.equipedBook?.id} == ${item?.id})`);
       if (items_types[itemType.BOOK]?.if_equiped(userdata, item))
       {
-        await NoteBook.unlink_writter(userdata.id);
-        await api.KiraUsers.update(userdata.id, {equipedBook: {_link: null}});
+        console.log(`is book equiped, so unequip.`);
+        await NoteBook.unlink_writter(userdata);
+        
+        await api.KiraUsers.update(userdata.id, 
+        {
+          equipedBook: {_link: null },
+        });
+        console.log(`et voilà`);
         return true;
       }
+      console.log(`but np, book is not equiped.`);
       return false;
     },
     if_equiped: (userdata, item) : boolean => {
@@ -356,6 +366,23 @@ export const items_types = {
     delete: async (userdata, item) => {
       if (item.meta.bookId)
         await NoteBook.delete(item.meta.bookId);
+    },
+    
+    create_first: async (lang, dolarValues, metaDataValues) => {
+      let godOwner : string = '';
+      for (let nameType in godNamesProba)
+      {
+        const nameProba = godNamesProba[nameType];
+        if (nameProba.chance >= 1 || Math.random() < nameProba.chance)
+        {
+          if (godOwner !== '')
+            godOwner += ' ';
+          godOwner += translate(lang, `items.books.god.${nameType}.${Math.ceil(Math.random()*nameProba.amount)}`)
+        }
+      }
+      // mutate them.
+      dolarValues.godOwner = godOwner;
+      metaDataValues.godOwner = godOwner;
     }
   },
 }
@@ -391,20 +418,7 @@ export function flow_pen(deep) {
 
 
 export function lore_book(deep) {  
-  let godOwner : string = '';
-  for (let nameType in godNamesProba)
-  {
-    const nameProba = godNamesProba[nameType];
-    if (nameProba.chance >= 1 || Math.random() < nameProba.chance)
-    {
-      if (godOwner !== '')
-        godOwner += ' ';
-      godOwner += translate(deep.lang, `items.books.god.${nameType}.${Math.ceil(Math.random()*nameProba.amount)}`)
-    }
-  }
-
-  let dolar = { godOwner };
-  return { dolar };
+  return {};
 }
 
 
@@ -485,6 +499,12 @@ export class Item {
 
   static async create(userdataId, lang, itemName, dolarValues = {}, metaDataValues = {})
   {
+    // first creation, can return meta.
+    if (items_types[items_info[itemName].type]?.create_first)
+    {
+      await items_types[items_info[itemName].type].create_first(lang, dolarValues, metaDataValues);// ! is mutable
+    }
+
     // create item lore
     let itemLoreTxt : string | undefined = field_translation(lang, itemName, 'lore', dolarValues);
 
@@ -528,6 +548,19 @@ export class Item {
       }
     }));
   }
+  
+  static async find_all(filter : any = {}) : Promise<Item[]> {
+    let itemsData = await api.KiraItems.findMany({
+      filter
+    });
+    
+    let items : Item[] = [];
+    for (let itemData of itemsData)
+    {
+      items.push(new Item(itemData));
+    }
+    return items;
+  }
 
   static async get(itemId : string, userdataId? : string) : Promise<Item | undefined> {
     let itemObj; 
@@ -541,7 +574,7 @@ export class Item {
       const item = new Item(itemObj);
       if (userdataId && !item.if_own(userdataId))
       {
-        throw new Error(`item [${item.get_title('en')}] is not owned by user [${userdataId}]`);//!
+        throw new Error(`item [${item.get_title('en')}] is not owned by user [${userdataId}] but is intended to.`);//!
         return;
       }
       return item;

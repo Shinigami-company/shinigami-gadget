@@ -323,6 +323,9 @@ new Achievement("onLeaderboard", "done_onLeaderboard", 1, false);
 new Achievement("secretRule", "done_secretRule", 1, false);
 new Achievement("killDailyComeback", "done_killDailyComeback", 1, false);
 
+new Achievement("shopEmpty", "done_shopEmpty", 1, false);
+new Achievement("penBreaker", "level_penBreaker", 3, false, [1, 3, 15]);
+
 //dont put the achievement here to be invisible
 Achievement.listDisplayed = [
   "kill",

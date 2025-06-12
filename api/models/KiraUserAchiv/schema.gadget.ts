@@ -35,6 +35,7 @@ export const schema: GadgetModel = {
       storageKey: "kvrTXv7E0_8W",
     },
     level_outerTime: { type: "number", storageKey: "L0BCxHZN5Kqx" },
+    level_penBreaker: { type: "number", storageKey: "XItCf_fG226g" },
     level_test2: {
       type: "number",
       default: 0,

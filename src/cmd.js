@@ -6,6 +6,7 @@ import {
   FeedbackState,
   itemType,
   KnowUsableBy,
+  penState,
   rememberTasksType,
   userBanType,
 } from "./enum.ts";
@@ -57,7 +58,7 @@ import {
   kira_user_set_ban,
   kira_user_dm_id,
   kira_user_update,
-  kira_user_get_owned_booksItemId,
+  kira_user_get_owned_books_item,
 } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
@@ -1052,6 +1053,7 @@ export async function kira_cmd(f_deep, f_cmd) {
    * - ([clock])
    * - |lang|
    * - ([|replyed|])
+   * - |ecolor|
    * datamodels
    * - |userdata|
    * - |userbook|
@@ -1067,15 +1069,18 @@ export async function kira_cmd(f_deep, f_cmd) {
   //get the user data element
   //if dont exist, it's automaticly created
   f_deep.userdata = await kira_user_get(f_deep.user.id, true);
-  await kira_user_update(f_deep.user, f_deep.userdata);
-  f_deep.clock.emit("got userdata");
-  //get the user's book
-  //if dont exist, is undefined
-  f_deep.userbook = await NoteBook.get(f_deep.userdata.noteBookId, true);
-  f_deep.clock.emit("got userbook");
   //get user lang
   //lang selected, else discord lang
   f_deep.lang = await lang_get(f_deep.userdata, f_deep.locale);
+  //update user
+  await kira_user_update(f_deep.user, f_deep.userdata, f_deep.lang);
+  f_deep.clock.emit("got userdata");
+
+  //get the user's book
+  //if dont exist, is undefined
+  f_deep.userbook = await NoteBook.get(f_deep.userdata.noteBookId, true);
+  f_deep.ecolor = f_deep.userbook?.color.int;
+  f_deep.clock.emit("got userbook");
   //if replyed by
   //will change a lot here, used by catch
   f_deep.replyed = false;
@@ -2064,29 +2069,42 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
           };
         }
         
-        let targer_userdata = await kira_user_get(arg_user);
+        let target_userdata = await kira_user_get(arg_user);
         let target_user = await DiscordUserById(arg_user);
+        let nnone = something => something ? something : '<none>';//not none.
         
         
         let fields = [
           {
             name: "userId",
-            value: arg_user,
+            value: nnone(arg_user),
           },
         ]
-        if (targer_userdata)
+        if (target_userdata)
           fields.push(
             {
+              name: "dataId",
+              value: nnone(target_userdata.id),
+            },
+            {
               name: "lang",
-              value: targer_userdata.lang,
+              value: nnone(target_userdata.lang),
             },
             {
               name: "apples",
-              value: targer_userdata.apples,
+              value: nnone(target_userdata.apples),
+            },
+            {
+              name: "version",
+              value: nnone(target_userdata.version),
             },
             {
               name: "dmId",
-              value: targer_userdata.dmId,
+              value: nnone(target_userdata.dmId),
+            },
+            {
+              name: "ownedNoteBooksId",
+              value: await kira_user_get_owned_books_item(target_userdata.id).then(array => array.join()),
             }
           );
 
@@ -2099,7 +2117,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
             embeds:
             [
               {
-                description: (targer_userdata)
+                description: (target_userdata)
                 ? translate(lang, `cmd.god.sub.info.description.is`, {"targetId": arg_user } )
                 : translate(lang, `cmd.god.sub.info.description.no`, {"targetId": arg_user } ),
                 fields,
@@ -2423,13 +2441,26 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
         //  console.timeEnd("test:cost");
         //}
 
-        throw EvalError("found a cat in the code");
+        //throw EvalError("found a cat in the code");
 
         //{
-        //  r = Achievement.list["counter"].level_graduate(arg_amount);
+        //  let itemName = 'book_purple';
+        //  let items = await Item.find_all({itemName: {equals: itemName}});
+        //  r = `link books [${itemName}]`;
+        //  for (let item of items)
+        //  {
+        //    console.log(`item.meta.bookId : ${item.meta.bookId} : ${item.meta}.bookId`);
+        //    let book = await NoteBook.get(item.meta.bookId, false);
+        //    await book.link_item(item);
+        //  }
         //}
 
-        
+        //let target_userdata = await kira_user_get(arg_user);
+        //let booksId = await kira_user_get_owned_books_item(target_userdata.id);
+        //r = `books of @${target_userdata.userName} (did=${target_userdata.id}) are ${booksId} (length ${booksId.length})`;
+        //const pen = await Item.get_equiped(target_userdata, itemType.PEN);
+        //r = `pen of @${target_userdata.userName} (did=${target_userdata.id}) from ${userdata.equipedPen?.id} is ${pen} > ${pen?.itemName}`;
+
 
         return {
           method: "PATCH",
@@ -3063,7 +3094,7 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
   //variables
   const h_book_amount = await stats_simple_get(
     userdata.statPtr.id,
-    "ever_book"
+    "ever_bookFirst"
   );
 
   //checks
@@ -3072,15 +3103,17 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
   if (userbook) {
     fail_reason = 'table';
   } else {
-    const owned_books_id = await kira_user_get_owned_booksItemId(userdata.id);
+    const owned_books_id = await kira_user_get_owned_books_item(userdata.id);
 
     if (owned_books_id.length > 0)
     {
       let books_item = [];
       let carry_amount = 0;
-      for (let bookId in owned_books_id)
+      for (let itemId of owned_books_id)
       {
-        let item = Item.get(bookId);
+        console.log(`get item ${itemId}`);
+        let item = await Item.get(itemId);
+        if (!item) throw Error(`item is not. (${item}) from item id [${itemId}], in all [${owned_books_id.join()}]`);
         books_item.push(item);
         if (item.if_own(userdata.id))
         {
@@ -3113,7 +3146,7 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
 
   let newUserbook = await Item.create(userdata.id, lang, 'book_black');
   await newUserbook.equip(userdata);
-  await stats_simple_add(userdata.statPtr.id, "ever_book"); //+stats
+  //await stats_simple_add(userdata.statPtr.id, "ever_bookFirst"); //moved at item.ts, when equiped.
 
   return {
     method: "PATCH",
@@ -3810,7 +3843,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   let show_page = -1;
   if (unic)
   {
-    on_page = 1;
+    show_page = 1;
   }
   else if (action == 'roll')
   {// random page
@@ -4005,6 +4038,10 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
         if (buy_item.info.type === itemType.PEN)
         {
           await stats_simple_add(userdata.statPtr.id, "ever_penBuy");
+        }
+        if (buy_item.info.type === itemType.PEN)
+        {
+          await stats_simple_add(userdata.statPtr.id, "ever_bookBuy");
         }
       }
     }
@@ -4280,6 +4317,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
   expireDate.setSeconds(expireDate.getSeconds() + (expireSpan));
 
   let gift;
+  console.log(`in gift you will unequip`);
   if (isApple)
   {
    gift = await Item.gift_apples(appleAmount, userdata, user.username, expireDate, recipientId)
@@ -4623,7 +4661,7 @@ async function cmd_kira({
     if (await stats_simple_get(
         userdata.statPtr.id,
         "ever_penBuy"
-      ) >=0 )
+      ) > 0 )
     { // fail because of no pen
       return {
         method: "PATCH",
@@ -4874,7 +4912,7 @@ async function cmd_kira({
           method: "POST",
           body: {
             content: translate(lang_victim, "cmd.kira.start.mp.victim", {
-              time: h_txt_span,
+              time: time_format_string_from_int(h_span, lang_victim),
             }),
             components: (firstTime) ? undefined :
             [
@@ -4993,13 +5031,15 @@ async function cmd_kira({
   {
     isSilent = true;
   }
-  if (!h_pen_remain===-1)
+  if (h_pen_remain===penState.EMPTY)
   {
     h_all_msg += translate(lang, "cmd.kira.warn.pen.empty")+"\n";
+    await stats_simple_add(userdata.statPtr.id, "ever_penEmpty");//+ stats
   }
-  if (!h_pen_remain===-2)
+  if (h_pen_remain===penState.BROKEN)
   {
     h_all_msg += translate(lang, "cmd.kira.warn.pen.broken")+"\n";
+    await stats_simple_add(userdata.statPtr.id, "ever_penBroken");//+ stats
   }
 
   //packing before wait
@@ -5208,7 +5248,7 @@ export async function cmd_kira_execute(data) {
         ifSuicide: pack.victim_id == pack.attacker_id,
         msgReference: pack.victim_message_id,
       });
-      if (h_will_book) await NoteBook.line_taste(pack.note_id, 1); //note need to exist
+      if (h_will_book) await NoteBook.note_taste(pack.note_id, 1); //note need to exist
     }
 
     {

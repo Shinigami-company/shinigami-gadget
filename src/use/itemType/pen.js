@@ -1,5 +1,6 @@
 import { api } from "gadget-server";
 import { items_info } from "../item";
+import { penState } from "../../enum";
 
 export const pen_filters = {
   red: (text) => `[2;31m${text}[0m`,
@@ -11,7 +12,8 @@ export const pen_filters = {
 
 export async function pen_use(userdata, penItem)
 {
-  penItem.meta.use+=1;
+  if (!penItem.meta.use) penItem.meta.use=0;
+  penItem.meta.use += 1;
   //penItem.meta.dura = items_info[penItem.itemName].atr.empty_durability - penItem.meta.use;//no more needed
   const empty_durability = items_info[penItem.itemName].atr.empty_durability;
   const broken_chance = items_info[penItem.itemName].atr.broken_chance;
@@ -26,7 +28,7 @@ export async function pen_use(userdata, penItem)
     } else {
       await penItem.delete(userdata);
     }
-    return -1;
+    return penState.EMPTY;
   }
   else if (broken_chance && Math.random()<broken_chance)
   {//break
@@ -40,10 +42,10 @@ export async function pen_use(userdata, penItem)
       await penItem.delete(userdata);
       penItem = null;
     }
-    return -2;
+    return penState.BROKEN;
   } else {//good
     await api.KiraItems.update(penItem.id, {meta: penItem.meta});
-    return 1;
+    return penState.FINE;
   }
 }
 

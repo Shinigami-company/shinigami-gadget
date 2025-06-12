@@ -120,7 +120,7 @@ export const schema: GadgetModel = {
       parent: { model: "KiraBooks" },
       storageKey: "-HzuHqzEaIWT",
     },
-    ownedBooksPtr: {
+    ownedNoteBooksPtr: {
       type: "hasMany",
       children: { model: "KiraBooks", belongsToField: "owner" },
       storageKey: "EArr0Ke5jyl_",
@@ -148,5 +148,6 @@ export const schema: GadgetModel = {
       storageKey: "04zNJTwrlf0Z::koCfbDR4Qxvo",
     },
     userName: { type: "string", storageKey: "86u085r2lfQA" },
+    version: { type: "number", storageKey: "dbz4H5EfmLop" },
   },
 };

@@ -25,10 +25,13 @@ const stats_simple_all = {
   is_gift: { type: 4 },
 
   ever_apple: { type: 1 },
-  ever_book: { type: 1 },
+  ever_bookFirst: { type: 1 },
   ever_test: { type: 1 },
-  ever_penBuy: { type: 1 },
   ever_itemBuy: { type: 1 },
+  ever_bookBuy: { type: 1 },
+  ever_penBuy: { type: 1 },
+  ever_penBroken: { type: 1 },
+  ever_penEmpty: { type: 1 },
 
   misc_match: { type: 1 },
   misc_know: { type: 1 },

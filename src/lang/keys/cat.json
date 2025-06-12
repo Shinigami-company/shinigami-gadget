@@ -234,7 +234,7 @@
 "stat.broad.show.is_hited": "awl deth = $[value]",
 "stat.broad.show.is_outedTime": "ded tym = $[value]",
 "stat.broad.show.ever_apple": "awl appl = $[value]",
-"stat.broad.show.ever_book": "awl feather buk = $[value]",
+"stat.broad.show.ever_bookFirst": "awl feather buk = $[value]",
 "stat.broad.show.streak_appleDay": "appl dai strk = $[value]",
 
 "stats.relation.fail.nothing": "uwr no enmy",

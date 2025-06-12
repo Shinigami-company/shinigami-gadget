@@ -2,6 +2,8 @@ import { api } from "gadget-server";
 
 import { FeedbackState, userBanType } from "../enum.ts";
 import { DiscordUserOpenDm } from "../utils.js";
+import { Item } from "./item.ts";
+import { NoteBook } from "./itemType/book.ts";
 
 export async function kira_do_refreshCommands() {
   if (false)
@@ -34,6 +36,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       apples: true,
       apples_daily: true,
       lang: true,
+      version: true,
       backDate: true,
       deathDate: true,
       giveUp: true,
@@ -109,14 +112,37 @@ export async function kira_user_create(f_userId) {
 
 } //return the created element
 
-export async function kira_user_update(user, userdata)
+export async function kira_user_update(user, userdata, lang)
 {
+  //update userName
   if (userdata && user.username != userdata.userName)
   {
     userdata.userName = user.username;
     await api.KiraUsers.update(userdata.id, {
-      userName: user.username
-    }); 
+      userName: userdata.userName
+    });
+  }
+
+  //VERSION
+
+  //give death note item
+  if (userdata.version < 1001000)
+  {
+    let noteBooksId = await kira_user_get_owned_books_note(userdata.id);
+    console.log(`update userdata [${userdata.id}/${userdata.userId}/${userdata.userName}] version ${userdata.version} to 1.001.000 : books id ${noteBooksId}`);
+    if (noteBooksId.length > 0)
+    {
+      let bookItem = await Item.create(userdata.id, lang, 'book_black');//manually add meta
+      let noteBook = await NoteBook.get(noteBooksId[0]);
+      if (!noteBook) throw Error(`try to update, but cant find book.`);
+      await noteBook.link_item(bookItem);
+      await bookItem.equip(userdata);//then equip
+    }
+
+    userdata.version = 1001000;
+    await api.KiraUsers.update(userdata.id, {
+      version: userdata.version
+    });
   }
 }
 
@@ -333,11 +359,11 @@ export async function kira_user_send_mail(userdataId, message)
 
 
 
-export async function kira_user_get_owned_booksItemId(userdataId) {
+export async function kira_user_get_owned_books_note(userdataId) {
 
   const h_user = await api.KiraUsers.findOne(userdataId, {
     select: {
-      ownedBooksPtr: {
+      ownedNoteBooksPtr: {
         edges: {
           node: {
             id: true,
@@ -347,7 +373,25 @@ export async function kira_user_get_owned_booksItemId(userdataId) {
     },
   });
 
-  return h_user.ownedBooksPtr.edges.map((the) => the.node.id);
+  return h_user.ownedNoteBooksPtr.edges.map((the) => the.node.id);
+}
+
+
+export async function kira_user_get_owned_books_item(userdataId) {
+
+  const h_user = await api.KiraUsers.findOne(userdataId, {
+    select: {
+      ownedNoteBooksPtr: {
+        edges: {
+          node: {
+            itemId: true,
+          },
+        },
+      },
+    },
+  });
+
+  return h_user.ownedNoteBooksPtr.edges.map((the) => the.node.itemId);
 }
 
 
