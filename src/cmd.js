@@ -1589,9 +1589,9 @@ async function check_can_alive({ lang, userdata }) {
 }
 
 //"book" check
-async function check_has_book({ lang, userbook }) {
+async function check_has_book({ lang, userbook, userdata }) {
   if (!userbook) {
-    booksId = await kira_user_get_owned_books_item(userdata.id)
+    const booksId = await kira_user_get_owned_books_item(userdata.id);
     return {
       content: translate(lang, `check.hasbook.not.${booksId.length > 0 ? 'inhand' : 'inpocket'}`),
     };
