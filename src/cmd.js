@@ -151,7 +151,7 @@ const commands_structure = {
   god: {
     functions: {
       exe: cmd_god,
-      checks: [[check_mailbox, true], [check_in_guild, true], [check_is_god, false]],
+      checks: [[check_in_guild, true], [check_is_god, false]],
     },
     register: {
       name: "god",
@@ -295,7 +295,7 @@ const commands_structure = {
   god_form: {
     functions: {
       exe: cmd_god_form,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_react_is_self, true],
         [check_is_god, true]
       ],
@@ -309,8 +309,7 @@ const commands_structure = {
   god_submit: {
     functions: {
       exe: cmd_god,
-      checks: [[check_mailbox, true],
-        [check_in_guild, true],
+      checks: [
         [check_is_god, true]
       ],
     },
@@ -338,7 +337,7 @@ const commands_structure = {
   invite: {
     functions: {
       exe: cmd_invite,
-      checks: [[check_mailbox, true]],
+      checks: [],
     },
     register: {
       name: "invite",
@@ -353,7 +352,7 @@ const commands_structure = {
   help: {
     functions: {
       exe: cmd_help,
-      checks: [[check_mailbox, true]],
+      checks: [],
     },
     register: {
       name: "help",
@@ -367,9 +366,8 @@ const commands_structure = {
   help_edit: {
     functions: {
       exe: cmd_help,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_react_is_self, true],
-        //[check_in_guild, true],
       ],
     },
     atr: {
@@ -381,7 +379,7 @@ const commands_structure = {
   how: {
     functions: {
       exe: cmd_how,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -402,7 +400,7 @@ const commands_structure = {
   feedback: {
     functions: {
       exe: cmd_feedback,
-      checks: [[check_mailbox, true], 
+      checks: [ 
         [check_react_is_self, true],
         [check_can_feedback, true],
       ],
@@ -419,7 +417,7 @@ const commands_structure = {
   feedback_form: {
     functions: {
       exe: cmd_feedback_form,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_react_is_self, true],
         [check_can_feedback, true],
       ],
@@ -433,7 +431,7 @@ const commands_structure = {
   feedback_submit: {
     functions: {
       exe: cmd_feedback,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_react_is_self, true],
         [check_can_feedback, true],
       ],
@@ -449,7 +447,7 @@ const commands_structure = {
   claim: {
     functions: {
       exe: cmd_claim,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -472,7 +470,6 @@ const commands_structure = {
     functions: {
       exe: cmd_burn,
       checks: [[check_in_guild, true],
-        [check_mailbox, true],
         [check_is_clean, true],
         [check_can_alive, false],
         [check_react_is_self, true],
@@ -494,7 +491,7 @@ const commands_structure = {
   apple: {
     functions: {
       exe: cmd_apple,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -515,7 +512,7 @@ const commands_structure = {
   lang: {
     functions: {
       exe: cmd_lang,
-      checks: [[check_mailbox, true], [check_in_guild, true], [check_can_alive, false]],
+      checks: [ [check_in_guild, true], [check_can_alive, false]],
     },
     register: {
       name: "lang",
@@ -540,7 +537,7 @@ const commands_structure = {
   stats: {
     functions: {
       exe: cmd_stats,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -574,7 +571,7 @@ const commands_structure = {
   running: {
     functions: {
       exe: cmd_running,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -595,7 +592,7 @@ const commands_structure = {
   quest: {
     functions: {
       exe: cmd_quest,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -616,7 +613,7 @@ const commands_structure = {
   top: {
     functions: {
       exe: cmd_top,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -650,7 +647,7 @@ const commands_structure = {
   rules: {
     functions: {
       exe: cmd_rules,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -672,7 +669,7 @@ const commands_structure = {
   see: {
     functions: {
       exe: cmd_see,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -702,7 +699,7 @@ const commands_structure = {
   see_edit: {
     functions: {
       exe: cmd_see,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
@@ -720,7 +717,7 @@ const commands_structure = {
   pocket: {
     functions: {
       exe: cmd_pocket,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -740,7 +737,7 @@ const commands_structure = {
   pocket_edit: {
     functions: {
       exe: cmd_pocket,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
@@ -763,7 +760,7 @@ const commands_structure = {
     },
     functions: {
       exe: cmd_gift,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -778,7 +775,7 @@ const commands_structure = {
   giftsend: {
     functions: {
       exe: cmd_gift,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -793,7 +790,7 @@ const commands_structure = {
   giftclaim: {
     functions: {
       exe: cmd_gift_claim,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -809,7 +806,7 @@ const commands_structure = {
   shop: {
     functions: {
       exe: cmd_shop,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -829,7 +826,7 @@ const commands_structure = {
   shop_edit: {
     functions: {
       exe: cmd_shop,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
@@ -848,7 +845,7 @@ const commands_structure = {
   drop: {
     functions: {
       exe: cmd_drop,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -871,7 +868,7 @@ const commands_structure = {
   trick: {
     functions: {
       exe: cmd_trick,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -893,7 +890,7 @@ const commands_structure = {
   trick_resp: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -910,7 +907,7 @@ const commands_structure = {
   trick_resp_eph: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -927,7 +924,7 @@ const commands_structure = {
   trick_resp_edit: {
     functions: {
       exe: cmd_trick_resp,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -946,7 +943,7 @@ const commands_structure = {
   kira: {
     functions: {
       exe: cmd_kira,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -990,7 +987,7 @@ const commands_structure = {
   know: {
     functions: {
       exe: cmd_know,
-      checks: [[check_mailbox, true],
+      checks: [
         [check_is_clean, true],
         [check_can_alive, true],
         [check_has_noDrop, true],
@@ -1596,10 +1593,11 @@ async function check_can_alive({ lang, userdata }) {
 }
 
 //"book" check
-function check_has_book({ lang, userbook }) {
+async function check_has_book({ lang, userbook }) {
   if (!userbook) {
+    booksId = await kira_user_get_owned_books_item(userdata.id)
     return {
-      content: translate(lang, "check.hasbook.not"),
+      content: translate(lang, `check.hasbook.not.${booksId.length > 0 ? 'inhand' : 'inpocket'}`),
     };
   }
   return undefined;
