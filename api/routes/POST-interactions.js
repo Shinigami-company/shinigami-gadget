@@ -158,12 +158,13 @@ export default async function route({ request, reply, api, logger, connections }
           data = { name: 'help_edit', options: (h_arg) ? [{ name: 'page', type: 4, value: parseInt(h_arg[0]) }] : []};
         } break;
 
+        case ("see"):
         case ("see_edit"):
         {
           if (h_arg.length>1)
-            data = { name: 'see_edit', options: [{ name: 'bookId', type: 4, value: parseInt(h_arg[0]) }, { name: 'page', type: 4, value: parseInt(h_arg[1]) }] };
+            data = { name: h_cmd, options: [{ name: 'bookId', type: 4, value: parseInt(h_arg[0]) }, { name: 'page', type: 4, value: parseInt(h_arg[1]) }] };
           else
-            data = { name: 'see_edit', options: [{ name: 'bookId', type: 4, value: parseInt(h_arg[0]) }]};
+            data = { name: h_cmd, options: [{ name: 'bookId', type: 4, value: parseInt(h_arg[0]) }]};
         } break;
         
         case ("pocket_edit"):

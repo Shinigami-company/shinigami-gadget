@@ -13,6 +13,9 @@ export const items_info = {
   event_egg_2025: {
     type: itemType.COLLECTOR,
     emoji: sett_emoji_items.event_egg_2025,
+    actions: {
+      drop: true
+    },
     fields: {
       claim: true,
       lore: true,
@@ -32,6 +35,10 @@ export const items_info = {
   pen_black: {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_black,
+    actions: {
+      drop: true,
+      equip: true
+    },
     atr: {
       filters: [],
       broken_item: 'broken_pen',
@@ -56,6 +63,10 @@ export const items_info = {
   pen_blue: {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_blue,
+    actions: {
+      drop: true,
+      equip: true
+    },
     atr: {
       filters: ['blue'],
       broken_item: 'broken_pen',
@@ -80,6 +91,10 @@ export const items_info = {
   pen_green: {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_green,
+    actions: {
+      drop: true,
+      equip: true
+    },
     atr: {
       filters: ['green'],
       broken_item: 'broken_pen',
@@ -104,6 +119,10 @@ export const items_info = {
   pen_red: {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_red,
+    actions: {
+      drop: true,
+      equip: true
+    },
     atr: {
       filters: ['red'],
       broken_item: 'broken_pen',
@@ -128,6 +147,10 @@ export const items_info = {
   pen_purple: {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_purple,
+    actions: {
+      drop: true,
+      equip: true
+    },
     atr: {
       filters: ['purple'],
       broken_item: 'broken_pen',
@@ -152,6 +175,10 @@ export const items_info = {
   feather_white: {
     type: itemType.PEN,
     emoji: sett_emoji_items.feather_white,
+    actions: {
+      drop: true,
+      equip: true
+    },
     atr: {
       filters: [],
       silent: true,
@@ -176,6 +203,9 @@ export const items_info = {
   broken_pen: {
     type: itemType.JUNK,
     emoji: sett_emoji_items.broken_pen,
+    actions: {
+      drop: true
+    },
     fields: {
       claim: false,
       lore: true,
@@ -191,6 +221,9 @@ export const items_info = {
   empty_pen: {
     type: itemType.JUNK,
     emoji: sett_emoji_items.empty_pen,
+    actions: {
+      drop: true
+    },
     fields: {
       claim: false,
       lore: true,
@@ -207,6 +240,11 @@ export const items_info = {
   book_black: {
     type: itemType.BOOK,
     emoji: sett_emoji_items.book_black,
+    actions: {
+      burn: true,
+      see: true,
+      equip: true
+    },
     atr: {
       color: {
         ord: 0,
@@ -223,6 +261,11 @@ export const items_info = {
   book_red: {
     type: itemType.BOOK,
     emoji: sett_emoji_items.book_red,
+    actions: {
+      burn: true,
+      see: true,
+      equip: true
+    },
     atr: {
       color: {
         ord: 1,
@@ -244,6 +287,11 @@ export const items_info = {
   book_white: {
     type: itemType.BOOK,
     emoji: sett_emoji_items.book_white,
+    actions: {
+      burn: true,
+      see: true,
+      equip: true
+    },
     atr: {
       color: {
         ord: 2,
@@ -265,6 +313,11 @@ export const items_info = {
   book_purple: {
     type: itemType.BOOK,
     emoji: sett_emoji_items.book_purple,
+    actions: {
+      burn: true,
+      see: true,
+      equip: true
+    },
     atr: {
       color: {
         ord: 3,
@@ -287,7 +340,6 @@ export const items_types = {
   [itemType.PEN]: {
     str: 'pen',
 
-    equipable: true,
     equip : async (userdata, item: Item) => {
       userdata.equipedPen = { id: item.id };
       await api.KiraUsers.update(userdata.id, {equipedPen: {_link: item.id}});
@@ -314,7 +366,12 @@ export const items_types = {
   [itemType.BOOK]: {
     str: 'book',
 
-    equipable: true,
+    actions: {
+      equip: true,
+      burn: true,
+      see: true,
+    },
+
     equip : async (userdata, item: Item) => {
       if (!item.meta.bookId)
       {
@@ -589,25 +646,25 @@ export class Item {
   // TYPE
   async unequip(userdata)
   {
-    if (!items_types[this.info.type]?.equipable) return false;
+    if (!this.info.actions.equip) return false;
     return await items_types[this.info.type].unequip(userdata, this);
   }
 
   async equip(userdata)
   {
-    if (!items_types[this.info.type]?.equipable) return false;
+    if (!this.info.actions.equip) return false;
     return await items_types[this.info.type].equip(userdata, this);
   }
   
   if_equiped(userdata) : boolean
   {
-    if (!items_types[this.info.type]?.equipable) return false;
+    if (!this.info.actions.equip) return false;
     return items_types[this.info.type].if_equiped(userdata, this);
   }
   
   static async get_equiped(userdata, itemType) : Promise<Item | boolean | undefined>
   {
-    if (!items_types[itemType]?.equipable) return false;
+    if (!items_types[itemType]?.get_equiped) return false;
     return await items_types[itemType].get_equiped(userdata);
   }
 
@@ -624,7 +681,7 @@ export class Item {
   
   // IF
   if_own(userdataId : string) {
-    return ((this.ownerPtrId.toString()) == (userdataId.toString()));
+    return ((this.ownerPtrId?.toString()) == (userdataId.toString()));
   }
 
   // INFOS

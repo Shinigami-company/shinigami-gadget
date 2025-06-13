@@ -3726,7 +3726,6 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   //arg/page
   const action = (data.options?.find((opt) => opt.name === "action")?.value);//str
   const on_page = data.options?.find((opt) => opt.name === "page")?.value;//1,n
-  console.log("pocker : "+action+" "+on_page);
   
   const unic = items_all.length === 1;
   const last_page = items_all.length;
@@ -3757,6 +3756,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
 
   let fields=[];
   let item_components=[];
+  let content = translate(lang, "cmd.pocket.content."+((droped) ? "gone" : (show_page==-1) ? "all" : "one"));
 
   let get_item_field = (item_selected, equipedStr) => {
     let name = item_selected.get_title(lang) + ((equipedStr) ? translate(lang, "cmd.pocket.list.equiped." + equipedStr) : "");
@@ -3769,6 +3769,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
 
   if (show_page === -1)
   {// all items
+    let typesAmount = {};
     for (let i=0; i<items_all.length; i++)
     {
       let item_selected = await Item.get(items_all[i].id, userdata.id);
@@ -3776,15 +3777,29 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
       if (item_selected.if_equiped(userdata))
         equiped = items_types[item_selected.info.type].str;
       fields.push(get_item_field(item_selected, equiped));
+
+      if (!typesAmount[item_selected.info.type]) typesAmount[item_selected.info.type] = 0;
+      typesAmount[item_selected.info.type] += 1;
+    }
+
+    if (!typesAmount[itemType.BOOK])
+    {
+      content += '\n' + translate(lang, 'cmd.pocket.content.more.book');
+    }
+    if (!typesAmount[itemType.PEN])
+    {
+      content += '\n' + translate(lang, 'cmd.pocket.content.more.pen');
     }
   }
   else
   {// one item
     let item_selected = await Item.get(items_all[show_page-1]?.id, userdata.id);
 
-    //equip button and equipit
+    //ACTIONS
+
+    //actions/equip
     let equiped;
-    if (items_types[item_selected.info.type]?.equipable)
+    if (item_selected.info.actions.equip)
     {
       // do equipit
       if (actionEquip)
@@ -3801,30 +3816,63 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
         {
           type: MessageComponentTypes.BUTTON,
           custom_id: `makecmd pocket_edit equip+${show_page}`,
-          label: translate(lang, "cmd.pocket.equip."+items_types[item_selected.info.type].str+"."+((equiped) ? "out" : "in")),
+          label: translate(lang, "cmd.pocket.action.equip."+items_types[item_selected.info.type].str+"."+((equiped) ? "out" : "in")),
           style: ButtonStyleTypes.PRIMARY,
           disabled: (equiped != undefined || droped)
         },
       )
     }
-    
+
+    //action/see
+    if (item_selected.info.actions.see)
+    {
+      item_components.push(
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd see ${item_selected.meta.bookId}`,
+          label: translate(lang, 'cmd.pocket.action.look.inside'),
+          style: ButtonStyleTypes.SECONDARY,
+          disabled: droped
+        },
+      )
+    }
+
+    //show up before any delete
     fields.push(get_item_field(item_selected, equiped));
 
-    // do drop
-    if (droped) 
+    //actions/drop
+    if (item_selected.info.actions.drop)
     {
-      await item_selected.delete(userdata);
-      //item_selected = null;
-    }
-    item_components.push(
+      // do drop
+      if (droped) 
       {
-        type: MessageComponentTypes.BUTTON,
-        custom_id: `makecmd pocket_edit ${(actionDropState==1) ? 'drop_confirm' : 'drop'}+${show_page}`,
-        label: translate(lang, "cmd.pocket.drop."+((actionDropState) ? (droped) ? "done" : "confirm" : "first")),
-        style: ButtonStyleTypes.DANGER,
-        disabled: droped
-      },
-    )
+        await item_selected.delete(userdata);
+        //item_selected = null;
+      }
+      item_components.push(
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd pocket_edit ${(actionDropState==1) ? 'drop_confirm' : 'drop'}+${show_page}`,
+          label: translate(lang, "cmd.pocket.action.drop."+((actionDropState) ? (droped) ? "done" : "confirm" : "first")),
+          style: ButtonStyleTypes.DANGER,
+          disabled: droped
+        },
+      )
+    }
+    
+    //actions/burn
+    if (item_selected.info.actions.burn)
+    {
+      item_components.push(
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd pocket_edit ${(actionDropState==1) ? 'drop_confirm' : 'drop'}+${show_page}`,
+          label: translate(lang, "cmd.pocket.action.burn."+((actionDropState) ? (droped) ? "done" : "confirm" : "first")),
+          style: ButtonStyleTypes.DANGER,
+          disabled: droped
+        },
+      )
+    }
   }
 
   let components = [];
@@ -3863,11 +3911,11 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
       components: item_components
     })
   }
-  
+    
   return {
     method: "PATCH",
     body: {
-      content: translate(lang, "cmd.pocket.content."+((droped) ? "gone" : (show_page==-1) ? "all" : "one")),
+      content,
       embeds: [
         {
           color: userbook?.color.int,
@@ -4344,9 +4392,9 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
       )
     });
     //+achiv
-    if (gift.appleAmount>=3 && ownerdata.apples < userdata.apples)
+    if (gift.appleAmount >= 3 && ownerdata.apples > userdata.apples)
     {
-      await Achievement.list["giftAway"].do_grant(ownerdata, lang, 1, {personId: userdata.id});
+      await Achievement.list["giftAway"].do_grant(ownerdata, lang, 1, {personId: user.id});
     }
   } else {
     item = await Item.get(gift.itemPtrId, userdata.id);

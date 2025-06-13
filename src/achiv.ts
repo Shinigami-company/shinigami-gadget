@@ -323,7 +323,7 @@ new Achievement("shopEmpty", "done_shopEmpty", 1, false);
 new Achievement("giftAway", "done_giftAway", 1, false);
 new Achievement("giftJunk", "done_giftJunk", 1, false);
 new Achievement("giftSelf", "done_giftSelf", 1, false);
-new Achievement("penBreaker", "level_penBreaker", 3, false, [1, 3, 15]);
+new Achievement("penBreaker", "level_penBreaker", 3, false, [1, 5, 15]);
 
 //dont put the achievement here to be invisible
 Achievement.listDisplayed = [

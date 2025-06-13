@@ -238,7 +238,7 @@ export const SETT_CMD_GIFT = {
 }
 
 export const SETT_CMD_SHOP = {
-  itemAmount: 3//max 20
+  itemAmount: 3,//max 20
 }
 
 export const shopNewItemSeconds = 60;
