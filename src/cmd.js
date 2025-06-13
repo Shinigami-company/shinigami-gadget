@@ -59,6 +59,7 @@ import {
   kira_user_dm_id,
   kira_user_update,
   kira_user_get_owned_books_item,
+  kira_do_refreshCommand,
 } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
@@ -1509,9 +1510,10 @@ export async function kira_error_throw(
   if (ifThrow) throw f_errorObject;
 }
 
-export function cmd_register() {
+export function cmd_register(command = undefined) {
+  let keys = command ? [ command ] : Object.keys(commands_structure);
   let r_commandsRegisterAll = [];
-  for (let i in commands_structure) {
+  for (let i of keys) {
     if (commands_structure[i].register) {
       r_commandsRegisterAll.push(commands_structure[i].register);
     } else if (!commands_structure[i].atr?.systemOnly) {
@@ -2371,6 +2373,16 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
     //#update subcommand
     case "update":
       {
+        if (arg_texto) {
+          await kira_do_refreshCommand(arg_texto);
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.sub.update.done.command.refresh", {name: arg_texto}),
+            },
+          };
+        }
+
         if (!arg_user) {
           await kira_do_refreshCommands();
           return {

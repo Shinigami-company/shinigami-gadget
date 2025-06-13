@@ -1,21 +1,29 @@
-import { api } from "gadget-server";
+import { api } from 'gadget-server';
 
-import { FeedbackState, userBanType } from "../enum.ts";
-import { DiscordUserOpenDm } from "../utils.js";
-import { Item } from "./item.ts";
-import { NoteBook } from "./itemType/book.ts";
+import { FeedbackState, userBanType } from '../enum.ts';
+import { DiscordUserOpenDm, InstallGlobalCommands } from '../utils.js';
+import { Item } from './item.ts';
+import { NoteBook } from './itemType/book.ts';
+import { cmd_register } from '../cmd.js';
 
 export async function kira_do_refreshCommands() {
   if (false)
   {
-    console.debug("kira : refreshcmd : removeCommands()...");
+    console.debug('kira : refreshcmd : removeCommands()...');
     await api.removeCommands();
-    console.debug("kira : refreshcmd : removeCommands() done!");
+    console.debug('kira : refreshcmd : removeCommands() done!');
   }
-  console.debug("kira : refreshcmd : registerCommands()...");
+  console.debug('kira : refreshcmd : registerCommands()...');
   await api.registerCommands();
-  console.debug("kira : refreshcmd : registerCommands() done!");
+  console.debug('kira : refreshcmd : registerCommands() done!');
 }
+
+export async function kira_do_refreshCommand(command) {
+  console.debug(`kira : refreshcmd : registerCommand(${command})...`);
+  await InstallGlobalCommands(process.env.APP_ID, cmd_register(command));
+  console.debug(`kira : refreshcmd : registerCommand(${command}) done!`);
+}
+
 
 //---kira_user---
 //DATA about the user
@@ -170,7 +178,7 @@ export async function kira_user_add_apple(userdataId, f_amount = 1) {
 export async function kira_users_rank(f_onKey) {
   return await api.KiraUsers.findMany({
     sort: {
-      [f_onKey]: "Descending",
+      [f_onKey]: 'Descending',
     },
     select: {
       id: true,
@@ -426,7 +434,7 @@ export async function kira_run_mercy(f_victimId) {
         //attackerId: { equals: f_attackerId },
       },
       sort: {
-        finalDate: "Ascending"
+        finalDate: 'Ascending'
       }
     },
     {
