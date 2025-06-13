@@ -3756,7 +3756,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
 
   let fields=[];
   let item_components=[];
-  let content = translate(lang, "cmd.pocket.content."+((droped) ? "gone" : (show_page==-1) ? "all" : "one"));
+  let content = translate(lang, "cmd.pocket.content."+((droped) ? "gone" : (show_page == -1) ? "all" : "one"));
 
   let get_item_field = (item_selected, equipedStr) => {
     let name = item_selected.get_title(lang) + ((equipedStr) ? translate(lang, "cmd.pocket.list.equiped." + equipedStr) : "");

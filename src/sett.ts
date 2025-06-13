@@ -239,7 +239,6 @@ export const SETT_CMD_GIFT = {
 
 export const SETT_CMD_SHOP = {
   itemAmount: 3,//max 20
+  newItemSeconds: 3600,
+  newItemRound: 10
 }
-
-export const shopNewItemSeconds = 60;
-export const shopNewItemRound = 10;

@@ -1,4 +1,4 @@
-import { SETT_CMD_SHOP, shopNewItemRound, shopNewItemSeconds } from "../sett";
+import { SETT_CMD_SHOP } from "../sett";
 import { items_info } from "../use/item";
 import { kira_user_get_shopAlready, kira_user_set_shopAlready } from "../use/kira";
 
@@ -41,7 +41,7 @@ function generate_products()
 // functions
 export async function shop_byable_items(userdata) {
   let now = Date.now();
-  let ten = Math.floor(now / (1000*shopNewItemSeconds));
+  let ten = Math.floor(now / (1000*SETT_CMD_SHOP.newItemSeconds));
 
   let shopAlready = await kira_user_get_shopAlready(userdata.id);
 
@@ -101,13 +101,13 @@ export async function shop_buy_item(userdataId, seed)
 export function shop_get_time_remain()
 {
   let now = Date.now();
-  let seconds = shopNewItemSeconds - (Math.floor(now/1000) % shopNewItemSeconds);
-  seconds = Math.ceil(seconds/shopNewItemRound)*shopNewItemRound;
+  let seconds = SETT_CMD_SHOP.newItemSeconds - (Math.floor(now/1000) % SETT_CMD_SHOP.newItemSeconds);
+  seconds = Math.ceil(seconds/SETT_CMD_SHOP.newItemRound)*SETT_CMD_SHOP.newItemRound;
   return seconds;
 }
 
 export function shop_get_time_next()
 {
   let now = Date.now();
-  return Math.ceil(now/(shopNewItemSeconds*1000))*shopNewItemSeconds;
+  return Math.ceil(now/(SETT_CMD_SHOP.newItemSeconds*1000))*SETT_CMD_SHOP.newItemSeconds;
 }
