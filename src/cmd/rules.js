@@ -1,3 +1,4 @@
+import { ButtonStyleTypes, MessageComponentTypes } from "discord-interactions";
 import { translate } from "../lang";
 
 //rules
@@ -81,7 +82,56 @@ export function rule_key_parse(f_key) {
 
 
 //#rules command
-export async function cmd_rules({ userdata, userbook, lang }) {
+export async function cmd_rules({ userdata, data, userbook, lang }) {
+
+  let arg_action = data.options?.find((opt) => opt.name === 'action')?.value;
+  
+  if (!arg_action || arg_action == 'how') return cmd_rules_how({ userdata, userbook, lang });
+  if (arg_action == 'random') return cmd_rules_random({ userdata, userbook, lang });
+
+}
+
+async function cmd_rules_how({ userdata, userbook, lang }) {
+  //var view_text = (parseInt(process.env.invite_enable))
+  //  ? translate(lang, "cmd.help.new.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm})
+  //  : "";
+
+  let content=translate(lang, "cmd.rules.how.content");
+  let title=translate(lang, "cmd.rules.how.title");
+  let description=translate(lang, "cmd.rules.how.description");
+  let buttonRandomLabel=translate(lang, "cmd.rules.random.button");
+
+  return {
+    method: "PATCH",
+    body: {
+      content,
+      embeds: [
+        {
+          color: userbook.color.int,
+          title,
+          description
+        }
+      ],
+      components: [
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: [
+            {
+              type: MessageComponentTypes.BUTTON,
+              style: ButtonStyleTypes.SECONDARY,
+              custom_id: `makecmd rules random`,
+              label: buttonRandomLabel,
+            }
+          ]
+        }
+      ]
+    },
+  };
+}
+
+
+async function cmd_rules_random({ userdata, userbook, lang }) {
+
   const ruleKey = rule_key_random();
 
   {
@@ -91,13 +141,13 @@ export async function cmd_rules({ userdata, userbook, lang }) {
     }
   }
 
+  //let content = `${translate(lang, "cmd.rules.random.content")}\n-# ${translate(lang, "cmd.rules.random.english")}`;
+  let content = ' ';
+
   return {
     method: "PATCH",
     body: {
-      content:
-        translate(lang, "cmd.rules.english") +
-        "\n" +
-        translate(lang, "cmd.rules.preamble"),
+      content,
       embeds: [
         {
           color: userbook.color.int,

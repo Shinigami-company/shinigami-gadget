@@ -177,7 +177,7 @@ const commands_structure = {
             {
               name: "force drop",
               value: "forcedrop",
-              description: "drop someone's death note",
+              description: "drop someone's Death Note",
             },
             {
               name: "no feedback",
@@ -187,12 +187,12 @@ const commands_structure = {
             {
               name: "ban",
               value: "ban",
-              description: "confiscate someone's death note (for a span)",
+              description: "confiscate someone's Death Note (for a span)",
             },
             {
               name: "pardon",
               value: "unban",
-              description: "give back someone's death note",
+              description: "give back someone's Death Note",
             },
             {
               name: "mercy",
@@ -372,27 +372,6 @@ const commands_structure = {
       systemOnly: true,
     },
   },
-  
-  how: {
-    functions: {
-      exe: cmd_how,
-      checks: [
-        [check_is_clean, true],
-        [check_can_alive, false],
-        [check_has_noDrop, true],
-        [check_has_book, false],
-      ],
-    },
-    register: {
-      name: "how",
-      description: "How to use it",
-      //contexts: [0],//!disabled
-      type: 1,
-    },
-    atr: {
-      defered: deferedActionType.WAIT_MESSAGE,
-    },
-  },
 
   feedback: {
     functions: {
@@ -454,7 +433,7 @@ const commands_structure = {
     },
     register: {
       name: "claim",
-      description: "Claim your death note",
+      description: "Claim your Death Note",
       //contexts: [0],//!disabled
       type: 1,
     },
@@ -475,7 +454,7 @@ const commands_structure = {
     },
     register: {
       name: "burn",
-      description: "Burn your death note. Why would you do that?",
+      description: "Burn your Death Note. Why would you do that?",
       //contexts: [0],//!disabled
       type: 1,
     },
@@ -654,7 +633,7 @@ const commands_structure = {
     },
     register: {
       name: "rules",
-      description: "Get a random rules of the death note",
+      description: "How to use it",
       //contexts: [0],//!disabled
       type: 1,
     },
@@ -676,7 +655,7 @@ const commands_structure = {
     },
     register: {
       name: "see",
-      description: "Read what you wrote in your death note",
+      description: "Read what is written in a Death Note",
       //contexts: [0],//!disabled
       options: [
         {
@@ -853,7 +832,7 @@ const commands_structure = {
     },
     register: {
       name: "drop",
-      description: "Give up your death note to protect yourself",
+      description: "Give up your Death Note to protect yourself",
       //contexts: [0],//!disabled
       type: 1,
     },
@@ -2969,32 +2948,6 @@ async function cmd_help({ data, userbook, userdata, lang }) {
           components: buttons,
         },
       ],
-    },
-  };
-}
-
-
-async function cmd_how({ lang })
-{
-  var view_text = (parseInt(process.env.invite_enable))
-    ? translate(lang, "cmd.help.new.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm})
-    : "";
-  //var view_text = "";
-
-  let content=translate(lang, "cmd.how.content");
-  let title=translate(lang, "cmd.how.title");
-  let description=translate(lang, "cmd.how.description");
-
-  return {
-    method: "PATCH",
-    body: {
-      content,
-      embeds: [
-        {
-          title,
-          description
-        }
-      ]
     },
   };
 }

@@ -330,7 +330,7 @@
 "cmd.help.step.0": "I am a Shinigami, coming from the realm of death. :wing:\nComplete this `/help` tutorial and I will give you a cool pen.\n-# Remember that I can speak many languages, change with `/lang`.",
 
 "cmd.help.step.1": "First of all, **Claim your Death Note using `/claim`.**",
-"cmd.help.step.2": "Then, **write someone's name** with `/kira`.\n-# Do `/how` to read __How to Use It__ (rules of Death Note).",
+"cmd.help.step.2": "Then, **write someone's name** with `/kira`.\n-# Do `/rules` to read __How to Use It__ (rules of Death Note).",
 "cmd.help.step.3": "### Now, your life is changed forever, dear murderer.\nBut death is parth of life, so that fine. :ok_hand:\n\n-# Author warning : Death Note is a roleplay and sometimes ironical.\n-# **Never harm or bully someone**. This is the first and last warning.",
 "cmd.help.step.4": "You can look at your running attacks with `/running`.\nCounter an attack by using `/kira` on your attacker.\nBut be warned : there is a limit to that!",
 "cmd.help.step.5": "Read your Death Note with `/see`.\nCan be funny.",

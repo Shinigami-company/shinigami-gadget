@@ -167,6 +167,12 @@ export default async function route({ request, reply, api, logger, connections }
             data = { name: h_cmd, options: [{ name: 'bookId', type: 4, value: parseInt(h_arg[0]) }]};
         } break;
         
+        case ("rules"):
+        case ("rules_edit"):
+        {
+          data = { name: h_cmd, options: [{ name: 'action', value: h_arg[0] }]};
+        } break;
+        
         case ("pocket_edit"):
         {
           //'all' : all items page
