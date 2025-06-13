@@ -69,9 +69,6 @@ import {
   kira_user_get_drop,
   kira_user_set_feedback,
   kira_user_can_feedback,
-  kira_user_has_mail,
-  kira_user_pickup_mails,
-  kira_user_send_mail,
 } from "./use/kira.js"; //kira user
 import { kira_users_rank } from "./use/kira.js"; //kira user
 import {
@@ -216,7 +213,6 @@ const commands_structure = {
 
             //message
             { name: "tell", value: "tell", description: "tell to someone" },
-            { name: "mail", value: "mail", description: "mail to someone" },
             { name: "info", value: "info", description: "get info about someone" },
             
             //item
@@ -246,8 +242,8 @@ const commands_structure = {
         },
         {
           type: 3,
-          name: "message",
-          description: "the potential message",
+          name: "text",
+          description: "the potential text",
           required: false,
         },
       ],
@@ -1705,55 +1701,6 @@ async function check_in_guild({ lang, guild }) {
   return undefined;
 }
 
-async function check_mailbox({ lang, userdata }) {
-  const is_something = await kira_user_has_mail(userdata.id, userdata.feedbackState);
-  if (!is_something) return undefined;
-  //respond
-  
-  const letters_objects = await kira_user_pickup_mails(userdata.id);
-
-  var message_body = {
-    content: translate(lang,"check.mailbox.get.title"),
-    embeds: (() => {
-      let embeds = [];
-      for (let i in letters_objects) {
-        const v = letters_objects[i];
-
-        embeds.push({
-          color: 0,
-          description: v.content.markdown,
-          timestamp: v.creationDate,
-        });
-      }
-      return embeds;
-    })()
-  };
-
-  try {
-    //open DM
-    var h_recipient_dm_id = await kira_user_dm_id(userdata);
-
-    //send message
-    await DiscordRequest(
-      `channels/${h_recipient_dm_id}/messages`,
-      {
-        method: "POST",
-        body: message_body
-      }
-    ).then((res) => res.json());
-  } catch (e) {
-    let errorMsg = JSON.parse(e.message);
-    if (errorMsg?.code === 50007) {
-      
-      return message_body;
-
-    } else throw e;
-  }
-
-  return undefined;
-
-}
-
 //--- the commands ---
 
 //#god command
@@ -2121,56 +2068,6 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
                 fields,
               }
             ]
-          },
-        };
-      }
-
-
-    //#mail subcommand
-    case "mail":
-      {
-        if (!arg_user) {
-          return {
-            method: "PATCH",
-            body: {
-              content: translate(lang, "cmd.god.missing.user"),
-            },
-          };
-        }
-
-        if (!arg_texto) {
-          return {
-            method: "PATCH",
-            body: {
-              content: translate(lang, "cmd.god.missing.message"),
-            },
-          };
-        }
-
-        const h_targetId = arg_user;
-        const targetdata = await kira_user_get(h_targetId, false);
-
-        if (!targetdata) {
-          return {
-            method: "PATCH",
-            body: {
-              content: translate(lang, "cmd.god.sub.tell.fail.notplayer"),
-            },
-          };
-        }
-
-        var sucess=true;
-        await kira_user_send_mail(targetdata.id, arg_texto);
-
-
-        return {
-          method: "PATCH",
-          body: {
-            content: translate(lang, "cmd.god.sub.tell.send.remitter." + ((sucess) ? "sended" : "failed"), {
-              targetId: h_targetId,
-              //targetName: targetdata.username,
-            }),
-            //embeds: (sucess) ? message_embed : undefined
           },
         };
       }

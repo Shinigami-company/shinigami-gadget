@@ -90,14 +90,6 @@ export const schema: GadgetModel = {
       type: "string",
       storageKey: "7EStxtlMHvj5::U-rrIFAWCanl",
     },
-    mailboxLettersPtr: {
-      type: "hasMany",
-      children: {
-        model: "KiraLetters",
-        belongsToField: "recipientPtr",
-      },
-      storageKey: "7Pdoi1AWdxD7",
-    },
     myItems: {
       type: "hasMany",
       children: { model: "KiraItems", belongsToField: "ownerPtr" },
