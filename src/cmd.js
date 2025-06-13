@@ -51,7 +51,7 @@ import {
 } from "./lang"; //all user langugage things
 
 import {
-  kira_do_refreshCommands,
+  commands_put,
   kira_run_mercy,
   kira_user_check_banTime,
   kira_user_remove_ban,
@@ -59,7 +59,7 @@ import {
   kira_user_dm_id,
   kira_user_update,
   kira_user_get_owned_books_item,
-  kira_do_refreshCommand,
+  command_refresh_one,
 } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
@@ -1514,6 +1514,7 @@ export function cmd_register(command = undefined) {
   let keys = command ? [ command ] : Object.keys(commands_structure);
   let r_commandsRegisterAll = [];
   for (let i of keys) {
+    if (!commands_structure[i]) continue;
     if (commands_structure[i].register) {
       r_commandsRegisterAll.push(commands_structure[i].register);
     } else if (!commands_structure[i].atr?.systemOnly) {
@@ -1710,7 +1711,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
   const arg_sub = data.options.find((opt) => opt.name === "action")?.value; // also data.options[0].value
   const arg_user = data.options.find((opt) => opt.name === "user")?.value;
   const arg_amount = data.options.find((opt) => opt.name === "amount")?.value;
-  const arg_texto = data.options.find((opt) => opt.name === "message")?.value;
+  const arg_texto = data.options.find((opt) => opt.name === "text")?.value;
 
   switch (arg_sub) {
     //#life subcommand (#revive & #kill)
@@ -2374,17 +2375,19 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
     case "update":
       {
         if (arg_texto) {
-          await kira_do_refreshCommand(arg_texto);
+          let response = await command_refresh_one(arg_texto);
+          console.log("response:",response);
+          let reponseText = { 404: 'fail.none', 200: 'update', 201: 'create', 204: 'delete' }[response];
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.sub.update.done.command.refresh", {name: arg_texto}),
+              content: translate(lang, `cmd.god.sub.update.done.command.` + reponseText, {name: arg_texto}),
             },
           };
         }
 
         if (!arg_user) {
-          await kira_do_refreshCommands();
+          await commands_put();
           return {
             method: "PATCH",
             body: {

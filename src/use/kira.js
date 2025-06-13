@@ -1,27 +1,55 @@
 import { api } from 'gadget-server';
 
 import { FeedbackState, userBanType } from '../enum.ts';
-import { DiscordUserOpenDm, InstallGlobalCommands } from '../utils.js';
+import { CreateGlobalCommand, DeleteGlobalCommand, DiscordUserOpenDm, GetGlobalCommand, GetGlobalCommandsId, PutGlobalCommands, UpdateGlobalCommand } from '../utils.js';
 import { Item } from './item.ts';
 import { NoteBook } from './itemType/book.ts';
 import { cmd_register } from '../cmd.js';
 
-export async function kira_do_refreshCommands() {
-  if (false)
-  {
-    console.debug('kira : refreshcmd : removeCommands()...');
-    await api.removeCommands();
-    console.debug('kira : refreshcmd : removeCommands() done!');
-  }
+export async function commands_put() {
   console.debug('kira : refreshcmd : registerCommands()...');
-  await api.registerCommands();
+  await PutGlobalCommands(cmd_register());
   console.debug('kira : refreshcmd : registerCommands() done!');
 }
 
-export async function kira_do_refreshCommand(command) {
-  console.debug(`kira : refreshcmd : registerCommand(${command})...`);
-  await InstallGlobalCommands(process.env.APP_ID, cmd_register(command));
-  console.debug(`kira : refreshcmd : registerCommand(${command}) done!`);
+export async function command_refresh_one(commandName) {
+  console.debug(`kira : refreshcmd : refreshCommand(${commandName})...`);
+  let commandsToId = await GetGlobalCommandsId();
+  let commandId = commandsToId[commandName];
+  let registerWanted = cmd_register(commandName);
+  let registerActual = commandId ? await GetGlobalCommand(commandId) : undefined;
+  console.debug(`registerWanted:`);
+  console.debug(registerWanted);
+  console.debug(`registerActual:`);
+  console.debug(registerActual);
+  if (registerWanted.length > 0)
+  {
+    registerWanted = registerWanted[0];
+  } else {
+    registerWanted = undefined;
+  }
+
+  // wich method
+  if (!registerWanted && !registerActual)
+  {
+    return 404;//not found
+  }
+  else if (!registerWanted)
+  {
+    await DeleteGlobalCommand(commandId);
+    return 204;//delete
+  }
+  
+  else if (registerActual)
+  {
+    await UpdateGlobalCommand(commandId, registerWanted);
+    return 200;//updated
+  }
+  else
+  {
+    await CreateGlobalCommand(registerWanted);
+    return 201;//created
+  }
 }
 
 

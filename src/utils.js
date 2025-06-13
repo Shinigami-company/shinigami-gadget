@@ -112,12 +112,53 @@ export async function DiscordMessageChanged(
   return f_message.edited_timestamp !== this_message.edited_timestamp;
 }
 
-// other usefull things
+// GLOBAL COMMANDS
 
-export async function InstallGlobalCommands(appId, commands) {
+export async function GetGlobalCommandsId() {
+  const endpoint = `applications/${process.env.APP_ID}/commands`;
+
+  const resp = await DiscordRequest(endpoint, { method: 'GET' });
+  const commands = await resp.json();
+
+  const idByName = {};
+  for (let command of commands)
+  {
+    idByName[command.name] = command.id;
+  }
+  return idByName;
+}
+
+export async function PutGlobalCommands(commands_structure) {
   // API endpoint to overwrite global commands
-  const endpoint = `applications/${appId}/commands`;
+  const endpoint = `applications/${process.env.APP_ID}/commands`;
 
   // This is calling the bulk overwrite endpoint: https://discord.com/developers/docs/interactions/application-commands#bulk-overwrite-global-application-commands
-  return await DiscordRequest(endpoint, { method: "PUT", body: commands });
+  return await DiscordRequest(endpoint, { method: "PUT", body: commands_structure });
 }
+
+export async function CreateGlobalCommand(command_structure) {
+  const endpoint = `applications/${process.env.APP_ID}/commands`;
+
+  return await DiscordRequest(endpoint, { method: "POST", body: command_structure });
+};
+
+export async function GetGlobalCommand(command_id) {
+  const endpoint = `applications/${process.env.APP_ID}/commands/${command_id}`;
+
+  return await DiscordRequest(endpoint, { method: "GET"});
+};
+
+export async function DeleteGlobalCommand(command_id) {
+  const endpoint = `applications/${process.env.APP_ID}/commands/${command_id}`;
+
+  return await DiscordRequest(endpoint, { method: "DELETE"});
+};
+
+export async function UpdateGlobalCommand(command_id, command_structure) {
+  const endpoint = `applications/${process.env.APP_ID}/commands/${command_id}`;
+
+  return await DiscordRequest(endpoint, { method: "PATCH", body: command_structure });
+};
+
+
+

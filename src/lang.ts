@@ -1,5 +1,5 @@
 import { api } from "gadget-server";
-import { DiscordRequest } from "./utils";
+import { DiscordRequest, GetGlobalCommandsId } from "./utils";
 
 /**
 //the gpt tag function
@@ -103,20 +103,10 @@ const lang_texts: {
   };
 } = lang_load();
 
-async function get_commands_id() : Promise<{ [key: string]: string }>
-{
-  let response = await DiscordRequest(`/applications/${process.env.APP_ID}/commands`, { method: "GET" });
-  let commands_discord = await response.json();
-  let dict_command_to_id = {};
-  for (let command of commands_discord) {
-    dict_command_to_id[command.name] = command.id;
-  }
-  return dict_command_to_id;
-};
 
-let commands_id: { [key: string]: string };
+let commands_id: { [key: string]: string } = {};
 (async () => {
-  commands_id = await get_commands_id();
+  commands_id = await GetGlobalCommandsId(process.env.APP_ID) as { [key: string]: string };
 })();
 
 //for translations
