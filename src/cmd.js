@@ -227,6 +227,11 @@ const commands_structure = {
               value: "item",
               description: "give a item",
             },
+            {
+              name: "gift item",
+              value: "gift_mp",
+              description: "gift an item",
+            },
           ],
         },
         {
@@ -767,7 +772,7 @@ const commands_structure = {
     functions: {
       exe: cmd_gift_claim,
       checks: [
-        [check_in_guild, true],
+        //[check_in_guild, true],//must be off
         [check_is_clean, true],
         [check_can_alive, false],
         [check_has_noDrop, true],
@@ -1707,14 +1712,14 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
           };
         }
 
-        const h_targetId = arg_user;
-        const targetdata = await kira_user_get(h_targetId, false);
+        const targetId = arg_user;
+        const targetdata = await kira_user_get(targetId, false);
 
         if (!targetdata) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.sub.life.fail.notplayer"),
+              content: translate(lang, "cmd.god.fail.notplayer"),
             },
           };
         }
@@ -1728,7 +1733,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
               content: translate(
                 lang,
                 `cmd.god.sub.life.fail.already.${h_life ? "alive" : "dead"}`,
-                { targetId: h_targetId }
+                { targetId: targetId }
               ),
             },
           };
@@ -1742,7 +1747,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
             content: translate(
               lang,
               `cmd.god.sub.life.done.${h_life ? "revive" : "kill"}`,
-              { targetId: h_targetId }
+              { targetId: targetId }
             ),
           },
         };
@@ -1921,14 +1926,14 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
           };
         }
 
-        const h_targetId = arg_user;
-        const targetdata = await kira_user_get(h_targetId, false);
+        const targetId = arg_user;
+        const targetdata = await kira_user_get(targetId, false);
 
         if (!targetdata) {
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.sub.apple.fail.notplayer"),
+              content: translate(lang, "cmd.god.fail.notplayer"),
             },
           };
         }
@@ -1952,7 +1957,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
           method: "PATCH",
           body: {
             content: translate(lang, "cmd.god.sub.apple.done." + h_identity, {
-              targetId: h_targetId,
+              targetId: targetId,
               displayed: Math.abs(arg_amount),
               word: translate(
                 lang,
@@ -2082,14 +2087,14 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
           //  };
           //}
 
-          const h_targetId = arg_user;
-          const targetdata = await kira_user_get(h_targetId, false);
+          const targetId = arg_user;
+          const targetdata = await kira_user_get(targetId, false);
 
           if (!targetdata) {
             return {
               method: "PATCH",
               body: {
-                content: translate(lang, "cmd.god.sub.tell.fail.notplayer"),
+                content: translate(lang, "cmd.god.fail.notplayer"),
               },
             };
           }
@@ -2110,8 +2115,8 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
             return {
               method: "PATCH",
               body: {
-                content: translate(lang, "cmd.god.sub.tell.fail.nomp", {
-                  targetId: h_targetId,
+                content: translate(lang, "cmd.god.fail.nomp", {
+                  targetId: targetId,
                 })
               },
             };
@@ -2121,7 +2126,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
             method: "PATCH",
             body: {
               content: translate(lang, "cmd.god.sub.tell.confirm", {
-                targetId: h_targetId,
+                targetId: targetId,
               }),
               components: [
                 {
@@ -2129,7 +2134,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
                   components: [
                     {
                       type: MessageComponentTypes.BUTTON,
-                      custom_id: `makecmd god_form true+${h_targetId}+${dmid}`,
+                      custom_id: `makecmd god_form true+${targetId}+${dmid}`,
                       label: translate(lang, "cmd.god.sub.tell.confirm.yes"),
                       emoji: sett_emoji_feedback_confirm,
                       style: ButtonStyleTypes.PRIMARY,
@@ -2199,8 +2204,8 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
         }
 
         
-        const h_targetId = arg_user;
-        const targetdata = await kira_user_get(h_targetId, false);
+        const targetId = arg_user;
+        const targetdata = await kira_user_get(targetId, false);
 
         let pentype = (arg_texto) ? arg_texto : "pen_black";
 
@@ -2243,8 +2248,8 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
         }
 
         
-        const h_targetId = arg_user;
-        const targetdata = await kira_user_get(h_targetId, false);
+        const targetId = arg_user;
+        const targetdata = await kira_user_get(targetId, false);
 
         let itemName = arg_texto;
 
@@ -2258,6 +2263,120 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
           }
         };
       }
+    
+    //#gift_mp
+    case "gift_mp":
+      {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
+
+        let targetId = arg_user;
+        let targetdata = await kira_user_get(targetId);
+
+        if (!targetdata) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.fail.notplayer"),
+            },
+          };
+        }
+
+        let appleAmount = arg_amount;
+        let isApple = !(!appleAmount);
+        let itemName = arg_texto;
+        let recipientId = arg_user;
+
+        
+
+        // expire
+        let expireSpan = SETT_CMD_GIFT.expireSpanSecond;
+        let expireDate = new Date();
+        expireDate.setSeconds(expireDate.getSeconds() + (expireSpan));
+
+        let gift;
+        if (isApple)
+        {
+          gift = await Item.gift_apples(appleAmount, userdata, undefined, expireDate, recipientId, true)
+        } else {
+          //let item = await Item.get(item_id, userdata.id);
+          let item = await Item.create(undefined, lang, itemName);
+          gift = await item.gift_send(userdata, undefined, expireDate, recipientId, true);
+        }
+        
+        if (!gift) throw Error("the gift cannot be send");
+
+        let content = translate(lang, "cmd.gift.post.content.holly");
+        content += "\n" + translate(lang, "cmd.gift.post.expire", { "timestamp": Math.ceil(expireDate.getTime() / 1000) });
+
+
+        var sucess = true;
+        let dmid;
+        try {
+          //open DM
+          dmid = await kira_user_dm_id(targetdata);
+        } catch (e) {
+          let errorMsg = JSON.parse(e.message);
+          if (errorMsg?.code === 50007) {
+            sucess=false;
+          } else throw e;
+        }
+
+        if (!sucess)
+        {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.fail.nomp", {
+                targetId,
+              })
+            },
+          };
+        }
+
+        await DiscordRequest(
+          `channels/${dmid}/messages`,
+          {
+            method: "POST",
+            body: {
+              content,
+              components: [
+                {
+                  type: MessageComponentTypes.ACTION_ROW,
+                  components: [
+                    {
+                      type: MessageComponentTypes.BUTTON,
+                      custom_id: `makecmd giftclaim ${gift.id}`,
+                      label: translate(lang, "cmd.gift.post.button.claim"),
+                      style: ButtonStyleTypes.SUCCESS,
+                      emoji: sett_emoji_gift_claim
+                    }
+                  ]
+                }
+              ]
+            },
+          }
+        );
+        
+        
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.god.sub.gift_mp.content."+ ((isApple) ? 'apple' : 'item'), {
+              targetId: targetId,
+              amount: appleAmount,
+              itemName
+            }),
+          },
+        };
+      }
+
 
     //#test subcommand
     case "test":
@@ -2381,7 +2500,7 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
           return {
             method: "PATCH",
             body: {
-              content: translate(lang, "cmd.god.sub.update.fail.notplayer"),
+              content: translate(lang, "cmd.god.fail.notplayer"),
             },
           };
         }
@@ -3033,7 +3152,13 @@ async function cmd_burn({
   lang,
   token,
 }) {
-  if (!userbook) {
+  
+  const confirm = data.options?.find((opt) => opt.name === "confirm")?.value;
+  const bookId = data.options?.find((opt) => opt.name === "bookId")?.value;
+  const lookedbook = (bookId) ? await NoteBook.get(bookId) : userbook;
+  const lookedbookItem = await Item.get(lookedbook.itemId);
+
+  if (!lookedbook) {
     return {
       method: "PATCH",
       body: {
@@ -3044,23 +3169,24 @@ async function cmd_burn({
 
   //confirmation message
   if (
-    !(type === InteractionType.MESSAGE_COMPONENT) ||
-    !data.options ||
-    !message
+    //!(type === InteractionType.MESSAGE_COMPONENT) ||
+    //!data.options ||
+    //!message ||
+    confirm == undefined
   ) {
     //that not a message component interaction.
     await stats_simple_add(userdata.statPtr.id, "misc_match"); //+stats
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, `cmd.burn.confirm`),
+        content: translate(lang, `cmd.burn.confirm.content`),
         components: [
           {
             type: MessageComponentTypes.ACTION_ROW,
             components: [
               {
                 type: MessageComponentTypes.BUTTON,
-                custom_id: `makecmd burn true`,
+                custom_id: `makecmd burn ${lookedbook.id}+true`,
                 label: translate(lang, `cmd.burn.confirm.button.ok`),
                 emoji: sett_emoji_burn_confirm,
                 style: ButtonStyleTypes.DANGER,
@@ -3068,7 +3194,7 @@ async function cmd_burn({
               },
               {
                 type: MessageComponentTypes.BUTTON,
-                custom_id: `makecmd burn false`,
+                custom_id: `makecmd burn ${lookedbook.id}+false`,
                 label: translate(lang, `cmd.burn.confirm.button.no`),
                 style: ButtonStyleTypes.SECONDARY,
                 disabled: false,
@@ -3076,16 +3202,12 @@ async function cmd_burn({
             ],
           },
         ],
-      },
-    };
-  }
-
-  //if itself
-  if (message.interaction.user.id !== userdata.userId) {
-    return {
-      method: "PATCH",
-      body: {
-        content: translate(lang, `cmd.burn.fail.notu`),
+        embeds: [
+          {
+            description: translate(lang, `cmd.burn.confirm.description`),
+            fields: [lookedbookItem.get_embed_field(userdata, lang)],
+          },
+        ]
       },
     };
   }
@@ -3097,9 +3219,20 @@ async function cmd_burn({
       method: "PATCH",
       body: {
         components: [],
+        embeds: []
       },
     }
   );
+
+  //if owner
+  if (!lookedbookItem.if_own(userdata.id)) {
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, `cmd.burn.fail.notown`),
+      },
+    };
+  }
 
   //if time
   {
@@ -3117,7 +3250,7 @@ async function cmd_burn({
   }
 
   //if cancel
-  if (!data.options[0] || !data.options[0].value) {
+  if (!confirm) {
     //remove components from the message
     //this does not works if know is used as a command
     return {
@@ -3128,9 +3261,9 @@ async function cmd_burn({
     };
   }
 
-  console.debug(`cmd : burn userbook=`, userbook);
-  //throw new Error("you would have burned it with sucress.");
-  await NoteBook.delete(userbook.id);
+  console.debug(`cmd : burn lookedbook=`, lookedbook);
+  throw new Error("you would have burned it with sucress.");
+  await Item.delete(lookedbook.itemId);
 
   return {
     method: "PATCH",
@@ -3726,14 +3859,6 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   let item_components=[];
   let content = translate(lang, "cmd.pocket.content."+((droped) ? "gone" : (show_page == -1) ? "all" : "one"));
 
-  let get_item_field = (item_selected, equipedStr) => {
-    let name = item_selected.get_title(lang) + ((equipedStr) ? translate(lang, "cmd.pocket.list.equiped." + equipedStr) : "");
-    if (droped) name = `~~${name}~~`;
-    return {
-      name,
-      value: item_selected.get_lore(lang)
-    }
-  }
 
   if (show_page === -1)
   {// all items
@@ -3741,10 +3866,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     for (let i=0; i<items_all.length; i++)
     {
       let item_selected = await Item.get(items_all[i].id, userdata.id);
-      let equiped;
-      if (item_selected.if_equiped(userdata))
-        equiped = items_types[item_selected.info.type].str;
-      fields.push(get_item_field(item_selected, equiped));
+      fields.push(item_selected.get_embed_field(userdata, lang, droped));
 
       if (!typesAmount[item_selected.info.type]) typesAmount[item_selected.info.type] = 0;
       typesAmount[item_selected.info.type] += 1;
@@ -3806,7 +3928,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     }
 
     //show up before any delete
-    fields.push(get_item_field(item_selected, equiped));
+    fields.push(item_selected.get_embed_field(userdata, lang, droped));
 
     //actions/drop
     if (item_selected.info.actions.drop)
@@ -3834,7 +3956,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
       item_components.push(
         {
           type: MessageComponentTypes.BUTTON,
-          custom_id: `makecmd pocket_edit ${(actionDropState==1) ? 'drop_confirm' : 'drop'}+${show_page}`,
+          custom_id: `makecmd burn ${item_selected.meta.bookId}`,
           label: translate(lang, "cmd.pocket.action.burn."+((actionDropState) ? (droped) ? "done" : "confirm" : "first")),
           style: ButtonStyleTypes.DANGER,
           disabled: droped
@@ -4387,7 +4509,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     `channels/${message.channel_id}/messages/${message.id}`,{
     method: "PATCH",
     body: {
-      content: translate(lang, "cmd.gift.claim.sucess", 
+      content: translate(lang, `cmd.gift.claim.sucess.${gift.holly ? 'holly' : 'human'}`, 
       {gifterId: gift.userIdOwner, giftedId: userdata.userId, itemTitle}),
       components: [],
     }

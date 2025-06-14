@@ -715,23 +715,36 @@ export class Item {
       lore += ' ';
     return lore;
   }
+  
+  get_embed_field(userdata : any, lang : string, droped : boolean = false) {
+    let equipedStr : string | undefined;
+    if (this.if_equiped(userdata))
+      equipedStr = items_types[this.info.type].str;
+    let name = this.get_title(lang) + ((equipedStr) ? translate(lang, "cmd.pocket.list.equiped." + equipedStr) : "");
+    if (droped) name = `~~${name}~~`;
+    return {
+      name,
+      value: this.get_lore(lang)
+    }
+  }
 
   // GIFT
-  async gift_send(userdataOwner, usernameOwner, expireTimestamp, userIdRecipient) {
-    if (!this.if_own(userdataOwner.id)) return false;
+  async gift_send(userdataOwner, usernameOwner, expireTimestamp, userIdRecipient, holly = false) {
+    if (!this.if_own(userdataOwner.id) && !holly) return false;
     
     await this.unequip(userdataOwner);
     //await api.KiraUsers.update(itemId, {myItems: {_unlink:[{id: userdataIdOwner}]}});//not this way
     await api.KiraItems.update(this.id, {ownerPtr: {_link:null}});
     this.ownerPtrId = null;
     
-    return await api.KiraItemGift.create({itemPtr: {_link: this.id}, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient, expireDate: expireTimestamp});
+    return await api.KiraItemGift.create({itemPtr: {_link: this.id}, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient, expireDate: expireTimestamp, holly});
   }
 
-  static async gift_apples(appleAmount, userdataOwner, usernameOwner, expireTimestamp, userIdRecipient) {
+  static async gift_apples(appleAmount, userdataOwner, usernameOwner, expireTimestamp, userIdRecipient, holly = false) {
     //await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, 'gift.send.'+(userIdRecipient) ? 'one' : 'everyone', {gifted: });//got lazy
-    await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, 'gift.send.everyone');
-    return await api.KiraItemGift.create({appleAmount, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient, expireDate: expireTimestamp});
+    if (!holly)
+      await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, 'gift.send.everyone');
+    return await api.KiraItemGift.create({appleAmount, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient, expireDate: expireTimestamp, holly});
   }
 
 

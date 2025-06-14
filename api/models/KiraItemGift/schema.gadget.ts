@@ -13,6 +13,7 @@ export const schema: GadgetModel = {
       includeTime: true,
       storageKey: "BYdqxzu_mg9d",
     },
+    holly: { type: "boolean", storageKey: "HvLVznD_Cc5S" },
     itemPtr: {
       type: "belongsTo",
       parent: { model: "KiraItems" },

@@ -238,10 +238,10 @@ export default async function route({ request, reply, api, logger, connections }
           
         case ("burn"):
         {
-          data = { name: 'burn', options: [{name: 'confirm', value: h_arg[0]==="true"}]};
+          data = { name: 'burn', options: [{name: 'bookId', value: parseInt(h_arg[0])}]};
           if (h_arg[1])
           {
-            data.options.push();
+            data.options.push({name: 'confirm', value: h_arg[1]==="true"});
           }
         } break;
 
