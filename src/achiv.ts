@@ -37,7 +37,7 @@ export class Achievement {
   static list : {[key : string] : Achievement} = {};
 
   //MODEL/GET
-  async #level_get(f_achivModelId) {
+  async level_get(f_achivModelId) {
     const received_level = await api.KiraUserAchiv.findOne(f_achivModelId, {
       select: { [this.modelKey]: true },
     }).then((obj) => obj[this.modelKey]);
@@ -94,7 +94,7 @@ export class Achievement {
     const maxLevel = this.maxLevel;
     if (f_newLevel > maxLevel) f_newLevel = maxLevel;
     //get actual level
-    const h_registerLevel = await this.#level_get(achivModelId);
+    const h_registerLevel = await this.level_get(achivModelId);
     //used
     const h_gap = f_newLevel - h_registerLevel;
     let h_apples = 0;
@@ -319,6 +319,7 @@ new Achievement("onLeaderboard", "done_onLeaderboard", 1, false);
 new Achievement("secretRule", "done_secretRule", 1, false);
 new Achievement("killDailyComeback", "done_killDailyComeback", 1, false);
 
+new Achievement("help", "done_help", 1, false);
 new Achievement("shopEmpty", "done_shopEmpty", 1, false);
 new Achievement("giftAway", "done_giftAway", 1, false);
 new Achievement("giftJunk", "done_giftJunk", 1, false);
@@ -327,6 +328,7 @@ new Achievement("penBreaker", "level_penBreaker", 3, false, [1, 5, 15]);
 
 //dont put the achievement here to be invisible
 Achievement.listDisplayed = [
+  "help",
   "kill",
   "counter",
   "outerTime",

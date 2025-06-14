@@ -4,6 +4,7 @@
   "description": "Gadget shinigami app : an Discord app",
   "license": "UNLICENSED",
   "private": true,
+  "types": "./index.d.ts",
   "scripts": {
     "vite:build": "NODE_ENV=production vite build"
   },

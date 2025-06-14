@@ -7,13 +7,13 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "h5yqaGyCRxSC",
   fields: {
+    anon: { type: "boolean", storageKey: "HvLVznD_Cc5S" },
     appleAmount: { type: "number", storageKey: "wvcd1qQV6a_M" },
     expireDate: {
       type: "dateTime",
       includeTime: true,
       storageKey: "BYdqxzu_mg9d",
     },
-    holly: { type: "boolean", storageKey: "HvLVznD_Cc5S" },
     itemPtr: {
       type: "belongsTo",
       parent: { model: "KiraItems" },

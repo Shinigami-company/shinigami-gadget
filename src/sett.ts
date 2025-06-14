@@ -131,6 +131,10 @@ export const sett_emoji_items = {
     name: "pen_purple",
     id: "1374590353109422141",
   },
+  pen_cool: {
+    name: "pen_cool",
+    id: "1383511161840078988",
+  },
   feather_white: {
     name: "feather_white",
     id: "1374353915675545770",
@@ -227,11 +231,12 @@ export const SETT_CMD = {
   pocket: {
     maxCarryItems,
   },
-  help: {
-    footBarFull: '▰',
-    footBarVoid: '▱',
-  }
 };
+
+export const SETT_CMD_HELP = {
+  footBarFull: '▰',
+  footBarVoid: '▱',
+}
 
 export const SETT_CMD_GIFT = {
   expireSpanSecond: (3600 * 24 * 2)

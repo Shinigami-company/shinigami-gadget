@@ -2,11 +2,12 @@ import { api } from "gadget-server";
 import { items_info } from "../item";
 import { penState } from "../../enum";
 
-export const pen_filters = {
+export const pen_filters = {//ANSI color code block
   red: (text) => `[2;31m${text}[0m`,
   blue: (text) => `[2;34m${text}[0m`,
   green: (text) => `[2;32m${text}[0m`,
   purple: (text) => `[2;35m${text}[0m`,
+  high_white: (text) => `[30;47m${text}[0m`,
 }
 
 

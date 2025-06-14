@@ -223,7 +223,18 @@ export async function kira_user_dm_id(userdata)
 {
   if (userdata?.dmId)
     return userdata.dmId;
-  let dmId = await DiscordUserOpenDm(userdata.userId);
+  let dmId;
+
+  //open new DM
+  dmId = await DiscordUserOpenDm(userdata.userId);
+  //try {
+  //} catch (e) {
+  //  //let errorMsg = JSON.parse(e.message);
+  //  //if (errorMsg?.code === 50007) {
+  //  //  sucess=false;
+  //  //} else throw e;
+  //}
+  if (!dmId) return;
   await api.KiraUsers.update(userdata.id, { dmId });
   return dmId;
 }

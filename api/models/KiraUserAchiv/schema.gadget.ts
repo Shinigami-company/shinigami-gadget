@@ -12,6 +12,7 @@ export const schema: GadgetModel = {
     done_giftAway: { type: "number", storageKey: "8IIwE--QcbVc" },
     done_giftJunk: { type: "number", storageKey: "LvGsPbLNFT74" },
     done_giftSelf: { type: "number", storageKey: "zuzVk25eYZUM" },
+    done_help: { type: "number", storageKey: "PHlIfyzqzVfW" },
     done_killDailyComeback: {
       type: "number",
       storageKey: "oCNto3mBnRsx",

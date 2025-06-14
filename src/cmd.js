@@ -133,14 +133,15 @@ linkme("linked from cmd"); //need to use a function from there
 import { tricks_all } from "./cmd/trick.js";
 import { shop_buy_item, shop_byable_items, shop_get_time_next, shop_get_time_remain } from "./cmd/shop.js";
 import { cmd_rules } from "./cmd/rules.js";
+import { cmd_help } from "./cmd/help.js";
 import { webhook_reporter } from "./use/post.js";
 import { channel } from "diagnostics_channel";
 import { error } from "console";
 import { register } from "module";
 import { randomInt } from "crypto";
 import { act } from "react-dom/test-utils";
-import { help_steps } from "./cmd/help.js";
 import { string_emoji } from "./use/tools.ts";
+import { Gift } from "./cmd/gift";
 
 
 //the structure to describe the command
@@ -2064,7 +2065,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
       {
         const letter = data.options.find((opt) => opt.name === "letter")?.value;
         const author = data.options.find((opt) => opt.name === "author")?.value;
-        let dmid = data.options.find((opt) => opt.name === "dmid")?.value;
+        let dmId = data.options.find((opt) => opt.name === "dmId")?.value;
         let targetId = data.options.find((opt) => opt.name === "targetid")?.value;
 
         if (!letter)
@@ -2099,18 +2100,9 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
             };
           }
 
-          var sucess = true;
-          try {
-            //open DM
-            dmid = await kira_user_dm_id(targetdata);
-          } catch (e) {
-            let errorMsg = JSON.parse(e.message);
-            if (errorMsg?.code === 50007) {
-              sucess=false;
-            } else throw e;
-          }
+          let dmId = await kira_user_dm_id(targetdata);
 
-          if (!sucess)
+          if (!dmId)
           {
             return {
               method: "PATCH",
@@ -2134,7 +2126,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
                   components: [
                     {
                       type: MessageComponentTypes.BUTTON,
-                      custom_id: `makecmd god_form true+${targetId}+${dmid}`,
+                      custom_id: `makecmd god_form true+${targetId}+${dmId}`,
                       label: translate(lang, "cmd.god.sub.tell.confirm.yes"),
                       emoji: sett_emoji_feedback_confirm,
                       style: ButtonStyleTypes.PRIMARY,
@@ -2168,7 +2160,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
 
         //send message
         await DiscordRequest(
-          `channels/${dmid}/messages`,
+          `channels/${dmId}/messages`,
           {
             method: "POST",
             body: {
@@ -2291,44 +2283,19 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
         let appleAmount = arg_amount;
         let isApple = !(!appleAmount);
         let itemName = arg_texto;
+        let item;
         let recipientId = arg_user;
 
-        
-
-        // expire
-        let expireSpan = SETT_CMD_GIFT.expireSpanSecond;
-        let expireDate = new Date();
-        expireDate.setSeconds(expireDate.getSeconds() + (expireSpan));
-
-        let gift;
-        if (isApple)
+        if (!isApple)
         {
-          gift = await Item.gift_apples(appleAmount, userdata, undefined, expireDate, recipientId, true)
-        } else {
-          //let item = await Item.get(item_id, userdata.id);
-          let item = await Item.create(undefined, lang, itemName);
-          gift = await item.gift_send(userdata, undefined, expireDate, recipientId, true);
+          item = await Item.create(undefined, lang, itemName);
         }
         
-        if (!gift) throw Error("the gift cannot be send");
+        const response = await Gift.top_send(lang, true, recipientId, appleAmount, item)
 
-        let content = translate(lang, "cmd.gift.post.content.holly");
-        content += "\n" + translate(lang, "cmd.gift.post.expire", { "timestamp": Math.ceil(expireDate.getTime() / 1000) });
+        let dmId = await kira_user_dm_id(targetdata);
 
-
-        var sucess = true;
-        let dmid;
-        try {
-          //open DM
-          dmid = await kira_user_dm_id(targetdata);
-        } catch (e) {
-          let errorMsg = JSON.parse(e.message);
-          if (errorMsg?.code === 50007) {
-            sucess=false;
-          } else throw e;
-        }
-
-        if (!sucess)
+        if (!dmId)
         {
           return {
             method: "PATCH",
@@ -2341,18 +2308,18 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
         }
 
         await DiscordRequest(
-          `channels/${dmid}/messages`,
+          `channels/${dmId}/messages`,
           {
             method: "POST",
             body: {
-              content,
+              content: response.content,
               components: [
                 {
                   type: MessageComponentTypes.ACTION_ROW,
                   components: [
                     {
                       type: MessageComponentTypes.BUTTON,
-                      custom_id: `makecmd giftclaim ${gift.id}`,
+                      custom_id: `makecmd giftclaim ${response.gift.id}`,
                       label: translate(lang, "cmd.gift.post.button.claim"),
                       style: ButtonStyleTypes.SUCCESS,
                       emoji: sett_emoji_gift_claim
@@ -2932,144 +2899,6 @@ async function cmd_invite({ lang })
 //    },
 //  };
 //}
-
-async function cmd_help({ data, userbook, userdata, lang }) {
-  //arg/page
-  let show_page = data.options?.find((opt) => opt.name === "page")?.value;
-  let last_page = await stats_simple_get(userdata.statPtr.id, "help_state");
-  if (last_page===null)
-  {
-    stats_simple_set(userdata.statPtr.id, "help_state", 0);
-    last_page = 0;
-  }
-  const max_page = 18;
-  const min_page = 0;
-  if (show_page===undefined)
-  {
-    show_page = last_page;
-  }
-
-  if (show_page < min_page || show_page > max_page) {
-    return {
-      method: "PATCH",
-      body: {
-        content: translate(lang, `cmd.help.step.fail.none`, { number: show_page }),
-      }
-    };
-  }
-
-  //page/make
-  let content = " ";
-  //let color = (userbook) ? userbook?.color.int : 0;
-  let color = 2326507;//discord blue
-  let buttons = [];
-
-  if (show_page > last_page + 1)
-  {//fail bcs jumped over a step
-  
-    content = translate(lang, `cmd.help.step.fail.jump`);
-    buttons.push(
-      {
-        type: MessageComponentTypes.BUTTON,
-        custom_id: `makecmd help_edit`,
-        label: translate(lang, `cmd.help.step.button.path`),
-        style: ButtonStyleTypes.SECONDARY,
-      }
-    );
-
-    return {
-      method: "PATCH",
-      body: {
-        content,
-        components: [
-          {
-            type: MessageComponentTypes.ACTION_ROW,
-            components: buttons,
-          },
-        ],
-        embeds: []
-      },
-    };
-  }
-  
-  let ifFirstTimeThisStep = (show_page === last_page + 1);
-  let ifFailedNextQuest = false;
-  if (ifFirstTimeThisStep)
-  {
-    let lastHelpStep = help_steps[show_page - 1];
-    let ifLastQuestDone = (((!lastHelpStep) || (!lastHelpStep.ifQuest) || (await lastHelpStep.checkQuest(userdata.statPtr.id))));
-    
-    if (ifLastQuestDone)
-    {
-      await stats_simple_set(userdata.statPtr.id, "help_state", show_page);
-      last_page = show_page;
-    } else {
-      show_page -= 1;
-      ifFirstTimeThisStep = false;
-      ifFailedNextQuest = true;
-    }
-
-  }
-  
-  let ifFirstTimeNextStep = ((show_page === last_page) || ifFirstTimeThisStep) && !(show_page >= max_page);
-  let thisHelpStep = help_steps[show_page];
-  let ifQuest = thisHelpStep.ifQuest;
-  let ifQuestDone = (!ifQuest || await thisHelpStep.checkQuest(userdata.statPtr.id));// true if !ifQuest
-  let dolarDesc = {};
-
-  let footer_text = `${SETT_CMD.help.footBarFull.repeat(show_page)}/${SETT_CMD.help.footBarFull.repeat(last_page - show_page)}${SETT_CMD.help.footBarVoid.repeat(max_page - last_page)}`;
-
-  // specials
-  if (thisHelpStep.special?.invite)
-  {
-    dolarDesc["inviteLink"] = process.env.invite_bot;
-    dolarDesc["joinLink"] = process.env.invite_realm;
-  }
-
-
-  // done : show up
-  let description = translate(lang, `cmd.help.step.${show_page}`, dolarDesc);
-  buttons.push(
-    {
-      type: MessageComponentTypes.BUTTON,
-      custom_id: `makecmd help_edit ${show_page - 1}`,
-      label: translate(lang, `cmd.help.step.button.back`, { page: show_page - 1 }),
-      style: ButtonStyleTypes.SECONDARY,
-      disabled: (show_page <= min_page),
-    },
-  );
-  buttons.push(
-    {
-      type: MessageComponentTypes.BUTTON,
-      custom_id: `makecmd help_edit ${show_page + 1}`,
-      label: translate(lang, `cmd.help.step.button.${(!ifFirstTimeNextStep) ? "next" : (ifQuest) ? (ifFailedNextQuest) ? "notdone" : "done" : "ok"}`, { page: show_page + 1 }),
-      style: (ifFailedNextQuest) ? ButtonStyleTypes.DANGER : (ifFirstTimeNextStep && ifQuestDone) ? ButtonStyleTypes.SUCCESS : ButtonStyleTypes.SECONDARY,
-      disabled: (show_page >= max_page),// || !ifQuestDone
-    },
-  );
-
-  return {
-    method: "PATCH",
-    body: {
-      content,
-      embeds: [
-        {
-          color,
-          description,
-          footer: {
-            text: footer_text,
-          },
-        },
-      ],
-      components: [
-        {
-          type: MessageComponentTypes.ACTION_ROW,
-          components: buttons,
-        },
-      ],
-    },
-  };
-}
 
 //#claim command
 async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
@@ -4208,7 +4037,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
 //#gift
 async function cmd_gift({ data, userdata, user, lang, message, token}) {
 
-  let item_id = data.options?.find((opt) => opt.name === "itemid")?.value;
+  let itemId = data.options?.find((opt) => opt.name === "itemid")?.value;
   let gifted_id = data.options?.find((opt) => opt.name === "giftedid")?.value;
 
   if (message) {
@@ -4223,7 +4052,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
     );
   }
   
-  if (!item_id)
+  if (!itemId)
   {
     let options_objects = [];
     const items_all = await Item.inventory_ids(userdata.id);
@@ -4288,13 +4117,13 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
     }
   }
 
-  const isApple = (item_id<0);
+  const isApple = (itemId<0);
   let item;
   let itemTitle;
   let appleAmount;
   if (isApple)
   {
-    appleAmount = item_id*-1;
+    appleAmount = itemId*-1;
     itemTitle = translate(lang, "cmd.gift.pick.apple", {
       price: appleAmount,
       unit: translate(
@@ -4314,7 +4143,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
     }
   } else {
 
-    item = await Item.get(item_id, userdata.id);
+    item = await Item.get(itemId, userdata.id);
     if (!item)
     {
       return {
@@ -4324,7 +4153,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
         }
       }
     }
-    itemTitle = item.get_title(lang, false);
+    itemTitle = item.get_title(lang);
   }
 
   if (!gifted_id)
@@ -4339,7 +4168,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
             components: [
               {
                 type: MessageComponentTypes.USER_SELECT,
-                custom_id: `makecmd giftsend ${item_id}+<value>`,
+                custom_id: `makecmd giftsend ${itemId}+<value>`,
                 placeholder: translate(lang, "cmd.gift.pick.user.place"),
               }
             ]
@@ -4349,7 +4178,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
             components: [
               {
                 type: MessageComponentTypes.BUTTON,
-                custom_id: `makecmd giftsend ${item_id}+@everyone`,
+                custom_id: `makecmd giftsend ${itemId}+@everyone`,
                 label: translate(lang, "cmd.gift.pick.user.all"),
                 style: ButtonStyleTypes.PRIMARY,
               }
@@ -4361,41 +4190,20 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
   }
 
   const recipientId = (gifted_id==="@everyone") ? undefined : gifted_id;
-  
-  // expire
-  let expireSpan = SETT_CMD_GIFT.expireSpanSecond;
-  let expireDate = new Date();
-  expireDate.setSeconds(expireDate.getSeconds() + (expireSpan));
 
-  let gift;
-  console.log(`in gift you will unequip`);
-  if (isApple)
-  {
-   gift = await Item.gift_apples(appleAmount, userdata, user.username, expireDate, recipientId)
-  } else {
-   let item = await Item.get(item_id, userdata.id);
-   gift = await item.gift_send(userdata, user.username, expireDate, recipientId);
-  }
-  
-  if (!gift) throw Error("the gift cannot be send");
-
-  //+stats
-  await stats_simple_add(userdata.statPtr.id, "do_gift");
-
-  let content = translate(lang, "cmd.gift.post.content."+ ((recipientId) ? "one" : "everyone"), {gifterId: userdata.userId, giftedId: recipientId});
-  content += "\n" + translate(lang, "cmd.gift.post.expire", { "timestamp": Math.ceil(expireDate.getTime() / 1000) });
+  const response = await Gift.top_send(lang, false, recipientId, appleAmount, item, userdata);
 
   return {
     method: "PATCH",
     body: {
-      content,
+      content : response.content,
       components: [
         {
           type: MessageComponentTypes.ACTION_ROW,
           components: [
             {
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd giftclaim ${gift.id}`,
+              custom_id: `makecmd giftclaim ${response.gift.id}`,
               label: translate(lang, "cmd.gift.post.button.claim"),
               style: ButtonStyleTypes.SUCCESS,
               emoji: sett_emoji_gift_claim
@@ -4415,7 +4223,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     throw Error("no gift id provided.");
   }
 
-  const gift = await Item.gift_get(gift_id);
+  const gift = await Gift.get(gift_id);
 
   // checks
   let fail_reason = "";
@@ -4458,15 +4266,16 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
   }
 
 
-  await Item.gift_pick(gift, userdata);
+  await Gift.pick(gift, userdata);
 
   const ownerdata = await kira_user_get(gift.userIdOwner);
+  const giftSelf = gift.userIdOwner === userdata.userId;
   //+stats
   await stats_simple_add(userdata.statPtr.id, "is_gift");
   //+achiv
-  if (gift.userIdOwner===userdata.userId)
+  if (giftSelf)
   {
-    await Achievement.list["giftSelf"].do_grant(ownerdata, lang);
+    await Achievement.list["giftSelf"].do_grant(userdata, lang);
   }
   
   const isApple = (gift.appleAmount!=null);
@@ -4482,9 +4291,9 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
       )
     });
     //+achiv
-    if (gift.appleAmount >= 3 && ownerdata.apples > userdata.apples)
+    if (!giftSelf && ownerdata && gift.appleAmount >= 3 && ownerdata.apples > userdata.apples)
     {
-      await Achievement.list["giftAway"].do_grant(ownerdata, lang, 1, {personId: user.id});
+      await Achievement.list["giftAway"].do_grant(ownerdata, lang, 1, {personId: userdata.userId});
     }
   } else {
     item = await Item.get(gift.itemPtrId, userdata.id);
@@ -4492,13 +4301,9 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     {
       throw Error("the item fled");
     }
-    itemTitle = item.get_title(lang, false);
+    itemTitle = item.get_title(lang);
     //+achiv
-    if (gift.userIdOwner===userdata.userId)
-    {
-      await Achievement.list["giftSelf"].do_grant(userdata, lang);
-    }
-    else if (item.info.type === itemType.JUNK)
+    if (!giftSelf && item.info.type === itemType.JUNK)
     {
       await Achievement.list["giftJunk"].do_grant(userdata, lang);
     }
@@ -4509,7 +4314,7 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     `channels/${message.channel_id}/messages/${message.id}`,{
     method: "PATCH",
     body: {
-      content: translate(lang, `cmd.gift.claim.sucess.${gift.holly ? 'holly' : 'human'}`, 
+      content: translate(lang, `cmd.gift.claim.sucess.${gift.anon ? 'anon' : 'human'}`, 
       {gifterId: gift.userIdOwner, giftedId: userdata.userId, itemTitle}),
       components: [],
     }

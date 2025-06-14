@@ -172,6 +172,29 @@ export const items_info = {
     }
   },
   
+  pen_cool: {
+    type: itemType.PEN,
+    emoji: sett_emoji_items.pen_cool,
+    actions: {
+      drop: true,
+      equip: true
+    },
+    atr: {
+      filters: ['high_white'],
+      broken_item: 'broken_pen',
+      broken_chance: .1,
+      empty_item: 'empty_pen',
+      empty_durability: 5,
+    },
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_pen
+      }
+    },
+  },
+  
   feather_white: {
     type: itemType.PEN,
     emoji: sett_emoji_items.feather_white,
@@ -725,40 +748,6 @@ export class Item {
     return {
       name,
       value: this.get_lore(lang)
-    }
-  }
-
-  // GIFT
-  async gift_send(userdataOwner, usernameOwner, expireTimestamp, userIdRecipient, holly = false) {
-    if (!this.if_own(userdataOwner.id) && !holly) return false;
-    
-    await this.unequip(userdataOwner);
-    //await api.KiraUsers.update(itemId, {myItems: {_unlink:[{id: userdataIdOwner}]}});//not this way
-    await api.KiraItems.update(this.id, {ownerPtr: {_link:null}});
-    this.ownerPtrId = null;
-    
-    return await api.KiraItemGift.create({itemPtr: {_link: this.id}, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient, expireDate: expireTimestamp, holly});
-  }
-
-  static async gift_apples(appleAmount, userdataOwner, usernameOwner, expireTimestamp, userIdRecipient, holly = false) {
-    //await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, 'gift.send.'+(userIdRecipient) ? 'one' : 'everyone', {gifted: });//got lazy
-    if (!holly)
-      await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, 'gift.send.everyone');
-    return await api.KiraItemGift.create({appleAmount, userIdOwner: userdataOwner.userId, usernameOwner, userIdRecipient, expireDate: expireTimestamp, holly});
-  }
-
-
-  static async gift_get(giftId) {
-    return await api.KiraItemGift.maybeFindFirst({filter: {id: {equals: giftId}}});
-  }
-
-  static async gift_pick(gift, userdata) {
-    await api.KiraItemGift.delete(gift.id);
-    if (gift.appleAmount)
-    {
-      return await kira_apple_send(userdata.id, gift.appleAmount, userdata.statPtr.id, 'gift.recive', {'gifter': gift.usernameOwner});
-    } else {
-      return await api.KiraItems.update(gift.itemPtrId, {ownerPtr: {_link: userdata.id}});
     }
   }
 }
