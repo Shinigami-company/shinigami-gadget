@@ -245,11 +245,12 @@ export default async function route({ request, reply, api, logger, connections }
         } break;
           
         case ("burn"):
+        case ("burn_edit"):
         {
           data = { name: 'burn', options: [{name: 'bookId', value: parseInt(h_arg[0])}]};
           if (h_arg[1])
           {
-            data.options.push({name: 'confirm', value: h_arg[1]==="true"});
+            data.options.push({name: 'state', value: parseInt(h_arg[1])});
           }
         } break;
 

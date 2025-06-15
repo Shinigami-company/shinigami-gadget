@@ -16,7 +16,7 @@ export class Gift {
       await item.unequip(userdataOwner);
 
       //await api.KiraUsers.update(itemId, {myItems: {_unlink:[{id: userdataIdOwner}]}});//not this way
-      await api.KiraItems.update(item.id, {ownerPtr: {_link:null}});
+      await api.KiraItems.update(item.id, {ownerPtr: {_link:null}, ownedDate: null});
       item.ownerPtrId = null;
     }
     

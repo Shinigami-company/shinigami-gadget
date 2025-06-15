@@ -468,6 +468,18 @@ const commands_structure = {
       defered: deferedActionType.WAIT_MESSAGE,
     },
   },
+  burn_edit: {
+    functions: {
+      exe: cmd_burn,
+      checks: [
+        [check_react_is_self, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_UPDATE,
+      systemOnly: true,
+    },
+  },
 
   //GET
   apple: {
@@ -2962,7 +2974,8 @@ async function cmd_burn({
   token,
 }) {
   
-  const confirm = data.options?.find((opt) => opt.name === "confirm")?.value;
+  let state = data.options?.find((opt) => opt.name === "state")?.value;
+  if (!state) state = 0;
   const bookId = data.options?.find((opt) => opt.name === "bookId")?.value;
   const lookedbook = (bookId) ? await NoteBook.get(bookId) : userbook;
   const lookedbookItem = await Item.get(lookedbook.itemId);
@@ -2978,13 +2991,55 @@ async function cmd_burn({
 
   //confirmation message
   if (
-    //!(type === InteractionType.MESSAGE_COMPONENT) ||
-    //!data.options ||
-    //!message ||
-    confirm == undefined
+    state === 1 || state === 0
   ) {
     //that not a message component interaction.
-    await stats_simple_add(userdata.statPtr.id, "misc_match"); //+stats
+    let buttons = [];
+    if (state === 0)
+    {
+      await stats_simple_add(userdata.statPtr.id, "misc_match"); //+stats
+      buttons = [
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd burn_edit ${lookedbook.id}+1`,
+          label: translate(lang, `cmd.burn.confirm.button.ok`),
+          emoji: sett_emoji_burn_confirm,
+          style: ButtonStyleTypes.DANGER,
+          disabled: false,
+        },
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd burn_edit ${lookedbook.id}+-1`,
+          label: translate(lang, `cmd.burn.confirm.button.no`),
+          style: ButtonStyleTypes.SECONDARY,
+          disabled: false,
+        },
+      ]
+    }
+    else if (state === 1)
+    {
+      buttons = [
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd burn ${lookedbook.id}+-1`,
+          label: translate(lang, `cmd.burn.confirm.button.nono`),
+          style: ButtonStyleTypes.SECONDARY,
+          disabled: false,
+        },
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd burn ${lookedbook.id}+2`,
+          label: translate(lang, `cmd.burn.confirm.button.okok`),
+          emoji: sett_emoji_burn_confirm,
+          style: ButtonStyleTypes.DANGER,
+          disabled: false,
+        },
+      ]
+    }
+
+
+
+    
     return {
       method: "PATCH",
       body: {
@@ -2992,29 +3047,16 @@ async function cmd_burn({
         components: [
           {
             type: MessageComponentTypes.ACTION_ROW,
-            components: [
-              {
-                type: MessageComponentTypes.BUTTON,
-                custom_id: `makecmd burn ${lookedbook.id}+true`,
-                label: translate(lang, `cmd.burn.confirm.button.ok`),
-                emoji: sett_emoji_burn_confirm,
-                style: ButtonStyleTypes.DANGER,
-                disabled: false,
-              },
-              {
-                type: MessageComponentTypes.BUTTON,
-                custom_id: `makecmd burn ${lookedbook.id}+false`,
-                label: translate(lang, `cmd.burn.confirm.button.no`),
-                style: ButtonStyleTypes.SECONDARY,
-                disabled: false,
-              },
-            ],
+            components: buttons,
           },
         ],
         embeds: [
           {
             description: translate(lang, `cmd.burn.confirm.description`),
             fields: [lookedbookItem.get_embed_field(userdata, lang)],
+            footer: {
+              text: translate(lang, `cmd.burn.confirm.footer`),
+            }
           },
         ]
       },
@@ -3059,7 +3101,7 @@ async function cmd_burn({
   }
 
   //if cancel
-  if (!confirm) {
+  if (state != 2) {
     //remove components from the message
     //this does not works if know is used as a command
     return {
@@ -3071,8 +3113,9 @@ async function cmd_burn({
   }
 
   console.debug(`cmd : burn lookedbook=`, lookedbook);
-  throw new Error("you would have burned it with sucress.");
-  await Item.delete(lookedbook.itemId);
+  //throw new Error("you would have burned it with sucress.");
+  const item = await Item.get(lookedbook.itemId);
+  await item.delete(userdata);
 
   return {
     method: "PATCH",
@@ -3636,7 +3679,13 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
   //arg/page
   const action = (data.options?.find((opt) => opt.name === "action")?.value);//str
   const lastItemId = data.options?.find((opt) => opt.name === "itemId")?.value;
-  const on_page = items_all.findIndex((item) => item.id === lastItemId) + 1;//1,n
+  const on_page = (() => {
+    for (let i = 0; i<items_all.length; i++)
+    {
+      if (items_all[i].id === lastItemId) return i+1;
+    }
+    return;
+  })();//1,n
   
   const unic = items_all.length === 1;
   const last_page = items_all.length;
@@ -3668,6 +3717,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
 
   let fields=[];
   let item_components=[];
+  let itemId;
   let content = translate(lang, "cmd.pocket.content."+((throwed) ? "gone" : (show_page == -1) ? "all" : "one"));
 
 
@@ -3683,18 +3733,23 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
       typesAmount[item_selected.info.type] += 1;
     }
 
+    if (!typesAmount[itemType.PEN])
+    {
+      content += '\n' + translate(lang, 'cmd.pocket.content.more.pen');
+    }
     if (!typesAmount[itemType.BOOK])
     {
       content += '\n' + translate(lang, 'cmd.pocket.content.more.book');
     }
-    if (!typesAmount[itemType.PEN])
+    else if (typesAmount[itemType.BOOK] >= 2)
     {
-      content += '\n' + translate(lang, 'cmd.pocket.content.more.pen');
+      await Achievement.list['booksDouble'].do_grant(userdata, lang);
     }
   }
   else
   {// one item
     let item_selected = await Item.get(items_all[show_page-1]?.id, userdata.id);
+    itemId = items_all[show_page-1]?.id;
 
     //ACTIONS
 
@@ -3764,12 +3819,6 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
     //actions/gift
     if (item_selected.info.actions.gift)
     {
-      // do throw
-      if (throwed) 
-      {
-        await item_selected.delete(userdata);
-        //item_selected = null;
-      }
       item_components.push(
         {
           type: MessageComponentTypes.BUTTON,
@@ -3813,7 +3862,7 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
             },
             {
               type: MessageComponentTypes.BUTTON,
-              custom_id: `makecmd pocket_edit roll+${show_page}`,
+              custom_id: `makecmd pocket_edit roll+${itemId}`,
               label: translate(lang, "cmd.pocket.get."+((show_page==-1) ? "one" : "other")),
               style: ButtonStyleTypes.SECONDARY,
               disabled: (last_page<2 && show_page>-1)
@@ -4013,7 +4062,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
   //+achiv
   if (empty_amount == items_shop.length)
   {
-    Achievement.list['shopEmpty'].do_grant(userdata, lang);
+    await Achievement.list['shopEmpty'].do_grant(userdata, lang);
   }
 
   //content=content+"\n"+footer_text;

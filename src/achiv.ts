@@ -321,6 +321,7 @@ new Achievement("killDailyComeback", "done_killDailyComeback", 1, false);
 
 new Achievement("help", "done_help", 1, false);
 new Achievement("shopEmpty", "done_shopEmpty", 1, false);
+new Achievement("booksDouble", "done_booksDouble", 1, false);
 new Achievement("giftAway", "done_giftAway", 1, false);
 new Achievement("giftJunk", "done_giftJunk", 1, false);
 new Achievement("giftSelf", "done_giftSelf", 1, false);
@@ -343,6 +344,7 @@ Achievement.listDisplayed = [
   "counterShort",
   "murdersOn",
   "shopEmpty",
+  "booksDouble",
   "giftAway",
   "giftJunk",
   "giftSelf",

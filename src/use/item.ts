@@ -637,7 +637,10 @@ export class Item {
   
   static async find_all(filter : any = {}) : Promise<Item[]> {
     let itemsData = await api.KiraItems.findMany({
-      filter
+      filter,
+      sort: {
+        ownedDate: 'Descending',
+      },
     });
     
     let items : Item[] = [];

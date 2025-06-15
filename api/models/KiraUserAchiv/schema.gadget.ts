@@ -7,6 +7,7 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "LAh9i2LlL1o3",
   fields: {
+    done_booksDouble: { type: "number", storageKey: "scs3vJ72lMIO" },
     done_counterMax: { type: "number", storageKey: "KD5akNfwxXEy" },
     done_counterShort: { type: "number", storageKey: "ymPoh5WS76ci" },
     done_giftAway: { type: "number", storageKey: "8IIwE--QcbVc" },
