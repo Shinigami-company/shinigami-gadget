@@ -191,7 +191,7 @@ export default async function route({ request, reply, api, logger, connections }
           //'droped' : confirm drop
           data = { name: 'pocket_edit', options: [
             { name: 'action', value: h_arg[0] },
-            { name: 'page', value: parseInt(h_arg[1]) },
+            { name: 'itemId', value: h_arg[1] },
           ] };
         } break;
 

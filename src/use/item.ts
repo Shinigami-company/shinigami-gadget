@@ -14,7 +14,7 @@ export const items_info = {
     type: itemType.COLLECTOR,
     emoji: sett_emoji_items.event_egg_2025,
     actions: {
-      drop: true
+      gift: true
     },
     fields: {
       claim: true,
@@ -36,7 +36,8 @@ export const items_info = {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_black,
     actions: {
-      drop: true,
+      throw: true,
+      gift: true,
       equip: true
     },
     atr: {
@@ -64,7 +65,8 @@ export const items_info = {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_blue,
     actions: {
-      drop: true,
+      throw: true,
+      gift: true,
       equip: true
     },
     atr: {
@@ -92,7 +94,8 @@ export const items_info = {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_green,
     actions: {
-      drop: true,
+      throw: true,
+      gift: true,
       equip: true
     },
     atr: {
@@ -120,7 +123,8 @@ export const items_info = {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_red,
     actions: {
-      drop: true,
+      throw: true,
+      gift: true,
       equip: true
     },
     atr: {
@@ -148,7 +152,8 @@ export const items_info = {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_purple,
     actions: {
-      drop: true,
+      throw: true,
+      gift: true,
       equip: true
     },
     atr: {
@@ -176,7 +181,8 @@ export const items_info = {
     type: itemType.PEN,
     emoji: sett_emoji_items.pen_cool,
     actions: {
-      drop: true,
+      throw: true,
+      gift: true,
       equip: true
     },
     atr: {
@@ -199,7 +205,8 @@ export const items_info = {
     type: itemType.PEN,
     emoji: sett_emoji_items.feather_white,
     actions: {
-      drop: true,
+      throw: true,
+      gift: true,
       equip: true
     },
     atr: {
@@ -227,7 +234,8 @@ export const items_info = {
     type: itemType.JUNK,
     emoji: sett_emoji_items.broken_pen,
     actions: {
-      drop: true
+      gift: true,
+      throw: true,
     },
     fields: {
       claim: false,
@@ -245,7 +253,8 @@ export const items_info = {
     type: itemType.JUNK,
     emoji: sett_emoji_items.empty_pen,
     actions: {
-      drop: true
+      gift: true,
+      throw: true
     },
     fields: {
       claim: false,
@@ -743,12 +752,12 @@ export class Item {
     return lore;
   }
   
-  get_embed_field(userdata : any, lang : string, droped : boolean = false) {
+  get_embed_field(userdata : any, lang : string, throwed : boolean = false) {
     let equipedStr : string | undefined;
     if (this.if_equiped(userdata))
       equipedStr = items_types[this.info.type].str;
     let name = this.get_title(lang) + ((equipedStr) ? translate(lang, "cmd.pocket.list.equiped." + equipedStr) : "");
-    if (droped) name = `~~${name}~~`;
+    if (throwed) name = `~~${name}~~`;
     return {
       name,
       value: this.get_lore(lang)
