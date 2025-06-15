@@ -41,7 +41,7 @@ export class Gift {
     {
       return await kira_apple_send(userdata.id, gift.appleAmount, userdata.statPtr.id, `gift.recive.${(gift.anon) ? 'anon' : 'human'}`, {'gifter': gift.usernameOwner});
     } else {
-      return await api.KiraItems.update(gift.itemPtrId, {ownerPtr: {_link: userdata.id}});
+      return await api.KiraItems.update(gift.itemPtrId, {ownerPtr: {_link: userdata.id}, ownedDate: new Date().toISOString()});
     }
   }
 

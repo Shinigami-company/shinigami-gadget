@@ -20,6 +20,11 @@ export const schema: GadgetModel = {
     itemLoreTxt: { type: "richText", storageKey: "BR9ljaH87ShH" },
     itemName: { type: "string", storageKey: "J3mHD1CwWgaL" },
     meta: { type: "json", default: {}, storageKey: "hH4HSdLsgis9" },
+    ownedDate: {
+      type: "dateTime",
+      includeTime: true,
+      storageKey: "qinoXMGtow-0",
+    },
     ownerPtr: {
       type: "belongsTo",
       parent: { model: "KiraUsers" },

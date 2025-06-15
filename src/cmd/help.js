@@ -1,12 +1,13 @@
 import { ButtonStyleTypes, MessageComponentTypes } from 'discord-interactions';
 import { translate } from '../lang';
-import { SETT_CMD_HELP, sett_emoji_gift_claim } from '../sett';
+import { SETT_CMD_HELP, sett_emoji_feedback_confirm, sett_emoji_gift_claim } from '../sett';
 import { stats_simple_get, stats_simple_set } from '../use/stats'
 import { Achievement } from '../achiv';
 import { Item } from '../use/item';
 import { Gift } from './gift';
 import { kira_user_dm_id } from '../use/kira';
 import { DiscordRequest } from '../utils';
+import { cmd_register } from '../cmd';
 
 export const help_steps = [// step propety is just indicative.
   {step: 0, ifQuest: false},
@@ -75,23 +76,188 @@ export const help_steps = [// step propety is just indicative.
 
 
 
+class HelpButtons {
+
+  buttons_special = [];
+  buttons_action = [];
+  buttons_nav = [];
+  doneNav = true;
+
+  constructor()
+  {
+
+  }
+
+  add_special(button)
+  {
+    this.buttons_special.push(button);
+  }
+  add_action(button)
+  {
+    this.buttons_action.push(button);
+  }
+  add_nav(button)
+  {
+    this.buttons_nav.push(button);
+  }
+
+  generate(lang, userdata, done, action)
+  {
+    let components = [];
+    
+    // add nav
+    if (done && this.doneNav)
+    {
+      let sections = ['menu', 'tuto', 'describe', 'feedback'];
+      for (let sectionText of sections)
+      {
+        this.add_nav(
+          {
+            type: MessageComponentTypes.BUTTON,
+            style: ButtonStyleTypes.SECONDARY,
+            label: translate(lang, `cmd.help.nav.buttons.${sectionText}`),
+            custom_id: `makecmd help_edit ${sectionText}`,
+            disabled: (sectionText == action)
+          }
+        )
+      }
+    }
+
+    // ACTION_ROW
+    if (this.buttons_special.length)
+    {
+      components.push(
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: this.buttons_special,
+        },
+      )
+    }
+    if (this.buttons_action.length)
+    {
+      components.push(
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: this.buttons_action,
+        },
+      )
+    }
+    if (this.buttons_nav.length)
+    {
+      components.push(
+        {
+          type: MessageComponentTypes.ACTION_ROW,
+          components: this.buttons_nav,
+        },
+      )
+    }
+
+    return components;    
+  }
+}
+
 
 
 
 
 //#help
 export async function cmd_help({ data, userbook, userdata, lang }) {
-  const arg_action = data.options?.find((opt) => opt.name === 'action')?.value;
+  let arg_action = data.options?.find((opt) => opt.name === 'action')?.value;
+  const done = await Achievement.list['help'].level_get(userdata.achivPtr.id)
 
-  if (!arg_action || arg_action == 'tuto') return cmd_help_tuto({ data, userdata, userbook, lang });
-  if (arg_action == 'complete') return cmd_help_complete({ data, userdata, userbook, lang });
-  if (arg_action == 'command') return cmd_help_command({ data, userdata, userbook, lang });
+  if (!arg_action)
+  {
+    if (done)
+    {
+      arg_action = 'menu';
+    } else {
+      arg_action = 'tuto';
+    }
+  }
+  
+  const deep = { data, userdata, userbook, lang, done };
+
+  if (arg_action == 'tuto') return cmd_help_tuto(deep);
+  if (arg_action == 'menu') return cmd_help_menu(deep);
+  if (arg_action == 'complete') return cmd_help_complete(deep);
+  if (arg_action == 'describe') return cmd_help_describe(deep);
+  if (arg_action == 'feedback') return cmd_help_feedback(deep);
 }
 
 
-async function cmd_help_tuto({ data, userbook, userdata, lang }) {
+async function cmd_help_menu({ data, userbook, userdata, lang, done }) {
   let buttonsObj = new HelpButtons();
-  const done = await Achievement.list['help'].level_get(userdata.achivPtr.id)
+
+
+
+  var view_text = (false && (parseInt(process.env.invite_enable)))
+    ? "\n"+translate(lang, "cmd.help.reminder.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm})
+    : "";
+  //var view_text = "";
+
+  var reminder = translate(lang, "cmd.help.reminder.content", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "view": view_text});
+
+  let content = ' ';
+  let description = translate(lang, `cmd.help.menu.description`, {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "reminder": reminder});
+  let footer_text = translate(lang, `cmd.help.menu.footer`);
+
+  return {
+    method: 'PATCH',
+    body: {
+      content,
+      embeds: [
+        {
+          color: 2326507,
+          description,
+          footer: {
+            text: footer_text,
+          },
+        },
+      ],
+      components: buttonsObj.generate(lang, userdata, done, 'menu'),
+    },
+  };
+}
+
+async function cmd_help_feedback({ data, userbook, userdata, lang, done }) {
+  let buttonsObj = new HelpButtons();
+
+
+  let content = ' ';
+  let description = translate(lang, `cmd.help.feedback.description`);
+  let footer_text = ' ';
+
+  buttonsObj.add_action(
+    {
+      type: MessageComponentTypes.BUTTON,
+      custom_id: `makecmd feedback_form true`,
+      label: translate(lang, "cmd.help.feedback.button"),
+      emoji: sett_emoji_feedback_confirm,
+      style: ButtonStyleTypes.PRIMARY,
+      disabled: false,
+    },
+  )
+
+  return {
+    method: 'PATCH',
+    body: {
+      content,
+      embeds: [
+        {
+          color: 2326507,
+          description,
+          footer: {
+            text: footer_text,
+          },
+        },
+      ],
+      components: buttonsObj.generate(lang, userdata, done, 'feedback'),
+    },
+  };
+}
+
+async function cmd_help_tuto({ data, userbook, userdata, lang, done }) {
+  let buttonsObj = new HelpButtons();
   //arg/page
   let show_page = data.options?.find((opt) => opt.name === 'page')?.value;
   let last_page = await stats_simple_get(userdata.statPtr.id, 'help_state');
@@ -115,7 +281,7 @@ async function cmd_help_tuto({ data, userbook, userdata, lang }) {
       method: 'PATCH',
       body: {
         content: translate(lang, `cmd.help.tuto.fail.none`, { number: show_page }),
-        components: buttonsObj.generate(lang, userdata, done),
+        components: buttonsObj.generate(lang, userdata, done, 'tuto'),
         embeds: []
       }
     };
@@ -141,7 +307,7 @@ async function cmd_help_tuto({ data, userbook, userdata, lang }) {
       method: 'PATCH',
       body: {
         content,
-        components: buttonsObj.generate(lang, userdata, done),
+        components: buttonsObj.generate(lang, userdata, done, 'tuto'),
         embeds: []
       },
     };
@@ -230,98 +396,17 @@ async function cmd_help_tuto({ data, userbook, userdata, lang }) {
           },
         },
       ],
-      components: buttonsObj.generate(lang, userdata, done),
+      components: buttonsObj.generate(lang, userdata, done, 'tuto'),
     },
   };
 }
 
 
-
-class HelpButtons {
-
-  buttons_special = [];
-  buttons_action = [];
-  buttons_nav = [];
-  doneNav = true;
-
-  constructor()
-  {
-
-  }
-
-  add_special(button)
-  {
-    this.buttons_special.push(button);
-  }
-  add_action(button)
-  {
-    this.buttons_action.push(button);
-  }
-  add_nav(button)
-  {
-    this.buttons_nav.push(button);
-  }
-
-  generate(lang, userdata, done)
-  {
-    let components = [];
-    
-    // add nav
-    if (done && this.doneNav)
-    {
-      let sections = ['tuto', 'command'];
-      for (let sectionText of sections)
-      {
-        this.add_nav(
-          {
-            type: MessageComponentTypes.BUTTON,
-            style: ButtonStyleTypes.SECONDARY,
-            label: translate(lang, `cmd.help.nav.buttons.${sectionText}`),
-            custom_id: `makecmd help_edit ${sectionText}`,
-          }
-        )
-      }
-    }
-
-    // ACTION_ROW
-    if (this.buttons_special.length)
-    {
-      components.push(
-        {
-          type: MessageComponentTypes.ACTION_ROW,
-          components: this.buttons_special,
-        },
-      )
-    }
-    if (this.buttons_action.length)
-    {
-      components.push(
-        {
-          type: MessageComponentTypes.ACTION_ROW,
-          components: this.buttons_action,
-        },
-      )
-    }
-    if (this.buttons_nav.length)
-    {
-      components.push(
-        {
-          type: MessageComponentTypes.ACTION_ROW,
-          components: this.buttons_nav,
-        },
-      )
-    }
-
-    return components;    
-  }
-}
-
-
-async function cmd_help_complete({ data, userbook, userdata, lang }) {
-  let last_page = await stats_simple_get(userdata.statPtr.id, 'help_state');
-  const done = await Achievement.list['help'].level_get(userdata.achivPtr.id);
-  const max_page = help_steps.length - 1;
+async function cmd_help_complete({ data, userbook, userdata, lang, done }) {
   let buttonsObj = new HelpButtons();
+
+  let last_page = await stats_simple_get(userdata.statPtr.id, 'help_state');
+  const max_page = help_steps.length - 1;
   
   // checks
   let fail_reason;
@@ -353,7 +438,7 @@ async function cmd_help_complete({ data, userbook, userdata, lang }) {
       body: {
         content: translate(lang, `cmd.help.complete.fail.${fail_reason}`),
         embeds: [],
-        components: buttonsObj.generate(lang, userdata, done),
+        components: buttonsObj.generate(lang, userdata, done, 'complete'),
       },
     };
   }
@@ -441,17 +526,46 @@ async function cmd_help_complete({ data, userbook, userdata, lang }) {
             text: footer_text,
           },
         }],
-      components: buttonsObj.generate(lang, userdata, true),
+      components: buttonsObj.generate(lang, userdata, true, 'complete'),
     },
   };
 }
 
 
-async function cmd_help_command({ data, userbook, userdata, lang }) {
-  let last_page = await stats_simple_get(userdata.statPtr.id, 'help_state');
-  const max_page = help_steps.length - 1;
-  if (last_page === max_page)
-  {
+async function cmd_help_describe({ data, userbook, userdata, lang, done }) {
+  let buttonsObj = new HelpButtons();
 
+
+  let content = ' ';
+  let description = translate(lang, `cmd.help.describe.description`);
+  let footer_text = ' ';
+
+  let fields = [];
+  for (let struct of cmd_register())
+  {
+    fields.push(
+      {
+        name: translate(lang, `cmd.help.describe.field.name`, {'commandName': struct.name }),
+        value: translate(lang, `cmd.help.describe.field.value`, {'commandDesc': struct.description }),
+      }
+    )
   }
+
+  return {
+    method: 'PATCH',
+    body: {
+      content,
+      embeds: [
+        {
+          color: 2326507,
+          description,
+          footer: {
+            text: footer_text,
+          },
+          fields
+        },
+      ],
+      components: buttonsObj.generate(lang, userdata, done, 'describe'),
+    },
+  };
 }

@@ -335,14 +335,16 @@
 "cmd.invite.no": "I dont want to join new guilds for now.\n`$[details]`",
 
 
-"cmd.help.old.content": "I am a Shinigami, coming from the realm of death. :wing:\n\n**Claim your Death Note using `/claim`**\nYou can writte names with `/kira`\nDefend yourself by killing your attacker\nGather apples using `/apple`\nTrick your friends with `/trick`\nGrow up Kira's world `/invite`\nAnd others, but im lazy to explain. $[view]\n-# Commands are aviable on guilds",
-"cmd.help.old.view": "You can see all there :\n$[inviteLink]",
-
+"cmd.help.nav.buttons.menu": "HELP",
 "cmd.help.nav.buttons.tuto": "Read tutorial",
-"cmd.help.nav.buttons.command": "Look commands",
+"cmd.help.nav.buttons.describe": "Look commands",
+"cmd.help.nav.buttons.feedback": "Feedback",
 
-"cmd.help.menu.description": "Do you need help?",
-"cmd.help.menu.footer": "Get help from humans in (Kira's Kingdom)[$[joinLink]]",
+"cmd.help.menu.description": "### Do you need help?\nYou can reread the tuto, view commands descriptions, or send a feedback.\nYou can also get human help in [Kira's Kingdom]($[joinLink]).\n### Just a reminder\n$[reminder]",
+"cmd.help.menu.footer": " ",
+
+"cmd.help.reminder.content": "I am a Shinigami, coming from the realm of death. :wing:\n\n**Claim your Death Note using `/claim`**\nYou can writte names with `/kira`\nDefend yourself by killing your attacker\nGather apples using `/apple`\nYou can then `/shop` cool things\nTrick your friends with `/trick`\nFinish all `/quest`\nGrow up Kira's world `/invite`$[view]\n-# Commands are aviable on guilds",
+"cmd.help.reminder.view": "You can see all there :\n$[inviteLink]",
 
 "cmd.help.tuto.button.back": "< back",
 "cmd.help.tuto.button.next": "next >",
@@ -383,6 +385,12 @@
 "cmd.help.complete.fail.already": "**Nope!** I already given the recompense to you. ",
 "cmd.help.complete.done.description": "Full `/help` unlocked. :sparkles:\nYou can now :\n- Send help message\n- See all commands details\n- Do `/invite` anywhere\n-# Dont look at your MP <:stare_L:1347339510173663303>",
 
+"cmd.help.describe.description": " ",
+"cmd.help.describe.field.name": "`/$[commandName]`",
+"cmd.help.describe.field.value": "- $[commandDesc]",
+
+"cmd.help.feedback.description": "You can send a feedback :\n- if you **need help**\n- if you have a **problem**\n- if you have a **suggestion**\nI will send the letter to King of Death\n-# also named developer, I dont know why",
+"cmd.help.feedback.button": "Writte a letter",
 
 "stats.broad.fail.nothing": "You are responsible of absolutely nothing (yet)",
 "stats.broad.show": "Here's what you've done :",

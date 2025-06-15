@@ -586,6 +586,7 @@ export class Item {
       ownerPtr: {
         _link: userdataId,
       },
+      ownedDate: new Date().toISOString(),
       itemName,
       itemLoreTxt: {markdown: itemLoreTxt},
       meta: metaDataValues
@@ -603,6 +604,9 @@ export class Item {
         ownerPtr: {
           equals: userdataId,
         },
+      },
+      sort: {
+        ownedDate: 'Descending',
       },
       select: {
         id: true,

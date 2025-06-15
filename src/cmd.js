@@ -11,7 +11,7 @@ import {
   userBanType,
 } from "./enum.ts";
 
-import { SETT_CMD_GIFT, sett_emoji_gift_claim, sett_options_gift_apples, Settings } from "./sett";
+import { SETT_CMD_GIFT, sett_emoji_gift_claim, sett_emoji_items, sett_options_gift_apples, Settings } from "./sett";
 
 //--- imports ---
 
@@ -2856,7 +2856,7 @@ async function cmd_invite({ lang })
               type: MessageComponentTypes.BUTTON,
               url: process.env.invite_bot,
               style: ButtonStyleTypes.LINK,
-              //emoji: items_info['book_red'].emoji,//!
+              emoji: sett_emoji_items.book_red,
               label: button_label_invite,
               disabled: false,
             },
@@ -2869,7 +2869,7 @@ async function cmd_invite({ lang })
               type: MessageComponentTypes.BUTTON,
               url: process.env.invite_realm,
               style: ButtonStyleTypes.LINK,
-              //emoji: items_info['book_white'].emoji,//!
+              emoji: sett_emoji_items.book_white,
               label: button_label_join,
               disabled: false,
             },
@@ -2879,26 +2879,6 @@ async function cmd_invite({ lang })
     },
   };
 }
-
-
-//#help command
-//async function cmd_help({ lang })
-//{
-//  var view_text = (parseInt(process.env.invite_enable))
-//    ? translate(lang, "cmd.help.new.view", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm})
-//    : "";
-//  //var view_text = "";
-
-//  var body_content=translate(lang, "cmd.help.new.content", {"inviteLink": process.env.invite_bot, "joinLink": process.env.invite_realm, "view": view_text});
-//  //var button_label=translate(lang, "cmd.help.step.button.invite");
-
-//  return {
-//    method: "PATCH",
-//    body: {
-//      content: body_content
-//    },
-//  };
-//}
 
 //#claim command
 async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
