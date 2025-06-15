@@ -42,7 +42,7 @@
     "keys": true,
     "name": "Cat UwU",
     "lore": "this is a custom language",
-    "progress": 100,
+    "progress": 90,
     "sublang": "en"
   },
 
@@ -52,7 +52,7 @@
     "keys": true,
     "name": "😃",
     "lore": "this is a custom language",
-    "progress": 100,
+    "progress": 90,
     "sublang": "en"
   }
 }
