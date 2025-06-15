@@ -379,7 +379,7 @@
 "cmd.help.tuto.step.15": "### Never forget : *You* choose your destiny. :index_pointing_at_the_viewer:\nYou can kill, get revenge, be rich, burn things...\nOr just troll you friends.\n**The Death Note has the power. It's up to *you*.**",
 "cmd.help.tuto.step.16": "### Join and have fun\nAre you ready to build your Kira's destiny?\n- Meet others Kira in **[Kira's Kingdom]($[joinLink])**.\n- Bring me in **[your own server]($[inviteLink])**.",
 "cmd.help.tuto.step.17": "### Help and be helped\nSend a letter to the King of Death if you have **any feedback** to provide.\nSome examples : you need help, something is wrong, send a suggestion, found typo, report Ryuk...\nIf your request is intresting, you may **change the world**. :globe_with_meridians:\nStart writing anytime with `/feedback`.",
-"cmd.help.tuto.step.18": "### That it! :tada:\nYou finished the tutorial.\nDo you want a cool pen?\n-# A promise is a promise",
+"cmd.help.tuto.step.18": "### That it! :tada:\nYou finished the tutorial.\nDo you want a cool pen?\n-# A promise is a promise.",
 
 "cmd.help.complete.fail.notdone": "**Nope!** You dont have done all tasks.",
 "cmd.help.complete.fail.already": "**Nope!** I already given the recompense to you. ",
