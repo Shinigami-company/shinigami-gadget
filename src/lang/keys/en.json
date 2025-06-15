@@ -225,6 +225,7 @@
 "cmd.gift.claim.fail.disapear": "The gift disappeared without a trace.",
 "cmd.gift.claim.fail.notu": "That not for you!",
 "cmd.gift.claim.fail.giver": "Given is given, retake is stolen!",
+"cmd.gift.claim.fail.full": "You are full!",
 "cmd.gift.claim.sucess.human": "<@$[gifterId]> gave **$[itemTitle]** to <@$[giftedId]>",
 "cmd.gift.claim.sucess.anon": "You unpacked **$[itemTitle]** from the box.",
 

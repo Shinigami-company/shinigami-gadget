@@ -4251,7 +4251,15 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     } else {
       fail_reason="notu";
     }
+  } else {
+    
+    let items_all = await Item.inventory_ids(userdata.id);
+    if (items_all.length >= SETT_CMD.pocket.maxCarryItems)
+    {
+      fail_reason = 'full';
+    }
   }
+  
   if (fail_reason)
   {
     return {
