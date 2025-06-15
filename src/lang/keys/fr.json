@@ -358,7 +358,7 @@
 
 "cmd.help.tuto.step.0": "Je suis le Shinigami, vennu du royaume des morts. :wing:\nTermines ce tutoriel `/help` et je te donnerais un stylo stylé.\n-# N'oublies pas que je peux parler plusieurs langues, change avec `/lang`.",
 
-"cmd.help.tuto.step.1": "Tout d'abord, **récupères ton Death Note avec `/claim`.**",
+"cmd.help.tuto.step.1": "Tout d'abord, **récupère ton Death Note avec `/claim`.**",
 "cmd.help.tuto.step.2": "Ensuite, **écrit le nom de quelqu'un** avec `/kira`.\n-# Fait `/rules` pour lire __How to Use It__ (les règles du Death Note).",
 "cmd.help.tuto.step.3": "### Maintenant, ta vie est changée pour toujours, cher meurtrier.\nMais la mort fait partie de la vie, donc c'est pas grave. :ok_hand:\n\n-# Avertissement de l'auteur : Death Note est un roleplay, parfois très ironique.\n-# **Ne fait pas mal et n'hacèle pas**. C'est le premier et dernier avertissement.",
 "cmd.help.tuto.step.4": "Tu peux regarder tes attaques en cours avec `/running`.\nContre une attaque avec `/kira` sur ton agresseur.\nMais attention : il y a une limite à ça !",
