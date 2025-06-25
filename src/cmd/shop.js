@@ -44,6 +44,7 @@ export async function shop_byable_items(userdata) {
   let ten = Math.floor(now / (1000*SETT_CMD_SHOP.newItemSeconds));
 
   let shopAlready = await kira_user_get_shopAlready(userdata.id);
+  if (!shopAlready) shopAlready = [];
 
   let items_seed = new Array(SETT_CMD_SHOP.itemAmount).fill(ten).map((v, i) => v + i);
   let older_index = 0;
@@ -94,6 +95,7 @@ export async function shop_byable_items(userdata) {
 export async function shop_buy_item(userdataId, seed)
 {
   let shopAlready = await kira_user_get_shopAlready(userdataId);
+  if (!shopAlready) shopAlready = [];
   shopAlready.push(seed);
   await kira_user_set_shopAlready(userdataId, shopAlready);
 }

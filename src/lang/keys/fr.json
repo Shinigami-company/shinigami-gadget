@@ -306,7 +306,7 @@
 "cmd.kira.fail.victim.dead.victim": "Mais tu es déjà mort·e.",
 "cmd.kira.fail.attacker.dead.attacker": "Mais tu es mort·e avant.",
 "cmd.kira.fail.attacker.dead.victim": "Mais ton attaquant·e est mort·e avant.",
-"cmd.kira.finish.attacker": "<@$[victimId]> **est mort·e de $[reason]**",
+"cmd.kira.finish.attacker": "<@$[victimId]> **est mort·e $[reason]**",
 "cmd.kira.finish.attacker.first": "Tu as obtenu $[number] $[unit] pour l'avoir tué.",
 "cmd.kira.finish.attacker.count": "C'est la $[number]ème fois que tu l'as tué·e.",
 "cmd.kira.finish.victim": "**Tu es mort·e $[reason]**",

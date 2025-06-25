@@ -451,10 +451,11 @@ const commands_structure = {
   burn: {
     functions: {
       exe: cmd_burn,
-      checks: [[check_in_guild, true],
+      checks: [
+        [check_react_is_self, true],
+        [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
-        [check_react_is_self, true],
         [check_has_noDrop, true],
       ],
     },
@@ -712,6 +713,7 @@ const commands_structure = {
     functions: {
       exe: cmd_pocket,
       checks: [
+        [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -755,6 +757,7 @@ const commands_structure = {
     functions: {
       exe: cmd_gift,
       checks: [
+        [check_react_is_self, true],
         [check_in_guild, true],
         [check_is_clean, true],
         [check_can_alive, false],
@@ -2077,7 +2080,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
       {
         const letter = data.options.find((opt) => opt.name === "letter")?.value;
         const author = data.options.find((opt) => opt.name === "author")?.value;
-        let dmId = data.options.find((opt) => opt.name === "dmId")?.value;
+        let dmId = data.options.find((opt) => opt.name === "dmid")?.value;
         let targetId = data.options.find((opt) => opt.name === "targetid")?.value;
 
         if (!letter)
