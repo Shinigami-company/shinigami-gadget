@@ -1,4 +1,4 @@
-//dumb module
+//dummy module
 declare module "gadget-server" {
   export const api: any;
   export type GadgetSettings = any;
