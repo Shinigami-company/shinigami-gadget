@@ -4630,17 +4630,6 @@ async function cmd_kira({
 
   let h_victim_data = await kira_user_get(h_victim_id, !h_will_fail); //needed to know if alive
 
-  if (!h_will_fail) {
-    if (check_has_noDrop({ userdata: h_victim_data })) {
-      return {
-        method: "PATCH",
-        body: {
-          content: translate(lang, "cmd.kira.fail.droped"),
-        },
-      };
-    }
-  }
-
   //check/others runs
   let run_combo = 1;
   {
@@ -4740,6 +4729,18 @@ async function cmd_kira({
         content: translate(lang, "cmd.kira.fail.isdead"),
       },
     };
+  }
+
+  //check/forgotten
+  if (!h_will_fail) {
+    if (check_has_noDrop({ userdata: h_victim_data })) {
+      return {
+        method: "PATCH",
+        body: {
+          content: translate(lang, "cmd.kira.fail.droped"),
+        },
+      };
+    }
   }
 
   //line
