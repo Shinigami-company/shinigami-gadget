@@ -188,9 +188,9 @@ export const items_info = {
     atr: {
       filters: ['high_white'],
       broken_item: 'broken_pen',
-      broken_chance: .1,
+      broken_chance: 0,
       empty_item: 'empty_pen',
-      empty_durability: 5,
+      empty_durability: 10,
     },
     fields: {
       claim: false,
@@ -224,8 +224,8 @@ export const items_info = {
     },
     shopData: {
       proba: 2.5,
-      price_min: 5,
-      price_max: 10,
+      price_min: 2,
+      price_max: 5,
     }
   },
 
