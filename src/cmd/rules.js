@@ -1,5 +1,6 @@
 import { ButtonStyleTypes, MessageComponentTypes } from "discord-interactions";
 import { translate } from "../lang";
+import { Achievement } from "../achiv";
 
 //rules
 const all_rules = [
