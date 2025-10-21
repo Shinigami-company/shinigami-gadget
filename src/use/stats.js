@@ -48,6 +48,7 @@ const stats_simple_all = {
   help_update: { type: 1 },
 
   count_dropTime: { type: 4 },
+  main_aliveSinceUnix: { type: 6 },
 };
 
 //used in #stats command
@@ -94,8 +95,10 @@ export function stats_simple_is_default(f_statKey, f_value) {
 
 export function stats_parse(f_statKey, f_value, f_lang = undefined) {
   switch (stats_simple_all[f_statKey].type) {
-    case 4:
+    case 4://a timespan 
       return time_format_string_from_int(f_value, f_lang);
+    case 6://time since now
+      return time_format_string_from_int(Math.round((new Date().getTime() - f_value) / 1000), f_lang);
     default:
       return f_value;
   }
@@ -325,8 +328,28 @@ export async function stats_checkup(f_userdata) {
 
 //--- RANKING ---
 
-export async function stats_simple_rank(f_onKey) {
+export async function stats_simple_rank(f_onKey, f_descending = true) {
   return await api.KiraUserStats.findMany({
+    sort: {
+      [f_onKey]: (f_descending) ? "Descending" : "Ascending",
+    },
+    filter: {
+      [f_onKey]: { notEquals: null },
+    },
+    select: {
+      userId: true,
+      userPtr: { userName: true },
+      [f_onKey]: true,
+    },
+
+    first: 3,
+  });
+} //return 3 best userdata on [f_onKey]
+
+
+
+export async function user_time_rank(f_onKey) {
+  return await api.KiraUsers.findMany({
     sort: {
       [f_onKey]: "Descending",
     },
@@ -335,6 +358,7 @@ export async function stats_simple_rank(f_onKey) {
     },
     select: {
       userId: true,
+      userName: true,
       [f_onKey]: true,
     },
 

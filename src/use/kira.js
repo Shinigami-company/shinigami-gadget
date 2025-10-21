@@ -5,6 +5,7 @@ import { CreateGlobalCommand, DeleteGlobalCommand, DiscordUserOpenDm, GetGlobalC
 import { Item } from './item.ts';
 import { NoteBook } from './itemType/book.ts';
 import { cmd_register } from '../cmd.js';
+import { stats_simple_set } from './stats.js';
 
 export async function commands_put() {
   console.debug('kira : refreshcmd : registerCommands()...');
@@ -180,16 +181,28 @@ export async function kira_user_update(user, userdata, lang)
       version: userdata.version
     });
   }
+
+  if (userdata.version < 1002000)
+  {
+    console.log(`update userdata [${userdata.id}/${userdata.userId}/${userdata.userName}] version ${userdata.version} to 1.001.002 : apple quest and lifesince`);
+    if (userdata.is_alive) kira_user_set_life(userdata, true);
+    
+    userdata.version = 1002000;
+    await api.KiraUsers.update(userdata.id, {
+      version: userdata.version
+    });
+  }
 }
 
 
 //capsule
-export async function kira_user_set_life(userdataId, f_bool, f_backDate = null) {
+export async function kira_user_set_life(userdata, f_bool, f_backDate = null) {
   if (f_backDate) f_backDate = f_backDate.toISOString();
-  await api.KiraUsers.update(userdataId, {
+  await api.KiraUsers.update(userdata.id, {
     is_alive: f_bool,
     backDate: f_backDate,
   });
+  stats_simple_set(userdata.statPtr.id, "main_aliveSinceUnix", (f_bool) ? new Date().getTime() : null);
 }
 
 export async function kira_user_add_apple(userdataId, f_amount = 1) {

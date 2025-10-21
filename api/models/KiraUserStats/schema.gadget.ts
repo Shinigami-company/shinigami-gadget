@@ -34,6 +34,10 @@ export const schema: GadgetModel = {
     is_killed: { type: "number", storageKey: "w4qjjsIgp6jN" },
     is_outedTime: { type: "number", storageKey: "OcXB5H52KnEk" },
     is_tried: { type: "number", storageKey: "AJjNLP5o-rcG" },
+    main_aliveSinceUnix: {
+      type: "number",
+      storageKey: "ur8HUrYd1Mic",
+    },
     misc_know: { type: "number", storageKey: "0_xXqRPWDLjY" },
     misc_match: { type: "number", storageKey: "xnOBXeUaGutL" },
     misc_trickFake: { type: "number", storageKey: "AFRcvv-44MMR" },

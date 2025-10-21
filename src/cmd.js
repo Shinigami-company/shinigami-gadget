@@ -102,6 +102,7 @@ import {
   stats_simple_bulkadd,
   stats_parse,
   stats_simple_rank,
+  user_time_rank,
   stats_order_broad,
   stats_order_ratio,
 } from "./use/stats.js"; // simple user statistics
@@ -625,6 +626,7 @@ const commands_structure = {
           description: "have the most...",
           required: true,
           choices: [
+            { name: "Life", value: "life" },
             { name: "Apples", value: "apple" },
             { name: "Kills", value: "kill" },
             { name: "Murders", value: "murder" },
@@ -1567,7 +1569,7 @@ async function check_can_alive({ lang, userdata }) {
   }
 
   //bring back
-  await kira_user_set_life(userdata.id, true);
+  await kira_user_set_life(userdata, true);
 
   //message
   if (SETT_CMD.kira.comebackBy.check.self.message) {
@@ -1755,7 +1757,7 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
           };
         }
 
-        await kira_user_set_life(targetdata.id, h_life);
+        await kira_user_set_life(targetdata, h_life);
 
         return {
           method: "PATCH",
@@ -3264,33 +3266,40 @@ async function cmd_top({ data, userdata, userbook, lang }) {
   const h_on = data.options[0].value;
   //get
   let h_ranks;
-  let h_amountK;
+  let h_amountKey;
   let if_parse = false;
   switch (h_on) {
     case "apple":
       {
         if_parse = false;
         h_ranks = await kira_users_rank("apples");
-        h_amountK = "apples";
+        h_amountKey = "apples";
       }
       break;
     case "kill":
       {
         h_ranks = await stats_simple_rank("do_kill");
-        h_amountK = "do_kill";
+        h_amountKey = "do_kill";
       }
       break;
     case "murder":
       {
         h_ranks = await stats_simple_rank("do_hit");
-        h_amountK = "do_hit";
+        h_amountKey = "do_hit";
       }
       break;
     case "time":
       {
         if_parse = true;
         h_ranks = await stats_simple_rank("do_outerTime");
-        h_amountK = "do_outerTime";
+        h_amountKey = "do_outerTime";
+      }
+      break;
+    case "life":
+      {
+        if_parse = true;
+        h_ranks = await stats_simple_rank("main_aliveSinceUnix", false);
+        h_amountKey = "main_aliveSinceUnix";
       }
       break;
   }
@@ -3301,15 +3310,16 @@ async function cmd_top({ data, userdata, userbook, lang }) {
     let h_txt = "";
 
     let h_nl = "";
-    for (let i = 0; i < 3; i++) {
-      let h_amount = h_ranks[i][h_amountK];
-      if (if_parse) h_amount = stats_parse(h_amountK, h_amount, lang);
+    for (let i = 0; i < h_ranks.length; i++) {
+      let h_amount = h_ranks[i][h_amountKey];
+      if (if_parse) h_amount = stats_parse(h_amountKey, h_amount, lang);
       if (h_ranks[i].userId === userdata.userId) ifSelfOn = true;
       h_txt +=
         h_nl +
         translate(lang, `cmd.top.get.${h_on}.place`, {
           rank: i + 1,
           playerId: h_ranks[i].userId,
+          playerName: (h_ranks[i].userName) ? h_ranks[i].userName : h_ranks[i].userPtr?.userName,
           amount: h_amount,
         });
       h_nl = "\n";
@@ -5179,7 +5189,7 @@ export async function cmd_kira_execute(data) {
 
     //kill
     {
-      await kira_user_set_life(h_victim_data.id, false, h_finalDate);
+      await kira_user_set_life(h_victim_data, false, h_finalDate);
       //revive
       kira_remember_task_add(h_finalDate, rememberTasksType.REVIVE, {
         userId: pack.victim_id,
@@ -5453,7 +5463,7 @@ export async function cmd_comeback(data) {
 
   //bring back
   console.log(`cmd : comeback : bringing back [${userdata.userId}]`);
-  await kira_user_set_life(userdata.id, true);
+  await kira_user_set_life(userdata, true);
 
   //if send message
   if (!SETT_CMD.kira.comebackBy.time[comeback_type].message) return;
