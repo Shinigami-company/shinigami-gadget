@@ -408,6 +408,7 @@
 "stat.broad.show.ever_apple": "Apple Domestic Product = $[value]",
 "stat.broad.show.ever_bookFirst": "Death Notes ever touched = $[value]",
 "stat.broad.show.streak_appleDay": "Daily apples claim in a row = $[value]",
+"stat.broad.show.main_aliveSinceUnix": "Current time alive = $[value]",
 
 "stats.relation.fail.nothing": "You are friendly with everyone (for now)",
 "stats.relation.show": "Here's your relationship summary :",

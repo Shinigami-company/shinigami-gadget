@@ -66,6 +66,7 @@ export const stats_order_broad = [
   "ever_book",
   "ever_apple",
   "streak_appleDay",
+  "main_aliveSinceUnix",
 ];
 
 export const stats_order_ratio = {
