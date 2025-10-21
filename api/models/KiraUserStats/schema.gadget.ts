@@ -14,6 +14,7 @@ export const schema: GadgetModel = {
     do_hit: { type: "number", storageKey: "4Dm5OSvFPNSB" },
     do_kill: { type: "number", storageKey: "zHeIEuJsJI3x" },
     do_outerTime: { type: "number", storageKey: "B7kY1TDBcI2m" },
+    do_spanTaken: { type: "number", storageKey: "z0JAZTCXgC7T" },
     do_try: { type: "number", storageKey: "-IHJS3dZcG1h" },
     ever_apple: { type: "number", storageKey: "mueABtRLk2rY" },
     ever_bookBuy: { type: "number", storageKey: "IsTzH3mWM0Tp" },
@@ -33,6 +34,7 @@ export const schema: GadgetModel = {
     is_hited: { type: "number", storageKey: "r4FMf016tCAO" },
     is_killed: { type: "number", storageKey: "w4qjjsIgp6jN" },
     is_outedTime: { type: "number", storageKey: "OcXB5H52KnEk" },
+    is_spanTaken: { type: "number", storageKey: "-2drGqSCHnKO" },
     is_tried: { type: "number", storageKey: "AJjNLP5o-rcG" },
     main_aliveSinceUnix: {
       type: "number",

@@ -15,14 +15,16 @@ const stats_simple_all = {
   do_try: { type: 1 },
   do_counter: { type: 1 },
   do_outerTime: { type: 4 },
-  do_gift: { type: 4 },
+  do_gift: { type: 1 },
+  do_spanTaken: { type: 4 },
 
   is_killed: { type: 1 },
   is_hited: { type: 1 },
   is_tried: { type: 1 },
   is_countered: { type: 1 },
   is_outedTime: { type: 4 },
-  is_gift: { type: 4 },
+  is_gift: { type: 1 },
+  is_spanTaken: { type: 4 },
 
   ever_apple: { type: 1 },
   ever_bookFirst: { type: 1 },
@@ -49,6 +51,7 @@ const stats_simple_all = {
 
   count_dropTime: { type: 4 },
   main_aliveSinceUnix: { type: 6 },
+  is_spanTaken: { type: 4 },
 };
 
 //used in #stats command
@@ -95,9 +98,9 @@ export function stats_simple_is_default(f_statKey, f_value) {
 
 export function stats_parse(f_statKey, f_value, f_lang = undefined) {
   switch (stats_simple_all[f_statKey].type) {
-    case 4://a timespan 
+    case 4://a timespan in second
       return time_format_string_from_int(f_value, f_lang);
-    case 6://time since now
+    case 6://time since a ms epoch
       return time_format_string_from_int(Math.round((new Date().getTime() - f_value) / 1000), f_lang);
     default:
       return f_value;

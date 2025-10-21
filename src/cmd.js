@@ -5186,6 +5186,7 @@ export async function cmd_kira_execute(data) {
     h_return_msg_victim.content = translate(lang, "cmd.kira.finish.victim", {//was using lang_victim here but no more
       reason: pack.txt_reason,
     });
+    let spanTaken = Math.round((new Date().getTime() - await stats_simple_get(h_victim_data.statPtr.id, "main_aliveSinceUnix")) / 1000);
 
     //kill
     {
@@ -5207,12 +5208,14 @@ export async function cmd_kira_execute(data) {
         const stat_bulk = await stats_simple_bulkadd(userdata.statPtr.id, {
           do_hit: 1,
           do_outerTime: pack.span,
+          do_spanTaken: spanTaken,
         });
         stat_outerTime = stat_bulk["do_outerTime"];
       }
       await stats_simple_bulkadd(h_victim_data.statPtr.id, {
         is_hited: 1,
         is_outedTime: pack.span,
+        is_spanTaken: spanTaken,
       });
     }
     //need to be out in this scope because used after
