@@ -3320,6 +3320,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
           rank: i + 1,
           playerId: h_ranks[i].userId,
           playerName: (h_ranks[i].userName) ? h_ranks[i].userName : h_ranks[i].userPtr?.userName,
+          //playerName: h_ranks[i].userPtr?.userName,
           amount: h_amount,
         });
       h_nl = "\n";

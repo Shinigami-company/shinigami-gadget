@@ -349,23 +349,3 @@ export async function stats_simple_rank(f_onKey, f_descending = true) {
     first: 3,
   });
 } //return 3 best userdata on [f_onKey]
-
-
-
-export async function user_time_rank(f_onKey) {
-  return await api.KiraUsers.findMany({
-    sort: {
-      [f_onKey]: "Descending",
-    },
-    filter: {
-      [f_onKey]: { notEquals: null },
-    },
-    select: {
-      userId: true,
-      userName: true,
-      [f_onKey]: true,
-    },
-
-    first: 3,
-  });
-} //return 3 best userdata on [f_onKey]

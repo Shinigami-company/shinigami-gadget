@@ -223,6 +223,7 @@ export async function kira_users_rank(f_onKey) {
     },
     select: {
       id: true,
+      userName: true,
       userId: true,
       [f_onKey]: true,
       lang: true,
