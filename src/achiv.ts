@@ -12,15 +12,15 @@ export class Achievement {
   modelKey : string;
   maxLevel : number;
   hidden : boolean;
-  graduations : number[];
-  rewards : number[];
+  graduations : number[] | undefined;
+  rewards : number[] | number | undefined;
   constructor(
     name : string,
     modelKey : string,
     maxLevel : number = 1,
     hidden : boolean = false,
-    graduations : number[] | undefined = undefined,
-    rewards : number[] | undefined = undefined
+    rewards : number[] | number | undefined = 1,
+    graduations : number[] | undefined = undefined
   ) {
     Achievement.list[name] = this;
     this.name = name;
@@ -28,8 +28,8 @@ export class Achievement {
     this.modelKey = modelKey;
     this.maxLevel = maxLevel;
     this.hidden = hidden;
-    if (graduations) this.graduations = graduations;
     if (rewards) this.rewards = rewards;
+    if (graduations) this.graduations = graduations;
   }
 
   //SELF/STATIC
@@ -37,22 +37,22 @@ export class Achievement {
   static list : {[key : string] : Achievement} = {};
 
   //MODEL/GET
-  async level_get(f_achivModelId) {
+  async level_get(f_achivModelId : string) {
     const received_level = await api.KiraUserAchiv.findOne(f_achivModelId, {
       select: { [this.modelKey]: true },
-    }).then((obj) => obj[this.modelKey]);
+    }).then((obj : any) => obj[this.modelKey]);
     return received_level === null ? 0 : received_level; //default is null
   }
 
   //MODEL/SET
-  async #level_set(f_achivModelId, f_setLevel) {
+  async #level_set(f_achivModelId : string, f_setLevel : number) {
     await api.KiraUserAchiv.update(f_achivModelId, {
       [this.modelKey]: f_setLevel,
     });
   }
 
   //VALUE/GET
-  #level_graduate(f_value) {
+  #level_graduate(f_value : number) {
     if (!this.graduations)
       throw `no graduation.\nkey [${this.modelKey}] cant be checked !`;
 
@@ -60,7 +60,7 @@ export class Achievement {
     for (; i < this.graduations.length && f_value >= this.graduations[i]; i++); //must have  ;  or  {}  at the end !
     return i;
   }
-  level_graduate(f_value) {
+  level_graduate(f_value : number) {
     return this.#level_graduate(f_value);
   }
 
@@ -70,7 +70,7 @@ export class Achievement {
     f_value : number,
     f_lang : string,
     f_doneDolarValues : any = {},
-    parseGrad = (it) => it
+    parseGrad = (it : any) => it
   ) {
     return await this.do_grant(
       f_userModel,
@@ -86,7 +86,7 @@ export class Achievement {
     f_lang : string,
     f_newLevel = 1,
     f_doneDolarValues : any = {},
-    parseGrad = (it) => it
+    parseGrad = (it : any) => it
   ) {
     //values
     const achivModelId = f_userModel.achivPtr.id;
@@ -109,17 +109,22 @@ export class Achievement {
     );
     //set the level
     await this.#level_set(achivModelId, f_newLevel);
+    let achievementTitle = translate(f_lang, `achievements.${this.name}.title`);
 
     //reward
     if (this.rewards) {
       //all level passed
       for (let level = h_registerLevel; level < f_newLevel; level++) {
-        h_apples += this.rewards[level];
+        h_apples += (typeof this.rewards == "number") ? this.rewards : this.rewards[level];
       }
 
       //add apple
-      if (h_apples > 0)
-        await kira_apple_send(f_userModel.id, h_apples, f_userModel.statPtr.id, 'quest', {name: this.name, level: f_newLevel});
+      //if (h_apples > 0)
+      //  await kira_apple_send(
+      //    f_userModel.id, h_apples, f_userModel.statPtr.id,
+      //    'quest.' + ((this.maxLevel > 1) ? 'level' : 'done'),
+      //    {name: this.name, title: achievementTitle, level: f_newLevel}
+      //  );
     }
 
     //message
@@ -130,7 +135,7 @@ export class Achievement {
         f_lang,
         `achievement.done.yay.${yayTypeStr}`,
         {
-          name: translate(f_lang, `achievements.${this.name}.title`),
+          name: achievementTitle,
           level: roman_from_int(f_newLevel),
         }
       );
@@ -152,7 +157,6 @@ export class Achievement {
 
       if (h_apples > 0)
         sending_content +=
-          "\n" +
           translate(f_lang, "achievement.done.apple", {
             number: h_apples.toString(),
             unit: translate(f_lang, `word.apple${h_apples > 1 ? "s" : ""}`),
@@ -173,7 +177,7 @@ export class Achievement {
             content: sending_content,
           },
         }).then((res) => res.json());
-      } catch (e) {
+      } catch (e : any) {
         let errorMsg = JSON.parse(e.message);
         if (errorMsg?.code === 50007) {
         } else throw e;
@@ -184,7 +188,7 @@ export class Achievement {
   }
 
   //STR/GET
-  static async display_get(f_userdata, f_bookColor, f_lang) {
+  static async display_get(f_userdata : any, f_bookColor : string, f_lang : string) {
     const userAchiv = await api.KiraUserAchiv.findOne(f_userdata.statPtr.id);
     let r_list_txt = "";
     let h_displayedLines = 0;
@@ -197,7 +201,7 @@ export class Achievement {
 
       const achivValue = userAchiv[achiv.modelKey];
       let translateKey = "achievement.line";
-      let translateInfos = {};
+      let translateInfos : any = {};
 
       if (achivValue === undefined) {
         throw new Error(
@@ -281,51 +285,52 @@ export class Achievement {
 //  }
 //}
 
-new Achievement("test1", "done_test1", 1, undefined, undefined, [10]);
+new Achievement("test1", "done_test1", 1, undefined, 1, [10]);
 new Achievement(
   "test2",
   "level_test2",
   8,
   false,
-  [5, 10, 20, 50, 100, 200, 500, 1000],
-  [1, 2, 3, 4, 5, 6, 7, 8]
+  [1, 2, 3, 4, 5, 6, 7, 8],
+  [5, 10, 20, 50, 100, 200, 500, 1000]
 );
 
-new Achievement("kill", "level_kill", 5, false, [5, 10, 20, 50, 100]);
-new Achievement("counter", "level_counter", 5, false, [5, 20, 50, 200, 500]);
-new Achievement("outerTime", "level_outerTime", 5, false, [
+new Achievement("kill", "level_kill", 5, false, 1, [5, 10, 20, 50, 100]);
+new Achievement("counter", "level_counter", 5, false, 1, [5, 20, 50, 200, 500]);
+new Achievement("outerTime", "level_outerTime", 5, false, 1, [
   1 * 3600,
   24 * 3600,
   7 * 24 * 3600,
   30 * 24 * 3600,
   365.25 * 24 * 3600,
 ]);
-new Achievement("writtenPage", "level_writtenPage", 3, false, [2, 10, 70]);
-new Achievement("avengeBest", "level_avengeBest", 3, false, [5, 30, 100]);
+new Achievement("writtenPage", "level_writtenPage", 3, false, 1, [2, 10, 70]);
+new Achievement("avengeBest", "level_avengeBest", 3, false, 1, [5, 30, 100]);
 new Achievement(
   "killDailyStreak",
   "level_killDailyStreak",
   3,
   false,
+  1,
   [3, 7, 30]
 );
-new Achievement("killU", "done_killU", 1, false);
-new Achievement("killShini", "done_killShini", 1, false);
-new Achievement("outer23d", "done_outer23d", 1, false);
-new Achievement("counterMax", "done_counterMax", 1, false);
-new Achievement("counterShort", "done_counterShort", 1, false);
-new Achievement("murdersOn", "done_murdersOn", 1, false, [10]);
-new Achievement("onLeaderboard", "done_onLeaderboard", 1, false);
-new Achievement("secretRule", "done_secretRule", 1, false);
-new Achievement("killDailyComeback", "done_killDailyComeback", 1, false);
+new Achievement("killU", "done_killU", 1, false, 1);
+new Achievement("killShini", "done_killShini", 1, false, 1);
+new Achievement("outer23d", "done_outer23d", 1, false, 1);
+new Achievement("counterMax", "done_counterMax", 1, false, 1);
+new Achievement("counterShort", "done_counterShort", 1, false, 1);
+new Achievement("murdersOn", "done_murdersOn", 1, false, 1, [10]);
+new Achievement("onLeaderboard", "done_onLeaderboard", 1, false, 1);
+new Achievement("secretRule", "done_secretRule", 1, false, 1);
+new Achievement("killDailyComeback", "done_killDailyComeback", 1, false, 1);
 
-new Achievement("help", "done_help", 1, false);
-new Achievement("shopEmpty", "done_shopEmpty", 1, false);
-new Achievement("booksDouble", "done_booksDouble", 1, false);
-new Achievement("giftAway", "done_giftAway", 1, false);
-new Achievement("giftJunk", "done_giftJunk", 1, false);
-new Achievement("giftSelf", "done_giftSelf", 1, false);
-new Achievement("penBreaker", "level_penBreaker", 3, false, [1, 5, 15]);
+new Achievement("help", "done_help", 1, false, 1);
+new Achievement("shopEmpty", "done_shopEmpty", 1, false, 1);
+new Achievement("booksDouble", "done_booksDouble", 1, false, 1);
+new Achievement("giftAway", "done_giftAway", 1, false, 1);
+new Achievement("giftJunk", "done_giftJunk", 1, false, 1);
+new Achievement("giftSelf", "done_giftSelf", 1, false, 1);
+new Achievement("penBreaker", "level_penBreaker", 3, false, 1, [1, 5, 15]);
 
 //dont put the achievement here to be invisible
 Achievement.listDisplayed = [
