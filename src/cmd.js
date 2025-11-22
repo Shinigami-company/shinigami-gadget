@@ -57,7 +57,6 @@ import {
   kira_user_remove_ban,
   kira_user_set_ban,
   kira_user_dm_id,
-  kira_user_update,
   kira_user_get_owned_books_item,
   command_refresh_one,
 } from "./use/kira.js"; // god register commands
@@ -136,13 +135,10 @@ import { shop_buy_item, shop_byable_items, shop_get_time_next, shop_get_time_rem
 import { cmd_rules } from "./cmd/rules.js";
 import { cmd_help } from "./cmd/help.js";
 import { webhook_reporter } from "./use/post.js";
-import { channel } from "diagnostics_channel";
-import { error } from "console";
-import { register } from "module";
 import { randomInt } from "crypto";
-import { act } from "react-dom/test-utils";
 import { string_emoji } from "./use/tools.ts";
 import { Gift } from "./cmd/gift";
+import { kira_user_update } from "./use/update.js";
 
 
 //the structure to describe the command

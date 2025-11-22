@@ -119,12 +119,15 @@ export class Achievement {
       }
 
       //add apple
-      //if (h_apples > 0)
-      //  await kira_apple_send(
-      //    f_userModel.id, h_apples, f_userModel.statPtr.id,
-      //    'quest.' + ((this.maxLevel > 1) ? 'level' : 'done'),
-      //    {name: this.name, title: achievementTitle, level: f_newLevel}
-      //  );
+      if (h_apples > 0)
+        await kira_apple_send(
+          f_userModel.id, h_apples, f_userModel.statPtr.id
+        );
+        //await kira_apple_send(
+        //  f_userModel.id, h_apples, f_userModel.statPtr.id,
+        //  'quest.' + ((this.maxLevel > 1) ? 'level' : 'done'),
+        //  {name: this.name, title: achievementTitle, level: f_newLevel}
+        //);
     }
 
     //message
@@ -266,7 +269,19 @@ export class Achievement {
       ],
     };
   }
+
+  static async count_finised(f_userdata : any) {
+    const userAchiv = await api.KiraUserAchiv.findOne(f_userdata.statPtr.id);
+    let countAchivFinish = 0;
+    for (const achivKey of Achievement.listDisplayed) {
+      const achiv = Achievement.list[achivKey];
+      const achivValue = userAchiv[achiv.modelKey];
+      countAchivFinish += achivValue;
+    }
+    return countAchivFinish;
+  }
 }
+
 
 //class Schedule {
 //  tasks : any[];

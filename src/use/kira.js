@@ -1,9 +1,7 @@
 import { api } from 'gadget-server';
 
-import { FeedbackState, userBanType } from '../enum.ts';
+import { userBanType } from '../enum.ts';
 import { CreateGlobalCommand, DeleteGlobalCommand, DiscordUserOpenDm, GetGlobalCommand, GetGlobalCommandsId, PutGlobalCommands, UpdateGlobalCommand } from '../utils.js';
-import { Item } from './item.ts';
-import { NoteBook } from './itemType/book.ts';
 import { cmd_register } from '../cmd.js';
 import { stats_simple_set } from './stats.js';
 
@@ -148,52 +146,6 @@ export async function kira_user_create(f_userId) {
   //await posting_newbi(f_userId, userdata);
 
 } //return the created element
-
-export async function kira_user_update(user, userdata, lang)
-{
-  //update userName
-  if (userdata && user.username != userdata.userName)
-  {
-    userdata.userName = user.username;
-    await api.KiraUsers.update(userdata.id, {
-      userName: userdata.userName
-    });
-  }
-
-  //VERSION
-
-  //give death note item
-  if (userdata.version < 1001000)
-  {
-    let noteBooksId = await kira_user_get_owned_books_note(userdata.id);
-    console.log(`update userdata [${userdata.id}/${userdata.userId}/${userdata.userName}] version ${userdata.version} to 1.001.000 : books id ${noteBooksId}`);
-    if (noteBooksId.length > 0)
-    {
-      let bookItem = await Item.create(userdata.id, lang, 'book_black');//manually add meta
-      let noteBook = await NoteBook.get_old(noteBooksId[0]);
-      if (!noteBook) throw Error(`try to update, but cant find book.`);
-      await noteBook.link_item(bookItem);
-      await bookItem.equip(userdata);//then equip
-    }
-
-    userdata.version = 1001000;
-    await api.KiraUsers.update(userdata.id, {
-      version: userdata.version
-    });
-  }
-
-  if (userdata.version < 1002000)
-  {
-    console.log(`update userdata [${userdata.id}/${userdata.userId}/${userdata.userName}] version ${userdata.version} to 1.001.002 : apple quest and lifesince`);
-    if (userdata.is_alive) kira_user_set_life(userdata, true);
-    
-    userdata.version = 1002000;
-    await api.KiraUsers.update(userdata.id, {
-      version: userdata.version
-    });
-  }
-}
-
 
 //capsule
 export async function kira_user_set_life(userdata, f_bool, f_backDate = null) {
