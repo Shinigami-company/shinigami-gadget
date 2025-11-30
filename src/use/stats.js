@@ -53,7 +53,7 @@ const stats_simple_all = {
   count_dropTime: { type: 4 },
   main_aliveSinceUnix: { type: 6 },
   
-  ever_bestAliveSpan: { type: 6 },
+  ever_bestAliveSpan: { type: 4 },
 
   // is not in stats but here for parsing
   apple: { type: 1 },
@@ -73,6 +73,7 @@ export const stats_order_broad = [
   "ever_apple",
   "streak_appleDay",
   "main_aliveSinceUnix",
+  "ever_bestAliveSpan",
 ];
 
 export const stats_order_ratio = {

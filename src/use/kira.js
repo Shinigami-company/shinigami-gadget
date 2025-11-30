@@ -157,9 +157,10 @@ export async function kira_user_set_life(userdata, f_bool, f_backDate = null) {
 
   if (!f_bool)
   {
-    let aliveSpan = new Date().getTime() - await stats_simple_get(userdata.statPtr.id, "main_aliveSinceUnix");
+    // epoch is in ms, span in s
+    let aliveSpan = Math.round((new Date().getTime() - await stats_simple_get(userdata.statPtr.id, "main_aliveSinceUnix")) / 1000);
     let lastBestAliveSpan = await stats_simple_get(userdata.statPtr.id, "ever_bestAliveSpan");
-    if (lastBestAliveSpan < aliveSpan) await stats_simple_set(userdata.statPtr.id, "ever_bestAliveSpan", aliveSpan);
+    if (!lastBestAliveSpan || lastBestAliveSpan < aliveSpan) await stats_simple_set(userdata.statPtr.id, "ever_bestAliveSpan", aliveSpan);
   }
 
   await stats_simple_set(userdata.statPtr.id, "main_aliveSinceUnix", (f_bool) ? new Date().getTime() : null);
