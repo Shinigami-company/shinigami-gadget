@@ -5291,7 +5291,6 @@ export async function cmd_kira_execute(data) {
     let victimLifeSpan = Math.round((new Date().getTime() - await stats_simple_get(h_victim_data.statPtr.id, "main_aliveSinceUnix")) / 1000);
     let victimLifeSteal = victimInterface.lifesteal;
     victimLifeSteal ??= 0;
-    console.log(`attackerInterface.lifesteal ${attackerInterface.lifesteal} = ${victimLifeSteal} + ${victimLifeSpan}`);
     attackerInterface.lifesteal = victimLifeSteal + victimLifeSpan;
     await attackerInterface.save();
 

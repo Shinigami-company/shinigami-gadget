@@ -8,13 +8,17 @@ const saveCheckRegistry = new FinalizationRegistry<{ id: number; saved: boolean 
 });
 
 export class UserDataInterface extends BaseInterface {
-  
+
+  // data for parent
+  protected static override get apiClass() {
+    return api.KiraUsers;
+  }
+
   // interface propeties
   public get lifesteal() : number {
     return this.data.lifesteal;
   }
   public set lifesteal(value : number) {
     this.data.lifesteal = value;
-    this.tosave('lifesteal', value);
   }
 }

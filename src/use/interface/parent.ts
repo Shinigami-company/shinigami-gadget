@@ -14,6 +14,7 @@ export class BaseInterface {
   protected id : number;
   protected data : any;
   private saveDictionnary : {[id: string]: any} = {};
+  protected static get apiClass(): any {return {};}
   
   constructor(userdata : any) {
     this.id = userdata.id;
@@ -22,7 +23,7 @@ export class BaseInterface {
   }
 
   public async save() {
-    await api.KiraUsers.update(this.id, this.saveDictionnary);
+    await (this.constructor as typeof BaseInterface).apiClass.update(this.id, this.saveDictionnary);
     this.saveDictionnary = {};
   }
   
