@@ -130,7 +130,7 @@ import { linkme } from "./use/remember.js";
 linkme("linked from cmd"); //need to use a function from there
 
 // new interface
-import { UserDataInterface } from "./use/userInterface.ts";
+import { UserDataInterface } from "./use/interface/userdata.ts";
 
 //commands components
 import { tricks_all } from "./cmd/trick.js";
@@ -5291,6 +5291,7 @@ export async function cmd_kira_execute(data) {
     let victimLifeSpan = Math.round((new Date().getTime() - await stats_simple_get(h_victim_data.statPtr.id, "main_aliveSinceUnix")) / 1000);
     let victimLifeSteal = victimInterface.lifesteal;
     attackerInterface.lifesteal = victimLifeSteal + victimLifeSpan;
+    //await attackerInterface.save();
 
     //kill
     {
