@@ -184,6 +184,9 @@ export async function kira_users_rank(f_onKey) {
     sort: {
       [f_onKey]: 'Descending',
     },
+    filter: {
+      [f_onKey]: { notEquals: null },
+    },
     select: {
       id: true,
       userName: true,
@@ -194,7 +197,7 @@ export async function kira_users_rank(f_onKey) {
 
     first: 3,
   });
-} //return 3 best kills userdata
+} //return 3 best userdata
 
 export async function kira_user_dm_id(userdata)
 {
