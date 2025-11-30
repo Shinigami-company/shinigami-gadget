@@ -304,39 +304,6 @@ export async function stats_pair_add(f_pair, f_key, f_addValue) {
   return h_value;
 }
 
-//--- CHECKUP ---
-
-export async function stats_checkup(f_userdata) {
-  let patch = {
-    do_kill: 0,
-    do_counter: 0,
-    is_killed: 0,
-    is_countered: 0,
-  };
-
-  for (const places of [stats_pair_place, stats_pair_place_reverse]) {
-    const h_founds = await api.KiraUserPair.findMany({
-      filter: {
-        [`userId${places[0]}`]: { equals: f_userdata.userId },
-      },
-    });
-
-    for (let i = 0; i < h_founds.length; i++) {
-      if (h_founds[i][`by_hit${places[0]}`] > 1) patch["do_kill"] += 1;
-      if (h_founds[i][`by_hit${places[1]}`] > 1) patch["is_killed"] += 1;
-      if (h_founds[i][`by_counter${places[0]}`])
-        patch["do_counter"] += h_founds[i][`by_counter${places[0]}`];
-      if (h_founds[i][`by_counter${places[1]}`])
-        patch["is_countered"] += h_founds[i][`by_counter${places[1]}`];
-      if (h_founds[i][`by_avenge${places[0]}`])
-        patch["do_avenger"] += h_founds[i][`by_avenge${places[0]}`];
-      if (h_founds[i][`by_avenge${places[1]}`])
-        patch["is_avenged"] += h_founds[i][`by_avenge${places[1]}`];
-    }
-  }
-  await api.KiraUserStats.update(f_userdata.statPtr.id, patch);
-}
-
 //--- RANKING ---
 
 export async function stats_simple_rank(f_onKey, f_descending = true) {

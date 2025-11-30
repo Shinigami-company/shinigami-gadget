@@ -113,7 +113,6 @@ import {
   stats_pairs_get_all,
   stats_pair_get_multiples,
 } from "./use/stats.js"; // pair user statstics
-import { stats_checkup } from "./use/stats.js"; // update user statistics
 import { Achievement, Schedule } from "./achiv"; // user achivements
 
 import {
@@ -2535,7 +2534,7 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
         {
           console.time("checkup");
           console.log(` cmd : checkup user id=${arg_user}`);
-          await stats_checkup(targetdata);
+          kira_user_update(arg_user, targetdata, targetdata.lang);
           console.timeEnd("checkup");
         }
 
