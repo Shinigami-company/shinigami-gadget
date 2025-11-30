@@ -146,6 +146,9 @@
 "cmd.top.get.life.name": "life time",
 "cmd.top.get.life.title": "Longer life leaderboard :",
 "cmd.top.get.life.place": "$[rank] : **@$[playerName]** with **$[amount]** without dying",
+"cmd.top.get.steal.name": "steal life time",
+"cmd.top.get.steal.title": "Steal life leaderboard :",
+"cmd.top.get.steal.place": "$[rank] : **@$[playerName]** with **$[amount]** life steal",
 
 "cmd.rules.random.english": "I've copied the rules of the Death Note in english, the most spoken human langage.",
 "cmd.rules.random.content": "Here a rule of the Death Note :",
