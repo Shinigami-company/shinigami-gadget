@@ -129,6 +129,9 @@ import { kira_remember_task_add } from "./use/remember.js";
 import { linkme } from "./use/remember.js";
 linkme("linked from cmd"); //need to use a function from there
 
+// new interface
+import { UserDataInterface } from "./use/userInterface.ts";
+
 //commands components
 import { tricks_all } from "./cmd/trick.js";
 import { shop_buy_item, shop_byable_items, shop_get_time_next, shop_get_time_remain } from "./cmd/shop.js";
@@ -5185,6 +5188,8 @@ export async function cmd_kira_execute(data) {
   const userdata = await kira_user_get(user.id, true);
   const h_attacker_book = await NoteBook.get(userdata.noteBookId);
   //const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang_attacker; //old
+  const attackerInterface = new UserDataInterface(userdata);
+  const victimInterface = new UserDataInterface(h_victim_data);
 
   //handle special case : burned book
   const h_will_book =
@@ -5283,7 +5288,9 @@ export async function cmd_kira_execute(data) {
     h_return_msg_victim.content = translate(lang, "cmd.kira.finish.victim", {//was using lang_victim here but no more
       reason: pack.txt_reason,
     });
-    let spanTaken = Math.round((new Date().getTime() - await stats_simple_get(h_victim_data.statPtr.id, "main_aliveSinceUnix")) / 1000);
+    let victimLifeSpan = Math.round((new Date().getTime() - await stats_simple_get(h_victim_data.statPtr.id, "main_aliveSinceUnix")) / 1000);
+    let victimLifeSteal = victimInterface.lifesteal;
+    attackerInterface.lifesteal = victimLifeSteal + victimLifeSpan;
 
     //kill
     {
@@ -5305,14 +5312,14 @@ export async function cmd_kira_execute(data) {
         const stat_bulk = await stats_simple_bulkadd(userdata.statPtr.id, {
           do_hit: 1,
           do_outerTime: pack.span,
-          do_spanTaken: spanTaken,
+          do_spanTaken: victimLifeSpan,
         });
         stat_outerTime = stat_bulk["do_outerTime"];
       }
       await stats_simple_bulkadd(h_victim_data.statPtr.id, {
         is_hited: 1,
         is_outedTime: pack.span,
-        is_spanTaken: spanTaken,
+        is_spanTaken: victimLifeSpan,
       });
     }
     //need to be out in this scope because used after

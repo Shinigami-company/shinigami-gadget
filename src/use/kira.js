@@ -153,6 +153,7 @@ export async function kira_user_set_life(userdata, f_bool, f_backDate = null) {
   await api.KiraUsers.update(userdata.id, {
     is_alive: f_bool,
     backDate: f_backDate,
+    lifesteal: (f_bool || !userdata.lifesteal) ? undefined : 0
   });
 
   if (!f_bool)
