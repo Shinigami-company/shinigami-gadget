@@ -235,6 +235,13 @@
 "cmd.gift.claim.sucess.human": "<@$[gifterId]> gave **$[itemTitle]** to <@$[giftedId]>",
 "cmd.gift.claim.sucess.anon": "You unpacked **$[itemTitle]** from the box.",
 
+"cmd.time.content.empty": "Well, remain alive if possible.",
+"cmd.time.content.have": "Are you sure that you can extend your life like that?",
+"cmd.time.embeds.self.steal": "You stole **$[lifeStealString]** life time to others.\n",
+"cmd.time.embeds.self.life": "You are alive since **$[aliveSpanString]**.\n",
+"cmd.time.embeds.help.attack": "Kill someone with `/kira` to takes it's life time.",
+"cmd.time.embeds.help.warn": "Be aware of not beeing killed if you wanna keep this life time for you!",
+
 "cmd.drop.shop": "Hum, yes, you could protect yourself for a while. :thinking:\nI can give you back the Death Note a certain time after you gave it up.\nBut I need apples to not become lazy!",
 "cmd.drop.shop.sentence": "I relinquish Death Note ownership...",
 "cmd.drop.shop.button.label": "$[price] $[unit] : for $[time]",

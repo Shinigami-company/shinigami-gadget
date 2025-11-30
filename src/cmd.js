@@ -836,6 +836,49 @@ const commands_structure = {
     },
   },
 
+  eyes: {
+    functions: {
+      exe: cmd_eyes,
+      checks: [
+        [check_react_is_self, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
+    },
+    register: {
+      name: "eyes",
+      description: "Will you get shinigami eyes today?",
+      //contexts: [0],//!disabled
+      type: 1,
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    },
+  },
+  
+  time: {
+    functions: {
+      exe: cmd_time,
+      checks: [
+        [check_react_is_self, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
+    },
+    register: {
+      name: "time",
+      description: "Time to count the life time you've steal",
+      //contexts: [0],//!disabled
+      type: 1,
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+    },
+  },
 
   //SET
   drop: {
@@ -4398,6 +4441,55 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
   })
 }
 
+//#eyes command
+async function cmd_eyes({ data, userdata, lang, message }) {
+  return {
+    method: "PATCH",
+    body: {
+      content: translate(lang, "cmd.eyes"),
+    },
+  };
+}
+
+//#time command
+async function cmd_time({ data, userdata, userbook, lang, message }) {
+  
+  let aliveSinceUnix = await stats_simple_get(userdata.statPtr.id, "main_aliveSinceUnix");
+  let lifeSteal = userdata.lifesteal;
+  let aliveSpanString = await stats_parse("main_aliveSinceUnix", aliveSinceUnix, lang);
+  let lifeStealString = await stats_parse("lifesteal", lifeSteal, lang);
+
+  let contentKey = lifeSteal ? 'cmd.time.content.have' : 'cmd.time.content.empty';
+  let content = translate(lang, contentKey);
+  
+ 
+  let description = '';
+  
+  description += translate(lang, "cmd.time.embeds.self.life", { aliveSpanString });
+  description += translate(lang, "cmd.time.embeds.help.attack");
+
+  if (lifeSteal)
+  {
+    description += translate(lang, "cmd.time.embeds.self.steal", { lifeStealString });
+    description += translate(lang, "cmd.time.embeds.help.warn");
+  }
+
+  return {
+    method: "PATCH",
+    body: {
+      content,
+      embeds: [
+        {
+          color: userbook.color.int,
+          description,
+          //footer: {
+          //  text: `im gonna eat another apple`,
+          //},
+        },
+      ],
+    },
+  };
+}
 
 //#drop command
 async function cmd_drop({ data, token, userdata, message, lang }) {
