@@ -4469,12 +4469,13 @@ async function cmd_time({ data, userdata, userbook, lang, message }) {
   let description = '';
   
   description += translate(lang, "cmd.time.embeds.self.life", { aliveSpanString });
-  description += translate(lang, "cmd.time.embeds.help.attack");
 
   if (lifeSteal)
   {
     description += translate(lang, "cmd.time.embeds.self.steal", { lifeStealString });
     description += translate(lang, "cmd.time.embeds.help.warn");
+  } else {
+    description += translate(lang, "cmd.time.embeds.help.attack");
   }
 
   return {

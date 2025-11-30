@@ -239,8 +239,8 @@
 "cmd.time.content.have": "Are you sure that you can extend your life like that?",
 "cmd.time.embeds.self.steal": "You stole **$[lifeStealString]** life time to others.\n",
 "cmd.time.embeds.self.life": "You are alive since **$[aliveSpanString]**.\n",
-"cmd.time.embeds.help.attack": "Kill someone with `/kira` to takes it's life time.",
-"cmd.time.embeds.help.warn": "Be aware of not beeing killed if you wanna keep this life time for you!",
+"cmd.time.embeds.help.attack": "Kill someone with `/kira` to takes it's life time.\n",
+"cmd.time.embeds.help.warn": "Be aware of not beeing killed if you wanna keep this life time for you!\n",
 
 "cmd.drop.shop": "Hum, yes, you could protect yourself for a while. :thinking:\nI can give you back the Death Note a certain time after you gave it up.\nBut I need apples to not become lazy!",
 "cmd.drop.shop.sentence": "I relinquish Death Note ownership...",

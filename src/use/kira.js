@@ -70,6 +70,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       is_god: true,
       apples: true,
       apples_daily: true,
+      lifesteal: true,
       lang: true,
       version: true,
       backDate: true,
