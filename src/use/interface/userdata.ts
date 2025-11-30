@@ -20,5 +20,6 @@ export class UserDataInterface extends BaseInterface {
   }
   public set lifesteal(value : number) {
     this.data.lifesteal = value;
+    this.tosave('lifesteal', value);
   }
 }

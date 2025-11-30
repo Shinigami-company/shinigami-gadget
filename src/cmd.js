@@ -3346,7 +3346,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
       break;
     case "steal":
       {
-        if_parse = false;
+        if_parse = true;
         h_ranks = await kira_users_rank("lifesteal");
         h_amountKey = "lifesteal";
       }
@@ -3359,6 +3359,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
     let h_txt = "";
 
     let h_nl = "";
+    console.log("h_ranks:",h_ranks);
     for (let i = 0; i < Math.min(h_ranks.length, h_ranks.length); i++) {
       let h_amount = h_ranks[i][h_amountKey];
       if (if_parse) h_amount = stats_parse(h_amountKey, h_amount, lang);
