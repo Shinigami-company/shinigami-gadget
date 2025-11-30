@@ -1,10 +1,10 @@
 import { api } from "gadget-server";
 
-const destroySaveCheck = new FinalizationRegistry<{ type: string, id: number, saveDictionnary: {[id: string]: any} }>((info) => {
-  console.log("suieundvuvuvuefzuefznueznfzeofeznofzefezno");
-  if (info.saveDictionnary.length > 0) {
+const destroySaveCheck = new FinalizationRegistry<{ this: BaseInterface, id: number, saveDictionnary: {[id: string]: any}, saved: () => {} }>((info) => {
+  console.log("suieundvuvuvuefzuefznueznfzeofeznofzefezno", info.saveDictionnary);
+  if (!info.saved()) {
     console.error("suieundvuvuvuefzuefznueznfzeofeznofzefezno");
-    throw new Error(`Object [${info.type}] id [${info.id}] was garbage collected with elements not saved:`, info.saveDictionnary);
+    throw new Error(`Object [${info.this}] type [${typeof info.this}] id [${info.id}] was garbage collected with elements not saved:`, info.saveDictionnary);
   }
 });
 
@@ -18,7 +18,7 @@ export class BaseInterface {
   constructor(userdata : any) {
     this.id = userdata.id;
     this.data = userdata;
-    destroySaveCheck.register(this, { type: typeof(this), id: this.id, saveDictionnary: this.saveDictionnary });
+    destroySaveCheck.register(this, { this: this, id: this.id, saveDictionnary: this.saveDictionnary, saved: this.saved });
   }
 
   public async save() {
