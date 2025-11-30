@@ -2,7 +2,7 @@ import { Item } from './item.ts';
 import { NoteBook } from './itemType/book.ts';
 import { Achievement } from "../achiv";
 import { kira_apple_send } from "./apple";
-import { kira_user_set_life } from './kira.js';
+import { kira_user_set_life, kira_user_get_owned_books_note } from './kira.js';
 import { api } from 'gadget-server';
 
 export async function kira_user_update(user, userdata, lang)

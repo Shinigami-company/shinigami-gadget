@@ -7,7 +7,8 @@ import { time_format_string_from_int } from "../tools.js";
 //1 = int counter
 //2 = list counter
 //3 = dict counter [you can use the DictKey parameter]
-//4 = time (int in s) [you can use the lang parameter]
+//4 = time span (int in s) [you can use the lang parameter]
+//6 = time from now to epoch (int in epoch) [you can use the lang parameter]
 
 const stats_simple_all = {
   do_kill: { type: 1 },
@@ -51,7 +52,12 @@ const stats_simple_all = {
 
   count_dropTime: { type: 4 },
   main_aliveSinceUnix: { type: 6 },
-  is_spanTaken: { type: 4 },
+  
+  ever_bestAliveSpan: { type: 6 },
+
+  // is not in stats but here for parsing
+  apple: { type: 1 },
+  lifesteal: { type: 4 },
 };
 
 //used in #stats command

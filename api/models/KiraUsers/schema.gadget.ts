@@ -90,6 +90,7 @@ export const schema: GadgetModel = {
       type: "string",
       storageKey: "7EStxtlMHvj5::U-rrIFAWCanl",
     },
+    lifesteal: { type: "number", storageKey: "xrCrZud3KrMh" },
     myItems: {
       type: "hasMany",
       children: { model: "KiraItems", belongsToField: "ownerPtr" },

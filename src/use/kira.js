@@ -3,7 +3,7 @@ import { api } from 'gadget-server';
 import { userBanType } from '../enum.ts';
 import { CreateGlobalCommand, DeleteGlobalCommand, DiscordUserOpenDm, GetGlobalCommand, GetGlobalCommandsId, PutGlobalCommands, UpdateGlobalCommand } from '../utils.js';
 import { cmd_register } from '../cmd.js';
-import { stats_simple_set } from './stats.js';
+import { stats_simple_set, stats_simple_get } from './stats.js';
 
 export async function commands_put() {
   console.debug('kira : refreshcmd : registerCommands()...');
@@ -154,7 +154,15 @@ export async function kira_user_set_life(userdata, f_bool, f_backDate = null) {
     is_alive: f_bool,
     backDate: f_backDate,
   });
-  stats_simple_set(userdata.statPtr.id, "main_aliveSinceUnix", (f_bool) ? new Date().getTime() : null);
+
+  if (!f_bool)
+  {
+    let aliveSpan = new Date().getTime() - await stats_simple_get(userdata.statPtr.id, "main_aliveSinceUnix");
+    let lastBestAliveSpan = await stats_simple_get(userdata.statPtr.id, "ever_bestAliveSpan");
+    if (lastBestAliveSpan < aliveSpan) await stats_simple_set(userdata.statPtr.id, "ever_bestAliveSpan", aliveSpan);
+  }
+
+  await stats_simple_set(userdata.statPtr.id, "main_aliveSinceUnix", (f_bool) ? new Date().getTime() : null);
 }
 
 export async function kira_user_add_apple(userdataId, f_amount = 1) {

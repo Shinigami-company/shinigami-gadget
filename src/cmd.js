@@ -622,10 +622,11 @@ const commands_structure = {
           description: "have the most...",
           required: true,
           choices: [
-            { name: "Life", value: "life" },
+            { name: "Life Steal", value: "steal" },
+            //{ name: "Life", value: "life" },
             { name: "Apples", value: "apple" },
             { name: "Kills", value: "kill" },
-            { name: "Murders", value: "murder" },
+            //{ name: "Murders", value: "murder" },
             { name: "Time", value: "time" },
           ],
         },
@@ -3298,6 +3299,13 @@ async function cmd_top({ data, userdata, userbook, lang }) {
         h_amountKey = "main_aliveSinceUnix";
       }
       break;
+    case "steal":
+      {
+        if_parse = false;
+        h_ranks = await kira_users_rank("lifesteal");
+        h_amountKey = "lifesteal";
+      }
+      break;
   }
 
   //formating
@@ -3306,7 +3314,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
     let h_txt = "";
 
     let h_nl = "";
-    for (let i = 0; i < h_ranks.length; i++) {
+    for (let i = 0; i < Math.min(h_ranks.length, h_ranks.length); i++) {
       let h_amount = h_ranks[i][h_amountKey];
       if (if_parse) h_amount = stats_parse(h_amountKey, h_amount, lang);
       if (h_ranks[i].userId === userdata.userId) ifSelfOn = true;

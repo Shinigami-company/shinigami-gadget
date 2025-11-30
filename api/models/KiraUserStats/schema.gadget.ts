@@ -17,6 +17,10 @@ export const schema: GadgetModel = {
     do_spanTaken: { type: "number", storageKey: "z0JAZTCXgC7T" },
     do_try: { type: "number", storageKey: "-IHJS3dZcG1h" },
     ever_apple: { type: "number", storageKey: "mueABtRLk2rY" },
+    ever_bestAliveSpan: {
+      type: "number",
+      storageKey: "n1xJG0GN3eAX",
+    },
     ever_bookBuy: { type: "number", storageKey: "IsTzH3mWM0Tp" },
     ever_bookFirst: { type: "number", storageKey: "u0u9Zfy3zBZK" },
     ever_itemBuy: { type: "number", storageKey: "ClLNszDKlSZ8" },
