@@ -203,7 +203,7 @@ export const items_info = {
   
   pen_skull: {
     type: itemType.PEN,
-    emoji: sett_emoji_items.pen_cool,
+    emoji: sett_emoji_items.pen_skull,
     actions: {
       throw: true,
       gift: true,
@@ -292,6 +292,33 @@ export const items_info = {
     }
   },
   
+
+  ink_black: {
+    type: itemType.INK,
+    emoji: sett_emoji_items.ink_black,
+    actions: {
+      throw: true,
+      gift: true,
+      //equip: true
+    },
+    atr: {
+      broken_chance: 0,
+      empty_durability: 2,
+    },
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_pen
+      }
+    },
+    shopData: {
+      proba: 1,
+      price_min: 0,
+      price_max: 1,
+    }
+  },
+
 
   book_black: {
     type: itemType.BOOK,
@@ -497,7 +524,33 @@ export const items_types = {
 
 
 export function flow_pen(deep) {
-  let key = 'items.pens.flow.ink.';
+  let key = 'items.pens.flow.dura.';
+  let penItem = deep.item;
+  let use = (penItem.meta?.use) ? penItem.meta.use : 0;
+  let dura = items_info[penItem.itemName].atr.empty_durability - use;
+  let progress = dura / items_info[penItem.itemName].atr.empty_durability;
+  if (progress >= 1)
+  {
+    key += 'full';
+  }
+  else if (progress >= .5)
+  {
+    key += 'half';
+  }
+  else if (progress >= .25)
+  {
+    key += 'quater';
+  }
+  else
+  {
+    key += 'last';
+  }
+  let dolar = { dura };
+  return { key, dolar };
+}
+
+export function flow_ink(deep) {
+  let key = 'items.inks.flow.dura.';
   let penItem = deep.item;
   let use = (penItem.meta?.use) ? penItem.meta.use : 0;
   let dura = items_info[penItem.itemName].atr.empty_durability - use;

@@ -135,6 +135,10 @@ export const sett_emoji_items = {
     name: "pen_cool",
     id: "1383511161840078988",
   },
+  pen_skull: {
+    name: "pen_cool",
+    id: "1383511161840078988",
+  },
   feather_white: {
     name: "feather_white",
     id: "1374353915675545770",
@@ -146,6 +150,10 @@ export const sett_emoji_items = {
   empty_pen: {
     name: "empty_pen",
     id: "1375207833628446811",
+  },
+  ink_black: {
+    name: "pen_black",
+    id: "1374354563032940627",
   },
   book_black: {
     name: "book_black",
