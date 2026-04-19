@@ -203,10 +203,10 @@ export function lang_lore(f_lang) {
   }
 
   if (h_warn) {
-    r_txt += `\n**\`${h_lore}\`**`;
+    r_txt += `\n\`⚠ ${h_warn}\``;
   }
 
-  if (h_progress) {
+  if (h_progress != undefined) {
     if (h_progress <= 0) {
       r_txt += `\n\`⚠ not translated\``;
     } else if (h_progress < 100) {
