@@ -154,7 +154,7 @@ const commands_structure = {
     register: {
       name: "god",
       //contexts: [0],//!disabled
-      description: "An admin-only command",
+      description: "A developer-only command",
 
       options: [
         {
