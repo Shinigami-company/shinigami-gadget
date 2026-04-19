@@ -201,6 +201,30 @@ export const items_info = {
     },
   },
   
+  pen_skull: {
+    type: itemType.PEN,
+    emoji: sett_emoji_items.pen_cool,
+    actions: {
+      throw: true,
+      gift: true,
+      equip: true
+    },
+    atr: {
+      filters: ['high_white'],
+      broken_item: 'broken_pen',
+      broken_chance: 0,
+      empty_item: 'empty_pen',
+      empty_durability: 20,
+    },
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_pen
+      }
+    },
+  },
+  
   feather_white: {
     type: itemType.PEN,
     emoji: sett_emoji_items.feather_white,

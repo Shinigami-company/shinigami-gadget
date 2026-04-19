@@ -39,6 +39,7 @@ export enum itemType {
   CONSOMABLE = 5,
   JUNK = 6,
   MISC = 7,
+  INK = 13,
 }
 
 export enum penState {
