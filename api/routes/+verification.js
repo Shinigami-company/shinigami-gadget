@@ -14,7 +14,8 @@ export default async function (server) {
     console.log("RAW REQUEST:",request.body);
     
     // old verification system
-    if (process.env.VERIFY_REQUEST === "1" && request.raw.url !== '/awake') {
+    if (process.env.VERIFY_REQUEST === "1") {
+      // && request.raw.url !== '/awake'
       VerifyDiscordRequest(request, reply, process.env.PUBLIC_KEY);
     }
     

@@ -32,15 +32,15 @@ async function kira_remember_set_interval() {
     }
   }
 
-  if (wakeup_interval_id === -1) {
-    //this works FOREVER (and that cool)
-    wakeup_interval_id = setInterval(
-      kira_remember_wakeup,
-      60 * 1000 * wakeup_minutes
-    );
-    console.log(`rem3mber : start wakeup. interval=${wakeup_interval_id}`);
-    await kira_remember_wakeup();//!
-  }
+  //if (wakeup_interval_id === -1) {
+  //  //this works FOREVER (and that cool)
+  //  wakeup_interval_id = setInterval(
+  //    kira_remember_wakeup,
+  //    60 * 1000 * wakeup_minutes
+  //  );
+  //  console.log(`rem3mber : start wakeup. interval=${wakeup_interval_id}`);
+  //  await kira_remember_wakeup();//!
+  //}
 }
 
 export async function kira_remember_task_add(f_date, f_type, f_data) {
@@ -145,20 +145,20 @@ async function kira_remember_checkup() {
   remembering = 0;
 }
 
-var ocurence_wakeup = 0;
-async function kira_remember_wakeup() {
-  console.debug(` rem3mber : mrew (min=${ocurence_wakeup * wakeup_minutes})`);
-  ocurence_wakeup += 1;
-  // clean up
-  await cleanup_gift();
-  await cleanup_run();
-  // awake
-  let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
-    raw.json()
-  );
-  if (response.code !== 200) console.error(`rem3mber : mrew failed`, response);
-  await kira_remember_set_interval();
-}
+//var ocurence_wakeup = 0;
+//async function kira_remember_wakeup() {
+//  console.debug(` rem3mber : mrew (min=${ocurence_wakeup * wakeup_minutes})`);
+//  ocurence_wakeup += 1;
+//  // clean up
+//  await cleanup_gift();
+//  await cleanup_run();
+//  // awake
+//  let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
+//    raw.json()
+//  );
+//  if (response.code !== 200) console.error(`rem3mber : mrew failed`, response);
+//  await kira_remember_set_interval();
+//}
 
 export async function linkme(f_txt) {
   console.log(` rem3mber : LINKING...`);
