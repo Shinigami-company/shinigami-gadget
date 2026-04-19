@@ -624,12 +624,12 @@ const commands_structure = {
           description: "have the most...",
           required: true,
           choices: [
-            { name: "Vitality", value: "vitality" },
-            { name: "Life", value: "life" },
             { name: "Apples", value: "apple" },
             { name: "Kills", value: "kill" },
             { name: "Murders", value: "murder" },
-            { name: "Time", value: "time" },
+            { name: "Murder Time", value: "time" },
+            { name: "Life Time", value: "life" },
+            { name: "Life Steal", value: "vitality" },
           ],
         },
       ],
@@ -3344,7 +3344,7 @@ async function cmd_top({ data, userdata, userbook, lang }) {
         h_amountKey = "main_aliveSinceUnix";
       }
       break;
-    case "steal":
+    case "vitality":
       {
         if_parse = true;
         h_ranks = await kira_users_rank("lifesteal");
