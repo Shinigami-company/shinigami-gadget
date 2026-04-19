@@ -54,5 +54,15 @@
     "lore": "this is a custom language",
     "progress": 90,
     "sublang": "en"
+  },
+
+  "fish":
+  {
+    "selectable": true,
+    "keys": true,
+    "name": "🐟",
+    "lore": "🐟🐟🐟🐟🐟🐟",
+    "progress": 99,
+    "sublang": "ji"
   }
 }
