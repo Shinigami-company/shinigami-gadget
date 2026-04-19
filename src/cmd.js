@@ -3985,7 +3985,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
   //arg/page
   let action_seed = data.options?.find((opt) => opt.name === "seed")?.value;//1,n
   const buyit = data.options?.find((opt) => opt.name === "buyit")?.value;//_,1,2
-  const how = data.options?.find((opt) => opt.name === "how")?.value;//true,false
+  const howRequest = data.options?.find((opt) => opt.name === "how")?.value;//true,false
 
   let fields = [];
   let components=[];
@@ -4103,7 +4103,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
           {
             type: MessageComponentTypes.BUTTON,
             custom_id: `makecmd shop_edit -2+0`,
-            label: translate(lang, "cmd.shop.get.how"),
+            label: translate(lang, `cmd.shop.get.how.${empty_amount == items_shop.length ? 'empty' : 'from'}`),
             style: ButtonStyleTypes.SECONDARY,
           }
         ]
@@ -4111,7 +4111,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
     )
   }
 
-  if (how)
+  if (howRequest)
   {
     await DiscordRequest(
       `webhooks/${process.env.APP_ID}/${token}`,
@@ -4119,7 +4119,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
         method: "POST",
         body: 
         {
-          content: translate(lang, 'cmd.shop.get.how.respond'),
+          content: translate(lang, `cmd.shop.get.how.${empty_amount == items_shop.length ? 'empty' : 'from'}.respond`),
           flags: InteractionResponseFlags.EPHEMERAL
         }
       }

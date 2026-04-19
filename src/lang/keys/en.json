@@ -214,8 +214,10 @@
 "cmd.shop.get.fail.poor": "You dont have $[price] $[unit]",
 "cmd.shop.get.fail.full": "You are full",
 "cmd.shop.get.done": "Cool!",
-"cmd.shop.get.how": "How did you get that?",
-"cmd.shop.get.how.respond": "Dont ask. So your in it?",
+"cmd.shop.get.how.from": "How did you get that?",
+"cmd.shop.get.how.from.respond": "Dont ask. Sooo, your in?",
+"cmd.shop.get.how.empty": "There is nothing",
+"cmd.shop.get.how.empty.respond": "You took it all! Wait a bit.",
 "cmd.shop.footer.time": "I will get something else in like $[time]",
 
 "cmd.gift.fail.noitem": "You dont have this item anymore.",
