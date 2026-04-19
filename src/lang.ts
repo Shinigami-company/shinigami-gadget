@@ -94,8 +94,9 @@ const lang_texts: {
   [key: string]: {
     selectable: boolean;
     name: string;
+    comment: string;
     lore: string;
-    hlore: string;
+    warn: string;
     progress: number;
     sublang: string;
     keys: boolean;
@@ -195,9 +196,14 @@ export function lang_lore(f_lang) {
   let r_txt = "";
   let h_progress = lang_texts[f_lang].progress;
   let h_lore = lang_texts[f_lang].lore;
+  let h_warn = lang_texts[f_lang].warn;
 
   if (h_lore) {
-    r_txt += `\n\`${h_lore}\``;
+    r_txt += `\n**\`${h_lore}\`**`;
+  }
+
+  if (h_warn) {
+    r_txt += `\n**\`${h_lore}\`**`;
   }
 
   if (h_progress) {

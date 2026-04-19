@@ -4,7 +4,7 @@
     "selectable": true,
     "keys": true,
     "name": "English",
-    "hlore": "bilang",
+    "comment": "bilang",
     "progress": 100
   },
 
@@ -13,7 +13,7 @@
     "selectable": true,
     "keys": true,
     "name": "Français",
-    "hlore": "bilang",
+    "comment": "bilang",
     "progress": 100,
     "sublang": "en"
   },
@@ -23,7 +23,7 @@
     "selectable": true,
     "keys": true,
     "name": "Deutsch",
-    "progress": 10,
+    "progress": 0,
     "sublang": "en"
   },  
 
@@ -41,7 +41,8 @@
     "selectable": true,
     "keys": true,
     "name": "Cat UwU",
-    "lore": "this is a custom language",
+    "lore": "meow",
+    "warn": "this is a strange language",
     "progress": 90,
     "sublang": "en"
   },
@@ -51,7 +52,8 @@
     "selectable": true,
     "keys": true,
     "name": "😃",
-    "lore": "this is a custom language",
+    "lore": "speaking only with emoji",
+    "warn": "this is a strange language",
     "progress": 90,
     "sublang": "en"
   },
@@ -62,6 +64,7 @@
     "keys": true,
     "name": "🐟",
     "lore": "🐟🐟🐟🐟🐟🐟",
+    "warn": "this is an event strange language",
     "progress": 99,
     "sublang": "ji"
   }
