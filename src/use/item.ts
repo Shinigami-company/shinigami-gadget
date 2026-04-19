@@ -43,7 +43,7 @@ export const items_info = {
     atr: {
       filters: [],
       broken_item: 'broken_pen',
-      broken_chance: .1,
+      broken_chance: .05,
       empty_item: 'empty_pen',
       empty_durability: 5,
     },
@@ -72,7 +72,7 @@ export const items_info = {
     atr: {
       filters: ['blue'],
       broken_item: 'broken_pen',
-      broken_chance: .1,
+      broken_chance: .05,
       empty_item: 'empty_pen',
       empty_durability: 5,
     },
@@ -84,9 +84,9 @@ export const items_info = {
       }
     },
     shopData: {
-      proba: 5,
-      price_min: 3,
-      price_max: 5,
+      proba: 10,
+      price_min: 2,
+      price_max: 4,
     }
   },
   
@@ -101,7 +101,7 @@ export const items_info = {
     atr: {
       filters: ['green'],
       broken_item: 'broken_pen',
-      broken_chance: .1,
+      broken_chance: .05,
       empty_item: 'empty_pen',
       empty_durability: 5,
     },
@@ -113,9 +113,9 @@ export const items_info = {
       }
     },
     shopData: {
-      proba: 2.5,
-      price_min: 5,
-      price_max: 10,
+      proba: 2,
+      price_min: 3,
+      price_max: 5,
     }
   },
 
@@ -130,7 +130,7 @@ export const items_info = {
     atr: {
       filters: ['red'],
       broken_item: 'broken_pen',
-      broken_chance: .1,
+      broken_chance: .05,
       empty_item: 'empty_pen',
       empty_durability: 5,
     },
@@ -142,9 +142,9 @@ export const items_info = {
       }
     },
     shopData: {
-      proba: 2.5,
-      price_min: 5,
-      price_max: 10,
+      proba: 2,
+      price_min: 3,
+      price_max: 5,
     }
   },
   
@@ -159,7 +159,7 @@ export const items_info = {
     atr: {
       filters: ['purple'],
       broken_item: 'broken_pen',
-      broken_chance: .1,
+      broken_chance: .05,
       empty_item: 'empty_pen',
       empty_durability: 5,
     },
@@ -171,9 +171,9 @@ export const items_info = {
       }
     },
     shopData: {
-      proba: 2.5,
-      price_min: 10,
-      price_max: 15,
+      proba: 1,
+      price_min: 3,
+      price_max: 5,
     }
   },
   
@@ -223,7 +223,7 @@ export const items_info = {
       }
     },
     shopData: {
-      proba: 2.5,
+      proba: 1,
       price_min: 2,
       price_max: 5,
     }
@@ -311,7 +311,7 @@ export const items_info = {
       flow: { function: flow_book }
     },
     shopData: {
-      proba: 1,
+      proba: .5,
       price_min: 40,
       price_max: 50,
     }
@@ -337,7 +337,7 @@ export const items_info = {
       flow: { function: flow_book }
     },
     shopData: {
-      proba: 1,
+      proba: .5,
       price_min: 300,
       price_max: 400,
     }
