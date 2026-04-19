@@ -3393,6 +3393,9 @@ async function cmd_top({ data, userdata, userbook, lang }) {
           {
             color: userbook?.color.int,
             description: h_txt,
+            footer: {
+              text: translate(lang, `cmd.top.get.${h_on}.description`)
+            },
           },
         ],
       },
