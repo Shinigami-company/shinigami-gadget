@@ -627,7 +627,7 @@ const commands_structure = {
             { name: "Apples", value: "apple" },
             { name: "Kills", value: "kill" },
             { name: "Murders", value: "murder" },
-            { name: "Murder Time", value: "time" },
+            { name: "Murdered Time", value: "time" },
             { name: "Life Time", value: "life" },
             { name: "Life Steal", value: "vitality" },
           ],
