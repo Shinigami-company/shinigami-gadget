@@ -9,7 +9,7 @@ import { stats_simple_add } from './stats';
 
 
 //flow is like a dynamic lore.
-export const items_info = {
+export const items_info: any = {
   event_egg_2025: {
     type: itemType.COLLECTOR,
     emoji: sett_emoji_items.event_egg_2025,
@@ -309,7 +309,7 @@ export const items_info = {
       claim: false,
       lore: true,
       flow: {
-        function: flow_pen
+        function: flow_ink
       }
     },
     shopData: {
@@ -523,16 +523,21 @@ export const items_types = {
 
 
 
-export function flow_pen(deep) {
+export function flow_pen(deep: any) {
   let key = 'items.pens.flow.dura.';
   let penItem = deep.item;
   let use = (penItem.meta?.use) ? penItem.meta.use : 0;
   let dura = items_info[penItem.itemName].atr.empty_durability - use;
   let progress = dura / items_info[penItem.itemName].atr.empty_durability;
+
   if (progress >= 1)
   {
     key += 'full';
   }
+  //else if (dura === 1)
+  //{// if a last use possible
+  //  key += 'last';
+  //}
   else if (progress >= .5)
   {
     key += 'half';
@@ -543,33 +548,38 @@ export function flow_pen(deep) {
   }
   else
   {
-    key += 'last';
+    key += 'less';
   }
   let dolar = { dura };
   return { key, dolar };
 }
 
-export function flow_ink(deep) {
+export function flow_ink(deep: any) {
   let key = 'items.inks.flow.dura.';
   let penItem = deep.item;
   let use = (penItem.meta?.use) ? penItem.meta.use : 0;
   let dura = items_info[penItem.itemName].atr.empty_durability - use;
   let progress = dura / items_info[penItem.itemName].atr.empty_durability;
+
   if (progress >= 1)
   {
     key += 'full';
   }
+  else if (dura === 1)
+  {// if a last use possible
+    key += 'last';
+  }
   else if (progress >= .5)
   {
     key += 'half';
-  }
-  else if (progress >= .25)
-  {
-    key += 'quater';
+    if (Math.random() > .5)
+      key += '.0';
+    else
+      key += '.1';
   }
   else
-  {
-    key += 'last';
+  {// should not happend here
+    key += 'less';
   }
   let dolar = { dura };
   return { key, dolar };
@@ -646,8 +656,10 @@ export class Item {
   constructor(itemDbObj: any) {
     if (!itemDbObj) return;
     copyAttrs(itemDbObj, this);
-    this.info = items_info[this.itemName];
-    this.atr = items_info[this.itemName].atr;
+    let info = items_info[this.itemName];
+    if (!info) throw new Error(`item [${this.itemName}] is unknow or does not exist anymore`);
+    this.info = info;
+    this.atr = info.atr;
   }
 
   async refresh() {
