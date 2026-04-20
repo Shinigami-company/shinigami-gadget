@@ -131,30 +131,39 @@ export const sett_emoji_items = {
     name: "pen_purple",
     id: "1374590353109422141",
   },
+  
   pen_cool: {
     name: "pen_cool",
     id: "1383511161840078988",
   },
   pen_skull: {
-    name: "pen_cool",
-    id: "1383511161840078988",
+    name: "pen_skull",
+    id: "1495886307250012320",
   },
+  
   feather_white: {
     name: "feather_white",
     id: "1374353915675545770",
   },
+  
   broken_pen: {
     name: "broken_pen",
-    id: "1375207829794983986",
+    id: "1495879918754594986",
   },
   empty_pen: {
     name: "empty_pen",
-    id: "1375207833628446811",
+    id: "1495879920948088832",
   },
+
   ink_black: {
-    name: "pen_black",
-    id: "1374354563032940627",
+    name: "ink_black",
+    id: "1495879469519339622",
   },
+  ink_blue: {
+    name: "ink_blue",
+    id: "1495879499622125568",
+  },
+
   book_black: {
     name: "book_black",
     id: "1281258833271849050",
