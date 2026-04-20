@@ -136,8 +136,8 @@ export const sett_emoji_items = {
     name: "pen_cool",
     id: "1383511161840078988",
   },
-  pen_skull: {
-    name: "pen_skull",
+  pen_bone: {
+    name: "pen_bone",
     id: "1495886307250012320",
   },
   

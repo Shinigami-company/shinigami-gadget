@@ -201,9 +201,9 @@ export const items_info = {
     },
   },
   
-  pen_skull: {
+  pen_bone: {
     type: itemType.PEN,
-    emoji: sett_emoji_items.pen_skull,
+    emoji: sett_emoji_items.pen_bone,
     actions: {
       throw: true,
       gift: true,
