@@ -3860,6 +3860,20 @@ async function cmd_pocket({ data, userdata, userbook, lang }) {
       )
     }
 
+    //action/use
+    if (item_selected.info.actions.use)
+    {
+      item_components.push(
+        {
+          type: MessageComponentTypes.BUTTON,
+          custom_id: `makecmd use ${item_selected.id}`,
+          label: translate(lang, 'cmd.pocket.action.use.'+items_types[item_selected.info.type].str),
+          style: ButtonStyleTypes.PRIMARY,
+          disabled: throwed
+        },
+      )
+    }
+
     //show up before any delete
     fields.push(item_selected.get_embed_field(userdata, lang, throwed));
 

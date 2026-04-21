@@ -299,7 +299,7 @@ export const items_info: any = {
     actions: {
       throw: true,
       gift: true,
-      //equip: true
+      use: true
     },
     atr: {
       broken_chance: 0,
@@ -518,6 +518,13 @@ export const items_types = {
       metaDataValues.godOwner = godOwner;
     }
   },
+
+  [itemType.INK]: {
+    str: 'ink',
+    
+    use : async (userdata, item: Item) => {
+    },
+  }
 }
 
 
