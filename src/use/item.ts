@@ -44,6 +44,8 @@ export const items_info: any = {
     },
     atr: {
       filters: [],
+    },
+    dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
       empty_item: 'empty_pen',
@@ -73,6 +75,8 @@ export const items_info: any = {
     },
     atr: {
       filters: ['blue'],
+    },
+    dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
       empty_item: 'empty_pen',
@@ -102,6 +106,8 @@ export const items_info: any = {
     },
     atr: {
       filters: ['green'],
+    },
+    dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
       empty_item: 'empty_pen',
@@ -131,6 +137,8 @@ export const items_info: any = {
     },
     atr: {
       filters: ['red'],
+    },
+    dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
       empty_item: 'empty_pen',
@@ -160,6 +168,8 @@ export const items_info: any = {
     },
     atr: {
       filters: ['purple'],
+    },
+    dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
       empty_item: 'empty_pen',
@@ -189,6 +199,8 @@ export const items_info: any = {
     },
     atr: {
       filters: ['high_white'],
+    },
+    dura: {
       broken_item: 'broken_pen',
       broken_chance: 0,
       empty_item: 'empty_pen',
@@ -213,10 +225,12 @@ export const items_info: any = {
     },
     atr: {
       filters: ['high_white'],
+    },
+    dura: {
       broken_item: 'broken_pen',
       broken_chance: 0,
       empty_item: 'empty_pen',
-      empty_durability: 20,
+      empty_durability: 15,
     },
     fields: {
       claim: false,
@@ -238,6 +252,8 @@ export const items_info: any = {
     atr: {
       filters: [],
       silent: true,
+    },
+    dura: {
       broken_chance: 0,//no item : will delete
       empty_durability: 3,//no item : will delete
     },
@@ -303,7 +319,8 @@ export const items_info: any = {
       gift: true,
       use: true
     },
-    atr: {
+    atr: {},
+    dura: {
       broken_chance: 0,
       empty_durability: 2,
     },

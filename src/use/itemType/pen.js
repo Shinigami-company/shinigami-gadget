@@ -16,12 +16,12 @@ export async function pen_use(userdata, penItem)
   const firstUse = (!penItem.meta.use);
   if (firstUse) penItem.meta.use=0;
   penItem.meta.use += 1;
-  //penItem.meta.dura = items_info[penItem.itemName].atr.empty_durability - penItem.meta.use;//no more needed
-  const empty_durability = items_info[penItem.itemName].atr.empty_durability;
-  const broken_chance = items_info[penItem.itemName].atr.broken_chance;
+  //penItem.meta.dura = items_info[penItem.itemName].dura.empty_durability - penItem.meta.use;//no more needed
+  const empty_durability = items_info[penItem.itemName].dura.empty_durability;
+  const broken_chance = items_info[penItem.itemName].dura.broken_chance;
   if (empty_durability && penItem.meta.use >= empty_durability)
   {//empty
-    const newItemName=items_info[penItem.itemName].atr.empty_item;
+    const newItemName=items_info[penItem.itemName].dura.empty_item;
     if (newItemName)
     {
       penItem.meta.oldName = penItem.itemName;
@@ -34,7 +34,7 @@ export async function pen_use(userdata, penItem)
   }
   else if (broken_chance && !firstUse && Math.random()<broken_chance)
   {//break
-    const newItemName=items_info[penItem.itemName].atr.broken_item;
+    const newItemName=items_info[penItem.itemName].dura.broken_item;
     if (newItemName)
     {
       penItem.meta.oldName = penItem.itemName;
@@ -53,7 +53,8 @@ export async function pen_use(userdata, penItem)
 
 export async function pen_fill(penItem) {
   if (penItem.itemName === 'empty_pen')
-  {// back from empty state
+  {
+    // back from empty state
     let backName = penItem.meta.oldName;
     await penItem.change(backName, penItem.meta);
     penItem.meta.oldName = undefined;

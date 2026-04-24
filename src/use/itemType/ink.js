@@ -8,12 +8,12 @@ export async function ink_use(userdata, inkItem)
   const firstUse = (!inkItem.meta.use);
   if (firstUse) inkItem.meta.use=0;
   inkItem.meta.use += 1;
-  //penItem.meta.dura = items_info[penItem.itemName].atr.empty_durability - penItem.meta.use;//no more needed
-  const empty_durability = items_info[inkItem.itemName].atr.empty_durability;
-  const broken_chance = items_info[inkItem.itemName].atr.broken_chance;
+  //penItem.meta.dura = items_info[penItem.itemName].dura.empty_durability - penItem.meta.use;//no more needed
+  const empty_durability = items_info[inkItem.itemName].dura.empty_durability;
+  const broken_chance = items_info[inkItem.itemName].dura.broken_chance;
   if (empty_durability && inkItem.meta.use >= empty_durability)
   {//empty
-    const newItemName=items_info[inkItem.itemName].atr.empty_item;
+    const newItemName=items_info[inkItem.itemName].dura.empty_item;
     if (newItemName)
     {
       inkItem.meta.oldName = inkItem.itemName;
@@ -26,7 +26,7 @@ export async function ink_use(userdata, inkItem)
   }
   else if (broken_chance && !firstUse && Math.random()<broken_chance)
   {//break
-    const newItemName=items_info[inkItem.itemName].atr.broken_item;
+    const newItemName=items_info[inkItem.itemName].dura.broken_item;
     if (newItemName)
     {
       inkItem.meta.oldName = inkItem.itemName;
