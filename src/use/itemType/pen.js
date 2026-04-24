@@ -52,7 +52,19 @@ export async function pen_use(userdata, penItem)
 }
 
 export async function pen_fill(penItem) {
-  penItem.meta.use=0;
+  if (penItem.meta.oldName)
+  {// back from empty state
+    if (penItem.itemName != 'empty_pen') throw Error(`trying to fill back a junk that is not empty_pen [${penItem.itemName}]`)
+    await penItem.change(penItem.meta.oldName, penItem.meta);
+    penItem.meta.oldName = undefined;
+  }
+  
+  // count fill
+  if (!penItem.meta.fill) penItem.meta.fill = 0;
+  penItem.meta.fill += 1;
+  
+  // reset use
+  penItem.meta.use = 0;
   await api.KiraItems.update(penItem.id, {meta: penItem.meta});
 }
 

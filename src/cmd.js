@@ -4572,9 +4572,9 @@ async function cmd_use({ data, userdata, lang, message, token}) {
         let options_objects = [];
         const items_all = await Item.inventory_ids(userdata.id);
         for (let item_minimal of items_all) {
-          let loopType = items_info[item_minimal.itemName].type;
-          if (loopType != itemType.PEN) continue;
-          // && loopType != itemType.JUNK
+          let loopName = item_minimal.itemName;
+          let loopType = items_info[loopName].type;
+          if (loopType != itemType.PEN && (loopType != itemType.JUNK && loopName != 'empty_pen')) continue;
           //if (items_info[item_minimal.itemName].atr.ink_color != items_info[usedItem.itemName].atr.ink_color) continue;
           options_objects.push({
             value: item_minimal.id,
