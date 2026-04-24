@@ -4587,6 +4587,8 @@ async function cmd_use({ data, userdata, lang, message, token}) {
             items_info[loopPotentialName].atr.ink_color != items_info[usedItem.itemName].atr.ink_color// if good ink
             ) continue;
 
+          if (!item_minimal.meta.use) continue;// never used
+
           options_objects.push({
             value: item_minimal.id,
             emoji: items_info[item_minimal.itemName].emoji,
