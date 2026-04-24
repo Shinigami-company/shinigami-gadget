@@ -52,10 +52,10 @@ export async function pen_use(userdata, penItem)
 }
 
 export async function pen_fill(penItem) {
-  if (penItem.meta.oldName)
+  if (penItem.itemName === 'empty_pen')
   {// back from empty state
-    if (penItem.itemName != 'empty_pen') throw Error(`trying to fill back a junk that is not empty_pen [${penItem.itemName}]`)
-    await penItem.change(penItem.meta.oldName, penItem.meta);
+    let backName = penItem.meta.oldName;
+    await penItem.change(backName, penItem.meta);
     penItem.meta.oldName = undefined;
   }
   
