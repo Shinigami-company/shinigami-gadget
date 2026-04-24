@@ -5393,8 +5393,6 @@ export async function cmd_kira_execute(data) {
   const userdata = await kira_user_get(user.id, true);
   const h_attacker_book = await NoteBook.get(userdata.noteBookId);
   //const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang_attacker; //old
-  const attackerInterface = new UserDataInterface(userdata);
-  const victimInterface = new UserDataInterface(h_victim_data);
 
   //handle special case : burned book
   const h_will_book =
@@ -5485,6 +5483,9 @@ export async function cmd_kira_execute(data) {
   //kill
   else {
     //sucess
+    const attackerInterface = new UserDataInterface(userdata);
+    const victimInterface = new UserDataInterface(h_victim_data);
+
     h_return_msg_attacker.content = translate(
       lang,
       "cmd.kira.finish.attacker",
