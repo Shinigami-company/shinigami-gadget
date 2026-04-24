@@ -212,6 +212,15 @@ export default async function route({ request, reply, api, logger, connections }
           ]}
         } break;
 
+        case ("use"):
+        {
+          data = { name: h_cmd, 
+          options: [
+            { name: 'itemid', value: parseInt(h_arg[0])}, 
+            { name: 'penitemid', value: h_arg.length>1 ? parseInt(h_arg[1]) : undefined}
+          ]}
+        } break;
+
         case ("shop_edit"): {
           data = { name: 'shop_edit',
           options: [

@@ -42,7 +42,7 @@ export enum itemType {
   INK = 13,
 }
 
-export enum penState {
+export enum usedState {
   FINE = 1,
   EMPTY = -1,
   BROKEN = -2,

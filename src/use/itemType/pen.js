@@ -1,6 +1,6 @@
 import { api } from "gadget-server";
 import { items_info } from "../item";
-import { penState } from "../../enum";
+import { usedState } from "../../enum";
 
 export const pen_filters = {//ANSI color code block
   red: (text) => `[2;31m${text}[0m`,
@@ -30,7 +30,7 @@ export async function pen_use(userdata, penItem)
     } else {
       await penItem.delete(userdata);
     }
-    return penState.EMPTY;
+    return usedState.EMPTY;
   }
   else if (broken_chance && !firstUse && Math.random()<broken_chance)
   {//break
@@ -44,10 +44,10 @@ export async function pen_use(userdata, penItem)
       await penItem.delete(userdata);
       penItem = null;
     }
-    return penState.BROKEN;
+    return usedState.BROKEN;
   } else {//good
     await api.KiraItems.update(penItem.id, {meta: penItem.meta});
-    return penState.FINE;
+    return usedState.FINE;
   }
 }
 

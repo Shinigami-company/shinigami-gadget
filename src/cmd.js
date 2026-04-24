@@ -6,7 +6,7 @@ import {
   FeedbackState,
   itemType,
   KnowUsableBy,
-  penState,
+  usedState,
   rememberTasksType,
   userBanType,
 } from "./enum.ts";
@@ -798,6 +798,29 @@ const commands_structure = {
     atr: {
       defered: deferedActionType.NO,
       systemOnly: true
+    }
+  },
+
+  use: {
+    //register: {
+    //  name: "gift",
+    //  description: "Gift one of your item or some apples.",
+    //  //contexts: [0],//!disabled
+    //  type: 1,
+    //},
+    functions: {
+      exe: cmd_use,
+      checks: [
+        [check_react_is_self, true],
+        [check_in_guild, true],
+        [check_is_clean, true],
+        [check_can_alive, false],
+        [check_has_noDrop, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_MESSAGE,
+      ephemeral: true,
     }
   },
 
@@ -4170,7 +4193,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
 async function cmd_gift({ data, userdata, user, lang, message, token}) {
 
   let itemId = data.options?.find((opt) => opt.name === "itemid")?.value;
-  let gifted_id = data.options?.find((opt) => opt.name === "giftedid")?.value;
+  let userGiftedId = data.options?.find((opt) => opt.name === "giftedid")?.value;
 
   if (message) {
     await DiscordRequest(
@@ -4288,7 +4311,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
     itemTitle = item.get_title(lang);
   }
 
-  if (!gifted_id)
+  if (!userGiftedId)
   {
     return {
       method: "PATCH",
@@ -4321,7 +4344,7 @@ async function cmd_gift({ data, userdata, user, lang, message, token}) {
     }
   }
 
-  const recipientId = (gifted_id==="@everyone") ? undefined : gifted_id;
+  const recipientId = (userGiftedId==="@everyone") ? undefined : userGiftedId;
 
   const response = await Gift.top_send(lang, false, recipientId, appleAmount, item, userdata);
 
@@ -4469,6 +4492,142 @@ async function cmd_eyes({ data, userdata, lang, message }) {
       content: translate(lang, "cmd.eyes"),
     },
   };
+}
+
+//#use
+async function cmd_use({ data, userdata, lang, message, token}) {
+
+  let usedItemId = data.options?.find((opt) => opt.name === "itemid")?.value;
+
+  if (message) {
+    await DiscordRequest(
+      `webhooks/${process.env.APP_ID}/${token}/messages/${message.id}`,
+      {
+        method: "PATCH",
+        body: {
+          components: [],
+        },
+      }
+    );
+  }
+  
+  if (!usedItemId)
+  {
+    throw new Error("can't use_cmd with no used item");
+    let options_objects = [];
+    const items_all = await Item.inventory_ids(userdata.id);
+    for (let item_minimal of items_all) {
+      options_objects.push({
+        value: item_minimal.id,
+        emoji: items_info[item_minimal.itemName].emoji,
+        label: Item.static_title(item_minimal.itemName, lang, false)
+      });
+    }
+    
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.gift.pick.item"),
+        components: [
+          {
+            type: MessageComponentTypes.ACTION_ROW,
+            components: [
+              {
+                type: MessageComponentTypes.STRING_SELECT,
+                options: options_objects,
+                custom_id: `makecmd gift <value>`,
+                placeholder: translate(lang, "cmd.gift.pick.item.object.place"),
+                style: ButtonStyleTypes.PRIMARY,
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+
+  let usedItem = await Item.get(usedItemId, userdata.id);
+  if (!usedItem)
+  {
+    throw new Error("can't use_cmd with no used item");
+    return {
+      method: "PATCH",
+      body: {
+        content: translate(lang, "cmd.gift.fail.noitem"),
+      }
+    }
+  }
+
+  let usedItemTitle = usedItem.get_title(lang);
+  let usedItemType = items_info[usedItem.itemName].type;
+
+  switch (usedItemType)
+  {
+    case itemType.INK: {
+      await items_types[itemType.INK].use(userdata, usedItem);
+      
+      //let filledPenId = data.options?.find((opt) => opt.name === "penitemid")?.value;
+
+      //if (!filledPenId)
+      //{
+      //  throw new Error("can't use_cmd with no used item");
+      //  let options_objects = [];
+      //  const items_all = await Item.inventory_ids(userdata.id);
+      //  for (let item_minimal of items_all) {
+      //    options_objects.push({
+      //      value: item_minimal.id,
+      //      emoji: items_info[item_minimal.itemName].emoji,
+      //      label: Item.static_title(item_minimal.itemName, lang, false)
+      //    });
+      //  }
+        
+      //  return {
+      //    method: "PATCH",
+      //    body: {
+      //      content: translate(lang, "cmd.gift.pick.item"),
+      //      components: [
+      //        {
+      //          type: MessageComponentTypes.ACTION_ROW,
+      //          components: [
+      //            {
+      //              type: MessageComponentTypes.STRING_SELECT,
+      //              options: options_objects,
+      //              custom_id: `makecmd gift <value>`,
+      //              placeholder: translate(lang, "cmd.gift.pick.item.object.place"),
+      //              style: ButtonStyleTypes.PRIMARY,
+      //            }
+      //          ]
+      //        }
+      //      ]
+      //    }
+      //  }
+      //}
+
+      //let usedItem = await Item.get(usedItemId, userdata.id);
+      //if (!usedItem)
+      //{
+      //  throw new Error("can't use_cmd with no used item");
+      //  return {
+      //    method: "PATCH",
+      //    body: {
+      //      content: translate(lang, "cmd.gift.fail.noitem"),
+      //    }
+      //  }
+      //}
+
+      return {
+        method: "PATCH",
+        body: {
+          content: "used"
+          //content: translate(lang, "cmd.gift.pick.item.object.place")
+        }
+      }
+
+    } break;
+
+    default:
+      throw new Error(`can't use_cmd on this item type ${usedItemType}`);
+  }
 }
 
 //#time command
@@ -5097,12 +5256,12 @@ async function cmd_kira({
   {
     isSilent = true;
   }
-  if (h_pen_remain===penState.EMPTY)
+  if (h_pen_remain===usedState.EMPTY)
   {
     h_all_msg += translate(lang, "cmd.kira.warn.pen.empty")+"\n";
     await stats_simple_add(userdata.statPtr.id, "ever_penEmpty");//+ stats
   }
-  if (h_pen_remain===penState.BROKEN)
+  if (h_pen_remain===usedState.BROKEN)
   {
     h_all_msg += translate(lang, "cmd.kira.warn.pen.broken")+"\n";
     const stat = await stats_simple_add(userdata.statPtr.id, "ever_penBroken");//+ stats

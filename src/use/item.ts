@@ -6,6 +6,7 @@ import { kira_apple_send } from './apple';
 import { NoteBook } from './itemType/book';
 import { copyAttrs } from './tools';
 import { stats_simple_add } from './stats';
+import { ink_use } from './itemType/ink';
 
 
 //flow is like a dynamic lore.
@@ -523,6 +524,7 @@ export const items_types = {
     str: 'ink',
     
     use : async (userdata, item: Item) => {
+      await ink_use(userdata, item);
     },
   }
 }
