@@ -19,6 +19,14 @@ export const ink_to_filters = {
   [inkColor.SPECIAL]: ['high_white'],
 }
 
+export const ink_to_pen = {
+  [inkColor.BLACK]: 'pen_black',
+  [inkColor.RED]: 'pen_red',
+  [inkColor.BLUE]: 'pen_blue',
+  [inkColor.GREEN]: 'pen_green',
+  [inkColor.PURPLE]: 'pen_purple',
+}
+
 export async function pen_use(userdata, penItem)
 {
   const firstUse = (!penItem.meta.use);
@@ -59,11 +67,12 @@ export async function pen_use(userdata, penItem)
   }
 }
 
-export async function pen_fill(penItem) {
+export async function pen_fill(penItem, inkItem) {
   if (penItem.itemName === 'empty_pen')
   {
     // back from empty state
     let backName = penItem.meta.oldName;
+    if (!backName) backName = ink_to_pen[items_info[inkItem].atr.ink_type];
     await penItem.change(backName, penItem.meta);
     penItem.meta.oldName = undefined;
   }
