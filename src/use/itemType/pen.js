@@ -72,7 +72,7 @@ export async function pen_fill(penItem, inkItem) {
   {
     // back from empty state
     let backName = penItem.meta.oldName;
-    if (!backName) backName = ink_to_pen[items_info[inkItem].atr.ink_type];
+    if (!backName) backName = ink_to_pen[items_info[inkItem.itemName].atr.ink_color];
     await penItem.change(backName, penItem.meta);
     penItem.meta.oldName = undefined;
   }

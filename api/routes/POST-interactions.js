@@ -214,7 +214,6 @@ export default async function route({ request, reply, api, logger, connections }
 
         case ("use"):
         {
-          console.log(`${h_cmd} h_arg:`,h_arg);
           data = { name: h_cmd, 
           options: [
             { name: 'itemid', value: parseInt(h_arg[0])}, 

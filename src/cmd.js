@@ -2984,7 +2984,6 @@ async function cmd_claim({ userdata, user, data, userbook, channel, lang }) {
       let carry_amount = 0;
       for (let itemId of owned_books_id)
       {
-        console.log(`get item ${itemId}`);
         let item = await Item.get(itemId);
         if (!item) throw Error(`item is not. (${item}) from item id [${itemId}], in all [${owned_books_id.join()}]`);
         books_item.push(item);
@@ -4570,12 +4569,25 @@ async function cmd_use({ data, userdata, lang, message, token}) {
       if (!filledItemId)
       {
         let options_objects = [];
-        const items_all = await Item.inventory_ids(userdata.id);
+        const items_all = await Item.inventory_ids(userdata.id, true);
         for (let item_minimal of items_all) {
           let loopName = item_minimal.itemName;
           let loopType = items_info[loopName].type;
-          if (loopType != itemType.PEN && (loopType != itemType.JUNK && loopName != 'empty_pen')) continue;
-          //if (items_info[item_minimal.itemName].atr.ink_color != items_info[usedItem.itemName].atr.ink_color) continue;
+          let loopPotentialName = loopName;
+          
+          if (loopType === itemType.JUNK)
+          {
+            if (loopName != 'empty_pen') continue;
+            loopPotentialName = item_minimal.meta.oldName;
+            //if (!loopPotentialName) loopPotentialName = ink_to_pen[items_info[usedItem.itemName].atr.ink_type];
+          } else if (loopType != itemType.PEN) continue;
+
+          if (// continue...
+            loopPotentialName &&// if broken_pen with no old
+            items_info[loopPotentialName].atr.ink_color &&// if has ink color
+            items_info[loopPotentialName].atr.ink_color != items_info[usedItem.itemName].atr.ink_color// if good ink
+            ) continue;
+
           options_objects.push({
             value: item_minimal.id,
             emoji: items_info[item_minimal.itemName].emoji,

@@ -553,7 +553,7 @@ export const items_types = {
     
     use : async (userdata, itemInk: Item, itemPen: Item) => {
       await ink_use(userdata, itemInk);
-      await pen_fill(itemPen);
+      await pen_fill(itemPen, itemInk);
     },
   }
 }
@@ -734,7 +734,7 @@ export class Item {
     return item;
   }
   
-  static async inventory_ids(userdataId) {
+  static async inventory_ids(userdataId, selectMeta = false) {
     return await api.KiraItems.findMany({
       filter: {
         ownerPtr: {
@@ -747,6 +747,7 @@ export class Item {
       select: {
         id: true,
         itemName: true,
+        meta: selectMeta
       }
     });
   }
