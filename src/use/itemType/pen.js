@@ -67,13 +67,16 @@ export async function pen_use(userdata, penItem)
   }
 }
 
-export async function pen_fill(penItem, inkItem) {
+export async function pen_fill(penItem, inkItem, lang) {
   if (penItem.itemName === 'empty_pen')
   {
-    // back from empty state
+    // set back from empty state
     let backName = penItem.meta.oldName;
-    if (!backName) backName = ink_to_pen[items_info[inkItem.itemName].atr.ink_color];
-    await penItem.change(backName, penItem.meta);
+    if (!backName) {// set back from permissive empty
+      backName = ink_to_pen[items_info[inkItem.itemName].atr.ink_color];
+      // have to refresh the lore
+    }
+    await penItem.change(backName, penItem.meta, lang);
     penItem.meta.oldName = undefined;
   }
   

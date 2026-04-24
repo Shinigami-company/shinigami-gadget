@@ -253,7 +253,7 @@
 "cmd.use.ink.pick.pen": "What pen do you wanna fill?",
 "cmd.use.ink.pick.pen.place": "Pen of the same color",
 "cmd.use.ink.pick.pen.none": "You don't have any pen you can fill with that!",
-"cmd.use.ink.pick.done": "You filled **$[penItemTitle]** with **$[inkItemTitle]**!",
+"cmd.use.ink.pick.done": "You filled **$[penItemTitle]** with **$[inkItemTitle]**",
 
 "cmd.time.content.empty": "Well, remain alive if possible.",
 "cmd.time.content.have": "Are you sure that you can extend your life like that?",

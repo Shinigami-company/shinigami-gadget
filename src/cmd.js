@@ -4579,15 +4579,17 @@ async function cmd_use({ data, userdata, lang, message, token}) {
             if (loopName != 'empty_pen') continue;
             loopPotentialName = item_minimal.meta.oldName;
             //if (!loopPotentialName) loopPotentialName = ink_to_pen[items_info[usedItem.itemName].atr.ink_type];
-          } else if (loopType != itemType.PEN) continue;
+          } else if (loopType === itemType.PEN)
+          {
+            if (!item_minimal.meta.use) continue;// never used
+          } else continue;
 
           if (// continue...
-            loopPotentialName &&// if broken_pen with no old
+            loopPotentialName &&// if broken_pen not permissive
             items_info[loopPotentialName].atr.ink_color &&// if has ink color
             items_info[loopPotentialName].atr.ink_color != items_info[usedItem.itemName].atr.ink_color// if good ink
             ) continue;
 
-          if (!item_minimal.meta.use) continue;// never used
 
           options_objects.push({
             value: item_minimal.id,
@@ -4595,9 +4597,18 @@ async function cmd_use({ data, userdata, lang, message, token}) {
             label: Item.static_title(item_minimal.itemName, lang, false)
           });
         }
+
+        if (!options_objects.length)
+        {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.use.ink.pick.pen.none")
+            }
+          }
+        }
         
-        return (options_objects) 
-        ? {
+        return {
           method: "PATCH",
           body: {
             content: translate(lang, "cmd.use.ink.pick.pen"),
@@ -4617,12 +4628,6 @@ async function cmd_use({ data, userdata, lang, message, token}) {
             ]
           }
         }
-        : {
-          method: "PATCH",
-          body: {
-            content: translate(lang, "cmd.use.ink.pick.pen.none")
-          }
-        }
       }
 
       let filledItem = await Item.get(filledItemId, userdata.id);
@@ -4637,7 +4642,7 @@ async function cmd_use({ data, userdata, lang, message, token}) {
       }
       let filledItemTitle = filledItem.get_title(lang);
 
-      await items_types[itemType.INK].use(userdata, usedItem, filledItem);
+      await items_types[itemType.INK].use(userdata, usedItem, filledItem, lang);
 
       return {
         method: "PATCH",

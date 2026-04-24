@@ -551,9 +551,9 @@ export const items_types = {
   [itemType.INK]: {
     str: 'ink',
     
-    use : async (userdata, itemInk: Item, itemPen: Item) => {
+    use : async (userdata: any, itemInk: Item, itemPen: Item, lang: string) => {
       await ink_use(userdata, itemInk);
-      await pen_fill(itemPen, itemInk);
+      await pen_fill(itemPen, itemInk, lang);
     },
   }
 }
@@ -836,13 +836,15 @@ export class Item {
   }
 
   // SET
-  async change(itemName: string | undefined, meta: {} | undefined)
+  async change(itemName: string | undefined, meta: {} | undefined, lang: string | undefined)
   {
     let change: any = {};
-    if (meta!=undefined)
+    if (meta != undefined)
       change.meta = meta;
-    if (itemName!=undefined)
+    if (itemName != undefined)
       change.itemName = itemName;
+    if (lang != undefined)
+      change.itemLoreTxt = { markdown: field_translation(lang, itemName, 'lore', {}) };// dont have any dolar
     await api.KiraItems.update(this.id, change);
   }
   
