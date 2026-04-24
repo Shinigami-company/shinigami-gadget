@@ -4526,7 +4526,7 @@ async function cmd_use({ data, userdata, lang, message, token}) {
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, "cmd.gift.pick.item"),
+        content: translate(lang, "cmd.use.pick.item"),
         components: [
           {
             type: MessageComponentTypes.ACTION_ROW,
@@ -4535,7 +4535,7 @@ async function cmd_use({ data, userdata, lang, message, token}) {
                 type: MessageComponentTypes.STRING_SELECT,
                 options: options_objects,
                 custom_id: `makecmd gift <value>`,
-                placeholder: translate(lang, "cmd.gift.pick.item.object.place"),
+                placeholder: translate(lang, "cmd.use.pick.item.place"),
                 style: ButtonStyleTypes.PRIMARY,
               }
             ]
@@ -4548,11 +4548,10 @@ async function cmd_use({ data, userdata, lang, message, token}) {
   let usedItem = await Item.get(usedItemId, userdata.id);
   if (!usedItem)
   {
-    throw new Error("can't use_cmd with no used item");
     return {
       method: "PATCH",
       body: {
-        content: translate(lang, "cmd.gift.fail.noitem"),
+        content: translate(lang, "cmd.use.fail.noitem"),
       }
     }
   }
@@ -4595,10 +4594,11 @@ async function cmd_use({ data, userdata, lang, message, token}) {
           });
         }
         
-        return {
+        return (options_objects) 
+        ? {
           method: "PATCH",
           body: {
-            content: translate(lang, "cmd.gift.pick.item"),
+            content: translate(lang, "cmd.use.ink.pick.pen"),
             components: [
               {
                 type: MessageComponentTypes.ACTION_ROW,
@@ -4607,12 +4607,18 @@ async function cmd_use({ data, userdata, lang, message, token}) {
                     type: MessageComponentTypes.STRING_SELECT,
                     options: options_objects,
                     custom_id: `makecmd use ${usedItemId}+<value>`,
-                    placeholder: translate(lang, "cmd.gift.pick.item.object.place"),
+                    placeholder: translate(lang, "cmd.use.ink.pick.pen.place"),
                     style: ButtonStyleTypes.PRIMARY,
                   }
                 ]
               }
             ]
+          }
+        }
+        : {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.use.ink.pick.pen.none")
           }
         }
       }
@@ -4627,14 +4633,14 @@ async function cmd_use({ data, userdata, lang, message, token}) {
           }
         }
       }
+      let filledItemTitle = filledItem.get_title(lang);
 
       await items_types[itemType.INK].use(userdata, usedItem, filledItem);
 
       return {
         method: "PATCH",
         body: {
-          content: "used"
-          //content: translate(lang, "cmd.gift.pick.item.object.place")
+          content: translate(lang, "cmd.use.ink.pick.done", {inkItemTitle: usedItemTitle, penItemTitle: filledItemTitle})
         }
       }
 
