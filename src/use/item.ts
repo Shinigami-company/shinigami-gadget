@@ -565,8 +565,8 @@ export function flow_pen(deep: any) {
   let key = 'items.pens.flow.dura.';
   let penItem = deep.item;
   let use = (penItem.meta?.use) ? penItem.meta.use : 0;
-  let dura = items_info[penItem.itemName].atr.empty_durability - use;
-  let progress = dura / items_info[penItem.itemName].atr.empty_durability;
+  let dura = items_info[penItem.itemName].dura.empty_durability - use;
+  let progress = dura / items_info[penItem.itemName].dura.empty_durability;
 
   if (progress >= 1)
   {
@@ -596,8 +596,8 @@ export function flow_ink(deep: any) {
   let key = 'items.inks.flow.dura.';
   let penItem = deep.item;
   let use = (penItem.meta?.use) ? penItem.meta.use : 0;
-  let dura = items_info[penItem.itemName].atr.empty_durability - use;
-  let progress = dura / items_info[penItem.itemName].atr.empty_durability;
+  let dura = items_info[penItem.itemName].dura.empty_durability - use;
+  let progress = dura / items_info[penItem.itemName].dura.empty_durability;
 
   if (progress >= 1)
   {
