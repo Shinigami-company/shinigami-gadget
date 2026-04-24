@@ -77,12 +77,6 @@ export async function pen_fill(penItem) {
   await api.KiraItems.update(penItem.id, {meta: penItem.meta});
 }
 
-export function pen_item_filters(penType)
-{
-  let filters = ink_to_filters[items_info[penType].atr.ink_color]
-  return filters;
-}
-
 export function pen_apply_filters(text, penType)
 {
   for (let filterKey of items_info[penType].atr.filters)
