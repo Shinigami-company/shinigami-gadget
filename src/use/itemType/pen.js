@@ -1,6 +1,6 @@
 import { api } from "gadget-server";
 import { items_info } from "../item";
-import { usedState } from "../../enum";
+import { inkColor, usedState } from "../../enum";
 
 export const pen_filters = {//ANSI color code block
   red: (text) => `[2;31m${text}[0m`,
@@ -10,6 +10,14 @@ export const pen_filters = {//ANSI color code block
   high_white: (text) => `[30;47m${text}[0m`,
 }
 
+export const ink_to_filters = {
+  [inkColor.BLACK]: [],
+  [inkColor.RED]: ['red'],
+  [inkColor.BLUE]: ['blue'],
+  [inkColor.GREEN]: ['green'],
+  [inkColor.PURPLE]: ['purple'],
+  [inkColor.SPECIAL]: ['high_white'],
+}
 
 export async function pen_use(userdata, penItem)
 {
@@ -67,6 +75,12 @@ export async function pen_fill(penItem) {
   // reset use
   penItem.meta.use = 0;
   await api.KiraItems.update(penItem.id, {meta: penItem.meta});
+}
+
+export function pen_item_filters(penType)
+{
+  let filters = ink_to_filters[items_info[penType].atr.ink_color]
+  return filters;
 }
 
 export function pen_apply_filters(text, penType)
