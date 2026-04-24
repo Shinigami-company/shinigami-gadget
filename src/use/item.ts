@@ -7,6 +7,7 @@ import { NoteBook } from './itemType/book';
 import { copyAttrs } from './tools';
 import { stats_simple_add } from './stats';
 import { ink_use } from './itemType/ink';
+import { pen_fill } from './itemType/pen';
 
 
 //flow is like a dynamic lore.
@@ -314,9 +315,9 @@ export const items_info: any = {
       }
     },
     shopData: {
-      proba: 1,
-      price_min: 0,
-      price_max: 1,
+      proba: 100,
+      price_min: 2,
+      price_max: 3,
     }
   },
 
@@ -523,8 +524,9 @@ export const items_types = {
   [itemType.INK]: {
     str: 'ink',
     
-    use : async (userdata, item: Item) => {
-      await ink_use(userdata, item);
+    use : async (userdata, itemInk: Item, itemPen: Item) => {
+      await ink_use(userdata, itemInk);
+      await pen_fill(itemPen);
     },
   }
 }

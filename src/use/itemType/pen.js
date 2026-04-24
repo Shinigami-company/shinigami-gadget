@@ -51,6 +51,11 @@ export async function pen_use(userdata, penItem)
   }
 }
 
+export async function pen_fill(penItem) {
+  penItem.meta.use=0;
+  await api.KiraItems.update(penItem.id, {meta: penItem.meta});
+}
+
 export function pen_apply_filters(text, penType)
 {
   for (let filterKey of items_info[penType].atr.filters)

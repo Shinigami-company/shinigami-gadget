@@ -4563,57 +4563,60 @@ async function cmd_use({ data, userdata, lang, message, token}) {
 
   switch (usedItemType)
   {
-    case itemType.INK: {
-      await items_types[itemType.INK].use(userdata, usedItem);
-      
-      //let filledPenId = data.options?.find((opt) => opt.name === "penitemid")?.value;
+    case itemType.INK: {      
+      let filledItemId = data.options?.find((opt) => opt.name === "penitemid")?.value;
+      console.log("data.options",data.options);
 
-      //if (!filledPenId)
-      //{
-      //  throw new Error("can't use_cmd with no used item");
-      //  let options_objects = [];
-      //  const items_all = await Item.inventory_ids(userdata.id);
-      //  for (let item_minimal of items_all) {
-      //    options_objects.push({
-      //      value: item_minimal.id,
-      //      emoji: items_info[item_minimal.itemName].emoji,
-      //      label: Item.static_title(item_minimal.itemName, lang, false)
-      //    });
-      //  }
+      if (!filledItemId)
+      {
+        let options_objects = [];
+        const items_all = await Item.inventory_ids(userdata.id);
+        for (let item_minimal of items_all) {
+          let loopType = items_info[item_minimal.itemName].type;
+          if (loopType != itemType.PEN) continue;
+          // && loopType != itemType.JUNK
+          //if (items_info[item_minimal.itemName].atr.ink_color != items_info[usedItem.itemName].atr.ink_color) continue;
+          options_objects.push({
+            value: item_minimal.id,
+            emoji: items_info[item_minimal.itemName].emoji,
+            label: Item.static_title(item_minimal.itemName, lang, false)
+          });
+        }
         
-      //  return {
-      //    method: "PATCH",
-      //    body: {
-      //      content: translate(lang, "cmd.gift.pick.item"),
-      //      components: [
-      //        {
-      //          type: MessageComponentTypes.ACTION_ROW,
-      //          components: [
-      //            {
-      //              type: MessageComponentTypes.STRING_SELECT,
-      //              options: options_objects,
-      //              custom_id: `makecmd gift <value>`,
-      //              placeholder: translate(lang, "cmd.gift.pick.item.object.place"),
-      //              style: ButtonStyleTypes.PRIMARY,
-      //            }
-      //          ]
-      //        }
-      //      ]
-      //    }
-      //  }
-      //}
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.gift.pick.item"),
+            components: [
+              {
+                type: MessageComponentTypes.ACTION_ROW,
+                components: [
+                  {
+                    type: MessageComponentTypes.STRING_SELECT,
+                    options: options_objects,
+                    custom_id: `makecmd use ${usedItemId}+<value>`,
+                    placeholder: translate(lang, "cmd.gift.pick.item.object.place"),
+                    style: ButtonStyleTypes.PRIMARY,
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
 
-      //let usedItem = await Item.get(usedItemId, userdata.id);
-      //if (!usedItem)
-      //{
-      //  throw new Error("can't use_cmd with no used item");
-      //  return {
-      //    method: "PATCH",
-      //    body: {
-      //      content: translate(lang, "cmd.gift.fail.noitem"),
-      //    }
-      //  }
-      //}
+      let filledItem = await Item.get(filledItemId, userdata.id);
+      if (!filledItem)
+      {
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(lang, "cmd.gift.fail.noitem"),
+          }
+        }
+      }
+
+      await items_types[itemType.INK].use(userdata, usedItem, filledItem);
 
       return {
         method: "PATCH",
