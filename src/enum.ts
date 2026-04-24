@@ -47,3 +47,21 @@ export enum usedState {
   EMPTY = -1,
   BROKEN = -2,
 }
+
+export enum inkColor {
+  BLACK = 0,
+  BLUE = 1,
+  GREEN = 2,
+  RED = 3,
+  PURPLE = 4,
+  SPECIAL = 9,
+}
+
+export enum penBody {
+  BALLPOINT = 0,
+  IRON = 1,
+  FOUNTAIN = 2,
+  PENCIL = 3,
+  FEATHER = 4,
+  SPECIAL = 9,
+}

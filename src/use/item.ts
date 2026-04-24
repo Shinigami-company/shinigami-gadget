@@ -1,5 +1,5 @@
 import { api } from 'gadget-server';
-import { itemType } from '../enum';
+import { inkColor, itemType } from '../enum';
 import { translate } from '../lang';
 import { sett_emoji_items, godNamesProba } from '../sett';
 import { kira_apple_send } from './apple';
@@ -44,6 +44,7 @@ export const items_info: any = {
     },
     atr: {
       filters: [],
+      ink_color: inkColor.BLACK,
     },
     dura: {
       broken_item: 'broken_pen',
@@ -75,6 +76,7 @@ export const items_info: any = {
     },
     atr: {
       filters: ['blue'],
+      ink_color: inkColor.BLUE,
     },
     dura: {
       broken_item: 'broken_pen',
@@ -106,6 +108,7 @@ export const items_info: any = {
     },
     atr: {
       filters: ['green'],
+      ink_color: inkColor.GREEN,
     },
     dura: {
       broken_item: 'broken_pen',
@@ -137,6 +140,7 @@ export const items_info: any = {
     },
     atr: {
       filters: ['red'],
+      ink_color: inkColor.RED,
     },
     dura: {
       broken_item: 'broken_pen',
@@ -168,6 +172,7 @@ export const items_info: any = {
     },
     atr: {
       filters: ['purple'],
+      ink_color: inkColor.PURPLE,
     },
     dura: {
       broken_item: 'broken_pen',
@@ -199,6 +204,7 @@ export const items_info: any = {
     },
     atr: {
       filters: ['high_white'],
+      ink_color: inkColor.SPECIAL,
     },
     dura: {
       broken_item: 'broken_pen',
@@ -225,6 +231,7 @@ export const items_info: any = {
     },
     atr: {
       filters: ['high_white'],
+      ink_color: inkColor.SPECIAL,
     },
     dura: {
       broken_item: 'broken_pen',
@@ -251,6 +258,7 @@ export const items_info: any = {
     },
     atr: {
       filters: [],
+      ink_color: inkColor.SPECIAL,
       silent: true,
     },
     dura: {
@@ -319,7 +327,9 @@ export const items_info: any = {
       gift: true,
       use: true
     },
-    atr: {},
+    atr: {
+      ink_color: inkColor.BLACK,
+    },
     dura: {
       broken_chance: 0,
       empty_durability: 2,
