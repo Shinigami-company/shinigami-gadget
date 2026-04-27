@@ -61,8 +61,8 @@ export const items_info: any = {
     },
     shopData: {
       proba: 10,
-      price_min: 2,
-      price_max: 4,
+      price_min: 1,
+      price_max: 3,
     }
   },
   
@@ -93,8 +93,8 @@ export const items_info: any = {
     },
     shopData: {
       proba: 5,
-      price_min: 2,
-      price_max: 4,
+      price_min: 1,
+      price_max: 3,
     }
   },
   
@@ -125,8 +125,8 @@ export const items_info: any = {
     },
     shopData: {
       proba: 2,
-      price_min: 3,
-      price_max: 5,
+      price_min: 2,
+      price_max: 4,
     }
   },
 
@@ -157,8 +157,8 @@ export const items_info: any = {
     },
     shopData: {
       proba: 2,
-      price_min: 3,
-      price_max: 5,
+      price_min: 2,
+      price_max: 4,
     }
   },
   
@@ -189,8 +189,8 @@ export const items_info: any = {
     },
     shopData: {
       proba: 1,
-      price_min: 3,
-      price_max: 5,
+      price_min: 2,
+      price_max: 4,
     }
   },
   
@@ -374,6 +374,93 @@ export const items_info: any = {
       proba: 1,
       price_min: 2,
       price_max: 3,
+    }
+  },
+  
+  ink_green: {
+    type: itemType.INK,
+    emoji: sett_emoji_items.ink_green,
+    actions: {
+      throw: true,
+      gift: true,
+      use: true
+    },
+    atr: {
+      ink_color: inkColor.GREEN,
+    },
+    dura: {
+      broken_chance: 0,
+      empty_durability: 2,
+    },
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_ink
+      }
+    },
+    shopData: {
+      proba: .5,
+      price_min: 3,
+      price_max: 4,
+    }
+  },
+  
+  ink_red: {
+    type: itemType.INK,
+    emoji: sett_emoji_items.ink_red,
+    actions: {
+      throw: true,
+      gift: true,
+      use: true
+    },
+    atr: {
+      ink_color: inkColor.RED,
+    },
+    dura: {
+      broken_chance: 0,
+      empty_durability: 2,
+    },
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_ink
+      }
+    },
+    shopData: {
+      proba: .5,
+      price_min: 3,
+      price_max: 4,
+    }
+  },
+  
+  ink_purple: {
+    type: itemType.INK,
+    emoji: sett_emoji_items.ink_purple,
+    actions: {
+      throw: true,
+      gift: true,
+      use: true
+    },
+    atr: {
+      ink_color: inkColor.PURPLE,
+    },
+    dura: {
+      broken_chance: 0,
+      empty_durability: 2,
+    },
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_ink
+      }
+    },
+    shopData: {
+      proba: .25,
+      price_min: 3,
+      price_max: 4,
     }
   },
 

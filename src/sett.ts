@@ -163,6 +163,18 @@ export const sett_emoji_items = {
     name: "ink_blue",
     id: "1495879499622125568",
   },
+  ink_red: {
+    name: "ink_red",
+    id: "1498403707623309322",
+  },
+  ink_green: {
+    name: "ink_green",
+    id: "1498403711939117298",
+  },
+  ink_purple: {
+    name: "ink_purple",
+    id: "1498403709678387280",
+  },
 
   book_black: {
     name: "book_black",
