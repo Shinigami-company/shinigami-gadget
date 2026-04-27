@@ -507,7 +507,7 @@ export const items_info: any = {
       flow: { function: flow_book }
     },
     shopData: {
-      proba: 500,
+      proba: .5,
       price_min: 40,
       price_max: 50,
     }
