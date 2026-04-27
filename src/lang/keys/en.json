@@ -103,7 +103,7 @@
 "cmd.burn.confirm.button.okok": "REALLY BURN IT",
 "cmd.burn.confirm.button.nono": "it was a joke!",
 "cmd.burn.fail.notu": "*That not your matchstick.*",
-"cmd.burn.fail.notowner": "You dont have this Death Note in your pocket anymore.",
+"cmd.burn.fail.notown": "You dont have this Death Note in your pocket anymore.",
 "cmd.burn.fail.expired": "*The matchstick went out in the meantime.*",
 "cmd.burn.cancel": "*You light off the matchstick.*\nPlaying with fire could be dangerous, but this is what makes it so fun.",
 "cmd.burn.done": "**You burnt your Death Note.** 🔥🔥🔥\nWell, see you later human.\n*The shinigami disappears*",

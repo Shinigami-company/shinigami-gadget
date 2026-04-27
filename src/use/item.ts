@@ -342,7 +342,7 @@ export const items_info: any = {
       }
     },
     shopData: {
-      proba: 100,
+      proba: 3,
       price_min: 2,
       price_max: 3,
     }
@@ -391,7 +391,7 @@ export const items_info: any = {
       flow: { function: flow_book }
     },
     shopData: {
-      proba: .5,
+      proba: 500,
       price_min: 40,
       price_max: 50,
     }
