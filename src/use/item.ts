@@ -92,7 +92,7 @@ export const items_info: any = {
       }
     },
     shopData: {
-      proba: 10,
+      proba: 5,
       price_min: 2,
       price_max: 4,
     }
@@ -342,7 +342,36 @@ export const items_info: any = {
       }
     },
     shopData: {
-      proba: 3,
+      proba: 2,
+      price_min: 2,
+      price_max: 3,
+    }
+  },
+  
+  ink_blue: {
+    type: itemType.INK,
+    emoji: sett_emoji_items.ink_blue,
+    actions: {
+      throw: true,
+      gift: true,
+      use: true
+    },
+    atr: {
+      ink_color: inkColor.BLUE,
+    },
+    dura: {
+      broken_chance: 0,
+      empty_durability: 2,
+    },
+    fields: {
+      claim: false,
+      lore: true,
+      flow: {
+        function: flow_ink
+      }
+    },
+    shopData: {
+      proba: 1,
       price_min: 2,
       price_max: 3,
     }
