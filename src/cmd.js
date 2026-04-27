@@ -5391,7 +5391,7 @@ export async function cmd_kira_execute(data) {
   const h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail); //needed to know if alive
   const lang_victim = h_victim_data ? await lang_get(h_victim_data, lang) : lang;
   const userdata = await kira_user_get(user.id, true);
-  const h_attacker_book = await NoteBook.get(userdata.noteBookId);
+  const h_attacker_book = await NoteBook.get(userdata.noteBookId, true);
   //const lang_victim = pack.lang_victim ? pack.lang_victim : pack.lang_attacker; //old
 
   //handle special case : burned book
