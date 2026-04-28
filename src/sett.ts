@@ -219,12 +219,12 @@ const noSuscide = false;
 const comebackBy = {
   time: {
     //comeback automaticly after the time
-    other: { if: false, message: false },
-    suicide: { if: true, message: true },
+    other: { revive: false, message: true, ephemeral: false, destruct: true },
+    suicide: { revive: true, message: true, ephemeral: false, destruct: false },
   },
   check: {
     //comeback when victim do something
-    self: { if: true, message: false }, //just, dont disable that.
+    self: { revive: true, message: false }, //just, dont disable that.
   },
 };
 const cancelWhenDeadAttacker = true;

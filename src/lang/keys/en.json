@@ -347,7 +347,7 @@
 "cmd.kira.counter.attacker": "**But <@$[victimId]> __countered__ the attack**...",
 "cmd.kira.counter.victim": "**But you __counter__ <@$[attackerId]>'s attack**",
 
-"cmd.comeback.time.other": "You came back to life.",
+"cmd.comeback.time.other": "You can now return to life by executing any command.",
 "cmd.comeback.time.suicide": "Having killed yourself, you come back to life by yourself.",
 "cmd.comeback.check.self": "You came back to life.",
 

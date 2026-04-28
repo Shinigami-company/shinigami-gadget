@@ -1625,7 +1625,7 @@ async function check_can_alive({ lang, userdata }) {
   const h_gap = parseInt(
     (new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000
   );
-  if (h_gap > 0 || !SETT_CMD.kira.comebackBy.check.self.if) {
+  if (h_gap > 0 || !SETT_CMD.kira.comebackBy.check.self.revive) {
     //can not be bring back
     return {
       content: translate(lang, "check.alive.not", {
@@ -5746,31 +5746,30 @@ export async function cmd_comeback(data) {
   const comeback_type = data.ifSuicide ? "suicide" : "other";
 
   //if comeback
-  if (!SETT_CMD.kira.comebackBy.time[comeback_type].if) return;
+  if (SETT_CMD.kira.comebackBy.time[comeback_type].revive)
+  {
+    const userdata = await kira_user_get(data.userId, false);
 
-  const userdata = await kira_user_get(data.userId, false);
-  const lang = userdata.lang;
-
-  const h_gap = parseInt(
-    (new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000
-  );
-  if (h_gap > 0) {
-    //can not be bring back
-    console.log(
-      `cmd : comeback : cant bring back [${userdata.userId}] bcs gap=${h_gap}`
+    const h_gap = parseInt(
+      (new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000
     );
-    return;
+    if (h_gap > 0) {
+      //can not be bring back
+      console.log(
+        `cmd : comeback : cant bring back [${userdata.userId}] bcs gap=${h_gap}`
+      );
+      return;
+    }
+
+    //bring back
+    console.log(`cmd : comeback : bringing back [${userdata.userId}]`);
+    await kira_user_set_life(userdata, true);
   }
 
-  //bring back
-  console.log(`cmd : comeback : bringing back [${userdata.userId}]`);
-  await kira_user_set_life(userdata, true);
-
   //if send message
-  if (!SETT_CMD.kira.comebackBy.time[comeback_type].message) return;
-
-  {
+  if (SETT_CMD.kira.comebackBy.time[comeback_type].message) {
     //open DM
+    const userdata = await kira_user_get(data.userId, false);
     const dm_id = await kira_user_dm_id(userdata);
 
     //send message
@@ -5782,7 +5781,7 @@ export async function cmd_comeback(data) {
           message_reference: {
             message_id: data.msgReference,
           },
-          content: translate(lang, "cmd.comeback.time." + comeback_type),
+          content: translate(userdata.lang, "cmd.comeback.time." + comeback_type),
         },
       });
     } catch (e) {
