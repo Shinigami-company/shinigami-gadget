@@ -79,6 +79,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       banValue: true,
       //banTime: true,
       dmId: true,
+      comebackMsgId: true,
       feedbackState: true,
       statPtr: { id: true },
       achivPtr: { id: true },

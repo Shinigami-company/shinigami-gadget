@@ -1637,7 +1637,22 @@ async function check_can_alive({ lang, userdata }) {
   //bring back
   await kira_user_set_life(userdata, true);
 
-  //message
+  // -delete message-
+  if (userdata.comebackMsgId) {
+    //open DM
+    const dm_id = await kira_user_dm_id(userdata);
+    //delete message
+    try {
+      await DiscordRequest(`channels/${dm_id}/messages/${userdata.comebackMsgId}`, {
+        method: "DELETE",
+      });
+    } catch (e) {
+      let errorMsg = JSON.parse(e.message);
+      if (!(errorMsg?.code === 50007)) throw e;
+    }
+  }
+
+  // -send message-
   if (SETT_CMD.kira.comebackBy.check.self.message) {
     //open DM
     const dm_id = await kira_user_dm_id(userdata);

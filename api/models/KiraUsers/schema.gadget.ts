@@ -39,6 +39,7 @@ export const schema: GadgetModel = {
       storageKey: "mEHu8wCFxIeg",
     },
     banValue: { type: "number", storageKey: "olZPOzgP4MKN" },
+    comebackMsgId: { type: "string", storageKey: "44CxL0VtcB1a" },
     deathDate: {
       type: "dateTime",
       includeTime: true,
