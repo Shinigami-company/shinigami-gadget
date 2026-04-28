@@ -208,6 +208,7 @@
 "cmd.pocket.action.look.inside": "Look inside",
 
 "cmd.shop.content.all": "I can bring you all :",
+"cmd.shop.footer.apple": "You have $[apple] 🍎",
 "cmd.shop.item.value": "- I give you that for $[price] :apple:",
 "cmd.shop.empty.title": " ",
 "cmd.shop.empty.value": "- *Nothing more here*",
@@ -221,7 +222,6 @@
 "cmd.shop.get.how.from.respond": "Dont ask. Sooo, your in?",
 "cmd.shop.get.how.empty": "There is nothing",
 "cmd.shop.get.how.empty.respond": "You took it all! Wait a bit.",
-"cmd.shop.footer.time": "I will get something else in like $[time]",
 
 "cmd.gift.fail.noitem": "You dont have this item anymore.",
 "cmd.gift.fail.poor": "You cant affrod it.",

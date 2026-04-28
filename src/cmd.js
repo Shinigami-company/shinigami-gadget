@@ -4027,7 +4027,7 @@ async function cmd_shop({ data, userdata, userbook, lang, token }) {
   let fields = [];
   let components=[];
   let content = translate(lang, "cmd.shop.content.all");
-  let footer_text = "";
+  let footer_text = translate(lang, "cmd.shop.footer.apple", {"apple": userdata.apples });
   let fail_reason = "";
 
   if (buyit === 2)
