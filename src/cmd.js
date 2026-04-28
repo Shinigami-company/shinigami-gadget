@@ -141,6 +141,7 @@ import { randomInt } from "crypto";
 import { string_emoji } from "./use/tools.ts";
 import { Gift } from "./cmd/gift";
 import { kira_user_update } from "./use/update.js";
+import { ink_match } from "./use/itemType/ink.js";
 
 
 //the structure to describe the command
@@ -4570,26 +4571,7 @@ async function cmd_use({ data, userdata, lang, message, token}) {
         let options_objects = [];
         const items_all = await Item.inventory_ids(userdata.id, true);
         for (let item_minimal of items_all) {
-          let loopName = item_minimal.itemName;
-          let loopType = items_info[loopName].type;
-          let loopPotentialName = loopName;
-          
-          if (loopType === itemType.JUNK)
-          {
-            if (loopName != 'empty_pen') continue;
-            loopPotentialName = item_minimal.meta.oldName;
-            //if (!loopPotentialName) loopPotentialName = ink_to_pen[items_info[usedItem.itemName].atr.ink_type];
-          } else if (loopType === itemType.PEN)
-          {
-            if (!item_minimal.meta.use) continue;// never used
-          } else continue;
-
-          if (// continue...
-            loopPotentialName &&// if broken_pen not permissive
-            items_info[loopPotentialName].atr.ink_color &&// if has ink color
-            items_info[loopPotentialName].atr.ink_color != items_info[usedItem.itemName].atr.ink_color// if good ink
-            ) continue;
-
+          if (!ink_match(item_minimal, usedItem)) continue;
 
           options_objects.push({
             value: item_minimal.id,

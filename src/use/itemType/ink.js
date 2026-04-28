@@ -1,6 +1,6 @@
 import { api } from "gadget-server";
 import { items_info } from "../item";
-import { usedState } from "../../enum";
+import { itemType, usedState } from "../../enum";
 
 
 export async function ink_use(userdata, inkItem)
@@ -43,3 +43,32 @@ export async function ink_use(userdata, inkItem)
   }
 }
 
+export function ink_match(penItem, inkItem)
+{
+  // penItem can be minimal with atr
+  let penName = penItem.itemName;
+  let penMeta = penItem.meta;
+  let penType = items_info[penName].type;
+  let penPotentialName = penName;
+  
+  if (penType === itemType.JUNK)
+  {
+    if (penName != 'empty_pen') return false;
+    penPotentialName = penMeta.oldName;// can be none and its normal
+  } else if (penType === itemType.PEN)
+  {
+    if (!penMeta.use) return false;// never used
+  } else return false;
+
+  console.log(`
+  items_info[penPotentialName].atr.ink_color === items_info[inkItem.itemName].atr.ink_color
+  items_info[${penPotentialName}].atr.ink_color === items_info[${inkItem.itemName}].atr.ink_color
+  ${items_info[penPotentialName].atr.ink_color} === ${items_info[inkItem.itemName].atr.ink_color}
+  `)
+  if (// true...
+    penPotentialName === undefined ||// if broken_pen permissive
+    items_info[penPotentialName].atr.ink_color === undefined ||// if has no ink color
+    items_info[penPotentialName].atr.ink_color === items_info[inkItem.itemName].atr.ink_color// if good ink
+    ) return true;
+  return false;
+}
