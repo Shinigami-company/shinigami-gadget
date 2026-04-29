@@ -2909,7 +2909,7 @@ async function cmd_feedback_form({ data, message, lang, token, id }) {
     await DiscordRequest(`webhooks/${process.env.APP_ID}/${token}`, {
       method: "POST",
       body: {
-        content: translate(lang, "cmd.feedback.writting"),
+        content: translate(lang, "cmd.feedback.writing"),
         /* didnt work
         data: {
           flags: InteractionResponseFlags.EPHEMERAL,

@@ -52,7 +52,7 @@
 "cmd.feedback.confirm": "✉➡️🗳️",
 "cmd.feedback.confirm.yes": "🖋️",
 "cmd.feedback.confirm.no": "❌",
-"cmd.feedback.writting": "🫵🖋️",
+"cmd.feedback.writing": "🫵🖋️",
 "cmd.feedback.modal.title": "🗳️",
 "cmd.feedback.modal.letter.label": "📝",
 "cmd.feedback.modal.letter.placeholder": "...",
