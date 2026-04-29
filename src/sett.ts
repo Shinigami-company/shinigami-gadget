@@ -219,7 +219,7 @@ const noSuscide = false;
 const comebackBy = {
   time: {
     //comeback automaticly after the time
-    other: { revive: false, message: true, ephemeral: false, destruct: true },
+    other: { revive: false, message: true, ephemeral: true, destruct: true },
     suicide: { revive: true, message: true, ephemeral: false, destruct: false },
   },
   check: {

@@ -5790,20 +5790,21 @@ export async function cmd_comeback(data) {
 
     //send message
     try {
-      var reminderMessage =
-      await DiscordRequest(`channels/${dm_id}/messages`, {
+      var reminderMessage = await DiscordRequest(`channels/${dm_id}/messages`, {
         method: "POST",
         body: {
-          data: {
-            flags: SETT_CMD.kira.comebackBy.time[comeback_type].ephemeral 
-                    ? InteractionResponseFlags.EPHEMERAL : undefined,
-          },
+          // ! does not seems to work
+          //data: {
+          //  flags: SETT_CMD.kira.comebackBy.time[comeback_type].ephemeral 
+          //          ? InteractionResponseFlags.EPHEMERAL : undefined,
+          //},
           message_reference: {
             message_id: data.msgReference,
           },
           content: translate(userdata.lang, "cmd.comeback.time." + comeback_type),
         },
-      });
+      }).then((res) => res.json());
+      // set the id for delete when resurrection
       if (SETT_CMD.kira.comebackBy.time[comeback_type].destruct)
         await kira_user_set_remindermsg(userdata.id, reminderMessage.id);
     } catch (e) {
