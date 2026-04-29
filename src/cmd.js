@@ -59,6 +59,7 @@ import {
   kira_user_dm_id,
   kira_user_get_owned_books_item,
   command_refresh_one,
+  kira_user_set_remindermsg,
 } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
@@ -1638,12 +1639,12 @@ async function check_can_alive({ lang, userdata }) {
   await kira_user_set_life(userdata, true);
 
   // -delete message-
-  if (userdata.comebackMsgId) {
+  if (userdata.reminderMsgId) {
     //open DM
     const dm_id = await kira_user_dm_id(userdata);
     //delete message
     try {
-      await DiscordRequest(`channels/${dm_id}/messages/${userdata.comebackMsgId}`, {
+      await DiscordRequest(`channels/${dm_id}/messages/${userdata.reminderMsgId}`, {
         method: "DELETE",
       });
     } catch (e) {
@@ -5789,16 +5790,22 @@ export async function cmd_comeback(data) {
 
     //send message
     try {
-      //var h_victim_message =
+      var reminderMessage =
       await DiscordRequest(`channels/${dm_id}/messages`, {
         method: "POST",
         body: {
+          data: {
+            flags: SETT_CMD.kira.comebackBy.time[comeback_type].ephemeral 
+                    ? InteractionResponseFlags.EPHEMERAL : undefined,
+          },
           message_reference: {
             message_id: data.msgReference,
           },
           content: translate(userdata.lang, "cmd.comeback.time." + comeback_type),
         },
       });
+      if (SETT_CMD.kira.comebackBy.time[comeback_type].destruct)
+        await kira_user_set_remindermsg(userdata.id, reminderMessage.id);
     } catch (e) {
       let errorMsg = JSON.parse(e.message);
       if (!(errorMsg?.code === 50007)) throw e;

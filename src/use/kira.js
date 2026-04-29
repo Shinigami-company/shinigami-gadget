@@ -79,7 +79,7 @@ export async function kira_user_get(f_userId, f_createIfNot = false) {
       banValue: true,
       //banTime: true,
       dmId: true,
-      comebackMsgId: true,
+      reminderMsgId: true,
       feedbackState: true,
       statPtr: { id: true },
       achivPtr: { id: true },
@@ -317,6 +317,12 @@ export async function kira_user_can_feedback(userdataId) {
     (new Date(iso).getTime() - new Date().getTime()) / 1000
   );
   return (span);
+}
+
+export async function kira_user_set_remindermsg(userdataId, reminderMsgId) {
+  await api.KiraUsers.update(userdataId, {
+    reminderMsgId: reminderMsgId,
+  });
 }
 
 
