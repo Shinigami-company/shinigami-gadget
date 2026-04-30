@@ -1621,20 +1621,19 @@ function check_is_alive({ lang, userdata }) {
 }
 
 async function can_alive_destruct_reminder(userdata) {
-  // -delete message-
-  if (userdata.reminderMsgId) {
-    kira_user_set_remindermsg(userdata.id, null);
-    //open DM
-    const dm_id = await kira_user_dm_id(userdata);
-    //delete message
-    try {
-      await DiscordRequest(`channels/${dm_id}/messages/${userdata.reminderMsgId}`, {
-        method: "DELETE",
-      });
-    } catch (e) {
-      let errorMsg = JSON.parse(e.message);
-      if (!(errorMsg?.code === 50007)) throw e;
-    }
+  if (!userdata.reminderMsgId) return;
+  //remove reminder even if crash
+  kira_user_set_remindermsg(userdata.id, null);
+  //open DM
+  const dm_id = await kira_user_dm_id(userdata);
+  //delete message
+  try {
+    await DiscordRequest(`channels/${dm_id}/messages/${userdata.reminderMsgId}`, {
+      method: "DELETE",
+    });
+  } catch (e) {
+    let errorMsg = JSON.parse(e.message);
+    if (!(errorMsg?.code === 50007)) throw e;
   }
 }
 
