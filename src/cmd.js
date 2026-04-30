@@ -1620,8 +1620,31 @@ function check_is_alive({ lang, userdata }) {
   return undefined;
 }
 
+async function can_alive_destruct_reminder(userdata) {
+  // -delete message-
+  if (userdata.reminderMsgId) {
+    //open DM
+    const dm_id = await kira_user_dm_id(userdata);
+    //delete message
+    try {
+      await DiscordRequest(`channels/${dm_id}/messages/${userdata.reminderMsgId}`, {
+        method: "DELETE",
+      });
+    } catch (e) {
+      let errorMsg = JSON.parse(e.message);
+      if (!(errorMsg?.code === 50007)) throw e;
+    }
+  }
+}
+
 async function check_can_alive({ lang, userdata }) {
-  if (userdata.is_alive) return undefined;
+  if (userdata.is_alive) {
+    // destruct
+    await can_alive_destruct_reminder(userdata);
+    //gud
+    return undefined;
+  }
+
   //is not alive
   const h_gap = parseInt(
     (new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000
@@ -1637,40 +1660,8 @@ async function check_can_alive({ lang, userdata }) {
 
   //bring back
   await kira_user_set_life(userdata, true);
-
-  // -delete message-
-  if (userdata.reminderMsgId) {
-    //open DM
-    const dm_id = await kira_user_dm_id(userdata);
-    //delete message
-    try {
-      await DiscordRequest(`channels/${dm_id}/messages/${userdata.reminderMsgId}`, {
-        method: "DELETE",
-      });
-    } catch (e) {
-      let errorMsg = JSON.parse(e.message);
-      if (!(errorMsg?.code === 50007)) throw e;
-    }
-  }
-
-  // -send message-
-  if (SETT_CMD.kira.comebackBy.check.self.message) {
-    //open DM
-    const dm_id = await kira_user_dm_id(userdata);
-    //send message
-    try {
-      //var h_victim_message =
-      await DiscordRequest(`channels/${dm_id}/messages`, {
-        method: "POST",
-        body: {
-          content: translate(lang, "cmd.comeback.check.self"),
-        },
-      });
-    } catch (e) {
-      let errorMsg = JSON.parse(e.message);
-      if (!(errorMsg?.code === 50007)) throw e;
-    }
-  }
+  //destruct
+  await can_alive_destruct_reminder(userdata);
   //gud
   return undefined;
 }
