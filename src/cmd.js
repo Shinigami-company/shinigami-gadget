@@ -1623,6 +1623,7 @@ function check_is_alive({ lang, userdata }) {
 async function can_alive_destruct_reminder(userdata) {
   // -delete message-
   if (userdata.reminderMsgId) {
+    kira_user_set_remindermsg(userdata.id, null);
     //open DM
     const dm_id = await kira_user_dm_id(userdata);
     //delete message
