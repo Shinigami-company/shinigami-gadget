@@ -319,6 +319,8 @@ new Achievement("outerTime", "level_outerTime", 5, false, 1, [
   30 * 24 * 3600,
   365.25 * 24 * 3600,
 ]);
+new Achievement("penFill", "level_penFill", 3, false, 1, [1, 5, 25]);
+new Achievement("penTotalUse", "level_penTotalUse", 3, false, 1, [10, 20, 40]);
 new Achievement("writtenPage", "level_writtenPage", 3, false, 1, [2, 10, 70]);
 new Achievement("avengeBest", "level_avengeBest", 3, false, 1, [5, 30, 100]);
 new Achievement(
