@@ -30,8 +30,12 @@ export const ink_to_pen = {
 export async function pen_use(userdata, penItem)
 {
   const firstUse = (!penItem.meta.use);
-  if (firstUse) penItem.meta.use=0;
+  // capacity - use = durability
+  if (firstUse) penItem.meta.use = 0;
   penItem.meta.use += 1;
+  // totalUse is the use count even after durability reset (fill)
+  penItem.meta.totalUse ??= 0;// necessayr for non-update pen
+  penItem.meta.totalUse += 1;
   //penItem.meta.dura = items_info[penItem.itemName].dura.empty_durability - penItem.meta.use;//no more needed
   const empty_durability = items_info[penItem.itemName].dura.empty_durability;
   const broken_chance = items_info[penItem.itemName].dura.broken_chance;
@@ -45,6 +49,7 @@ export async function pen_use(userdata, penItem)
       await penItem.change(newItemName, penItem.meta);
     } else {
       await penItem.delete(userdata);
+      penItem = null;
     }
     return usedState.EMPTY;
   }
