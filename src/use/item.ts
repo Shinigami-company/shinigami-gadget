@@ -336,7 +336,6 @@ export const items_info: any = {
       ink_color: inkColor.BLACK,
     },
     dura: {
-      broken_chance: 0,
       empty_capacity: 2,
     },
     fields: {
@@ -365,7 +364,6 @@ export const items_info: any = {
       ink_color: inkColor.BLUE,
     },
     dura: {
-      broken_chance: 0,
       empty_capacity: 2,
     },
     fields: {
@@ -394,7 +392,6 @@ export const items_info: any = {
       ink_color: inkColor.GREEN,
     },
     dura: {
-      broken_chance: 0,
       empty_capacity: 2,
     },
     fields: {
@@ -423,7 +420,6 @@ export const items_info: any = {
       ink_color: inkColor.RED,
     },
     dura: {
-      broken_chance: 0,
       empty_capacity: 2,
     },
     fields: {
@@ -452,7 +448,6 @@ export const items_info: any = {
       ink_color: inkColor.PURPLE,
     },
     dura: {
-      broken_chance: 0,
       empty_capacity: 2,
     },
     fields: {
