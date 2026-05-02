@@ -348,6 +348,7 @@ new Achievement("booksDouble", "done_booksDouble", 1, false, 1);
 new Achievement("giftAway", "done_giftAway", 1, false, 1);
 new Achievement("giftJunk", "done_giftJunk", 1, false, 1);
 new Achievement("giftSelf", "done_giftSelf", 1, false, 1);
+new Achievement("zeroApple", "done_zeroApple", 1, false, 1);
 new Achievement("fillNotEmptyPen", "done_fillNotEmptyPen", 1, false, 1);
 
 //dont put the achievement here to be invisible
@@ -373,6 +374,7 @@ Achievement.listDisplayed = [
   "giftAway",
   "giftJunk",
   "giftSelf",
+  "zeroApple",
   "fillNotEmptyPen",
   "onLeaderboard",
   "secretRule",

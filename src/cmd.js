@@ -3309,6 +3309,10 @@ async function cmd_apple({ userdata, user, locale, lang }) {
   }
 
   const displayed_apples = userdata.apples+h_apples_claimed;
+  if (displayed_apples === 0)
+  {
+    await Achievement.list["zeroApple"].do_grant(userdata, lang);
+  }
 
   return {
     method: "PATCH",

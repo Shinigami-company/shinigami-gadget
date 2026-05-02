@@ -37,6 +37,7 @@ export const schema: GadgetModel = {
       default: 0,
       storageKey: "TMxqggYdUD2l",
     },
+    done_zeroApple: { type: "number", storageKey: "_wUpBEblGnt_" },
     level_avengeBest: { type: "number", storageKey: "V19WHtlTcAJl" },
     level_counter: { type: "number", storageKey: "1TygINI1K0Wx" },
     level_kill: { type: "number", storageKey: "C2LK2FkrNIfD" },
