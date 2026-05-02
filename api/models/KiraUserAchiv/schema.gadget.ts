@@ -42,13 +42,13 @@ export const schema: GadgetModel = {
     },
     level_outerTime: { type: "number", storageKey: "L0BCxHZN5Kqx" },
     level_penBreaker: { type: "number", storageKey: "XItCf_fG226g" },
-    level_penFill: { type: "number", storageKey: "MUwKDF4sPSBl" },
-    level_penTotalUse: { type: "number", storageKey: "2qeVoVqWqkaa" },
+    level_penFiller: { type: "number", storageKey: "MUwKDF4sPSBl" },
     level_test2: {
       type: "number",
       default: 0,
       storageKey: "-KyrrpjDsO8V",
     },
+    level_useSamePen: { type: "number", storageKey: "2qeVoVqWqkaa" },
     level_writtenPage: { type: "number", storageKey: "Xr65Saii09qs" },
     userId: { type: "string", storageKey: "zY03WKPyvCHu" },
     userPtr: {

@@ -35,6 +35,7 @@ const stats_simple_all = {
   ever_penBuy: { type: 1 },
   ever_penBroken: { type: 1 },
   ever_penEmpty: { type: 1 },
+  ever_penFill: { type: 1 },
 
   misc_match: { type: 1 },
   misc_know: { type: 1 },
@@ -54,6 +55,7 @@ const stats_simple_all = {
   main_aliveSinceUnix: { type: 6 },
   
   ever_bestAliveSpan: { type: 4 },
+  ever_bestPenTotalUse: { type: 4 },
 
   // is not in stats but here for parsing
   apple: { type: 1 },

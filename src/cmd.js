@@ -4633,6 +4633,8 @@ async function cmd_use({ data, userdata, lang, message, token}) {
       let filledItemTitle = filledItem.get_title(lang);
 
       await items_types[itemType.INK].use(userdata, usedItem, filledItem, lang);
+      const stat = await stats_simple_add(userdata.statPtr.id, "ever_penFill");
+      await Achievement.list["penFiller"].do_check(userdata, stat, lang);
 
       return {
         method: "PATCH",
@@ -5088,23 +5090,22 @@ async function cmd_kira({
 
     if (h_dayGapDiff != 0) {
       //not the same day
-      const stat =
-        h_dayGapDiff === 1
-          ? await stats_simple_add(userdata.statPtr.id, "streak_killDay")
-          : await stats_simple_set(userdata.statPtr.id, "streak_killDay", 0);
       if (h_dayGapDiff === 1)
-        await Achievement.list["killDailyStreak"].do_check(
-          userdata,
-          stat,
-          lang
-        );
-      if (h_dayGapDiff >= 13)
+      {
+        const stat = await stats_simple_add(userdata.statPtr.id, "streak_killDay")
+        await Achievement.list["killDailyStreak"].do_check(userdata, stat, lang);
+      } else {
+        await stats_simple_set(userdata.statPtr.id, "streak_killDay", 0);
+      }
+
+      if (h_dayGapDiff >= 13) {
         await Achievement.list["killDailyComeback"].do_grant(
           userdata,
           lang,
           1,
           { gap: h_dayGapDiff }
         );
+      }
     }
 
     if ((userbook.index + 1) % SETT_CMD.see.maxLines === 0) {
