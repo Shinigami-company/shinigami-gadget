@@ -321,7 +321,7 @@ new Achievement("outerTime", "level_outerTime", 5, false, 1, [
 ]);
 new Achievement("penBreaker", "level_penBreaker", 3, false, 1, [1, 5, 15]);
 new Achievement("penFiller", "level_penFiller", 3, false, 1, [1, 5, 25]);
-new Achievement("useSamePen", "level_useSamePen", 3, false, 1, [10, 20, 40]);
+new Achievement("useSamePen", "level_useSamePen", 3, false, 1, [10, 20, 50]);
 new Achievement("writtenPage", "level_writtenPage", 3, false, 1, [2, 10, 70]);
 new Achievement("avengeBest", "level_avengeBest", 3, false, 1, [5, 30, 100]);
 new Achievement(

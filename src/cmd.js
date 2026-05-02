@@ -5083,6 +5083,9 @@ async function cmd_kira({
   );
 
   {
+    //+achiv
+    await Achievement.list["useSamePen"].do_check(userdata, h_attacker_pen.meta.totalUse, lang);
+
     //+stats
     await stats_simple_add(userdata.statPtr.id, "do_try");
     if (h_victim_data?.id)
