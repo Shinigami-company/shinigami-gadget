@@ -49,8 +49,9 @@ export const items_info: any = {
     dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
+      broken_factor: .01,
       empty_item: 'empty_pen',
-      empty_durability: 5,
+      empty_capacity: 5,
     },
     fields: {
       claim: false,
@@ -81,8 +82,9 @@ export const items_info: any = {
     dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
+      broken_factor: .01,
       empty_item: 'empty_pen',
-      empty_durability: 5,
+      empty_capacity: 5,
     },
     fields: {
       claim: false,
@@ -113,8 +115,9 @@ export const items_info: any = {
     dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
+      broken_factor: .01,
       empty_item: 'empty_pen',
-      empty_durability: 5,
+      empty_capacity: 5,
     },
     fields: {
       claim: false,
@@ -145,8 +148,9 @@ export const items_info: any = {
     dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
+      broken_factor: .01,
       empty_item: 'empty_pen',
-      empty_durability: 5,
+      empty_capacity: 5,
     },
     fields: {
       claim: false,
@@ -177,8 +181,9 @@ export const items_info: any = {
     dura: {
       broken_item: 'broken_pen',
       broken_chance: .05,
+      broken_factor: .01,
       empty_item: 'empty_pen',
-      empty_durability: 5,
+      empty_capacity: 5,
     },
     fields: {
       claim: false,
@@ -210,7 +215,7 @@ export const items_info: any = {
       broken_item: 'broken_pen',
       broken_chance: 0,
       empty_item: 'empty_pen',
-      empty_durability: 10,
+      empty_capacity: 10,
     },
     fields: {
       claim: false,
@@ -237,7 +242,7 @@ export const items_info: any = {
       broken_item: 'broken_pen',
       broken_chance: 0,
       empty_item: 'empty_pen',
-      empty_durability: 15,
+      empty_capacity: 15,
     },
     fields: {
       claim: false,
@@ -263,7 +268,7 @@ export const items_info: any = {
     },
     dura: {
       broken_chance: 0,//no item : will delete
-      empty_durability: 3,//no item : will delete
+      empty_capacity: 3,//no item : will delete
     },
     fields: {
       claim: false,
@@ -332,7 +337,7 @@ export const items_info: any = {
     },
     dura: {
       broken_chance: 0,
-      empty_durability: 2,
+      empty_capacity: 2,
     },
     fields: {
       claim: false,
@@ -361,7 +366,7 @@ export const items_info: any = {
     },
     dura: {
       broken_chance: 0,
-      empty_durability: 2,
+      empty_capacity: 2,
     },
     fields: {
       claim: false,
@@ -390,7 +395,7 @@ export const items_info: any = {
     },
     dura: {
       broken_chance: 0,
-      empty_durability: 2,
+      empty_capacity: 2,
     },
     fields: {
       claim: false,
@@ -419,7 +424,7 @@ export const items_info: any = {
     },
     dura: {
       broken_chance: 0,
-      empty_durability: 2,
+      empty_capacity: 2,
     },
     fields: {
       claim: false,
@@ -448,7 +453,7 @@ export const items_info: any = {
     },
     dura: {
       broken_chance: 0,
-      empty_durability: 2,
+      empty_capacity: 2,
     },
     fields: {
       claim: false,
@@ -681,8 +686,8 @@ export function flow_pen(deep: any) {
   let key = 'items.pens.flow.dura.';
   let penItem = deep.item;
   let use = (penItem.meta?.use) ? penItem.meta.use : 0;
-  let dura = items_info[penItem.itemName].dura.empty_durability - use;
-  let progress = dura / items_info[penItem.itemName].dura.empty_durability;
+  let dura = items_info[penItem.itemName].dura.empty_capacity - use;
+  let progress = dura / items_info[penItem.itemName].dura.empty_capacity;
 
   if (progress >= 1)
   {
@@ -712,8 +717,8 @@ export function flow_ink(deep: any) {
   let key = 'items.inks.flow.dura.';
   let penItem = deep.item;
   let use = (penItem.meta?.use) ? penItem.meta.use : 0;
-  let dura = items_info[penItem.itemName].dura.empty_durability - use;
-  let progress = dura / items_info[penItem.itemName].dura.empty_durability;
+  let dura = items_info[penItem.itemName].dura.empty_capacity - use;
+  let progress = dura / items_info[penItem.itemName].dura.empty_capacity;
 
   if (progress >= 1)
   {

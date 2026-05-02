@@ -34,12 +34,17 @@ export async function pen_use(userdata, penItem)
   if (firstUse) penItem.meta.use = 0;
   penItem.meta.use += 1;
   // totalUse is the use count even after durability reset (fill)
-  penItem.meta.totalUse ??= 0;// necessayr for non-update pen
+  penItem.meta.totalUse ??= 0;// not mergable with firstUse because of non-update pen
   penItem.meta.totalUse += 1;
-  //penItem.meta.dura = items_info[penItem.itemName].dura.empty_durability - penItem.meta.use;//no more needed
-  const empty_durability = items_info[penItem.itemName].dura.empty_durability;
-  const broken_chance = items_info[penItem.itemName].dura.broken_chance;
-  if (empty_durability && penItem.meta.use >= empty_durability)
+  
+  const empty_capacity = items_info[penItem.itemName].dura.empty_capacity;
+  let broken_chance = items_info[penItem.itemName].dura.broken_chance;
+  if (items_info[penItem.itemName].dura.broken_factor)
+  {
+    broken_chance += items_info[penItem.itemName].dura.broken_factor * (penItem.meta.totalUse - 1);
+  }
+
+  if (empty_capacity && penItem.meta.use >= empty_capacity)
   {//empty
     const newItemName=items_info[penItem.itemName].dura.empty_item;
     if (newItemName)

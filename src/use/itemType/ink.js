@@ -8,10 +8,10 @@ export async function ink_use(userdata, inkItem)
   const firstUse = (!inkItem.meta.use);
   if (firstUse) inkItem.meta.use=0;
   inkItem.meta.use += 1;
-  //penItem.meta.dura = items_info[penItem.itemName].dura.empty_durability - penItem.meta.use;//no more needed
-  const empty_durability = items_info[inkItem.itemName].dura.empty_durability;
+  //penItem.meta.dura = items_info[penItem.itemName].dura.empty_capacity - penItem.meta.use;//no more needed
+  const empty_capacity = items_info[inkItem.itemName].dura.empty_capacity;
   const broken_chance = items_info[inkItem.itemName].dura.broken_chance;
-  if (empty_durability && inkItem.meta.use >= empty_durability)
+  if (empty_capacity && inkItem.meta.use >= empty_capacity)
   {//empty
     const newItemName=items_info[inkItem.itemName].dura.empty_item;
     if (newItemName)
@@ -59,7 +59,7 @@ export function ink_match(penItem, inkItem)
   {
     if (!penMeta.use) return false;// never used
   } else return false;
-  
+
   if (// true...
     penPotentialName === undefined ||// if broken_pen permissive
     items_info[penPotentialName].atr.ink_color === undefined ||// if has no ink color
