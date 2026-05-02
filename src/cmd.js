@@ -4635,6 +4635,10 @@ async function cmd_use({ data, userdata, lang, message, token}) {
       await items_types[itemType.INK].use(userdata, usedItem, filledItem, lang);
       const stat = await stats_simple_add(userdata.statPtr.id, "ever_penFill");
       await Achievement.list["penFiller"].do_check(userdata, stat, lang);
+      if (items_info[filledItem.itemName].type === itemType.PEN)
+      {
+        await Achievement.list["fillNotEmptyPen"].do_grant(userdata, lang);
+      }
 
       return {
         method: "PATCH",

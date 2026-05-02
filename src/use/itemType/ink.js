@@ -59,12 +59,7 @@ export function ink_match(penItem, inkItem)
   {
     if (!penMeta.use) return false;// never used
   } else return false;
-
-  console.log(`
-  items_info[penPotentialName].atr.ink_color === items_info[inkItem.itemName].atr.ink_color
-  items_info[${penPotentialName}].atr.ink_color === items_info[${inkItem.itemName}].atr.ink_color
-  ${items_info[penPotentialName].atr.ink_color} === ${items_info[inkItem.itemName].atr.ink_color}
-  `)
+  
   if (// true...
     penPotentialName === undefined ||// if broken_pen permissive
     items_info[penPotentialName].atr.ink_color === undefined ||// if has no ink color

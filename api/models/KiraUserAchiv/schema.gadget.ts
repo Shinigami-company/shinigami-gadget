@@ -10,6 +10,10 @@ export const schema: GadgetModel = {
     done_booksDouble: { type: "number", storageKey: "scs3vJ72lMIO" },
     done_counterMax: { type: "number", storageKey: "KD5akNfwxXEy" },
     done_counterShort: { type: "number", storageKey: "ymPoh5WS76ci" },
+    done_fillNotEmptyPen: {
+      type: "number",
+      storageKey: "2kIUBvh4_Ih8",
+    },
     done_giftAway: { type: "number", storageKey: "8IIwE--QcbVc" },
     done_giftJunk: { type: "number", storageKey: "LvGsPbLNFT74" },
     done_giftSelf: { type: "number", storageKey: "zuzVk25eYZUM" },
