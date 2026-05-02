@@ -153,10 +153,13 @@ async function kira_remember_wakeup() {
   await cleanup_gift();
   await cleanup_run();
   // awake
-  let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
-    raw.json()
-  );
-  if (response.code !== 200) console.error(`rem3mber : mrew failed`, response);
+  if (process.env.REMEMBER_AWAKE_REQUEST === "1")
+  {
+    let response = await fetch(`${process.env.URL}/awake`).then((raw) =>
+      raw.json()
+    );
+    if (response.code !== 200) console.error(`rem3mber : mrew failed`, response);
+  }
   await kira_remember_set_interval();
 }
 
