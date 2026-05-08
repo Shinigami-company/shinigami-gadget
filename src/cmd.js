@@ -823,6 +823,7 @@ const commands_structure = {
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
       ephemeral: true,
+      systemOnly: true,
     }
   },
 
@@ -874,14 +875,15 @@ const commands_structure = {
         [check_has_noDrop, true],
       ],
     },
-    register: {
-      name: "eyes",
-      description: "Will you get shinigami eyes today?",
-      //contexts: [0],//!disabled
-      type: 1,
-    },
+    //register: {
+    //  name: "eyes",
+    //  description: "Will you get shinigami eyes today?",
+    //  //contexts: [0],//!disabled
+    //  type: 1,
+    //},
     atr: {
       defered: deferedActionType.WAIT_MESSAGE,
+      systemOnly: true,
     },
   },
   
