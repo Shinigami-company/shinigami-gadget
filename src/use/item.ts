@@ -615,10 +615,9 @@ export const items_types = {
       await api.KiraUsers.update(userdata.id, {equipedBook: {_link: item.id}});
     },
     unequip: async (userdata, item: Item) : Promise<boolean> => {
-      console.log(`unequip book : ${userdata.id}. so [${userdata?.noteBookId}] is (${userdata?.equipedBook?.id} == ${item?.id})`);
+      console.debug(`item: unequip book; userId=${userdata.id}; so [${userdata?.noteBookId}] is (${userdata?.equipedBook?.id} == ${item?.id})`);
       if (items_types[itemType.BOOK]?.if_equiped(userdata, item))
       {
-        console.log(`is book equiped, so unequip.`);
         await NoteBook.unlink_writter(userdata);
         
         userdata.equipedBook = { id: null };
@@ -626,10 +625,8 @@ export const items_types = {
         {
           equipedBook: {_link: null },
         });
-        console.log(`et voilà`);
         return true;
       }
-      console.log(`but np, book is not equiped.`);
       return false;
     },
     if_equiped: (userdata, item) : boolean => {

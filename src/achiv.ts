@@ -104,9 +104,7 @@ export class Achievement {
       return h_gap;
     }
 
-    console.log(
-      `LOG : achiv : model id [${f_userModel.statPtr.id}]  pass [${this.name}] from ${h_registerLevel} to ${f_newLevel}`
-    );
+    console.log(`achiv: do_grant: model id [${f_userModel.statPtr.id}]  pass [${this.name}] from ${h_registerLevel} to ${f_newLevel}`);
     //set the level
     await this.#level_set(achivModelId, f_newLevel);
     let achievementTitle = translate(f_lang, `achievements.${this.name}.title`);

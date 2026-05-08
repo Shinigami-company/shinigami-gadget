@@ -28,7 +28,7 @@ class ClockTime {
     const time_ms=Date.now()-this.epoch;
     if (save)
       this.write(name, time_ms)
-    console.debug(`clock : ${name} = `,times_precise_string_from_int(time_ms));
+    console.debug(`clock: ${name} = `,times_precise_string_from_int(time_ms));
   }
 
   write(id="time", value_ms) {
@@ -55,9 +55,9 @@ export default async function route({ request, reply, api, logger, connections }
   let { data } = source;
   const user = member ? member.user : source.user;
 
-  //console.log("1:",request.headers);
-  //console.log("2:",);
-  //console.log("3:",request.received);
+  //console.debug("1:",request.headers);
+  //console.debug("2:",);
+  //console.debug("3:",request.received);
 
   /**
    * Handle verification requests
@@ -69,11 +69,8 @@ export default async function route({ request, reply, api, logger, connections }
   // command call for slash  and components
   
   const calling_command =  async commandName => {
-      console.log(`
-	  route : call command
-	  user=${user.id} (${user.username}) command=${commandName} options=${data.options}
-	  RESP_URL=webhooks/${process.env.APP_ID}/${token}/messages/@original
-	  `);
+      console.log(`interaction: user=${user.id} (${user.username}) command=${commandName} options=${data.options}`);
+      console.debug(`interaction: resp_url=webhooks/${process.env.APP_ID}/${token}/messages/@original`);
       
       return await kira_cmd({ source, timespam, data, type, id, token, locale, user, message, channel, guild, clock }, commandName);
       
@@ -119,7 +116,7 @@ export default async function route({ request, reply, api, logger, connections }
   if (type === InteractionType.MESSAGE_COMPONENT || type === InteractionType.MODAL_SUBMIT) {
     // custom_id set in payload when sending message component
     
-    console.debug(`route : components interaction. origin data=`, data);
+    //console.debug(`route : components interaction. origin data=`, data);
     
     let componentId = data.custom_id;
     componentId=componentId.replace(/<value>/,(data?.values) ? data?.values[0] : undefined);
@@ -294,7 +291,7 @@ export default async function route({ request, reply, api, logger, connections }
         } break;
       }
 
-      console.debug(`route : components interaction. created data=`, data);
+      //console.debug(`route : components interaction. created data=`, data);
       return calling_command(h_cmd);
 
     }

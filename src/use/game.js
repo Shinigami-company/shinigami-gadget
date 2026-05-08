@@ -27,7 +27,7 @@ export async function kira_game_coin_clean()
     select: {id: true}
     }).then(list => list.map(obj => obj.id));
   if (!all_datas) return;
-  console.log("game : clean coin games data = ",all_datas);
+  console.log("game: clean coin games data; all datas = ",all_datas);
   await api.KiraGameCoin.bulkDelete(all_datas);
 }
 

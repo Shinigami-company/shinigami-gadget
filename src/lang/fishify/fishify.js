@@ -37,4 +37,4 @@ const input = fs.readFileSync(INPUT_FILE_NAME, "utf-8");
 const output = fishify(input);
 fs.writeFileSync(OUTPUT_FILE_NAME, output);
 
-console.log(`✅ file fishified ${INPUT_FILE_NAME} → ${OUTPUT_FILE_NAME}`);
+console.log(`script: fishify: file fishified ${INPUT_FILE_NAME} → ${OUTPUT_FILE_NAME}`);

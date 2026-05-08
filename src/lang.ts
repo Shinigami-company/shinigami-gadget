@@ -117,7 +117,7 @@ export function translate(
   f_dolarValues: { [key: string]: string } = {}
 ) {
   if (!lang_texts[f_lang]) {
-    console.error(`lang : unknown lang [${f_lang}]`);
+    console.error(`lang: unknown lang [${f_lang}]`);
     f_lang = "en";
   }
   while (!lang_texts[f_lang].keys || !lang_texts[f_lang].key[f_key]) {

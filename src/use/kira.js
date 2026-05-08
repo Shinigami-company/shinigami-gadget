@@ -6,21 +6,17 @@ import { cmd_register } from '../cmd.js';
 import { stats_simple_set, stats_simple_get } from './stats.js';
 
 export async function commands_put() {
-  console.debug('kira : refreshcmd : registerCommands()...');
+  console.debug('kira: refreshcmd: registerCommands() running...');
   await PutGlobalCommands(cmd_register());
-  console.debug('kira : refreshcmd : registerCommands() done!');
+  console.debug('kira: refreshcmd: registerCommands() done!');
 }
 
 export async function command_refresh_one(commandName) {
-  console.debug(`kira : refreshcmd : refreshCommand(${commandName})...`);
+  console.debug(`kira: refreshcmd: refreshCommand(${commandName})...`);
   let commandsToId = await GetGlobalCommandsId();
   let commandId = commandsToId[commandName];
   let registerWanted = cmd_register(commandName);
   let registerActual = commandId ? await GetGlobalCommand(commandId) : undefined;
-  console.debug(`registerWanted:`);
-  console.debug(registerWanted);
-  console.debug(`registerActual:`);
-  console.debug(registerActual);
   if (registerWanted.length > 0)
   {
     registerWanted = registerWanted[0];
@@ -171,14 +167,14 @@ export async function kira_user_set_life(userdata, f_bool, f_backDate = null) {
 }
 
 export async function kira_user_add_apple(userdataId, f_amount = 1) {
-  console.debug(`kira : kira_user_add_apple : adding [${f_amount}] apples to [${userdataId}]...`);
+  console.debug(`kira: kira_user_add_apple: adding [${f_amount}] apples to [${userdataId}]...`);
   const f_apples = await api.KiraUsers.findOne(userdataId, {
     select: { apples: true },
   }).then((data) => data.apples);
   await api.KiraUsers.update(userdataId, {
     apples: f_apples + f_amount,
   });
-  console.debug(`kira : kira_user_add_apple : added [${f_amount}] apples to [${userdataId}] now at (${f_apples+f_amount})`);
+  console.debug(`kira: kira_user_add_apple: added [${f_amount}] apples to [${userdataId}] now at (${f_apples+f_amount})`);
 }
 
 export async function kira_users_rank(f_onKey) {

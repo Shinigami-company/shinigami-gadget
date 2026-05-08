@@ -1,9 +1,7 @@
 import { api } from "gadget-server";
 
 const destroySaveCheck = new FinalizationRegistry<{ this: BaseInterface, id: number, saveDictionnary: {[id: string]: any}, saved: () => {} }>((info) => {
-  console.log("suieundvuvuvuefzuefznueznfzeofeznofzefezno", info.saveDictionnary);
   if (!info.saved()) {
-    console.error("suieundvuvuvuefzuefznueznfzeofeznofzefezno");
     throw new Error(`Object [${info.this}] type [${typeof info.this}] id [${info.id}] was garbage collected with elements not saved:`, info.saveDictionnary);
   }
 });

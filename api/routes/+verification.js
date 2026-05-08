@@ -10,8 +10,7 @@ import { VerifyDiscordRequest } from '../../src/utils.js';
  */
 export default async function (server) {
   server.addHook('preHandler', (request, reply, done) => {
-    //console.log("RAW REQUEST:",request.raw.url);
-    console.log("RAW REQUEST:",request.body);
+    console.debug("REQUEST: RAW=",request.body);
     
     // old verification system
     if (process.env.VERIFY_REQUEST === "1") {

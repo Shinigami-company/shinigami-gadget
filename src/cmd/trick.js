@@ -446,7 +446,7 @@ export const tricks_all = [
 
           //forward
           await kira_game_coin_pick_side(game_data.id, game_data.user1Side, game_data.user2Side);
-          //console.log(`trick : coin sides : ${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}=${self_face}`);
+          //console.debug(`trick: coin sides: ${user_1_id}_${user_1_face}_${user_2_id}_${user_2_face}=${self_face}`);
 
           if ((game_data.user1Side>0) && (game_data.user2Side>0))
           {
@@ -634,7 +634,6 @@ export const tricks_all = [
 
           //remove bet
           for (let i=1;i<3;i++) {
-            console.log(`HI ${i} = ${user_tree[i].userId} bcs ${user_tree[i]} bcs ${user_tree}`);
             user_tree[i].userdata=await kira_user_get(user_tree[i].userId);
             //check if rich
             if (user_tree[i].userdata.apples<bet) {

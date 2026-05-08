@@ -20,11 +20,11 @@ async function kira_remember_set_interval() {
         kira_remember_checkup,
         1000 * checkup_seconds
       );
-      console.log(
+      console.debug(
         `rem3mber : one pending task. start checkup. interval=${remember_interval_id}`
       );
     } else {
-      console.log(
+      console.debug(
         `rem3mber : no pending task. clear checkup. interval=${remember_interval_id}`
       );
       clearInterval(remember_interval_id);
@@ -38,7 +38,7 @@ async function kira_remember_set_interval() {
       kira_remember_wakeup,
       60 * 1000 * wakeup_minutes
     );
-    console.log(`rem3mber : start wakeup. interval=${wakeup_interval_id}`);
+    console.debug(`rem3mber : start wakeup. interval=${wakeup_interval_id}`);
     await kira_remember_wakeup();//!
   }
 }
@@ -79,7 +79,6 @@ export async function kira_remember_task_soon() {
       executeDate: { before: rememberTime },
     },
   });
-  //console.log("element:", element, Boolean(element));
   return Boolean(element);
 }
 
@@ -95,9 +94,7 @@ async function kira_remember_checkup() {
   //already
   if (remembering > 0) {
     remembering += 1;
-    console.log(
-      `ERROR : rem3mber : already remembering. remembering=${remembering} ocurence=${ocurence_checkup}`
-    );
+    console.debug(`rem3mber: already remembering; remembering=${remembering} ocurence=${ocurence_checkup}`);
     if (remembering < 10) return; //!only if AFK < 10s
   }
   remembering = 1;
@@ -108,10 +105,10 @@ async function kira_remember_checkup() {
   //execute
   try {
     if (f_tasks.length > 0) {
-      //console.log(` rem3mber : execute ${f_tasks.length} runs...`);
+      console.debug(` rem3mber : execute ${f_tasks.length} tasks...`);
       for (let i = 0; i < f_tasks.length; i += 1) {
-        console.log(
-          ` rem3mber : execute ${i} (interval=${remember_interval_id},remembering=${remembering},taskType=${f_tasks[i].RememberingType}) : `,
+        console.debug(
+          ` rem3mber: execute ${i}; (interval=${remember_interval_id},remembering=${remembering},taskType=${f_tasks[i].RememberingType}) : `,
           f_tasks[i]
         );
         //remove the task from database
@@ -147,7 +144,7 @@ async function kira_remember_checkup() {
 
 var ocurence_wakeup = 0;
 async function kira_remember_wakeup() {
-  console.debug(` rem3mber : mrew (min=${ocurence_wakeup * wakeup_minutes})`);
+  console.debug(` rem3mber: mrew (min=${ocurence_wakeup * wakeup_minutes})`);
   ocurence_wakeup += 1;
   // clean up
   await cleanup_gift();
@@ -164,9 +161,9 @@ async function kira_remember_wakeup() {
 }
 
 export async function linkme(f_txt) {
-  console.log(` rem3mber : LINKING...`);
+  console.debug(` rem3mber: LINKING...`);
   await kira_remember_set_interval();
-  console.log(` rem3mber : LINKED : `, f_txt);
+  console.log(` rem3mber: LINKED: `, f_txt);
   //remembering = 0;
 }
 
@@ -191,7 +188,8 @@ async function cleanup_gift()
 
   for (let gift of all_datas)
   {
-    console.log(`cl3nup : gift ${gift.id}`);
+    console.log(`cl3nup: gift [${gift.id}] DELETED`);
+    console.debug(gift);
     await api.KiraItemGift.delete(gift.id);
     if (!gift.appleAmount)
     {
@@ -218,7 +216,8 @@ async function cleanup_run()
 
   for (let run of all_datas)
   {
-    console.log(`cl3nup : run ${run.id}`);
+    console.log(`cl3nup: run ${run.id} DELETED`);
+    console.debug(run);
     await api.KiraRun.delete(run.id);
   }
 }

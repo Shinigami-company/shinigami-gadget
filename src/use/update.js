@@ -21,6 +21,7 @@ export async function kira_user_update(user, userdata, lang)
   // refresh simple stats do_ and is_
   if (!userdata.version)
   {
+    console.log(`update: update userdata [${userdata.id}/${userdata.userId}/${userdata.userName}] from [${userdata.version}] to 1.000.000: refresh simple stats`);
     let patch = {
       do_kill: 0,
       do_counter: 0,
@@ -60,7 +61,7 @@ export async function kira_user_update(user, userdata, lang)
   if (userdata.version < 1001000)
   {
     let noteBooksId = await kira_user_get_owned_books_note(userdata.id);
-    console.log(`update userdata [${userdata.id}/${userdata.userId}/${userdata.userName}] version ${userdata.version} to 1.001.000 : books id ${noteBooksId}`);
+    console.log(`update: update userdata [${userdata.id}/${userdata.userId}/${userdata.userName}] from [${userdata.version}] to 1.001.000: books id ${noteBooksId}`);
     if (noteBooksId.length > 0)
     {
       let bookItem = await Item.create(userdata.id, lang, 'book_black');//manually add meta
@@ -76,9 +77,11 @@ export async function kira_user_update(user, userdata, lang)
     });
   }
 
+  //apple quest (1.1.2) & ink update (1.2.0)
+  // this combination comes from a mistake in version typing, but this is fine bcs ink update does not requires anything
   if (userdata.version < 1002000)
   {
-    console.log(`update userdata [${userdata.id}/${userdata.userId}/${userdata.userName}] version ${userdata.version} to 1.001.002 : apple quest and lifesince`);
+    console.log(`update: update userdata [${userdata.id}/${userdata.userId}/${userdata.userName}] from [${userdata.version}] to 1.002.000: apple quest and lifesince`);
     if (userdata.is_alive) kira_user_set_life(userdata, true);
     
     let missedAmount = await Achievement.count_finised(userdata);

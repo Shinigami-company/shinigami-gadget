@@ -1,4 +1,4 @@
-console.log(`cmd : refresh`);
+console.log(`cmd: refresh`);
 //--- sett ---
 
 import {
@@ -1123,7 +1123,7 @@ export async function kira_cmd(f_deep, f_cmd) {
    */
   // usable ~~unusable~~ (unused) [used here] |created here|
 
-  //console.debug(`cmd : f_deep=`, f_deep);
+  //console.debug(`cmd: f_deep=`, f_deep);
   f_deep.clock.emit("cmd", true);
 
   //new datas
@@ -1427,8 +1427,7 @@ async function kira_cmd_error(f_deep, e, errorWhen)
     }
   }
 
-  console.error(`cmd : catch : found ERROR <${e.name}> [${e.code}] : `, e);
-  console.error(`cmd : catch : temp : cause=`, e.cause);
+  console.error(`cmd: catch: found ERROR <${e.name}> [${e.code}] : `, e);
 
   //-handle-
   //detect know issues
@@ -1470,7 +1469,7 @@ async function kira_cmd_error(f_deep, e, errorWhen)
   //any other error
 
   console.error(
-    `cmd : catch : throw ERROR : code=${e.code} name=${e.name} message=${e.message}`
+    `cmd: catch: throw ERROR: code=${e.code} name=${e.name} message=${e.message}`
   );
   kira_error_throw(
     e,
@@ -1494,7 +1493,7 @@ async function kira_cmd_error(f_deep, e, errorWhen)
 
 
 export function kira_error_msg(f_errorKey, f_errorObject, f_lang) {
-  console.error(`cmd : error msg code=${f_errorObject.code}`);
+  console.error(`cmd: kira_error_msg code=${f_errorObject.code}`);
   return translate(f_lang, f_errorKey, {
     name: f_errorObject.name,
     message: f_errorObject.message,
@@ -1740,9 +1739,7 @@ async function check_is_clean({ lang, userdata }) {
 
 //react check
 function check_react_is_self({ lang, user, type, message }) {
-  console.log(
-    `check : check_react_is_self type=${type} IM=${message?.interaction?.user.id} I=${message?.interaction_metadata?.user.id}`
-  );
+  //console.debug(`cmd: check: check_react_is_self type=${type} IM=${message?.interaction?.user.id} I=${message?.interaction_metadata?.user.id}`);
   if (
     type === InteractionType.MESSAGE_COMPONENT &&
     message.interaction_metadata.user.id !== user.id
@@ -2130,8 +2127,6 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
               value: await kira_user_get_owned_books_item(target_userdata.id).then(array => array.join()),
             }
           );
-
-        console.log("fields:",fields);
 
         return {
           method: "PATCH",
@@ -2530,9 +2525,11 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
     case "update":
       {
         if (arg_texto) {
+          console.time("update game");
           let response = await command_refresh_one(arg_texto);
-          console.log("response:",response);
+          console.log("cmd: cmd_god: update game: response=",response);
           let reponseText = { 404: 'fail.none', 200: 'update', 201: 'create', 204: 'delete' }[response];
+          console.timeEnd("update game");
           return {
             method: "PATCH",
             body: {
@@ -2563,10 +2560,10 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
         }
 
         {
-          console.time("checkup");
-          console.log(` cmd : checkup user id=${arg_user}`);
+          console.time("update user");
+          console.log(`cmd: cmd_god: update user: userId=${arg_user}`);
           kira_user_update(arg_user, targetdata, targetdata.lang);
-          console.timeEnd("checkup");
+          console.timeEnd("update user");
         }
 
         return {
@@ -3189,7 +3186,7 @@ async function cmd_burn({
     };
   }
 
-  console.debug(`cmd : burn lookedbook=`, lookedbook);
+  console.debug(`cmd: cmd_burn: lookedbook=`, lookedbook);
   //throw new Error("you would have burned it with sucress.");
   const item = await Item.get(lookedbook.itemId);
   await item.delete(userdata);
@@ -3393,7 +3390,6 @@ async function cmd_top({ data, userdata, userbook, lang }) {
     let h_txt = "";
 
     let h_nl = "";
-    console.log("h_ranks:",h_ranks);
     for (let i = 0; i < Math.min(h_ranks.length, h_ranks.length); i++) {
       let h_amount = h_ranks[i][h_amountKey];
       if (if_parse) h_amount = stats_parse(h_amountKey, h_amount, lang);
@@ -4576,7 +4572,6 @@ async function cmd_use({ data, userdata, lang, message, token}) {
   {
     case itemType.INK: {      
       let filledItemId = data.options?.find((opt) => opt.name === "penitemid")?.value;
-      console.log("data.options",data.options);
 
       if (!filledItemId)
       {
@@ -4892,7 +4887,7 @@ async function cmd_kira({
       }
     ).then((res) => res.json());
   } catch (error) {
-    console.debug(`kira : catch cant acess to user : ${error}`);
+    console.debug(`kira: catch cant access to user: ${error}`);
     if (JSON.parse(error.message)?.code === 10007) {
       //instant fail because victim not here
       return {
@@ -4924,7 +4919,7 @@ async function cmd_kira({
     }
     else
     { // create it if has never got a pen
-      console.log("create and equip a first new pen for",user.username);
+      console.log(`cmd: kira: create and equip a first new pen for ${user.username}`);
       const pen=await Item.create(userdata.id, lang, "pen_black");
       await pen.equip(userdata);
       await stats_simple_set(userdata.statPtr.id, "ever_penBuy", 1);
@@ -4951,7 +4946,8 @@ async function cmd_kira({
     //if attacker is not already killing victim
     let h_run_same = await kira_run_of(h_victim_id, user.id);
     if (h_run_same) {
-      console.log(` kira : A already killing V : `, h_run_same);
+      console.log(`cmd: kira: ATTACKER already killing VICTIM; runId=${h_run_same.id}`);
+      console.debug(`run=`,h_run_same);
       //if (new Date(h_run_same.finalDate) < new Date(h_now.getTime() + 610000))//!if sentance late of 10 second
       return {
         method: "PATCH",
@@ -4966,12 +4962,13 @@ async function cmd_kira({
     //if victim is not already killing attacker
     let h_run_reverse = await kira_run_of(user.id, h_victim_id);
     if (h_run_reverse) {
-      console.log(` kira : V already killing A : `, h_run_reverse);
+      console.log(`cmd: kira: VICTIM already killing ATTACKER; runId=${h_run_reverse.id}`);
+      console.debug(`run=`,h_run_reverse);
       run_combo = h_run_reverse.counterCombo + 1;
 
       if (run_combo >= SETT_CMD.kira.counterMax) {
         // too much combo
-        console.log(` kira : counter is max combo=`, run_combo);
+        console.log(`cmd: kira: max counter; combo=`, run_combo);
         {
           //+achiv
           await Achievement.list["counterMax"].do_grant(userdata, lang, 1, {
@@ -4989,9 +4986,9 @@ async function cmd_kira({
       }
 
       //cancel death if itself
-      console.log(` kira : countering... comobo=`, run_combo);
+      console.log(`cmd: kira: countering; comobo=`, run_combo);
       await cmd_kira_cancel({ runId: h_run_reverse.id });
-      console.log(` kira : countered`);
+      //console.log(`cmd: kira: countered`);
       {
         //+stats
         const h_pair = await stats_pair_get_id(
@@ -5018,7 +5015,7 @@ async function cmd_kira({
               1000
           );
           console.debug(
-            `kira : countershort gap=${
+            `kira : countershort; gap=${
               userdata.finalDate
             } - ${new Date()} = ${h_gap}`
           );
@@ -5065,7 +5062,6 @@ async function cmd_kira({
     reason: h_txt_reason,
     time: h_txt_span,
   });
-  console.log("h_attacker_pen.itemName:", h_attacker_pen.itemName, h_attacker_pen);
   h_line = pen_apply_filters(h_line, h_attacker_pen.itemName);
 
   if (h_line.length > 256 && !userdata.is_god) {
@@ -5086,9 +5082,6 @@ async function cmd_kira({
   const h_dayGap = time_day_gap(userbook.noteBook.updatedAt, locale, true, true);
   const h_dayGapDiff = h_dayGap.now.day - h_dayGap.last.day;
   const h_note = await userbook.line_append(h_line, h_dayGap);
-  console.debug(
-    `kira : h_dayGapDiff=${h_dayGapDiff}=${locale}-${userbook.updatedAt}`
-  );
 
   {
     //+achiv
@@ -5373,16 +5366,16 @@ async function cmd_kira({
 //is executed by [./remember.js]
 export async function cmd_kira_execute(data) {
   //if (!data.run)
-  console.log(` kira : EXECUTE. runId=${data.runId}`);
+  console.log(`cmd: kira: EXECUTE; runId=${data.runId}`);
 
   //run reading
   if (!data.runId) {
-    console.error(`kira : runId not defined. data=`, data);
+    console.error(`cmd: kira: runId not defined; data=`, data);
     return;
   }
   const pack = await kira_run_unpack_execute(data.runId);
   if (!pack) {
-    console.error(`kira : run deleted. data=`, data);
+    console.error(`cmd: kira: run deleted; data=`, data);
     //await kira_run_delete(data.runId);
     return;
   }
@@ -5401,9 +5394,9 @@ export async function cmd_kira_execute(data) {
     h_attacker_book && h_attacker_book.id === pack.attacker_book_id;
 
   //run delete
-  console.log(` kira : deleting... (runId=${data.runId})`);
+  console.log(`cmd: kira: deleting; (runId=${data.runId})`);
   await kira_run_delete(data.runId, h_victim_data?.id);
-  console.log(` kira : deleted. (runId=${data.runId})`);
+  console.log(`cmd: kira: deleted; (runId=${data.runId})`);
 
   try {
     //message/victim/first/edit
@@ -5552,10 +5545,7 @@ export async function cmd_kira_execute(data) {
         h_victim_data.statPtr.id,
         "do_kill"
       );
-      console.log(
-        "DBUG : kira : kills by victim for apples : ",
-        h_victim_kills
-      );
+      //console.log("cmd: kira: kills by victim for apples : ",h_victim_kills);
 
       {
         //+stats
@@ -5673,16 +5663,16 @@ export async function cmd_kira_execute(data) {
 
 //is not executed by [./remember.js]
 export async function cmd_kira_cancel(data) {
-  console.log(` kira : CANCEL. runId=${data.runId}`);
+  console.log(`cmd: kira: CANCEL; runId=${data.runId}`);
 
   //run reading
   if (!data.runId) {
-    console.error(`kira : runId not defined. data=`, data);
+    console.error(`cmd: kira: runId not defined; data=`, data);
     return;
   }
   const pack = await kira_run_unpack_execute(data.runId);
   if (!pack) {
-    console.error(`kira : run deleted. data=`, data);
+    console.error(`cmd: kira: run deleted; data=`, data);
     //await kira_run_delete(data.runId);
     return;
   }
@@ -5774,14 +5764,12 @@ export async function cmd_comeback(data) {
     );
     if (h_gap > 0) {
       //can not be bring back
-      console.log(
-        `cmd : comeback : cant bring back [${userdata.userId}] bcs gap=${h_gap}`
-      );
+      console.log(`cmd: comeback: cant bring back [${userdata.userId}] bcs gap=${h_gap}`);
       return;
     }
 
     //bring back
-    console.log(`cmd : comeback : bringing back [${userdata.userId}]`);
+    console.log(`cmd: comeback: bringing back [${userdata.userId}]`);
     await kira_user_set_life(userdata, true);
   }
 

@@ -19,8 +19,6 @@ export class NoteBook {
     this.itemName = noteBookObject.itemName;
     this.itemId = noteBookObject.itemId;
     this.id = noteBookObject.id;
-    console.log(`noteBookObject(${noteBookObject}) = items_info[${this.itemName}] = ${items_info[this.itemName]}`)
-    console.log(noteBookObject);
     if (!this.itemName)
     {
       if (canItemNone)
