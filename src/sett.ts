@@ -70,19 +70,19 @@ export const godNamesProba = {
 };
 
 export const sett_options_gift_apples = [
-  (apple) => Math.min(apple, 1),
-  (apple) => Math.min(apple, 2),
-  (apple) => Math.min(apple, 5),
-  (apple) => Math.min(apple, 10),
-  (apple) => Math.min(apple, 20),
-  (apple) => Math.min(apple, 100),
-  (apple) => Math.min(apple, 200),
-  (apple) => Math.min(apple, 500),
-  (apple) => Math.min(apple, 1000),
-  (apple) => Math.min(apple, Math.ceil(Math.log10(apple))),
-  (apple) => Math.min(apple, Math.ceil(apple/4)),
-  (apple) => Math.min(apple, Math.ceil(apple/2)),
-  (apple) => apple,
+  (apple: number) => Math.min(apple, 1),
+  (apple: number) => Math.min(apple, 2),
+  (apple: number) => Math.min(apple, 5),
+  (apple: number) => Math.min(apple, 10),
+  (apple: number) => Math.min(apple, 20),
+  (apple: number) => Math.min(apple, 100),
+  (apple: number) => Math.min(apple, 200),
+  (apple: number) => Math.min(apple, 500),
+  (apple: number) => Math.min(apple, 1000),
+  (apple: number) => Math.min(apple, Math.ceil(Math.log10(apple))),
+  (apple: number) => Math.min(apple, Math.ceil(apple/4)),
+  (apple: number) => Math.min(apple, Math.ceil(apple/2)),
+  (apple: number) => apple,
 ];
 
 //--emoji--
@@ -108,6 +108,12 @@ export const sett_emoji_feedback_confirm = {
 export const sett_emoji_coin_throw = {
   id: null,
   name: "🪙", //coin
+};
+export const sett_emoji_chocolate_tip = {
+  //id: "1291127709539368971",
+  //name: "gap",
+  id: "1347339176273776771",
+  name: "gap",
 };
 
 export const sett_emoji_items = {
