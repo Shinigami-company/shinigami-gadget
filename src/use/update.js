@@ -5,6 +5,8 @@ import { kira_apple_send } from "./apple";
 import { kira_user_set_life, kira_user_get_owned_books_note } from './kira.js';
 import { api } from 'gadget-server';
 
+export var actualVersion = 1002000;// v1.2.0 = 1 002 000
+
 export async function kira_user_update(user, userdata, lang)
 {
   //update userName

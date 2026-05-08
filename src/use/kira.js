@@ -4,6 +4,7 @@ import { userBanType } from '../enum.ts';
 import { CreateGlobalCommand, DeleteGlobalCommand, DiscordUserOpenDm, GetGlobalCommand, GetGlobalCommandsId, PutGlobalCommands, UpdateGlobalCommand } from '../utils.js';
 import { cmd_register } from '../cmd.js';
 import { stats_simple_set, stats_simple_get } from './stats.js';
+import { actualVersion } from './update.js';
 
 export async function commands_put() {
   console.debug('kira: refreshcmd: registerCommands() running...');
@@ -134,6 +135,7 @@ export async function kira_user_create(f_userId) {
 
   return await api.KiraUsers.create({
     userId: f_userId,
+    version: actualVersion,
     statPtr: {
       create: { userId: f_userId },
     },

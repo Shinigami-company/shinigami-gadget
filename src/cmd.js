@@ -2564,7 +2564,7 @@ ${pen_apply_filters(translate(lang, "cmd.god.sub.pen.in", { pentype }),pentype)}
         {
           console.time("update user");
           console.log(`cmd: cmd_god: update user: userId=${arg_user}`);
-          kira_user_update(arg_user, targetdata, targetdata.lang);
+          await kira_user_update(arg_user, targetdata, targetdata.lang);
           console.timeEnd("update user");
         }
 
