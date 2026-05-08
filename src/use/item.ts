@@ -804,6 +804,8 @@ export class Item {
   info;// special add
   atr;// special add
 
+  ownedDate;
+
   constructor(itemDbObj: any) {
     if (!itemDbObj) return;
     copyAttrs(itemDbObj, this);
@@ -855,12 +857,12 @@ export class Item {
         },
       },
       sort: {
-        ownedDate: 'Descending',
+        ownedDate: 'Ascending',
       },
       select: {
         id: true,
         itemName: true,
-        meta: selectMeta
+        meta: selectMeta,
       }
     });
   }
@@ -880,7 +882,7 @@ export class Item {
     let itemsData = await api.KiraItems.findMany({
       filter,
       sort: {
-        ownedDate: 'Descending',
+        ownedDate: 'Ascending',
       },
     });
     
