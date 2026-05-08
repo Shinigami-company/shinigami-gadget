@@ -21,6 +21,6 @@ export const schema: GadgetModel = {
     },
     userIdOwner: { type: "string", storageKey: "PRdjvPWkE4C_" },
     userIdRecipient: { type: "string", storageKey: "AxskXklKY2gi" },
-    usernameOwner: { type: "string", storageKey: "8gWLZ3DUS041" },
+    userNameOwner: { type: "string", storageKey: "8gWLZ3DUS041" },
   },
 };

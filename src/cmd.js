@@ -4436,7 +4436,6 @@ async function cmd_gift_claim({ data, userdata, lang, message, token }) {
     };
   }
 
-
   await Gift.pick(gift, userdata);
 
   const ownerdata = await kira_user_get(gift.userIdOwner);

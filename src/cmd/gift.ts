@@ -20,14 +20,14 @@ export class Gift {
       item.ownerPtrId = null;
     }
     
-    return await api.KiraItemGift.create({itemPtr: {_link: item.id}, userIdOwner: userdataOwner?.userId, usernameOwner: userdataOwner?.username, userIdRecipient, expireDate: expireTimestamp, anon: isAnonymous});
+    return await api.KiraItemGift.create({itemPtr: {_link: item.id}, userIdOwner: userdataOwner?.userId, userNameOwner: userdataOwner?.userName, userIdRecipient, expireDate: expireTimestamp, anon: isAnonymous});
   }
 
   static async #apples(appleAmount : number, isAnonymous = false, expireTimestamp : Date, userIdRecipient : string, userdataOwner : any) {
     //await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, 'gift.send.'+(userIdRecipient) ? 'one' : 'everyone', {gifted: });//got lazy
     if (!isAnonymous)
       await kira_apple_send(userdataOwner.id, appleAmount*-1, userdataOwner.statPtr.id, 'gift.send.everyone');
-    return await api.KiraItemGift.create({appleAmount, userIdOwner: userdataOwner?.userId, usernameOwner: userdataOwner?.username, userIdRecipient, expireDate: expireTimestamp, anon: isAnonymous});
+    return await api.KiraItemGift.create({appleAmount, userIdOwner: userdataOwner?.userId, userNameOwner: userdataOwner?.userName, userIdRecipient, expireDate: expireTimestamp, anon: isAnonymous});
   }
 
 
@@ -39,7 +39,7 @@ export class Gift {
     await api.KiraItemGift.delete(gift.id);
     if (gift.appleAmount)
     {
-      return await kira_apple_send(userdata.id, gift.appleAmount, userdata.statPtr.id, `gift.recive.${(gift.anon) ? 'anon' : 'human'}`, {'gifter': gift.usernameOwner});
+      return await kira_apple_send(userdata.id, gift.appleAmount, userdata.statPtr.id, `gift.receive.${(gift.anon) ? 'anon' : 'human'}`, {'gifter': gift.userNameOwner});
     } else {
       return await api.KiraItems.update(gift.itemPtrId, {ownerPtr: {_link: userdata.id}, ownedDate: new Date().toISOString()});
     }
