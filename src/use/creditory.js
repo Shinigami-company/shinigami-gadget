@@ -13,6 +13,9 @@ import { stats_simple_add } from "./stats.js";
 export async function creditory_read(creditoryType) {
   return await api.KiraCreditory.findMany({
     filter: {
+      hidden: {
+        notEquals: true,
+      },
       type: {
         equals: creditoryType,
       },

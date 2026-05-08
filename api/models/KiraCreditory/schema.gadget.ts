@@ -7,6 +7,7 @@ export const schema: GadgetModel = {
   type: "gadget/model-schema/v1",
   storageKey: "Hu3Zx938fiWn",
   fields: {
+    hidden: { type: "boolean", storageKey: "2XHHNoy7SIS4" },
     importance: {
       type: "number",
       default: 0,
