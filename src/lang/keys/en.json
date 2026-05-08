@@ -380,8 +380,10 @@
 "cmd.chocolate.embeds.supporters.nohead": "*No one is currently monthly tipper*",
 "cmd.chocolate.embeds.supporters.footer": "Support Shinigami developement by [**tiping a hot chocolate**]($[tipLink]) :hot_beverage:\nTippers can try out Shinigami features sooner :sparkles:",
 "cmd.chocolate.embeds.supporters.special.cool": "<:ryuk_heart:1347339176273776771> Thank for your support!",
-"cmd.chocolate.embeds.supporters.special.warn": ":money_with_wings: The Shinigami cost money to run.",
-"cmd.chocolate.embeds.supporters.special.emergency": ":warning: Currently, the Shinigami cost a good amount of money to run, and **may shutdown because of that.** Any monthly tip would be greatly appreciated.",
+"cmd.chocolate.embeds.supporters.special.cost": ":money_with_wings: The Shinigami cost money to run.",
+"cmd.chocolate.embeds.supporters.special.warn": ":warning: Currently, the Shinigami cost a good amount of money to run, and **may shutdown because of that.**",
+"cmd.chocolate.embeds.supporters.special.beg": ":warning: Currently, the Shinigami cost a good amount of money to run, and **may shutdown because of that.** Any monthly tip would be greatly appreciated.",
+"cmd.chocolate.embeds.supporters.special.troll": ":hot_beverage: PLEASE GIVE ME MONEY I REALLY NEED MY HOT CHOCOLATE",
 "cmd.chocolate.button.tip": "Support the Shinigami",
 "cmd.chocolate.button.join": "Join Kira's kingdom",
 

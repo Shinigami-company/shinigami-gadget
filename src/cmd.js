@@ -3020,7 +3020,7 @@ async function cmd_chocolate({ lang })
 
   let supporters_desc_users = ["- noone\n> empty quote","- anothernoone"];
   
-  let supporters_desc_special_id = "cool";
+  let supporters_desc_specialmsg_state = process.env.tip_specialmsg_state;// aviables: cool, cost, warn, beg, troll
 
   // build supporters embed
   let supporters_parth_top;
@@ -3031,11 +3031,11 @@ async function cmd_chocolate({ lang })
     supporters_parth_top = translate(lang, "cmd.chocolate.embeds.supporters.nohead");
   }
   
-  let supporters_parth_down = translate(lang, "cmd.chocolate.embeds.supporters.footer", {"tipLink": process.env.invite_tip, "joinLink": process.env.invite_realm});
+  let supporters_parth_down = translate(lang, "cmd.chocolate.embeds.supporters.footer", {"tipLink": process.env.tip_link, "joinLink": process.env.invite_realm});
 
   let supporters_parth_special;
-  if (supporters_desc_special_id)
-    supporters_parth_special = "-# "+translate(lang, `cmd.chocolate.embeds.supporters.special.${supporters_desc_special_id}`);
+  if (supporters_desc_specialmsg_state)
+    supporters_parth_special = "-# "+translate(lang, `cmd.chocolate.embeds.supporters.special.${supporters_desc_specialmsg_state}`);
   
   let supporters_description = [supporters_parth_top, supporters_parth_down, supporters_parth_special]
     .filter(v => v !== undefined)
@@ -3050,7 +3050,7 @@ async function cmd_chocolate({ lang })
   let button_tip = {
     type: MessageComponentTypes.BUTTON,
     //style: ButtonStyleTypes.PRIMARY,// does not works bcs of link
-    url: process.env.invite_tip,
+    url: process.env.tip_link,
     style: ButtonStyleTypes.LINK,
     emoji: sett_emoji_chocolate_tip,
     label: button_label_tip,
