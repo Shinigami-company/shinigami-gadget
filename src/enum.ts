@@ -65,3 +65,11 @@ export enum penBody {
   FEATHER = 4,
   SPECIAL = 9,
 }
+
+export enum creditoryType {
+  DEV = "dev",
+  TRANSLATE = "translator",
+  TESTER = "tester",//unused
+  TIPPER_MONTHLY = "tip.month",
+  TIPPER_ONCE = "tip.once",//unused
+}

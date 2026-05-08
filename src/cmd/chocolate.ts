@@ -2,6 +2,8 @@ import { translate } from "../lang";
 import { sett_emoji_chocolate_tip, sett_emoji_items } from "../sett";
 
 import { MessageComponentTypes, ButtonStyleTypes } from "discord-interactions";
+import { creditory_list } from "../use/creditory";
+import { creditoryType } from "../enum";
 
 //#chocolate command
 export async function cmd_chocolate({ lang }: {lang: string})
@@ -13,7 +15,7 @@ export async function cmd_chocolate({ lang }: {lang: string})
   let button_label_join=translate(lang, "cmd.chocolate.button.join");
 
   let credits_color = 5793266;
-  let credits_dev_list = [" - some1"];
+  let credits_dev_list = await creditory_list(creditoryType.DEV, true);
   let credits_translate_list = [" - some1","- some2"];
   let embed_credits = {
     title: translate(lang, "cmd.chocolate.embeds.credits.title"),

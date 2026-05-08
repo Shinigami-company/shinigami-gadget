@@ -24,6 +24,14 @@ export const permissions: GadgetPermissions = {
             update: true,
           },
         },
+        KiraCreditory: {
+          read: true,
+          actions: {
+            create: true,
+            delete: true,
+            update: true,
+          },
+        },
         KiraGameCoin: {
           read: true,
           actions: {
