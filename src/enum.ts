@@ -70,6 +70,5 @@ export enum creditoryType {
   DEV = "dev",
   TRANSLATE = "translator",
   TESTER = "tester",//unused
-  TIPPER_MONTHLY = "tip.month",
-  TIPPER_ONCE = "tip.once",//unused
+  TIPPER = "tip",
 }

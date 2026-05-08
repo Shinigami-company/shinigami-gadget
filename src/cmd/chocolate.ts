@@ -39,7 +39,7 @@ export async function cmd_chocolate({ lang }: {lang: string})
   // customize supporters embed
   let supporters_color = 16736095;
 
-  let supporters_desc_users = await creditory_list(creditoryType.TIPPER_MONTHLY, true);
+  let supporters_desc_users = await creditory_list(creditoryType.TIPPER, true);
   
   let supporters_desc_specialmsg_state = process.env.tip_specialmsg_state;// aviables: cool, cost, warn, beg, troll
 
