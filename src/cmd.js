@@ -2943,6 +2943,7 @@ async function cmd_invite({ lang })
           components: [
             {
               type: MessageComponentTypes.BUTTON,
+              //style: ButtonStyleTypes.PRIMARY,// does not works bcs of link
               url: process.env.invite_bot,
               style: ButtonStyleTypes.LINK,
               emoji: sett_emoji_items.book_red,
@@ -2956,6 +2957,7 @@ async function cmd_invite({ lang })
           components: [
             {
               type: MessageComponentTypes.BUTTON,
+              //style: ButtonStyleTypes.SECONDARY,// does not works bcs of link
               url: process.env.invite_realm,
               style: ButtonStyleTypes.LINK,
               emoji: sett_emoji_items.book_white,
