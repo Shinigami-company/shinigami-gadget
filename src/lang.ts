@@ -31,7 +31,7 @@ function dolar(f_text,f_value)
 */
 
 //varEx, from [https://github.com/OlaHulleberg/varEx/blob/main/index.js]
-function varEx(inputString: string, inputObject) {
+function varEx(inputString: string, inputObject: {[key: string]: string}) {
   // Early return if there are no $[] blocks
   if (!inputString.includes("$[")) return inputString;
 

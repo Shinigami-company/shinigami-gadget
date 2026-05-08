@@ -143,7 +143,7 @@ import { string_emoji } from "./use/tools.ts";
 import { Gift } from "./cmd/gift";
 import { kira_user_update } from "./use/update.js";
 import { ink_match } from "./use/itemType/ink.js";
-import { cmd_invite } from "./cmd/invite.js";
+import { cmd_invite } from "./cmd/invite.ts";
 
 
 //the structure to describe the command
