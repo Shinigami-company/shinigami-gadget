@@ -292,10 +292,11 @@ export async function kira_user_remove_ban(userdataId) {
 export async function kira_user_set_drop(userdataId, f_span) {
   let h_date = new Date();
   h_date.setSeconds(h_date.getSeconds() + f_span);
+  let h_iso = h_date.toISOString();
   await api.KiraUsers.update(userdataId, {
-    giveUp: h_date.toISOString(),
+    giveUp: h_iso,
   });
-  return h_date;
+  return h_iso;
 }
 
 export async function kira_user_remove_drop(userdataId) {

@@ -4747,11 +4747,11 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
   //alles kla
 
   //set
-  let returnDate = await kira_user_set_drop(userdata.id, h_span);
+  let returnDateIso = await kira_user_set_drop(userdata.id, h_span);
 
   // undrop message task
-  kira_remember_task_add(returnDate, rememberTasksType.UNDROP, {
-    return_iso: returnDate.toISOString(),
+  kira_remember_task_add(returnDateIso, rememberTasksType.UNDROP, {
+    return_iso: returnDateIso,
     user_id: userdata.userId,
   });
 
@@ -4790,9 +4790,11 @@ export async function cmd_undrop(taskdata) {
   const userdata = await kira_user_get(taskdata.user_id);
 
   // check if good date
-  if (userdata.giveUp !== taskdata.return_iso)
+  let user_giveup_time = new Date(userdata.giveUp).getTime();
+  let task_return_time = new Date(taskdata.return_iso).getTime();
+  if (user_giveup_time !== task_return_time)
   {
-    console.log(`cmd: undrop: not the same iso; userGiveUpIso!=rememberIso ${userdata.giveUp}!=${taskdata.return_iso}`);
+    console.log(`cmd: undrop: not the same iso; user_giveup_time!=rememberIso ${user_giveup_time}!=${task_return_time}`);
     return;
   }
 
