@@ -369,6 +369,18 @@ const commands_structure = {
       //ephemeral: true,
     },
   },
+  chocolate_edit: {
+    functions: {
+      exe: cmd_chocolate,
+      checks: [
+        [check_react_is_self, true],
+      ],
+    },
+    atr: {
+      defered: deferedActionType.WAIT_UPDATE,
+      systemOnly: true,
+    },
+  },
   
   help: {
     functions: {

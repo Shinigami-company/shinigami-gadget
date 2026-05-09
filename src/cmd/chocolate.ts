@@ -82,7 +82,7 @@ export async function cmd_chocolate({ data, lang }: {data: any, lang: string})
     type: MessageComponentTypes.BUTTON,
     style: ButtonStyleTypes.SECONDARY,
     label: translate(lang, `cmd.chocolate.nav.buttons.${loopSection}`),
-    custom_id: `makecmd chocolate ${loopSection}`,
+    custom_id: `makecmd chocolate_edit ${loopSection}`,
     disabled: (loopSection == section)
   }));
 
