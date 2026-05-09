@@ -53,7 +53,7 @@ export async function cmd_chocolate({ data, lang }: {data: any, lang: string})
       let supporters_parth_top;
       if (supporters_desc_users.length > 0)
       {
-        supporters_parth_top = translate(lang, "cmd.chocolate.embeds.supporters.header")+"\n"+supporters_desc_users.join("\n");
+        supporters_parth_top = translate(lang, "cmd.chocolate.embeds.supporters.header")+"\n\n"+supporters_desc_users.join("\n");
       } else {
         supporters_parth_top = translate(lang, "cmd.chocolate.embeds.supporters.nohead");
       }
