@@ -60,6 +60,10 @@ export const sett_catalog_drops = [
     price: 5,
     span: 86400 * 7,
   },
+  {
+    price: 10,
+    span: 86400 * 23,
+  },
 ];
 
 
