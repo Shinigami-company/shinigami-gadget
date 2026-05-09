@@ -295,6 +295,7 @@ export async function kira_user_set_drop(userdataId, f_span) {
   await api.KiraUsers.update(userdataId, {
     giveUp: h_date.toISOString(),
   });
+  return h_date;
 }
 
 export async function kira_user_set_feedback(userdataId, f_state, f_span = 0) {

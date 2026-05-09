@@ -1,6 +1,6 @@
 import { api } from "gadget-server";
 
-import { cmd_kira_execute, kira_error_report, cmd_comeback } from "../cmd.js";
+import { cmd_kira_execute, kira_error_report, cmd_comeback, cmd_undrop } from "../cmd.js";
 
 import { rememberTasksType } from "../enum.ts";
 
@@ -128,6 +128,12 @@ async function kira_remember_checkup() {
           case rememberTasksType.REVIVE:
             {
               await cmd_comeback(data);
+            }
+            break;
+
+          case rememberTasksType.UNDROP:
+            {
+              await cmd_undrop(data);
             }
             break;
         }

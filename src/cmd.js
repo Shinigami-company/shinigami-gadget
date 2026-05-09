@@ -4721,6 +4721,7 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
       };
     }
   }
+  h_span = 30;
 
   //is confirmed
   {
@@ -4747,7 +4748,13 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
   //alles kla
 
   //set
-  await kira_user_set_drop(userdata.id, h_span);
+  let returnDate = await kira_user_set_drop(userdata.id, h_span);
+
+  // undrop message task
+  kira_remember_task_add(returnDate, rememberTasksType.UNDROP, {
+    return_date: returnDate.toISOString(),
+    user_id: userdata.userId,
+  });
 
   //+stats
   await stats_simple_add(userdata.statPtr.id, "count_dropTime", h_span);
@@ -4774,6 +4781,33 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
         }),
       },
     };
+  }
+}
+
+export async function cmd_undrop(data) {
+  console.log(`cmd: drop: return; userId=${data.user_id}`);
+
+  const user = await DiscordUserById(data.user_id);
+  const userdata = await kira_userd(data.user_id);
+
+  // check if good date
+  // TODO
+
+  // undrop for optimization
+  // TODO
+
+  // send message
+  try {
+    // open DM
+    var user_dm_id = await kira_user_dm_id(userdata);
+    // POST message
+    await DiscordRequest(`channels/${user_dm_id}/messages`, {
+      method: "POST",
+      body: translate(userdata.lang, "cmd.undrop.return.mp"),
+    });
+  } catch (e) {
+    let errorMsg = JSON.parse(e.message);
+    if (!(errorMsg?.code === 50007)) throw e;
   }
 }
 

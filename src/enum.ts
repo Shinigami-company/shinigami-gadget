@@ -14,6 +14,7 @@ export enum FeedbackState {
 export enum rememberTasksType {
   KIRA = 1,
   REVIVE = 2,
+  UNDROP = 4,
 }
 
 export enum deferedActionType {
