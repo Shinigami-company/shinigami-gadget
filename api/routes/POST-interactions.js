@@ -228,6 +228,14 @@ export default async function route({ request, reply, api, logger, connections }
           }
         } break;
 
+        case ("chocolate_edit"):
+        case ("chocolate"):
+        {
+          data = { name: h_cmd, options: []};
+          if (h_arg.length >= 1)
+            data.options.push({ name: 'section', value: h_arg[0] });
+        } break;
+
         case ("see"):
         {//old
           //eg:
