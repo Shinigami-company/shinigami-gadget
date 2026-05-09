@@ -22,6 +22,7 @@ export async function cmd_chocolate({ data, lang }: {data: any, lang: string})
       let credits_color = 5793266;
       let credits_dev_list = await creditory_list(creditoryType.DEV, true);
       let credits_translate_list = await creditory_list(creditoryType.TRANSLATE, true);
+      let credits_special_list = await creditory_list(creditoryType.SPECIAL_THANK, true);
       embed_section = {
         fields: [
           {
@@ -34,9 +35,15 @@ export async function cmd_chocolate({ data, lang }: {data: any, lang: string})
           },
           {
             name: translate(lang, "cmd.chocolate.embeds.credits.thanks.name"),
-            value: translate(lang, "cmd.chocolate.embeds.credits.thanks.value"),
+            value: ((credits_special_list.length > 0)
+              ? translate(lang, "cmd.chocolate.embeds.credits.thanks.list") + "\n" + credits_special_list.join("\n") + "\n"
+              : "")
+              + translate(lang, "cmd.chocolate.embeds.credits.thanks.others"),
           },
           ],
+        footer: {
+          text: translate(lang, "cmd.chocolate.embeds.credits.origin"),
+        },
         color: credits_color,
       };
     } break;
@@ -47,7 +54,7 @@ export async function cmd_chocolate({ data, lang }: {data: any, lang: string})
 
       let supporters_desc_users = await creditory_list(creditoryType.TIPPER, true);
       
-      let supporters_desc_specialmsg_state = process.env.tip_specialmsg_state;// aviables: cool, cost, warn, beg, troll
+      let supporters_desc_specialmsg_state = process.env.tip_specialmsg_state;// aviables: cool, cost, warn, beg, final, troll
 
       // build supporters embed
       let supporters_parth_top;

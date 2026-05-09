@@ -69,6 +69,7 @@ export enum penBody {
 export enum creditoryType {
   DEV = "dev",
   TRANSLATE = "lang",
-  TESTER = "tester",//unused
+  SPECIAL_THANK = "thank",//unused
+  TESTER = "test",//unused
   TIPPER = "tip",
 }
