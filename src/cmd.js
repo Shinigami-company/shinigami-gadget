@@ -659,7 +659,7 @@ const commands_structure = {
             { name: "Kills", value: "kill" },
             { name: "Murders", value: "murder" },
             { name: "Murdered Time", value: "time" },
-            { name: "Life Time", value: "life" },
+            //{ name: "Life Time", value: "life" },
             { name: "Life Steal", value: "vitality" },
           ],
         },
