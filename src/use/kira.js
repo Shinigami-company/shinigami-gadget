@@ -298,6 +298,12 @@ export async function kira_user_set_drop(userdataId, f_span) {
   return h_date;
 }
 
+export async function kira_user_remove_drop(userdataId) {
+  await api.KiraUsers.update(userdataId, {
+    giveUp: null,
+  });
+}
+
 export async function kira_user_set_feedback(userdataId, f_state, f_span = 0) {
   let h_date = new Date();
   h_date.setSeconds(h_date.getSeconds() + f_span);

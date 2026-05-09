@@ -60,6 +60,7 @@ import {
   kira_user_get_owned_books_item,
   command_refresh_one,
   kira_user_set_remindermsg,
+  kira_user_remove_drop,
 } from "./use/kira.js"; // god register commands
 import {
   kira_user_get,
@@ -4748,9 +4749,9 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
   //set
   let returnDate = await kira_user_set_drop(userdata.id, h_span);
 
-  // undrop message task
+  // un drop message task
   kira_remember_task_add(returnDate, rememberTasksType.UNDROP, {
-    return_date: returnDate.toISOString(),
+    return_iso: returnDate.toISOString(),
     user_id: userdata.userId,
   });
 
@@ -4783,16 +4784,20 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
 }
 
 export async function cmd_undrop(data) {
-  console.log(`cmd: drop: return; userId=${data.user_id}`);
+  console.log(`cmd: undrop: return; userId=${data.user_id}`);
 
   const user = await DiscordUserById(data.user_id);
   const userdata = await kira_user_get(data.user_id);
 
   // check if good date
-  // TODO
+  if (userdata.giveUp !== return_iso)
+  {
+    console.log(`cmd: undrop: not the same iso; userGiveUpIso!=rememberIso ${userdata.giveUp}!=${return_iso}`);
+    return;
+  }
 
-  // undrop for optimization
-  // TODO
+  // undrop in model for optimization
+  await kira_user_remove_drop(userdata.id);
 
   // send message
   try {
