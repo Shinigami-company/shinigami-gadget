@@ -185,6 +185,11 @@ const commands_structure = {
               description: "drop someone's Death Note",
             },
             {
+              name: "remove drop",
+              value: "undrop",
+              description: "undrop someone's Death Note",
+            },
+            {
               name: "no feedback",
               value: "nofeedback",
               description: "remove someone's ability to feedback for a span",
@@ -1903,11 +1908,41 @@ async function cmd_god({ userdata, userbook, data, lang, locale }) {
           body: {
             content: translate(
               lang,
-              "cmd.god.sub.forcedrop.done." +
-                (arg_amount == 0 ? "zero" : "more"),
+              "cmd.god.sub.forcedrop.done",
               {
                 targetId: arg_user,
                 time: time_format_string_from_int(arg_amount, lang),
+              }
+            ),
+          },
+        };
+      }
+      break;
+
+    //#undrop subcommand
+    case "undrop":
+      {
+        if (!arg_user) {
+          return {
+            method: "PATCH",
+            body: {
+              content: translate(lang, "cmd.god.missing.user"),
+            },
+          };
+        }
+
+        const targetdata = await kira_user_get(arg_user, false);
+
+        await kira_user_remove_drop(targetdata.id);
+
+        return {
+          method: "PATCH",
+          body: {
+            content: translate(
+              lang,
+              "cmd.god.sub.undrop.done",
+              {
+                targetId: arg_user,
               }
             ),
           },
