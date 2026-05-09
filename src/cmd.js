@@ -1708,16 +1708,15 @@ async function check_has_book({ lang, userbook, userdata }) {
 }
 
 function check_has_noDrop({ lang, userdata }) {
+  const iso = userdata.giveUp;
+  if (!iso) return undefined;
+  //calculate drop
   let gap = 0;
-  {
-    //calculate drop
-    const iso = userdata.giveUp;
-    if (iso) {
-      const span = Math.ceil(
-        (new Date(iso).getTime() - new Date().getTime()) / 1000
-      );
-      if (span > 0) gap = span;
-    }
+  if (iso) {
+    const span = Math.ceil(
+      (new Date(iso).getTime() - new Date().getTime()) / 1000
+    );
+    if (span > 0) gap = span;
   }
   if (gap > 0) {
     return {
