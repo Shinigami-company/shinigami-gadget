@@ -33,20 +33,32 @@ export const sett_catalog_knows = {
 
 export const sett_catalog_drops = [
   {
-    price: 1,
-    span: 600,
+    price: 0,
+    span: 360,
   },
   {
     price: 1,
     span: 3600,
   },
   {
-    price: 2,
+    price: 1,
+    span: 43200,
+  },
+  {
+    price: 1,
     span: 86400,
   },
   {
-    price: 5,
+    price: 2,
+    span: 86400 * 2,
+  },
+  {
+    price: 3,
     span: 86400 * 3,
+  },
+  {
+    price: 5,
+    span: 86400 * 7,
   },
 ];
 
