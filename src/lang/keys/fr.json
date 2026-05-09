@@ -367,6 +367,23 @@
 "cmd.invite.button.join": "Rejoindre le royaume de Kira",
 "cmd.invite.no": "Je ne veux pas rejoindre de nouveaux serveur pour l'instant.\n`$[details]`",
 
+"cmd.chocolate.content": "Moi aussi j'adore le chocolat ! Tu peux m'en donner ?",
+"cmd.chocolate.nav.buttons.credits": "Crédits",
+"cmd.chocolate.nav.buttons.supporters": "Tipeurs",
+"cmd.chocolate.embeds.credits.dev.name": "Developpement",
+"cmd.chocolate.embeds.credits.translate.name": "Traduction",
+"cmd.chocolate.embeds.credits.thanks.name": "Remerciment",
+"cmd.chocolate.embeds.credits.thanks.value": "Merci à tous les testeurs et les membres de la communautée qui contribuent à l'évolution du Shinigami !",
+"cmd.chocolate.embeds.supporters.header": "Remerciments mortels à tous les tipeurs mensuels:",
+"cmd.chocolate.embeds.supporters.nohead": "*Il n'y a actuellement aucun tipeur régulier*",
+"cmd.chocolate.embeds.supporters.footer": "Aide au développement du Shinigami en [**tipant un chocolat chaud**]($[tipLink]) :hot_beverage:\nTippers can try out Shinigami features sooner :sparkles:\nI promise will share the hot chocolate with Ryuk <:ryuk_draw:1345790011190018088>",
+"cmd.chocolate.embeds.supporters.special.cool": "<:ryuk_heart:1347339176273776771> Merci pour votre soutiens!",
+"cmd.chocolate.embeds.supporters.special.cost": ":money_with_wings: Faire fonctionner le Shinigami coûte de l'argent.",
+"cmd.chocolate.embeds.supporters.special.warn": ":warning: Actuellement, faire fonctionner le Shinigami coûte une bonne somme d'argent, **il pourrait être arrêté pour cette raison.**",
+"cmd.chocolate.embeds.supporters.special.beg": ":warning: Actuellement, faire fonctionner le Shinigami coûte une bonne somme d'argent, **il pourrait être __arrêté__ pour cette raison.** __Un pourboir mensuel__ permettrait **d'éviter ça**.",
+"cmd.chocolate.embeds.supporters.special.troll": ":hot_beverage: SVP DONNEZ MOI DE L'ARGENT J'AI VRAIMENT BESOIN DE MON CHOCOLAT CHAUD",
+"cmd.chocolate.button.tip": "Soutenez le Shinigami",
+"cmd.chocolate.button.join": "Rejoindre le royaume de Kira",
 
 "cmd.help.nav.buttons.menu": "AIDE",
 "cmd.help.nav.buttons.tuto": "Lire le tutoriel",
@@ -375,7 +392,6 @@
 
 "cmd.help.menu.description": "### Tu as besoin d'aide ?\nTu peux relire tuto, voir la description des commandes, ou envoyer un feedback.\nTu peux aussi avoir l'aide d'un hamain dans le [royaume de Kira]($[joinLink]).\n### Un petit rappel\n$[reminder]",
 "cmd.help.menu.footer": " ",
-
 
 "cmd.help.reminder.content": "Je suis un Shinigami, venant du royaume des morts. :wing:\n\n**Récupère ton Death Note avec `/claim`**\nTu peux écrire des noms avec `/kira`\nDéfends toi en tuant ton agresseur\nAccumule des pommes avec `/apple`\nTu pourras acheter des trucs cool `/shop`\nPiège tes amis avec `/trick`\nTermines toutes les `/quest`\nFait grandir le monde de Kira avec `/invite`\nEt d'autres, mais j'ai la flemme de t'expliquer. $[view]\n-# Les commandes sont disponibles sur les serveurs dicord",
 "cmd.help.reminder.view": "Tu peux tout voir ici :\n$[inviteLink]",
