@@ -4721,7 +4721,6 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
       };
     }
   }
-  h_span = 30;
 
   //is confirmed
   {
@@ -4788,7 +4787,7 @@ export async function cmd_undrop(data) {
   console.log(`cmd: drop: return; userId=${data.user_id}`);
 
   const user = await DiscordUserById(data.user_id);
-  const userdata = await kira_userd(data.user_id);
+  const userdata = await kira_user_get(data.user_id);
 
   // check if good date
   // TODO
@@ -4803,7 +4802,9 @@ export async function cmd_undrop(data) {
     // POST message
     await DiscordRequest(`channels/${user_dm_id}/messages`, {
       method: "POST",
-      body: translate(userdata.lang, "cmd.undrop.return.mp"),
+      body: {
+        content: translate(userdata.lang, "cmd.undrop.return.mp"),
+      }
     });
   } catch (e) {
     let errorMsg = JSON.parse(e.message);
