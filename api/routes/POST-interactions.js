@@ -69,7 +69,7 @@ export default async function route({ request, reply, api, logger, connections }
   // command call for slash  and components
   
   const calling_command =  async commandName => {
-      console.log(`interaction: user=${user.id} (${user.username}) command=${commandName} options=${data.options}`);
+      console.log(`interaction: user=${user.id} (${user.username}) command=${commandName} options=`, data.options);
       console.debug(`interaction: resp_url=webhooks/${process.env.APP_ID}/${token}/messages/@original`);
       
       return await kira_cmd({ source, timespam, data, type, id, token, locale, user, message, channel, guild, clock }, commandName);
