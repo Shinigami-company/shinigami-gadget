@@ -4749,7 +4749,7 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
   //set
   let returnDate = await kira_user_set_drop(userdata.id, h_span);
 
-  // un drop message task
+  // undrop message task
   kira_remember_task_add(returnDate, rememberTasksType.UNDROP, {
     return_iso: returnDate.toISOString(),
     user_id: userdata.userId,
@@ -4783,16 +4783,16 @@ async function cmd_drop({ data, token, userdata, message, lang }) {
   }
 }
 
-export async function cmd_undrop(data) {
-  console.log(`cmd: undrop: return; userId=${data.user_id}`);
+export async function cmd_undrop(taskdata) {
+  console.log(`cmd: undrop: return; userId=${taskdata.user_id}`);
 
-  const user = await DiscordUserById(data.user_id);
-  const userdata = await kira_user_get(data.user_id);
+  const user = await DiscordUserById(taskdata.user_id);
+  const userdata = await kira_user_get(taskdata.user_id);
 
   // check if good date
-  if (userdata.giveUp !== return_iso)
+  if (userdata.giveUp !== taskdata.return_iso)
   {
-    console.log(`cmd: undrop: not the same iso; userGiveUpIso!=rememberIso ${userdata.giveUp}!=${return_iso}`);
+    console.log(`cmd: undrop: not the same iso; userGiveUpIso!=rememberIso ${userdata.giveUp}!=${taskdata.return_iso}`);
     return;
   }
 
@@ -5375,19 +5375,19 @@ async function cmd_kira({
 }
 
 //is executed by [./remember.js]
-export async function cmd_kira_execute(data) {
+export async function cmd_kira_execute(taskdata) {
   //if (!data.run)
-  console.log(`cmd: kira: EXECUTE; runId=${data.runId}`);
+  console.log(`cmd: kira: EXECUTE; runId=${taskdata.runId}`);
 
   //run reading
-  if (!data.runId) {
-    console.error(`cmd: kira: runId not defined; data=`, data);
+  if (!taskdata.runId) {
+    console.error(`cmd: kira: runId not defined; data=`, taskdata);
     return;
   }
-  const pack = await kira_run_unpack_execute(data.runId);
+  const pack = await kira_run_unpack_execute(taskdata.runId);
   if (!pack) {
-    console.error(`cmd: kira: run deleted; data=`, data);
-    //await kira_run_delete(data.runId);
+    console.error(`cmd: kira: run deleted; data=`, taskdata);
+    //await kira_run_delete(taskdata.runId);
     return;
   }
 
@@ -5405,9 +5405,9 @@ export async function cmd_kira_execute(data) {
     h_attacker_book && h_attacker_book.id === pack.attacker_book_id;
 
   //run delete
-  console.log(`cmd: kira: deleting; (runId=${data.runId})`);
-  await kira_run_delete(data.runId, h_victim_data?.id);
-  console.log(`cmd: kira: deleted; (runId=${data.runId})`);
+  console.log(`cmd: kira: deleting; (runId=${taskdata.runId})`);
+  await kira_run_delete(taskdata.runId, h_victim_data?.id);
+  console.log(`cmd: kira: deleted; (runId=${taskdata.runId})`);
 
   try {
     //message/victim/first/edit
@@ -5673,18 +5673,18 @@ export async function cmd_kira_execute(data) {
 }
 
 //is not executed by [./remember.js]
-export async function cmd_kira_cancel(data) {
-  console.log(`cmd: kira: CANCEL; runId=${data.runId}`);
+export async function cmd_kira_cancel(taskdata) {
+  console.log(`cmd: kira: CANCEL; runId=${taskdata.runId}`);
 
   //run reading
-  if (!data.runId) {
-    console.error(`cmd: kira: runId not defined; data=`, data);
+  if (!taskdata.runId) {
+    console.error(`cmd: kira: runId not defined; data=`, taskdata);
     return;
   }
-  const pack = await kira_run_unpack_execute(data.runId);
+  const pack = await kira_run_unpack_execute(taskdata.runId);
   if (!pack) {
-    console.error(`cmd: kira: run deleted; data=`, data);
-    //await kira_run_delete(data.runId);
+    console.error(`cmd: kira: run deleted; data=`, taskdata);
+    //await kira_run_delete(taskdata.runId);
     return;
   }
 
@@ -5695,7 +5695,7 @@ export async function cmd_kira_cancel(data) {
   // let h_victim_data = await kira_user_get(pack.victim_id, !pack.will_fail);//needed to know if alive
 
   //run delete
-  await kira_run_delete(data.runId, pack.victim_data_id);
+  await kira_run_delete(taskdata.runId, pack.victim_data_id);
 
   //message/victim/first/edit
   try {
@@ -5762,13 +5762,13 @@ export async function cmd_kira_cancel(data) {
 }
 
 //is executed by [./remember.js]
-export async function cmd_comeback(data) {
-  const comeback_type = data.ifSuicide ? "suicide" : "other";
+export async function cmd_comeback(taskdata) {
+  const comeback_type = taskdata.ifSuicide ? "suicide" : "other";
 
   //if comeback
   if (SETT_CMD.kira.comebackBy.time[comeback_type].revive)
   {
-    const userdata = await kira_user_get(data.userId, false);
+    const userdata = await kira_user_get(taskdata.userId, false);
 
     const h_gap = parseInt(
       (new Date(userdata.backDate).getTime() - new Date().getTime()) / 1000
@@ -5787,7 +5787,7 @@ export async function cmd_comeback(data) {
   //if send message
   if (SETT_CMD.kira.comebackBy.time[comeback_type].message) {
     //open DM
-    const userdata = await kira_user_get(data.userId, false);
+    const userdata = await kira_user_get(taskdata.userId, false);
     const dm_id = await kira_user_dm_id(userdata);
 
     //send message
@@ -5801,7 +5801,7 @@ export async function cmd_comeback(data) {
           //          ? InteractionResponseFlags.EPHEMERAL : undefined,
           //},
           message_reference: {
-            message_id: data.msgReference,
+            message_id: taskdata.msgReference,
           },
           content: translate(userdata.lang, "cmd.comeback.time." + comeback_type),
         },
