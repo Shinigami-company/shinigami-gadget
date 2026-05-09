@@ -268,7 +268,7 @@
 "cmd.drop.shop.button.poor": "But you can't affrod it.",
 "cmd.drop.fail.poor": "I need more apples, to not be bored.",
 "cmd.drop.done": "You relinquish your Death Note for **$[time]**.\nUntil next time, human!\n*The shinigami disappears, but he will come back later...*",
-"cmd.undrop.return.mp": "Hey human! Do you remember me?\nI'm giving back your Death Note! **You can use it again <:book_black:1281258833271849050>**\n-# But beware, you are no longer protected from attacks!",
+"cmd.undrop.return.mp": "Hey human! Do you remember me?\nI'm giving back your Death Note! **You can use it again <:book_black:1281258833271849050>**\n-# But beware, you are no longer protected from attacks.",
 
 "cmd.trick.shop": "Im booored. What do you want to do that's funny?",
 "cmd.trick.shop.sentence": "I want to...",

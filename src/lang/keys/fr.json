@@ -268,6 +268,7 @@
 "cmd.drop.shop.button.poor": "Mais tu n'en as pas assez.",
 "cmd.drop.fail.poor": "J'ai besoin de plus de pomme, pour ne pas être en manque.",
 "cmd.drop.done": "Tu as abandonné ton Death Note pendant **$[time]**.\nÀ la prochaine humain·e!\n*le shinigami disparait avec le Death Note...*",
+"cmd.undrop.return.mp": "Salut humain ! Tu te souviens de moi ?\nJe te redonne ton Death Note ! **Tu peux l'utiliser de nouveau <:book_black:1281258833271849050>**\n-# Mais fait attention, tu n'es plus protégé des attaques.",
 
 "cmd.trick.shop": "Je m'enuiiie. Tu veux pas faire un truc ?",
 "cmd.trick.shop.sentence": "Je veux...",
