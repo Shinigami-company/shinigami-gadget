@@ -33,6 +33,8 @@ export async function creditory_list(creditoryType, allowMessage = true) {
       let line = creditor.name;
       if (!creditor.incrusted)
         line = `\`${line}\``;
+      if (creditor.link)
+        line = `[${line}](${creditor.link})`;
       line = `- ${line}`;
       if (allowMessage && creditor.message)
         line += `\n> ${creditor.message}`
