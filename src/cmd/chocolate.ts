@@ -23,7 +23,6 @@ export async function cmd_chocolate({ data, lang }: {data: any, lang: string})
       let credits_dev_list = await creditory_list(creditoryType.DEV, true);
       let credits_translate_list = await creditory_list(creditoryType.TRANSLATE, true);
       embed_section = {
-        title: translate(lang, "cmd.chocolate.embeds.credits.title"),
         fields: [
           {
             name: translate(lang, "cmd.chocolate.embeds.credits.dev.name"),
@@ -69,7 +68,6 @@ export async function cmd_chocolate({ data, lang }: {data: any, lang: string})
         .filter(v => v !== undefined)
         .join("\n\n");
       embed_section = {
-        title: translate(lang, "cmd.chocolate.embeds.supporters.title"),
         description: supporters_description,
         color: supporters_color,
       };
