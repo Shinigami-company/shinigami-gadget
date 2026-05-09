@@ -30,7 +30,10 @@ export async function creditory_list(creditoryType, allowMessage = true) {
   return await creditory_read(creditoryType).then(
     creditories =>
     creditories.map(creditor => {
-      let line = `- \`${creditor.name}\``;
+      let line = creditor.name;
+      if (!creditor.incrusted)
+        line = `\`${line}\``;
+      line = `- ${line}`;
       if (allowMessage && creditor.message)
         line += `\n> ${creditor.message}`
       return line;
